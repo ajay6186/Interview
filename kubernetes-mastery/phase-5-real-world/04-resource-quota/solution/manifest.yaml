@@ -1,0 +1,45 @@
+# ============================================================================
+# Solution 5.4 — ResourceQuota
+# ============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-a
+
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: team-quota
+  namespace: team-a
+spec:
+  hard:
+    requests.cpu: "2"           # Total CPU requests across all pods: 2 cores
+    requests.memory: 2Gi        # Total memory requests: 2GiB
+    limits.cpu: "4"             # Total CPU limits: 4 cores
+    limits.memory: 4Gi          # Total memory limits: 4GiB
+    count/pods: "10"            # Max 10 pods in this namespace
+    count/deployments.apps: "5" # Max 5 deployments
+    count/services: "5"         # Max 5 services
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limits
+  namespace: team-a
+spec:
+  limits:
+    - type: Container
+      default:
+        memory: "256Mi"   # Applied when no limits specified
+        cpu: "200m"
+      defaultRequest:
+        memory: "128Mi"   # Applied when no requests specified
+        cpu: "100m"
+
+# HOW THEY WORK TOGETHER:
+# - LimitRange: sets per-container defaults (so every pod has requests/limits)
+# - ResourceQuota: enforces the TOTAL across all pods in the namespace
+# - Without LimitRange, pods with no resource specs bypass ResourceQuota!

@@ -1,0 +1,35 @@
+# FIXED: 5 bugs corrected — see comments below
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  # FIX 1: .Values.replicacount → .Values.replicaCount (case-sensitive)
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: GREETING
+              # FIX 2: added | quote — string values must be quoted or YAML interprets them
+              value: {{ .Values.config.greeting | quote }}
+            - name: MAX_CONN
+              value: {{ .Values.config.maxConnections | quote }}
+          resources:
+            requests:
+              # FIX 3: corrected indentation (was 13 spaces, must be 14)
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"

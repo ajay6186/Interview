@@ -1,0 +1,56 @@
+// Exercise 3.2 — Matrix Builds
+
+pipeline {
+    agent none
+
+    stages {
+        stage('Test Matrix') {
+            // TODO: Define a matrix with two axes:
+            // Axis 1: NODE_VERSION  values: '16', '18', '20'
+            // Axis 2: OS           values: 'linux', 'mac'
+            // Exclude combination: NODE_VERSION=16 with OS=mac
+            matrix {
+                axes {
+                    axis {
+                        name   ???
+                        values ???
+                    }
+                    axis {
+                        name   ???
+                        values ???
+                    }
+                }
+                // TODO: Exclude NODE_VERSION=16 on OS=mac
+                excludes {
+                    exclude {
+                        axis {
+                            name   ???
+                            values ???
+                        }
+                        axis {
+                            name   ???
+                            values ???
+                        }
+                    }
+                }
+                // TODO: Use the matrix axis values to run on the correct agent
+                // and print which combination is running
+                stages {
+                    stage('Run Tests') {
+                        agent {
+                            docker {
+                                // TODO: Use node:${NODE_VERSION}-alpine image
+                                image ???
+                            }
+                        }
+                        steps {
+                            // TODO: Print "Testing on Node NODE_VERSION / OS"
+                            echo ???
+                            sh 'node --version'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

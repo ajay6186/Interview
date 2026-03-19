@@ -1,0 +1,42 @@
+// Exercise 1.5 — Post Actions
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo "Building..." && mkdir -p dist && echo "artifact" > dist/app.zip'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // This intentionally fails when FORCE_FAIL=true
+                sh 'echo "Testing..."'
+            }
+        }
+    }
+
+    // TODO: Add a post block with four conditions:
+    // 1. always  — print "Cleaning up workspace..."
+    // 2. success — print "Build SUCCEEDED — ready to deploy"
+    // 3. failure — print "Build FAILED — check the logs"
+    // 4. always  — archive the artifact dist/app.zip (archiveArtifacts)
+    post {
+        // TODO: always block
+        ??? {
+            echo ???
+            // TODO: Archive artifacts matching 'dist/**'
+            archiveArtifacts artifacts: ???, allowEmptyArchive: true
+        }
+        // TODO: success block
+        ??? {
+            echo ???
+        }
+        // TODO: failure block
+        ??? {
+            echo ???
+        }
+    }
+}

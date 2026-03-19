@@ -1,0 +1,67 @@
+# ============================================================================
+# Exercise 3.2 — StatefulSets
+# ============================================================================
+
+# Headless Service: required for StatefulSet DNS (clusterIP: None)
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-headless
+spec:
+  # TODO: Set clusterIP to None (makes this a headless service)
+  clusterIP: ???
+  selector:
+    app: db
+  ports:
+    - port: 5432
+
+---
+# TODO: Set apiVersion for StatefulSet (hint: apps/v1)
+apiVersion: ???
+kind: StatefulSet
+
+metadata:
+  name: db
+
+spec:
+  # TODO: Reference the headless service name
+  serviceName: ???
+  # TODO: Set replicas to 3
+  replicas: ???
+
+  selector:
+    matchLabels:
+      app: db
+
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "devpassword"
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            # TODO: Mount the volume from volumeClaimTemplates
+            - name: data
+              mountPath: /var/lib/postgresql/data
+
+  # TODO: Define volumeClaimTemplates — each pod gets its own PVC
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          # TODO: Set to ReadWriteOnce
+          - ???
+        resources:
+          requests:
+            # TODO: Request 1Gi storage
+            storage: ???

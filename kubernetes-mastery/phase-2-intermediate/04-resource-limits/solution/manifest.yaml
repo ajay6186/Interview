@@ -1,0 +1,43 @@
+# ============================================================================
+# Solution 2.4 — Resource Requests and Limits
+# ============================================================================
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resource-pod
+spec:
+  containers:
+    - name: app
+      image: nginx:alpine
+      resources:
+        requests:
+          memory: "128Mi"    # Scheduler places pod on node with >= 128Mi free
+          cpu: "250m"        # 250 millicores = 0.25 CPU core
+        limits:
+          memory: "256Mi"    # OOMKilled if exceeded
+          cpu: "500m"        # CPU throttled (not killed) if exceeded
+
+---
+# LimitRange: auto-applies defaults to pods without explicit resource specs
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limits
+spec:
+  limits:
+    - type: Container
+      defaultRequest:
+        memory: "128Mi"
+        cpu: "100m"
+      default:              # Applied when no limits are specified
+        memory: "256Mi"
+        cpu: "200m"
+      max:                  # No container in this namespace can exceed:
+        memory: "1Gi"
+        cpu: "2"
+
+# QoS CLASSES:
+#   Guaranteed:  requests == limits  (most stable, last evicted)
+#   Burstable:   requests < limits   (can burst, evicted 2nd)
+#   BestEffort:  no requests/limits  (first evicted under pressure)

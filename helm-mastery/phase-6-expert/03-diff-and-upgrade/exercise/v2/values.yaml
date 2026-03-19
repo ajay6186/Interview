@@ -1,0 +1,23 @@
+# v2: increased replicas, new image tag, new env var, added resource limits
+replicaCount: 3
+
+image:
+  repository: nginx
+  tag: "1.25"
+
+service:
+  type: ClusterIP
+  port: 80
+
+config:
+  greeting: "Hello from v2"
+  # New in v2
+  maxConnections: 100
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "64Mi"
+  limits:
+    cpu: "250m"
+    memory: "128Mi"

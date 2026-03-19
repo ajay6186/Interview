@@ -1,0 +1,6 @@
+apiVersion: v2
+name: final-challenge
+description: Exercise 6.5 - Final Challenge — production-grade chart combining all patterns
+type: application
+version: 1.0.0
+appVersion: "1.0.0"

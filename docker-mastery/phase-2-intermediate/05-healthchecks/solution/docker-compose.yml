@@ -1,0 +1,24 @@
+# ============================================================================
+# Solution 2.5 — Health Checks in docker-compose
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  api:
+    image: node:18-alpine
+    command: sh -c "echo 'API started' && while true; do sleep 1; done"
+    depends_on:
+      web:
+        condition: service_healthy   # Wait until web passes health check

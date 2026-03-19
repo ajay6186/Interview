@@ -1,0 +1,14 @@
+{{- define "platform.labels" -}}
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+environment: {{ .Values.global.environment }}
+{{- end }}
+
+{{- define "platform.image" -}}
+{{- if .registry -}}
+{{ .registry }}/{{ .repo }}:{{ .tag }}
+{{- else -}}
+{{ .repo }}:{{ .tag }}
+{{- end -}}
+{{- end }}

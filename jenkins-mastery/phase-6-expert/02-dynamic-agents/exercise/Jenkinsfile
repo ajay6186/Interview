@@ -1,0 +1,48 @@
+// Exercise 6.2 — Dynamic Kubernetes Agents
+
+pipeline {
+    // TODO: Define a Kubernetes agent with a pod containing two containers:
+    // Container 1: name=node,   image=node:18-alpine,  command=cat, tty=true
+    // Container 2: name=docker, image=docker:24-dind, privileged=true
+    agent {
+        kubernetes {
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: ???
+    image: ???
+    command: [cat]
+    tty: true
+  - name: ???
+    image: ???
+    securityContext:
+      privileged: ???
+'''
+        }
+    }
+
+    stages {
+        stage('Node Build') {
+            steps {
+                // TODO: Run steps inside the "node" container
+                container(???) {
+                    sh 'node --version'
+                    sh 'npm --version'
+                    sh 'echo "Installing and building..."'
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                // TODO: Run steps inside the "docker" container
+                container(???) {
+                    sh 'docker version'
+                    sh 'docker build -t myapp:latest . || echo "No Dockerfile — skipping"'
+                }
+            }
+        }
+    }
+}

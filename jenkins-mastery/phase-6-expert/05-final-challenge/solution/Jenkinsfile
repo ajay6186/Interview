@@ -1,0 +1,145 @@
+pipeline {
+    agent none
+
+    options {
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 1, unit: 'HOURS')
+    }
+
+    parameters {
+        booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip test suite')
+        choice(name: 'DEPLOY_ENV', choices: ['dev', 'staging', 'prod'], description: 'Target environment')
+    }
+
+    environment {
+        IMAGE_NAME    = 'myorg/myapp'
+        HELM_RELEASE  = 'myapp'
+        SLACK_CHANNEL = '#ci-builds'
+        CONFIG_REPO   = 'git@github.com:myorg/k8s-config.git'
+    }
+
+    stages {
+        stage('Build & Test') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    args  '-v npm-cache:/root/.npm'
+                }
+            }
+            steps {
+                sh 'npm ci'
+                sh 'npm run lint'
+                script {
+                    if (!params.SKIP_TESTS) {
+                        sh 'npm test'
+                        junit testResults: 'test-results/**/*.xml', allowEmptyResults: true
+                    } else {
+                        echo 'Tests skipped by parameter'
+                    }
+                }
+                sh 'npm run build'
+                stash name: 'app-build', includes: 'dist/**'
+            }
+        }
+
+        stage('Security Scan') {
+            agent any
+            steps {
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                    sh 'npm audit --audit-level=high'
+                }
+            }
+        }
+
+        stage('Docker Build & Push') {
+            agent any
+            when { branch 'main' }
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                    sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} -t ${IMAGE_NAME}:latest ."
+                }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'U', passwordVariable: 'P')]) {
+                    sh 'docker login -u $U -p $P'
+                    sh "docker push ${IMAGE_NAME}:${env.GIT_SHA}"
+                    sh "docker push ${IMAGE_NAME}:latest"
+                }
+            }
+        }
+
+        stage('Deploy Staging') {
+            agent any
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        helm upgrade --install ${HELM_RELEASE} ./helm/myapp \
+                          --set image.tag=${env.GIT_SHA} \
+                          --atomic --timeout 5m \
+                          -n staging --kubeconfig=$KUBECONFIG
+                    """
+                }
+            }
+        }
+
+        stage('Approve Production') {
+            when { branch 'main' }
+            steps {
+                script {
+                    timeout(time: 2, unit: 'HOURS') {
+                        input message: 'Deploy to production?', ok: 'Deploy', submitter: 'ops-team'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Production') {
+            agent any
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        helm upgrade --install ${HELM_RELEASE} ./helm/myapp \
+                          --set image.tag=${env.GIT_SHA} \
+                          --atomic --timeout 5m \
+                          -n production --kubeconfig=$KUBECONFIG
+                    """
+                }
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-deploy-key',
+                    keyFileVariable: 'GIT_KEY')]) {
+                    sh '''
+                        export GIT_SSH_COMMAND="ssh -i $GIT_KEY -o StrictHostKeyChecking=no"
+                        git clone ${CONFIG_REPO} config
+                        cd config
+                        sed -i "s|  tag: .*|  tag: ${GIT_SHA}|g" apps/myapp/values.yaml
+                        git config user.email "jenkins@ci" && git config user.name "Jenkins CI"
+                        git add apps/myapp/values.yaml
+                        git commit -m "chore: bump myapp to ${GIT_SHA} [ci skip]"
+                        git push origin main
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh "docker rmi ${IMAGE_NAME}:${env.GIT_SHA} || true"
+            sh "docker rmi ${IMAGE_NAME}:latest || true"
+            archiveArtifacts artifacts: 'dist/**', allowEmptyArchive: true
+        }
+        success {
+            slackSend(channel: env.SLACK_CHANNEL, color: 'good',
+                message: "✅ #${env.BUILD_NUMBER} PASSED — ${env.JOB_NAME} (${env.BUILD_URL})")
+        }
+        failure {
+            slackSend(channel: env.SLACK_CHANNEL, color: 'danger',
+                message: "❌ #${env.BUILD_NUMBER} FAILED — ${env.JOB_NAME} (${env.BUILD_URL})")
+            withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                sh "helm rollback ${HELM_RELEASE} 0 -n production --kubeconfig=$KUBECONFIG || true"
+            }
+        }
+    }
+}

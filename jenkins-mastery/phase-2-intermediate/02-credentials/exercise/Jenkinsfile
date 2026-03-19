@@ -1,0 +1,44 @@
+// Exercise 2.2 — Credentials
+// Prerequisites: create these credentials in Jenkins:
+//   docker-hub-creds  (Username with password)
+//   api-token         (Secret text)
+
+pipeline {
+    agent any
+
+    // TODO: Bind the docker-hub-creds credential to DOCKER_USER and DOCKER_PASS
+    // using the credentials() helper in environment block
+    environment {
+        DOCKER_CREDS = credentials(???)
+    }
+
+    stages {
+        stage('Docker Login') {
+            steps {
+                // TODO: Use withCredentials to bind docker-hub-creds
+                // usernameVariable: DOCKER_USER, passwordVariable: DOCKER_PASS
+                withCredentials([usernamePassword(
+                    credentialsId: ???,
+                    usernameVariable: ???,
+                    passwordVariable: ???
+                )]) {
+                    // Values are masked as **** in logs
+                    sh 'echo "Logging in as: $DOCKER_USER"'
+                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                }
+            }
+        }
+
+        stage('API Call') {
+            steps {
+                // TODO: Use withCredentials to bind api-token as API_KEY (secret text)
+                withCredentials([string(
+                    credentialsId: ???,
+                    variable: ???
+                )]) {
+                    sh 'curl -H "Authorization: Bearer $API_KEY" https://api.example.com/status'
+                }
+            }
+        }
+    }
+}

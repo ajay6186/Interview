@@ -1,0 +1,35 @@
+# ============================================================================
+# Exercise 3.3 — Docker Compose Profiles
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    # No profile = always starts
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: secret
+    # No profile = always starts
+
+  adminer:
+    image: adminer
+    ports:
+      - "8081:8080"
+    # TODO: Assign to "tools" profile
+    # profiles:
+    #   - tools
+
+  seeder:
+    image: node:18-alpine
+    command: sh -c "echo 'Seeding...' && sleep 5 && echo 'Done!'"
+    depends_on:
+      - db
+    # TODO: Assign to "dev" profile
+    # profiles:
+    #   - dev

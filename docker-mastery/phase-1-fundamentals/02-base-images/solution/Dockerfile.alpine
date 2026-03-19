@@ -1,0 +1,8 @@
+# ============================================================================
+# Solution 1.2 — Base Image: Alpine
+# Alpine is very small (~5MB). Great for production when musl libc is OK.
+# ============================================================================
+FROM python:3.11-alpine
+WORKDIR /app
+COPY app.py .
+CMD ["python3", "app.py"]

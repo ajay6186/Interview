@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  # BUG 4: toYaml without nindent causes bad indentation
+  config: {{ .Values.config | toYaml }}

@@ -1,0 +1,57 @@
+# ============================================================================
+# Solution 3.5 — Network Policies
+# ============================================================================
+
+# Default deny all ingress traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  podSelector: {}        # Empty = select all pods in namespace
+  policyTypes:
+    - Ingress            # No ingress rules = deny all ingress
+
+---
+# Allow only api → db on port 5432
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-api-to-db
+spec:
+  podSelector:
+    matchLabels:
+      app: db            # This policy protects db pods
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api   # Only allow traffic from pods labeled app=api
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+# Allow frontend → api on port 3000
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-api
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: frontend
+      ports:
+        - protocol: TCP
+          port: 3000
+
+# RESULT: frontend → api (allowed), api → db (allowed), frontend → db (DENIED)

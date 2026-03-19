@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  # TODO: Add a RollingUpdate strategy using .Values.rollout.maxSurge and .Values.rollout.maxUnavailable
+  # strategy:
+  #   type: ???
+  #   rollingUpdate:
+  #     maxSurge: ???
+  #     maxUnavailable: ???
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+      annotations:
+        # TODO: Add checksum annotation so pods restart when ConfigMap changes
+        # Hint: sha256sum of the ConfigMap — use include + sha256sum
+        # checksum/config: ???
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config

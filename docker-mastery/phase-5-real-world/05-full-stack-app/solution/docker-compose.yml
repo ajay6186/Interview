@@ -1,0 +1,56 @@
+# ============================================================================
+# Solution 5.5 — Full Stack Application
+# ============================================================================
+
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+    networks:
+      - frontend              # Only talks to api — cannot reach db or redis
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgres://user:pass@db:5432/appdb
+      REDIS_URL: redis://redis:6379
+      PORT: 3000
+    depends_on:
+      - db
+      - redis
+    networks:
+      - frontend              # Reachable by nginx
+      - backend               # Can reach db and redis
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - backend               # Isolated — not reachable from nginx
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend               # Isolated — not reachable from nginx
+
+networks:
+  frontend:   # nginx ↔ api
+  backend:    # api ↔ db, api ↔ redis
+
+volumes:
+  pg_data:
+  redis_data:

@@ -1,0 +1,45 @@
+pipeline {
+    agent none
+
+    stages {
+        stage('Test Matrix') {
+            matrix {
+                axes {
+                    axis {
+                        name   'NODE_VERSION'
+                        values '16', '18', '20'
+                    }
+                    axis {
+                        name   'OS'
+                        values 'linux', 'mac'
+                    }
+                }
+                excludes {
+                    exclude {
+                        axis {
+                            name   'NODE_VERSION'
+                            values '16'
+                        }
+                        axis {
+                            name   'OS'
+                            values 'mac'
+                        }
+                    }
+                }
+                stages {
+                    stage('Run Tests') {
+                        agent {
+                            docker {
+                                image "node:${NODE_VERSION}-alpine"
+                            }
+                        }
+                        steps {
+                            echo "Testing on Node ${NODE_VERSION} / ${OS}"
+                            sh 'node --version'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "replicaCount": {
+      "TODO": "Set type to integer, minimum 1, maximum 20"
+    },
+    "image": {
+      "type": "object",
+      "required": ["repository"],
+      "properties": {
+        "repository": {
+          "TODO": "Set type to string, minLength 1"
+        },
+        "tag": {
+          "type": "string"
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "TODO": "Set type to string, enum: ClusterIP, NodePort, LoadBalancer"
+        },
+        "port": {
+          "TODO": "Set type to integer, minimum 1, maximum 65535"
+        }
+      }
+    }
+  },
+  "required": ["replicaCount", "image", "service"]
+}

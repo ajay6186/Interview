@@ -1,0 +1,27 @@
+// Exercise 1.1 — First Pipeline
+// Replace every ??? with the correct value
+
+pipeline {
+    // TODO: Run on any available agent
+    agent ???
+
+    stages {
+        stage('Build') {
+            steps {
+                // TODO: Print "Hello from Jenkins!"
+                ??? 'Hello from Jenkins!'
+                // TODO: Run shell command: echo "Running build..."
+                ??? 'echo "Running build..."'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // TODO: Print "Running tests..."
+                ???
+                // TODO: Print "All tests passed!"
+                ???
+            }
+        }
+    }
+}

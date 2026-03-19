@@ -1,0 +1,45 @@
+# ============================================================================
+# Solution 6.5 — Monitoring with Prometheus Annotations
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: metrics-app
+  template:
+    metadata:
+      labels:
+        app: metrics-app
+      annotations:
+        prometheus.io/scrape: "true"    # Tell Prometheus to scrape this pod
+        prometheus.io/port: "3000"      # Which port to scrape
+        prometheus.io/path: "/metrics"  # Which path (default is /metrics)
+    spec:
+      containers:
+        - name: app
+          image: node:18-alpine
+          command:
+            - node
+            - -e
+            - |
+              const http = require('http');
+              let requests = 0;
+              http.createServer((req, res) => {
+                requests++;
+                if (req.url === '/metrics') {
+                  res.end('# HELP http_requests_total Total HTTP requests\n# TYPE http_requests_total counter\nhttp_requests_total ' + requests + '\n');
+                } else {
+                  res.end('App running. Visit /metrics\n');
+                }
+              }).listen(3000);
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"

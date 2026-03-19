@@ -1,0 +1,60 @@
+// Exercise 5.1 — Node.js CI Pipeline
+
+pipeline {
+    // TODO: Run all stages inside node:18-alpine container
+    agent {
+        docker {
+            image ???
+            // Mount npm cache volume to speed up installs
+            args '-v npm-cache:/root/.npm'
+        }
+    }
+
+    environment {
+        CI = 'true'
+    }
+
+    stages {
+        stage('Install') {
+            steps {
+                // TODO: Install dependencies using npm ci (not npm install)
+                sh ???
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                // TODO: Run ESLint — fail the build if there are lint errors
+                sh ???
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // TODO: Run tests with JUnit reporter output to test-results/junit.xml
+                sh ???
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+    }
+
+    post {
+        always {
+            // TODO: Publish JUnit XML results from 'test-results/**/*.xml'
+            junit testResults: ???, allowEmptyResults: true
+            // TODO: Archive dist/ artifacts
+            archiveArtifacts artifacts: ???, allowEmptyArchive: true
+        }
+        success {
+            echo "Node.js CI passed for build #${env.BUILD_NUMBER}"
+        }
+        failure {
+            echo "Node.js CI FAILED — check lint/test output above"
+        }
+    }
+}

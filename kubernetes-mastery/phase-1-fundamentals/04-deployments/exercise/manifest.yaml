@@ -1,0 +1,49 @@
+# ============================================================================
+# Exercise 1.4 — Deployments
+# ============================================================================
+
+# TODO: Set apiVersion for Deployments (hint: apps/v1)
+apiVersion: ???
+kind: Deployment
+
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx-app
+
+spec:
+  # TODO: Set replicas to 3
+  replicas: ???
+
+  selector:
+    matchLabels:
+      # TODO: Set the selector — must match template labels below
+      app: ???
+
+  # Rolling update strategy (optional — this is the default)
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1          # Allow 1 extra pod during update
+      maxUnavailable: 0    # Never reduce below desired count
+
+  template:
+    metadata:
+      labels:
+        # TODO: Add label app=nginx-app (must match selector.matchLabels)
+        app: ???
+    spec:
+      containers:
+        # TODO: Define a container named "nginx" using image "nginx:alpine"
+        - name: ???
+          image: ???
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              # TODO: Set memory request to "64Mi" and cpu to "100m"
+              memory: ???
+              cpu: ???
+            limits:
+              memory: "128Mi"
+              cpu: "250m"

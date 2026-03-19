@@ -1,0 +1,22 @@
+# ============================================================================
+# Exercise 1.1 — Chart.yaml (Chart Anatomy)
+# Complete all the TODO fields below.
+# ============================================================================
+
+# TODO: Set the Helm API version — always "v2" for Helm 3
+apiVersion: ???
+
+# TODO: Set the chart name (lowercase, hyphens ok)
+name: ???
+
+# TODO: Write a one-line description
+description: ???
+
+# TODO: Set the chart type ("application" or "library")
+type: ???
+
+# TODO: Set the chart version — use SemVer, e.g. "0.1.0"
+version: ???
+
+# TODO: Set the app version — the version of the app being packaged, e.g. "1.0.0"
+appVersion: ???

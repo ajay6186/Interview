@@ -1,0 +1,15 @@
+# TODO: Set replicaCount to 1 for dev
+replicaCount: ???
+
+# TODO: Set image tag to "dev"
+image:
+  tag: ???
+
+# TODO: Enable debug logging
+config:
+  logLevel: ???
+  debug: ???
+
+# TODO: Disable ingress (not needed locally)
+ingress:
+  enabled: ???

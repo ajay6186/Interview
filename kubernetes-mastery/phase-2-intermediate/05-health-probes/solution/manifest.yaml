@@ -1,0 +1,45 @@
+# ============================================================================
+# Solution 2.5 — Health Probes
+# ============================================================================
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: probe-pod
+spec:
+  containers:
+    - name: app
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+
+      livenessProbe:
+        httpGet:
+          path: /               # nginx returns 200 on /
+          port: 80
+        initialDelaySeconds: 10  # Wait 10s before first check (app startup time)
+        periodSeconds: 10        # Check every 10 seconds
+        failureThreshold: 3      # Restart after 3 consecutive failures (30s total)
+        successThreshold: 1      # Only 1 success needed to be "healthy"
+
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 5   # Start checking readiness earlier than liveness
+        periodSeconds: 5
+        failureThreshold: 3      # Remove from Service after 3 failures (pod not ready)
+
+      startupProbe:
+        httpGet:
+          path: /
+          port: 80
+        failureThreshold: 30     # Allow up to 30 * 10s = 300s for startup
+        periodSeconds: 10        # Liveness/readiness paused until this passes
+
+# PROBE TYPES:
+#   httpGet:  GET request — success if 200-399 response code
+#   tcpSocket: success if TCP connection established
+#   exec:     success if command exits with 0
+#     exec:
+#       command: ["cat", "/tmp/healthy"]

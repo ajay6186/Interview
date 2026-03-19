@@ -1,0 +1,19 @@
+image:
+  repository: myapp
+  tag: "1.0.0"
+
+service:
+  port: 8080
+
+database:
+  host: "postgres:5432"
+  name: "mydb"
+
+migration:
+  image: "migrate/migrate:v4.16.2"
+  # SQL migrations directory (mounted from ConfigMap)
+  dir: "/migrations"
+
+notifications:
+  # Webhook URL for post-install notification
+  webhookUrl: ""

@@ -1,0 +1,31 @@
+# TODO: Override for production — 3 replicas, warn logging, TLS ingress, HPA enabled
+replicaCount: ???
+
+image:
+  pullPolicy: ???
+
+config:
+  logLevel: ???
+  environment: ???
+
+ingress:
+  enabled: ???
+  host: ???
+  tls:
+    enabled: ???
+
+hpa:
+  enabled: ???
+  minReplicas: ???
+  maxReplicas: ???
+
+resources:
+  requests:
+    cpu: ???
+    memory: ???
+  limits:
+    cpu: ???
+    memory: ???
+
+migration:
+  enabled: ???

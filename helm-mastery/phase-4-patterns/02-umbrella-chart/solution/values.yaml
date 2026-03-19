@@ -1,0 +1,17 @@
+global:
+  imageRegistry: "docker.io/mycompany"
+  environment: "production"
+
+frontend:
+  replicaCount: 2
+  image:
+    repository: frontend
+    tag: "1.0.0"
+
+backend:
+  replicaCount: 3
+  image:
+    repository: backend
+    tag: "1.0.0"
+  config:
+    databaseUrl: "postgresql://db:5432/myapp"

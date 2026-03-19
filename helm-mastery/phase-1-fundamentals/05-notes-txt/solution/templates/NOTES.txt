@@ -1,0 +1,22 @@
+1. {{ .Chart.Name }} has been installed!
+   Release:   {{ .Release.Name }}
+   Namespace: {{ .Release.Namespace }}
+   Version:   {{ .Chart.AppVersion }}
+
+2. Access your application:
+
+{{- if eq .Values.service.type "NodePort" }}
+   export NODE_PORT=$(kubectl get svc {{ .Release.Name }}-{{ .Chart.Name }} \
+     -n {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}")
+   export NODE_IP=$(kubectl get nodes -o jsonpath="{.items[0].status.addresses[0].address}")
+   echo "Visit: http://$NODE_IP:$NODE_PORT"
+
+{{- else if eq .Values.service.type "LoadBalancer" }}
+   NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+   kubectl get svc {{ .Release.Name }}-{{ .Chart.Name }} -n {{ .Release.Namespace }} -w
+
+{{- else }}
+   kubectl port-forward svc/{{ .Release.Name }}-{{ .Chart.Name }} 8080:{{ .Values.service.port }} \
+     -n {{ .Release.Namespace }}
+   echo "Visit: http://localhost:8080"
+{{- end }}

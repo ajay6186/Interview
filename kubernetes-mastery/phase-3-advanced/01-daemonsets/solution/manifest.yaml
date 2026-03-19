@@ -1,0 +1,51 @@
+# ============================================================================
+# Solution 3.1 — DaemonSets
+# ============================================================================
+
+apiVersion: apps/v1
+kind: DaemonSet
+
+metadata:
+  name: log-collector
+  labels:
+    app: log-collector
+
+spec:
+  selector:
+    matchLabels:
+      app: log-collector
+
+  updateStrategy:
+    type: RollingUpdate   # Update one node at a time
+
+  template:
+    metadata:
+      labels:
+        app: log-collector
+    spec:
+      tolerations:
+        # Allow this DaemonSet to run on control-plane nodes too
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+
+      containers:
+        - name: collector
+          image: busybox
+          command: ["sh", "-c", "while true; do echo $(date) collecting logs; sleep 10; done"]
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "50m"
+            limits:
+              memory: "64Mi"
+              cpu: "100m"
+          volumeMounts:
+            - name: varlog
+              mountPath: /var/log/host
+              readOnly: true            # Read host logs, don't modify them
+
+      volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log              # Mount the actual node's /var/log

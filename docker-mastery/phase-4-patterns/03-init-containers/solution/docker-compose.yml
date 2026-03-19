@@ -1,0 +1,31 @@
+# ============================================================================
+# Solution 4.3 — Init Containers Pattern
+# ============================================================================
+
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: myapp
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  db-migrate:
+    image: node:18-alpine
+    command: sh -c "echo 'Running migrations...' && sleep 3 && echo 'Migrations done!'"
+    depends_on:
+      db:
+        condition: service_healthy       # Wait for db to pass healthcheck
+
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully  # Wait for migration to finish

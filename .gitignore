@@ -1,0 +1,48 @@
+# Claude Code personal memory
+.claude/
+
+# VS Code
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+.env
+.venv
+venv/
+env/
+*.pyc
+
+# Node / TypeScript
+node_modules/
+dist/
+build/
+*.js.map
+*.d.ts.map
+.npm/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.env
+docker-compose.override.yml
+
+# Misc
+*.swp
+*.swo
+.idea/

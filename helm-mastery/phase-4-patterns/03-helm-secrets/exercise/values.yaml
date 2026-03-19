@@ -1,0 +1,14 @@
+image:
+  repository: myapp
+  tag: "1.0.0"
+
+service:
+  port: 8080
+
+# Secret references — names of pre-existing Kubernetes Secrets
+# NOTE: Never put actual secret values here!
+secrets:
+  # Name of the Secret containing database credentials
+  dbSecretName: "myapp-db-credentials"
+  # Name of the Secret containing API keys
+  apiSecretName: "myapp-api-credentials"

@@ -1,0 +1,32 @@
+{{- if .Values.frontend.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-frontend
+  labels:
+    {{- include "platform.labels" . | nindent 4 }}
+    component: frontend
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-frontend
+    spec:
+      containers:
+        - name: frontend
+          # TODO: Use the platform.image helper template to build the image reference
+          image: {{ include "platform.image" (dict "registry" ??? "repo" ??? "tag" ???) }}
+          ports:
+            - containerPort: {{ .Values.frontend.service.port }}
+          env:
+            - name: ENVIRONMENT
+              value: {{ .Values.global.environment | quote }}
+            - name: API_URL
+              # TODO: Set API_URL to point to the backend service
+              # Pattern: http://<release-name>-backend:<backend-service-port>
+              value: ???
+{{- end }}

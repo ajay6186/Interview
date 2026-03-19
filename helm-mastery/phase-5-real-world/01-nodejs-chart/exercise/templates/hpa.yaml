@@ -1,0 +1,28 @@
+{{- if .Values.hpa.enabled }}
+# TODO: Create an HorizontalPodAutoscaler resource
+# apiVersion: autoscaling/v2
+# kind: HorizontalPodAutoscaler
+# metadata.name: {{ .Release.Name }}-hpa
+# spec.scaleTargetRef: point to the Deployment
+# spec.minReplicas: from .Values.hpa.minReplicas
+# spec.maxReplicas: from .Values.hpa.maxReplicas
+# spec.metrics: CPU utilization using .Values.hpa.targetCPUUtilizationPercentage
+apiVersion: ???
+kind: ???
+metadata:
+  name: {{ .Release.Name }}-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-app
+  minReplicas: ???
+  maxReplicas: ???
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: ???
+{{- end }}

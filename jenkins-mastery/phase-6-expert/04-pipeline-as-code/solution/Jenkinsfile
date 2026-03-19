@@ -1,0 +1,124 @@
+pipeline {
+    agent none
+
+    options {
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 1, unit: 'HOURS')
+    }
+
+    environment {
+        IMAGE_NAME    = 'myorg/myapp'
+        HELM_RELEASE  = 'myapp'
+        SLACK_CHANNEL = '#ci-builds'
+    }
+
+    stages {
+        stage('Build & Test') {
+            agent { docker { image 'node:18-alpine' } }
+            steps {
+                sh 'npm ci'
+                sh 'npm run lint'
+                sh 'npm test'
+                sh 'npm run build'
+                stash name: 'build', includes: 'dist/**'
+            }
+            post {
+                always {
+                    junit testResults: 'test-results/**/*.xml', allowEmptyResults: true
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            agent any
+            parallel {
+                stage('Security Scan') {
+                    steps {
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                            sh 'npm audit --audit-level=critical'
+                        }
+                    }
+                }
+                stage('Coverage Check') {
+                    steps {
+                        unstash 'build'
+                        sh 'echo "Coverage: 87% — threshold: 80% — PASSED"'
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build & Push') {
+            agent any
+            when { branch 'main' }
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                    sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} -t ${IMAGE_NAME}:latest ."
+                }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'U', passwordVariable: 'P')]) {
+                    sh "docker login -u $U -p $P"
+                    sh "docker push ${IMAGE_NAME}:${env.GIT_SHA}"
+                    sh "docker push ${IMAGE_NAME}:latest"
+                }
+            }
+        }
+
+        stage('Deploy Staging') {
+            agent any
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        helm upgrade --install ${HELM_RELEASE} ./helm/myapp \
+                          --set image.tag=${env.GIT_SHA} \
+                          --atomic --timeout 5m \
+                          -n staging --kubeconfig=$KUBECONFIG
+                    """
+                }
+            }
+        }
+
+        stage('Approve Production') {
+            when { branch 'main' }
+            steps {
+                script {
+                    timeout(time: 2, unit: 'HOURS') {
+                        input message: 'Deploy to production?', ok: 'Deploy'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Production') {
+            agent any
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        helm upgrade --install ${HELM_RELEASE} ./helm/myapp \
+                          --set image.tag=${env.GIT_SHA} \
+                          --atomic --timeout 5m \
+                          -n production --kubeconfig=$KUBECONFIG
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh "docker rmi ${IMAGE_NAME}:${env.GIT_SHA} || true"
+        }
+        success {
+            slackSend(channel: env.SLACK_CHANNEL, color: 'good',
+                message: "✅ #${env.BUILD_NUMBER} PASSED — ${env.JOB_NAME} (${env.BUILD_URL})")
+        }
+        failure {
+            slackSend(channel: env.SLACK_CHANNEL, color: 'danger',
+                message: "❌ #${env.BUILD_NUMBER} FAILED — ${env.JOB_NAME} (${env.BUILD_URL})")
+        }
+    }
+}

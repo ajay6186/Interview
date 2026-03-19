@@ -1,0 +1,16 @@
+app:
+  replicaCount: 1
+  image: nginx:alpine
+
+redis:
+  enabled: true           # Matches condition in Chart.yaml
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
+
+# HOW IT WORKS:
+# - "helm dependency update" downloads redis chart to charts/redis-*.tgz
+# - When redis.enabled=false, the whole redis subchart is skipped
+# - redis.auth.enabled → maps to redis subchart's auth.enabled value

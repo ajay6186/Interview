@@ -1,0 +1,36 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+  annotations:
+    # TODO: If TLS is enabled, add cert-manager annotation
+    # Key: cert-manager.io/cluster-issuer
+    # Value: .Values.ingress.tls.issuer
+    {{- if .Values.ingress.tls.enabled }}
+    cert-manager.io/cluster-issuer: ???
+    {{- end }}
+spec:
+  # TODO: If TLS is enabled, add tls block
+  # tls:
+  #   - hosts:
+  #       - <the ingress host>
+  #     secretName: <use .Values.ingress.tls.secretName or default to "Release.Name-tls">
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - ???
+      secretName: {{ .Values.ingress.tls.secretName | default (printf "%s-tls" .Release.Name) }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-svc
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}

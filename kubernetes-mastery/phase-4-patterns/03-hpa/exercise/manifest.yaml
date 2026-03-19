@@ -1,0 +1,65 @@
+# ============================================================================
+# Exercise 4.3 — Horizontal Pod Autoscaler
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-apache
+  template:
+    metadata:
+      labels:
+        app: php-apache
+    spec:
+      containers:
+        - name: php-apache
+          image: registry.k8s.io/hpa-example
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "200m"     # HPA uses this as 100% baseline
+            limits:
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache
+spec:
+  selector:
+    app: php-apache
+  ports:
+    - port: 80
+---
+# TODO: Set apiVersion for HPA (hint: autoscaling/v2)
+apiVersion: ???
+kind: HorizontalPodAutoscaler
+
+metadata:
+  name: php-apache-hpa
+
+spec:
+  scaleTargetRef:
+    # TODO: Set apiVersion to apps/v1, kind to Deployment, name to php-apache
+    apiVersion: ???
+    kind: ???
+    name: ???
+
+  # TODO: Set minReplicas to 1 and maxReplicas to 10
+  minReplicas: ???
+  maxReplicas: ???
+
+  metrics:
+    # TODO: Scale based on CPU utilization targeting 50%
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: ???

@@ -1,0 +1,41 @@
+pipeline {
+    agent {
+        kubernetes {
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: node
+    image: node:18-alpine
+    command: [cat]
+    tty: true
+  - name: docker
+    image: docker:24-dind
+    securityContext:
+      privileged: true
+'''
+        }
+    }
+
+    stages {
+        stage('Node Build') {
+            steps {
+                container('node') {
+                    sh 'node --version'
+                    sh 'npm --version'
+                    sh 'echo "Installing and building..."'
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                container('docker') {
+                    sh 'docker version'
+                    sh 'docker build -t myapp:latest . || echo "No Dockerfile — skipping"'
+                }
+            }
+        }
+    }
+}

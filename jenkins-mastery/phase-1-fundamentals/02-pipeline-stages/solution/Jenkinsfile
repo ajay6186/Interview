@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'echo "Compiling application..."'
+                sh 'mkdir -p build && echo "artifact" > build/app.jar'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    def result = 'PASSED'
+                    echo "Test result: ${result}"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    def timestamp = sh(script: 'date', returnStdout: true).trim()
+                    echo "Deployed at: ${timestamp}"
+                }
+            }
+        }
+    }
+}

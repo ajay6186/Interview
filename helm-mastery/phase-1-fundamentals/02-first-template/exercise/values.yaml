@@ -1,0 +1,21 @@
+# ============================================================================
+# Exercise 1.2 — values.yaml
+# Set the default values used by the deployment template.
+# ============================================================================
+
+# TODO: Set replicaCount to 2
+replicaCount: ???
+
+image:
+  # TODO: Set repository to "nginx"
+  repository: ???
+  # TODO: Set tag to "alpine"
+  tag: ???
+  # TODO: Set pullPolicy to "IfNotPresent"
+  pullPolicy: ???
+
+service:
+  # TODO: Set type to "ClusterIP"
+  type: ???
+  # TODO: Set port to 80
+  port: ???

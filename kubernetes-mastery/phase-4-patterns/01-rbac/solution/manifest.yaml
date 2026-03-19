@@ -1,0 +1,51 @@
+# ============================================================================
+# Solution 4.1 — RBAC
+# ============================================================================
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pod-reader
+  namespace: default
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader-role
+  namespace: default
+
+rules:
+  - apiGroups: [""]            # "" = core API group (pods, services, configmaps)
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]   # Read-only verbs
+
+  # Add more rules as needed:
+  # - apiGroups: ["apps"]
+  #   resources: ["deployments"]
+  #   verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-reader-binding
+  namespace: default
+
+subjects:
+  - kind: ServiceAccount
+    name: pod-reader
+    namespace: default
+
+roleRef:
+  kind: Role
+  name: pod-reader-role
+  apiGroup: rbac.authorization.k8s.io
+
+# COMMON VERBS: get, list, watch, create, update, patch, delete
+# COMMON RESOURCES: pods, services, deployments, configmaps, secrets, nodes
+# API GROUPS:
+#   ""          → core (pods, services, nodes, configmaps, secrets)
+#   "apps"      → deployments, replicasets, statefulsets, daemonsets
+#   "batch"     → jobs, cronjobs
+#   "networking.k8s.io" → ingresses, networkpolicies

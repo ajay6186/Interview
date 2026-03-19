@@ -1,0 +1,42 @@
+// Exercise 2.1 — Agents
+// Use different agent types per stage
+
+pipeline {
+    // TODO: Set agent to "none" at pipeline level
+    // (each stage will declare its own agent)
+    agent ???
+
+    stages {
+        stage('On Any Node') {
+            // TODO: Set agent to run on any available node
+            agent ???
+            steps {
+                sh 'echo "Running on: $(hostname)"'
+            }
+        }
+
+        stage('On Linux Node') {
+            // TODO: Set agent to run on a node with label "linux"
+            agent {
+                label ???
+            }
+            steps {
+                sh 'uname -s'
+            }
+        }
+
+        stage('Inside Docker') {
+            // TODO: Set agent to run inside "node:18-alpine" Docker container
+            agent {
+                docker {
+                    image ???
+                }
+            }
+            steps {
+                // Should print Node.js version from inside the container
+                sh 'node --version'
+                sh 'npm --version'
+            }
+        }
+    }
+}

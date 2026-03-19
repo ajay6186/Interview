@@ -1,0 +1,12 @@
+apiVersion: v2
+name: with-dependencies
+description: Exercise 2.5 - Chart Dependencies (Solution)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: redis
+    version: ">=17.0.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled    # Read from values.yaml: redis.enabled

@@ -1,0 +1,54 @@
+# ============================================================================
+# Exercise 4.5 — Init Containers
+# ============================================================================
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-demo
+spec:
+  # TODO: Define initContainers (runs before the main container)
+  # Add one init container:
+  #   name: wait-for-db
+  #   image: busybox
+  #   command: until nc -z db-service 5432; do echo waiting; sleep 2; done
+  # initContainers:
+  #   - name: ???
+  #     image: ???
+  #     command: ["sh", "-c", "until nc -z db-service 5432; do echo waiting for db; sleep 2; done"]
+
+  containers:
+    - name: app
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+      # TODO: The app should start ONLY after the init container finishes
+      # (This is automatic — just leave the main container as-is)
+
+---
+# Fake db-service (so the init container eventually succeeds)
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+spec:
+  selector:
+    app: db-service
+  ports:
+    - port: 5432
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db-service
+  labels:
+    app: db-service
+spec:
+  containers:
+    - name: postgres
+      image: postgres:15-alpine
+      env:
+        - name: POSTGRES_PASSWORD
+          value: "test"
+      ports:
+        - containerPort: 5432

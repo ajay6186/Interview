@@ -1,0 +1,45 @@
+# ============================================================================
+# Solution 6.2 — Taints and Tolerations
+# ============================================================================
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: regular-pod
+spec:
+  containers:
+    - name: app
+      image: nginx:alpine
+  # No tolerations → cannot schedule on node tainted with dedicated=gpu:NoSchedule
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-pod
+spec:
+  tolerations:
+    - key: "dedicated"       # Must match the taint key
+      operator: "Equal"      # Equal: match key+value | Exists: match key only
+      value: "gpu"           # Must match the taint value
+      effect: "NoSchedule"   # Must match the taint effect
+
+  # Optional: use nodeAffinity to also attract this pod to the GPU node
+  # affinity:
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #         - matchExpressions:
+  #             - key: dedicated
+  #               operator: In
+  #               values: [gpu]
+
+  containers:
+    - name: gpu-app
+      image: nginx:alpine
+      command: ["sh", "-c", "echo GPU workload running; sleep 3600"]
+
+# TAINT EFFECTS:
+#   NoSchedule:       new pods without toleration won't be placed here
+#   PreferNoSchedule: scheduler avoids but doesn't enforce
+#   NoExecute:        evicts existing pods AND blocks new ones

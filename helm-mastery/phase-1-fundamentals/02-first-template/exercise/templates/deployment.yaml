@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- /* TODO 1: Set name to "RELEASE_NAME-CHART_NAME" */}}
+  name: {{ .Release.Name }}-{{ ??? }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  {{- /* TODO 2: Set replicas from values */}}
+  replicas: {{ ??? }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- /* TODO 3: Set image to "repository:tag" from values */}}
+          image: "{{ ??? }}:{{ ??? }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 80

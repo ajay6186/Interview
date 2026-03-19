@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-global-config
+data:
+  ENVIRONMENT: {{ .Values.global.environment | quote }}
+  DOMAIN: {{ .Values.global.domain | quote }}
+  FRONTEND_IMAGE: "{{ .Values.global.imageRegistry }}/{{ .Values.frontend.image }}:{{ .Values.frontend.tag }}"
+  API_IMAGE: "{{ .Values.global.imageRegistry }}/{{ .Values.api.image }}:{{ .Values.api.tag }}"
+  APP_URL: "https://{{ .Values.global.domain }}"

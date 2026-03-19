@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'myorg/myapp'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                }
+                sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} ."
+            }
+        }
+
+        stage('Security Scans') {
+            parallel {
+                stage('Dependency Audit') {
+                    agent { docker { image 'node:18-alpine' } }
+                    steps {
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                            sh 'npm audit --audit-level=critical'
+                        }
+                    }
+                }
+
+                stage('Image Vulnerability Scan') {
+                    steps {
+                        sh """
+                            docker run --rm \
+                              -v /var/run/docker.sock:/var/run/docker.sock \
+                              aquasec/trivy image \
+                              --exit-code 1 \
+                              --severity CRITICAL \
+                              ${IMAGE_NAME}:${env.GIT_SHA}
+                        """
+                    }
+                }
+
+                stage('Secret Detection') {
+                    agent { docker { image 'zricethezav/gitleaks:latest' } }
+                    steps {
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                            sh 'gitleaks detect --source . --verbose'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

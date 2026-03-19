@@ -1,0 +1,70 @@
+// Exercise 5.4 — Deploy with Helm
+
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME   = 'myorg/myapp'
+        HELM_RELEASE = 'myapp'
+        HELM_NS      = 'default'
+        CHART_PATH   = './helm/myapp'
+    }
+
+    stages {
+        stage('Build & Push') {
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                    sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} ."
+                }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'U', passwordVariable: 'P')]) {
+                    sh "docker login -u $U -p $P && docker push ${IMAGE_NAME}:${env.GIT_SHA}"
+                }
+            }
+        }
+
+        stage('Helm Diff') {
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    // TODO: Show what changes helm upgrade would make (requires helm-diff plugin)
+                    // helm diff upgrade <release> <chart> --set image.tag=<tag> -n <ns>
+                    sh """
+                        helm diff upgrade ${HELM_RELEASE} ${CHART_PATH} \\
+                          --set image.tag=${env.GIT_SHA} \\
+                          -n ${HELM_NS} \\
+                          --kubeconfig=$KUBECONFIG || true
+                    """
+                }
+            }
+        }
+
+        stage('Helm Deploy') {
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    // TODO: Deploy using helm upgrade --install
+                    // Flags: --set image.tag=<sha>, --atomic, --timeout 5m, -n <ns>
+                    sh """
+                        helm upgrade --install ${HELM_RELEASE} ${CHART_PATH} \\
+                          --set image.tag=??? \\
+                          ??? \\
+                          --timeout ??? \\
+                          -n ${HELM_NS} \\
+                          --kubeconfig=$KUBECONFIG
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        failure {
+            withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                // TODO: On failure, roll back to the previous helm revision
+                sh "helm rollback ${HELM_RELEASE} 0 -n ${HELM_NS} --kubeconfig=$KUBECONFIG || true"
+            }
+        }
+    }
+}

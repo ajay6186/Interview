@@ -1,0 +1,21 @@
+global:
+  environment: "production"
+
+frontend:
+  replicaCount: 3
+  ingress:
+    tls:
+      enabled: true
+      issuer: "letsencrypt-prod"
+
+backend:
+  replicaCount: 5
+  config:
+    logLevel: "warn"
+
+database:
+  storage:
+    size: "20Gi"
+
+monitoring:
+  enabled: true

@@ -1,0 +1,30 @@
+# ============================================================================
+# Solution 3.4 — Resource Limits
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'      # Max 50% of one CPU core
+          memory: 256M      # Max 256 MB RAM
+        reservations:
+          memory: 128M      # Guaranteed minimum
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: secret
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'      # Max 1 CPU core
+          memory: 512M      # Max 512 MB RAM
+        reservations:
+          memory: 256M

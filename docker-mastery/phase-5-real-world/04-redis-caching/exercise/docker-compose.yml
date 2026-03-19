@@ -1,0 +1,31 @@
+# ============================================================================
+# Exercise 5.4 — Redis Caching
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      # TODO: Set REDIS_URL to point to the redis service
+      # Format: redis://SERVICE_NAME:PORT
+      # REDIS_URL: redis://redis:6379
+      REDIS_URL: ""
+    # TODO: Add depends_on for redis
+    # depends_on:
+    #   - redis
+
+  # TODO: Add a Redis service
+  # Use image: redis:7-alpine
+  # Add a named volume for persistence: redis_data:/data
+  # redis:
+  #   image: redis:7-alpine
+  #   volumes:
+  #     - redis_data:/data
+
+# TODO: Declare the named volume
+# volumes:
+#   redis_data:

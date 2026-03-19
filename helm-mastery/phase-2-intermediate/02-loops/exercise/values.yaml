@@ -1,0 +1,13 @@
+envVars:
+  APP_ENV: production
+  LOG_LEVEL: info
+  MAX_CONNECTIONS: "100"
+
+extraPorts:
+  - 8080
+  - 9090
+
+allowedHosts:
+  - app.example.com
+  - api.example.com
+  - admin.example.com

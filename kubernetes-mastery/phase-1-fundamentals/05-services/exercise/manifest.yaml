@@ -1,0 +1,56 @@
+# ============================================================================
+# Exercise 1.5 — Services
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+
+---
+# Service 1: ClusterIP (default — cluster-internal only)
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-clusterip
+spec:
+  # TODO: Set type to ClusterIP (or omit — it's the default)
+  type: ???
+  selector:
+    # TODO: Select pods with label app=nginx
+    app: ???
+  ports:
+    - port: 80        # Service listens on 80
+      targetPort: 80  # Forwards to pod port 80
+
+---
+# Service 2: NodePort (accessible from outside the cluster)
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-nodeport
+spec:
+  # TODO: Set type to NodePort
+  type: ???
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      targetPort: 80
+      # TODO: Set a nodePort in the range 30000-32767 (e.g., 30080)
+      nodePort: ???

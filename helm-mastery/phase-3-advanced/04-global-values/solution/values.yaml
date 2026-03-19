@@ -1,0 +1,12 @@
+global:
+  imageRegistry: "docker.io"
+  environment: "production"
+  domain: "example.com"
+
+frontend:
+  image: nginx
+  tag: alpine
+
+api:
+  image: node
+  tag: "18-alpine"

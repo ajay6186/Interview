@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+# TODO: Use kind: StatefulSet (not Deployment)
+kind: ???
+metadata:
+  name: {{ .Release.Name }}-postgresql
+spec:
+  # TODO: Set serviceName to the headless service name
+  serviceName: ???
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-postgresql
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: postgresql
+              containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  # TODO: Reference the secret we created, key "postgres-password"
+                  name: ???
+                  key: ???
+            - name: POSTGRES_USER
+              value: {{ .Values.auth.username | quote }}
+            - name: POSTGRES_DB
+              value: {{ .Values.auth.database | quote }}
+            - name: PGDATA
+              value: /data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+  # TODO: Define volumeClaimTemplates to give each pod its own PVC
+  # Each PVC should request .Values.storage.size with ReadWriteOnce access mode
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ???
+        resources:
+          requests:
+            storage: ???
+        {{- if .Values.storage.storageClass }}
+        storageClassName: {{ .Values.storage.storageClass }}
+        {{- end }}

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  {{- /* TODO 1: Loop over .Values.envVars (a map) and render each key: value pair */}}
+  {{- range $key, $val := ??? }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+
+  {{- /* TODO 2: Render allowedHosts as a comma-separated string */}}
+  {{- /* Hint: use join ", " on the list */}}
+  ALLOWED_HOSTS: {{ ??? | join ", " | quote }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-ports
+data:
+  {{- /* TODO 3: Loop over .Values.extraPorts and render each port */}}
+  {{- /* Access release name inside range with $.Release.Name */}}
+  {{- range ??? }}
+  port-{{ . }}: "enabled for {{ $.Release.Name }}"
+  {{- end }}

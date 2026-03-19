@@ -1,0 +1,27 @@
+# ============================================================================
+# Exercise 2.3 — Volumes and Bind Mounts
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    # TODO: Add a bind mount mapping ./web on host to /app in container
+    # volumes:
+    #   - ./web:/app
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: mydb
+    # TODO: Mount the named volume "db-data" to /var/lib/postgresql/data
+    # volumes:
+    #   - db-data:/var/lib/postgresql/data
+
+# TODO: Declare the named volume at the top level
+# volumes:
+#   db-data:

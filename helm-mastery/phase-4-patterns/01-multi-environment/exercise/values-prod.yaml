@@ -1,0 +1,26 @@
+# TODO: Set replicaCount to 5 for production
+replicaCount: ???
+
+# TODO: Use a pinned image tag (not "latest") and IfNotPresent pull policy
+image:
+  tag: ???
+  pullPolicy: ???
+
+# TODO: Increase resource requests/limits for production load
+resources:
+  requests:
+    cpu: ???
+    memory: ???
+  limits:
+    cpu: ???
+    memory: ???
+
+# TODO: Enable ingress with production host "myapp.example.com"
+ingress:
+  enabled: ???
+  host: ???
+
+# TODO: Set log level to "warn" and disable debug in production
+config:
+  logLevel: ???
+  debug: ???

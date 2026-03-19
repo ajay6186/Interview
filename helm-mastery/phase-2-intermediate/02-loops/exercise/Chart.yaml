@@ -1,0 +1,6 @@
+apiVersion: v2
+name: loops
+description: Exercise 2.2 - Loops
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

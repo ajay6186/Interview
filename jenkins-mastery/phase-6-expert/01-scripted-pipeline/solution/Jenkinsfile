@@ -1,0 +1,31 @@
+// Scripted Pipeline — no "pipeline {}" block
+node('any') {
+
+    def appName = 'myapp'
+
+    stage('Checkout') {
+        checkout scm
+    }
+
+    try {
+        stage('Build') {
+            sh "echo 'Building ${appName}...'"
+            sh 'mkdir -p dist && echo artifact > dist/app.zip'
+        }
+
+        stage('Test') {
+            sh 'echo "Running tests..."'
+        }
+
+        stage('Deploy') {
+            sh 'echo "Deploying..."'
+        }
+
+    } catch (Exception e) {
+        currentBuild.result = 'FAILURE'
+        throw e
+
+    } finally {
+        cleanWs()
+    }
+}

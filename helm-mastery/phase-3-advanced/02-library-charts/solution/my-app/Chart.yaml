@@ -1,0 +1,11 @@
+apiVersion: v2
+name: my-app
+description: Exercise 3.2 - Uses my-library (Solution)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: my-library
+    version: "0.1.0"
+    repository: "file://../my-library"

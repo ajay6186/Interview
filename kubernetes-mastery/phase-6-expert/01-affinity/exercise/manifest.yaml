@@ -1,0 +1,48 @@
+# ============================================================================
+# Exercise 6.1 — Node and Pod Affinity
+# Label a node first: kubectl label node <node-name> disktype=ssd
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: affinity-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: affinity-demo
+  template:
+    metadata:
+      labels:
+        app: affinity-demo
+    spec:
+      affinity:
+        # TODO: Add nodeAffinity to PREFER nodes with label disktype=ssd
+        # nodeAffinity:
+        #   preferredDuringSchedulingIgnoredDuringExecution:
+        #     - weight: 1
+        #       preference:
+        #         matchExpressions:
+        #           - key: disktype
+        #             operator: In
+        #             values: [ssd]
+
+        # TODO: Add podAntiAffinity to spread replicas across different nodes
+        # This means: don't place two pods of this app on the same node
+        # podAntiAffinity:
+        #   preferredDuringSchedulingIgnoredDuringExecution:
+        #     - weight: 100
+        #       podAffinityTerm:
+        #         labelSelector:
+        #           matchLabels:
+        #             app: affinity-demo
+        #         topologyKey: kubernetes.io/hostname
+
+      containers:
+        - name: app
+          image: nginx:alpine
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"

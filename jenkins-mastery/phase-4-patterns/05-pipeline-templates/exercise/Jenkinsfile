@@ -1,0 +1,13 @@
+// Exercise 4.5 — Pipeline Templates
+// Use the shared library to run a standard CI pipeline in just a few lines
+
+// TODO: Load the shared library "pipeline-templates"
+@Library(???) _
+
+// TODO: Call the standardCiPipeline() function from the library
+// Pass: image: 'node:18-alpine', testCmd: 'npm test', buildCmd: 'npm run build'
+???(
+    image:    ???,
+    testCmd:  ???,
+    buildCmd: ???
+)

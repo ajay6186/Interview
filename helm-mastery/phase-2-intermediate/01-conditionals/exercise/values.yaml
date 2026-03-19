@@ -1,0 +1,13 @@
+image:
+  repository: nginx
+  tag: alpine
+
+serviceAccount:
+  create: true
+  name: ""
+
+ingress:
+  enabled: false
+  host: example.com
+
+replicaCount: 1

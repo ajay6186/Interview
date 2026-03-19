@@ -1,0 +1,36 @@
+# ============================================================================
+# Solution 1.2 — Labels and Selectors
+# ============================================================================
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp          # Primary identity label
+    env: staging        # Environment label
+    version: v1         # Version label
+  annotations:
+    description: "Learning labels and selectors"
+    # Annotations can hold any string — common uses:
+    # prometheus.io/scrape: "true"
+    # kubernetes.io/change-cause: "updated to v1"
+
+spec:
+  containers:
+    - name: app
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  selector:
+    app: myapp        # Routes traffic to ALL pods with label app=myapp
+  ports:
+    - port: 80
+      targetPort: 80

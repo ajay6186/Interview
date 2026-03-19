@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mkdir -p dist && echo "compiled-app" > dist/app.zip'
+                sh 'echo "Build complete"'
+                stash name: 'app-dist', includes: 'dist/**'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                unstash 'app-dist'
+                sh 'ls -la dist/'
+                sh 'echo "Tests passed against dist/app.zip"'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                unstash 'app-dist'
+                sh 'echo "Deploying dist/app.zip to server..."'
+                archiveArtifacts artifacts: 'dist/**', fingerprint: true
+            }
+        }
+    }
+}

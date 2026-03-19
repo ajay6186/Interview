@@ -1,0 +1,31 @@
+# ============================================================================
+# Solution 3.3 — Docker Compose Profiles
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: secret
+
+  adminer:
+    image: adminer
+    ports:
+      - "8081:8080"
+    profiles:
+      - tools       # Only: docker compose --profile tools up
+
+  seeder:
+    image: node:18-alpine
+    command: sh -c "echo 'Seeding...' && sleep 5 && echo 'Done!'"
+    depends_on:
+      - db
+    profiles:
+      - dev         # Only: docker compose --profile dev up

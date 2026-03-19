@@ -1,0 +1,18 @@
+replicaCount: 3
+
+image:
+  repository: nginx
+  tag: "1.25"
+
+service:
+  port: 80
+
+# Rolling update configuration
+rollout:
+  # Max extra pods allowed during update (can be int or %)
+  maxSurge: 1
+  # Max pods that can be unavailable during update
+  maxUnavailable: 0
+
+config:
+  message: "Hello from v1"

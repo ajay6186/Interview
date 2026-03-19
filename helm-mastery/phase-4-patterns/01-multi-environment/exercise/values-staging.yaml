@@ -1,0 +1,16 @@
+# TODO: Set replicaCount to 2 for staging
+replicaCount: ???
+
+# TODO: Set image tag to "staging" and always pull
+image:
+  tag: ???
+  pullPolicy: ???
+
+# TODO: Enable ingress with host "staging.myapp.example.com"
+ingress:
+  enabled: ???
+  host: ???
+
+# TODO: Set log level to "info" for staging
+config:
+  logLevel: ???

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+      annotations:
+        # TODO: If monitoring is enabled, add Prometheus scrape annotations
+        # Annotations go on the POD template, not the Deployment
+        # prometheus.io/scrape: "true"
+        # prometheus.io/port: <metricsPort as string>
+        # prometheus.io/path: <metricsPath>
+        {{- if .Values.monitoring.enabled }}
+        prometheus.io/scrape: ???
+        prometheus.io/port: ???
+        prometheus.io/path: ???
+        {{- end }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+            # TODO: If monitoring is enabled, expose the metrics port as a named port "metrics"
+            {{- if .Values.monitoring.enabled }}
+            - name: metrics
+              containerPort: ???
+            {{- end }}

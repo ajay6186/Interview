@@ -1,0 +1,64 @@
+# ============================================================================
+# Solution 3.2 — StatefulSets
+# ============================================================================
+
+# Headless Service — enables DNS per pod, no load balancing
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-headless
+spec:
+  clusterIP: None     # Headless: no VIP, DNS returns individual pod IPs
+  selector:
+    app: db
+  ports:
+    - port: 5432
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: db
+
+spec:
+  serviceName: db-headless    # Must match the headless Service name
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: db
+
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "devpassword"
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+
+  # K8s creates one PVC per pod: data-db-0, data-db-1, data-db-2
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 1Gi
+
+# DNS for each pod:
+#   db-0.db-headless.default.svc.cluster.local
+#   db-1.db-headless.default.svc.cluster.local
+#   db-2.db-headless.default.svc.cluster.local

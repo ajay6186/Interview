@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    environment {
+        SLACK_CHANNEL = '#ci-builds'
+        NOTIFY_EMAIL  = 'team@example.com'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building application...'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+            }
+        }
+    }
+
+    post {
+        success {
+            slackSend(
+                channel: env.SLACK_CHANNEL,
+                color: 'good',
+                message: "✅ Build #${env.BUILD_NUMBER} PASSED — ${env.JOB_NAME} (${env.BUILD_URL})"
+            )
+        }
+
+        failure {
+            slackSend(
+                channel: env.SLACK_CHANNEL,
+                color: 'danger',
+                message: "❌ Build #${env.BUILD_NUMBER} FAILED — ${env.JOB_NAME} (${env.BUILD_URL})"
+            )
+            emailext(
+                subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Build failed. See details at: ${env.BUILD_URL}",
+                to: env.NOTIFY_EMAIL
+            )
+        }
+    }
+}

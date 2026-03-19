@@ -1,0 +1,21 @@
+# ============================================================================
+# Exercise 4.1 — Environment Files
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    image: node:18-alpine
+    command: sh -c "echo Port: $APP_PORT && while true; do sleep 1; done"
+    # TODO: Load from .env file
+    # env_file:
+    #   - .env
+
+  db:
+    image: postgres:15-alpine
+    # TODO: Load from .env.db file
+    # env_file:
+    #   - .env.db
+    ports:
+      - "5432:5432"

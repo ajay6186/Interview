@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-pre-install
+  annotations:
+    # TODO 1: Mark this as a pre-install hook
+    "helm.sh/hook": ???
+    # TODO 2: Set hook weight to "0" (lower = runs earlier)
+    "helm.sh/hook-weight": ???
+    # TODO 3: Delete this job after it succeeds
+    "helm.sh/hook-delete-policy": ???
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: pre-install
+          image: busybox
+          # This simulates a DB migration or pre-flight check
+          command: ["sh", "-c", "echo 'Running pre-install checks...' && sleep 2 && echo 'Pre-install done!'"]

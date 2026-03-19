@@ -1,0 +1,52 @@
+// Exercise 5.5 — GitOps Pipeline
+// Build the image, then update the image tag in a config/GitOps repo
+
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME   = 'myorg/myapp'
+        CONFIG_REPO  = 'git@github.com:myorg/k8s-config.git'
+        VALUES_FILE  = 'apps/myapp/values.yaml'
+    }
+
+    stages {
+        stage('Build & Push') {
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                    sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} ."
+                }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'U', passwordVariable: 'P')]) {
+                    sh "docker login -u $U -p $P && docker push ${IMAGE_NAME}:${env.GIT_SHA}"
+                }
+            }
+        }
+
+        stage('Update GitOps Repo') {
+            // TODO: Only update the config repo on the main branch
+            when { branch ??? }
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-deploy-key',
+                    keyFileVariable: 'GIT_KEY')]) {
+                    sh '''
+                        export GIT_SSH_COMMAND="ssh -i $GIT_KEY -o StrictHostKeyChecking=no"
+                        # TODO: Clone the config repo into a "config" directory
+                        git clone ??? config
+                        cd config
+                        # TODO: Update image.tag in the values file using sed
+                        # Pattern to replace: "  tag: .*" with "  tag: <GIT_SHA>"
+                        sed -i "s|  tag: .*|  tag: ${GIT_SHA}|g" ???
+                        # TODO: Commit and push the change
+                        git config user.email "jenkins@ci"
+                        git config user.name "Jenkins CI"
+                        git add ???
+                        git commit -m "chore: update myapp image to ${GIT_SHA} [ci skip]"
+                        git push ???
+                    '''
+                }
+            }
+        }
+    }
+}

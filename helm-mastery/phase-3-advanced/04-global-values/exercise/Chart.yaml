@@ -1,0 +1,6 @@
+apiVersion: v2
+name: global-values
+description: Exercise 3.4 - Global Values
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

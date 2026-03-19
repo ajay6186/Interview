@@ -1,0 +1,11 @@
+replicaCount: 1
+
+config:
+  logLevel: "debug"
+  environment: "development"
+
+ingress:
+  enabled: false
+
+hpa:
+  enabled: false

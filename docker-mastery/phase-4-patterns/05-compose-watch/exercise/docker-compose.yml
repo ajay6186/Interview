@@ -1,0 +1,19 @@
+# ============================================================================
+# Exercise 4.5 — Docker Compose Watch
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    # TODO: Add develop.watch configuration:
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ./src
+    #       target: /app/src
+    #     - action: rebuild
+    #       path: package.json

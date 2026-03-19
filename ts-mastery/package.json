@@ -1,0 +1,16 @@
+{
+  "name": "ts-mastery",
+  "version": "1.0.0",
+  "description": "TypeScript Mastery — 6-Phase Exercise Project (Beginner to Expert)",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "check:solutions": "tsc --noEmit -p tsconfig.solutions.json",
+    "run": "ts-node",
+    "exercise": "ts-node"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "ts-node": "^10.9.0",
+    "@types/node": "^20.0.0"
+  }
+}

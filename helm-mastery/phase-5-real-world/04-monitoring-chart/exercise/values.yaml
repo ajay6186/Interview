@@ -1,0 +1,20 @@
+replicaCount: 1
+
+image:
+  repository: myapp
+  tag: "1.0.0"
+
+service:
+  port: 8080
+
+monitoring:
+  enabled: false
+  # Prometheus metrics port
+  metricsPort: 9090
+  # Metrics path
+  metricsPath: /metrics
+  # Create a ServiceMonitor (requires Prometheus Operator)
+  serviceMonitor:
+    enabled: false
+    interval: "30s"
+    namespace: "monitoring"

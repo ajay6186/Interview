@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}-test-connection
+  annotations:
+    # TODO: Mark this pod as a Helm test
+    "helm.sh/hook": ???
+spec:
+  restartPolicy: Never
+  containers:
+    - name: test
+      image: busybox
+      # TODO: Add a command that:
+      #   1. Uses wget to check the service is reachable
+      #   2. Service name: RELEASE_NAME-svc, port 80
+      #   3. Exit 0 on success, non-zero on failure
+      command:
+        - sh
+        - -c
+        - ???

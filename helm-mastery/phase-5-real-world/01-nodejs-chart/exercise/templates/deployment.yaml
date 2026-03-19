@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+  labels:
+    {{- include "nodejs.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nodejs.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nodejs.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+          # TODO: Add livenessProbe using .Values.probes.liveness.path and timing values
+          livenessProbe:
+            httpGet:
+              path: ???
+              port: http
+            initialDelaySeconds: ???
+            periodSeconds: ???
+          # TODO: Add readinessProbe using .Values.probes.readiness.path and timing values
+          readinessProbe:
+            httpGet:
+              path: ???
+              port: http
+            initialDelaySeconds: ???
+            periodSeconds: ???
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

@@ -1,0 +1,50 @@
+# ============================================================================
+# Solution 6.1 — Node and Pod Affinity
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: affinity-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: affinity-demo
+  template:
+    metadata:
+      labels:
+        app: affinity-demo
+    spec:
+      affinity:
+        nodeAffinity:
+          # SOFT rule: prefer SSD nodes, but schedule elsewhere if none available
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: disktype
+                    operator: In
+                    values: [ssd]
+
+        podAntiAffinity:
+          # SOFT rule: spread replicas across nodes (survives node failure)
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: affinity-demo
+                topologyKey: kubernetes.io/hostname  # "spread per node"
+
+      containers:
+        - name: app
+          image: nginx:alpine
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+
+# REQUIRED vs PREFERRED:
+# requiredDuringScheduling... = HARD constraint (pod stays Pending if no match)
+# preferredDuringScheduling... = SOFT constraint (scheduler tries but can ignore)

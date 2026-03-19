@@ -1,0 +1,25 @@
+# ============================================================================
+# Solution 1.1 — Chart.yaml
+# ============================================================================
+
+apiVersion: v2                        # Always v2 for Helm 3
+
+name: my-app                          # Lowercase, hyphens allowed
+
+description: A sample Helm chart for learning chart anatomy
+
+type: application                     # application = deployable, library = helpers only
+
+version: 0.1.0                        # Chart version — bump this on every chart change
+                                      # SemVer: MAJOR.MINOR.PATCH
+
+appVersion: "1.0.0"                   # App version — matches your Docker image tag
+                                      # Quoted to prevent YAML parsing as float
+
+# Optional but useful:
+# keywords:
+#   - web
+# maintainers:
+#   - name: Your Name
+#     email: you@example.com
+# icon: https://example.com/icon.png

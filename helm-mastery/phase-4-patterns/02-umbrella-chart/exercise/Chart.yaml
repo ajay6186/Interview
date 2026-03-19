@@ -1,0 +1,15 @@
+apiVersion: v2
+name: platform
+description: Exercise 4.2 - Umbrella Chart
+type: application
+version: 0.1.0
+dependencies:
+  # TODO: Declare frontend as a local dependency
+  # Hint: name: frontend, version: "0.1.0", repository: "file://charts/frontend"
+  - name: ???
+    version: ???
+    repository: ???
+  # TODO: Declare backend as a local dependency
+  - name: ???
+    version: ???
+    repository: ???

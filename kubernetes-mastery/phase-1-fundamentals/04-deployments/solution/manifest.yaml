@@ -1,0 +1,42 @@
+# ============================================================================
+# Solution 1.4 — Deployments
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx-app
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: nginx-app    # Must match template.metadata.labels
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # +1 pod allowed during update (4 total momentarily)
+      maxUnavailable: 0  # Never drop below 3 healthy pods
+
+  template:             # Pod template — applied to each replica
+    metadata:
+      labels:
+        app: nginx-app  # Must match selector.matchLabels
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"      # 100m = 0.1 CPU core
+            limits:
+              memory: "128Mi"
+              cpu: "250m"

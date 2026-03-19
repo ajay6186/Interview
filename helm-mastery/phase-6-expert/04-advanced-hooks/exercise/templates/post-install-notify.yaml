@@ -1,0 +1,29 @@
+{{- if .Values.notifications.webhookUrl }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-notify
+  annotations:
+    # TODO: Set hook to run after successful install
+    helm.sh/hook: ???
+    # TODO: Set delete policy to delete Job after it succeeds
+    helm.sh/hook-delete-policy: ???
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-notify
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: notify
+          image: curlimages/curl:latest
+          args:
+            - "-X"
+            - "POST"
+            - "-H"
+            - "Content-Type: application/json"
+            - "-d"
+            - '{"text":"Release {{ .Release.Name }} v{{ .Chart.AppVersion }} installed successfully"}'
+            - {{ .Values.notifications.webhookUrl | quote }}
+{{- end }}

@@ -1,0 +1,47 @@
+// Exercise 1.3 — Environment Variables
+
+pipeline {
+    agent any
+
+    // TODO: Define pipeline-level environment variables
+    // APP_NAME = "myapp"
+    // APP_VERSION = "1.0.0"
+    environment {
+        APP_NAME    = ???
+        APP_VERSION = ???
+    }
+
+    stages {
+        stage('Print Info') {
+            steps {
+                // TODO: Print "App: myapp  Version: 1.0.0"
+                // Use the variables defined above with ${} syntax
+                echo "App: ${???}  Version: ${???}"
+
+                // TODO: Print the Jenkins built-in BUILD_NUMBER variable
+                echo "Build number: ${???}"
+
+                // TODO: Print the Jenkins built-in WORKSPACE variable
+                echo "Workspace: ${???}"
+            }
+        }
+
+        stage('Override Env') {
+            // TODO: Override APP_VERSION to "2.0.0-SNAPSHOT" for this stage only
+            environment {
+                APP_VERSION = ???
+            }
+            steps {
+                // Should print 2.0.0-SNAPSHOT here
+                echo "Stage version: ${APP_VERSION}"
+            }
+        }
+
+        stage('Back to Original') {
+            steps {
+                // Should print 1.0.0 again (stage override is gone)
+                echo "Pipeline version: ${APP_VERSION}"
+            }
+        }
+    }
+}

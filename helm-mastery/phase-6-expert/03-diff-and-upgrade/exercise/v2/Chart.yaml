@@ -1,0 +1,6 @@
+apiVersion: v2
+name: my-app
+description: Exercise 6.3 - Diff and Upgrade (v2)
+type: application
+version: 2.0.0
+appVersion: "2.0.0"

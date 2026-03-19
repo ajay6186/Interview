@@ -1,0 +1,32 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "app.fullname" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  annotations:
+    # TODO: If TLS is enabled, add cert-manager annotation
+    {{- if .Values.ingress.tls.enabled }}
+    cert-manager.io/cluster-issuer: ???
+    {{- end }}
+spec:
+  # TODO: If TLS is enabled, add tls block with the host and a secret name
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - ???
+      secretName: {{ printf "%s-tls" (include "app.fullname" .) }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host | required "ingress.host is required when ingress.enabled=true" }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "app.fullname" . }}
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}

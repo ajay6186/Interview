@@ -1,0 +1,45 @@
+// Exercise 1.2 — Pipeline Stages
+// A four-stage CI pipeline: Checkout → Build → Test → Deploy
+
+pipeline {
+    agent any
+
+    stages {
+        // TODO: Add a "Checkout" stage that prints "Checking out source code..."
+        stage(???) {
+            steps {
+                ???
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // TODO: Run: echo "Compiling application..."
+                sh ???
+                // TODO: Run: mkdir -p build && echo "artifact" > build/app.jar
+                sh ???
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // TODO: Use script{} block to run Groovy: define a variable
+                // result = "PASSED" and print "Test result: PASSED"
+                script {
+                    def result = ???
+                    echo "Test result: ${result}"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                // TODO: Capture the output of "date" command and print it
+                script {
+                    def timestamp = sh(script: ???, returnStdout: true).trim()
+                    echo "Deployed at: ${timestamp}"
+                }
+            }
+        }
+    }
+}

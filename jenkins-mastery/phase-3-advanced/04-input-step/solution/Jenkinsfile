@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build & Test') {
+            steps {
+                echo 'Building and testing...'
+                sh 'echo "All checks passed"'
+            }
+        }
+
+        stage('Approve Production Deploy') {
+            steps {
+                script {
+                    timeout(time: 24, unit: 'HOURS') {
+                        def approval = input(
+                            message: 'Deploy to production?',
+                            ok: 'Deploy',
+                            submitter: 'ops-team',
+                            parameters: [
+                                choice(name: 'SLOT', choices: ['blue', 'green'], description: 'Deploy slot')
+                            ]
+                        )
+                        echo "Approved! Deploying to slot: ${approval}"
+                    }
+                }
+            }
+        }
+
+        stage('Production Deploy') {
+            steps {
+                echo 'Deploying to production...'
+            }
+        }
+    }
+}

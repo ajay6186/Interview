@@ -1,0 +1,32 @@
+pipeline {
+    agent {
+        docker { image 'node:18-alpine' }
+    }
+
+    stages {
+        stage('Install') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'npm test -- --reporter=junit --reporter-option output=test-results/junit.xml'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+    }
+
+    post {
+        always {
+            junit testResults: 'test-results/**/*.xml', allowEmptyResults: true
+            archiveArtifacts artifacts: 'dist/**', fingerprint: true, allowEmptyArchive: true
+        }
+    }
+}

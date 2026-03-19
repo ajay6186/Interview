@@ -1,0 +1,170 @@
+// Exercise 6.5 — Final Challenge
+// Build a complete production CI/CD pipeline from scratch
+// Fill in every ??? — this covers the full Jenkins syllabus
+
+pipeline {
+    // TODO: agent none (stages define their own agents)
+    agent ???
+
+    options {
+        // TODO: Prevent concurrent builds
+        ???
+        // TODO: Keep only last 10 builds
+        buildDiscarder(logRotator(numToKeepStr: ???))
+        // TODO: 1-hour pipeline timeout
+        timeout(time: ???, unit: ???)
+    }
+
+    parameters {
+        // TODO: Boolean param: SKIP_TESTS default false
+        ???
+        // TODO: Choice param: DEPLOY_ENV choices dev/staging/prod
+        ???
+    }
+
+    environment {
+        IMAGE_NAME    = 'myorg/myapp'
+        HELM_RELEASE  = 'myapp'
+        SLACK_CHANNEL = '#ci-builds'
+        CONFIG_REPO   = 'git@github.com:myorg/k8s-config.git'
+    }
+
+    stages {
+        stage('Build & Test') {
+            // TODO: node:18-alpine Docker agent with npm-cache volume
+            agent {
+                docker {
+                    image ???
+                    args  ???
+                }
+            }
+            steps {
+                sh 'npm ci'
+                // TODO: Run lint
+                sh ???
+                // TODO: Conditionally run tests (skip when params.SKIP_TESTS is true)
+                script {
+                    if (???) {
+                        sh 'npm test'
+                        junit testResults: 'test-results/**/*.xml', allowEmptyResults: true
+                    } else {
+                        echo 'Tests skipped by parameter'
+                    }
+                }
+                sh 'npm run build'
+                // TODO: Stash dist/ as 'app-build'
+                stash name: ???, includes: ???
+            }
+        }
+
+        stage('Security Scan') {
+            agent any
+            steps {
+                // TODO: Scan for vulnerabilities — UNSTABLE on findings, not FAILED
+                catchError(buildResult: ???, stageResult: ???) {
+                    sh 'npm audit --audit-level=high'
+                }
+            }
+        }
+
+        stage('Docker Build & Push') {
+            agent any
+            when {
+                // TODO: Only run on main branch
+                branch ???
+            }
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                    sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} -t ${IMAGE_NAME}:latest ."
+                }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'U', passwordVariable: 'P')]) {
+                    sh 'docker login -u $U -p $P'
+                    sh "docker push ${IMAGE_NAME}:${env.GIT_SHA}"
+                    sh "docker push ${IMAGE_NAME}:latest"
+                }
+            }
+        }
+
+        stage('Deploy Staging') {
+            agent any
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    // TODO: helm upgrade --install with --atomic --timeout 5m to staging namespace
+                    sh """
+                        helm upgrade --install ${HELM_RELEASE} ./helm/myapp \\
+                          --set image.tag=${env.GIT_SHA} \\
+                          ??? \\
+                          -n staging --kubeconfig=$KUBECONFIG
+                    """
+                }
+            }
+        }
+
+        stage('Approve Production') {
+            when { branch 'main' }
+            steps {
+                script {
+                    // TODO: 2-hour timeout + input approval
+                    timeout(time: ???, unit: ???) {
+                        input message: ???, ok: ???, submitter: 'ops-team'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Production') {
+            agent any
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        helm upgrade --install ${HELM_RELEASE} ./helm/myapp \\
+                          --set image.tag=${env.GIT_SHA} \\
+                          --atomic --timeout 5m \\
+                          -n production --kubeconfig=$KUBECONFIG
+                    """
+                }
+                // TODO: Update GitOps config repo with new image tag
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-deploy-key',
+                    keyFileVariable: 'GIT_KEY')]) {
+                    sh '''
+                        export GIT_SSH_COMMAND="ssh -i $GIT_KEY -o StrictHostKeyChecking=no"
+                        git clone ${CONFIG_REPO} config
+                        cd config
+                        sed -i "s|  tag: .*|  tag: ${GIT_SHA}|g" apps/myapp/values.yaml
+                        git config user.email "jenkins@ci" && git config user.name "Jenkins CI"
+                        git add apps/myapp/values.yaml
+                        git commit -m "chore: bump myapp to ${GIT_SHA} [ci skip]"
+                        git push origin main
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // TODO: Clean up Docker images
+            sh "docker rmi ${IMAGE_NAME}:${env.GIT_SHA} || true"
+            sh "docker rmi ${IMAGE_NAME}:latest || true"
+            archiveArtifacts artifacts: 'dist/**', allowEmptyArchive: true
+        }
+        success {
+            // TODO: Slack success notification
+            slackSend(channel: env.SLACK_CHANNEL, color: ???,
+                message: ???)
+        }
+        failure {
+            // TODO: Slack failure notification
+            slackSend(channel: env.SLACK_CHANNEL, color: ???,
+                message: ???)
+            // TODO: Helm rollback on production failure
+            withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                sh "helm rollback ${HELM_RELEASE} 0 -n production --kubeconfig=$KUBECONFIG || true"
+            }
+        }
+    }
+}

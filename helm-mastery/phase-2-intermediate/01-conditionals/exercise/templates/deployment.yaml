@@ -1,0 +1,56 @@
+{{- /* TODO 1: Use required() to fail if image.repository is empty */}}
+{{- $repo := required "image.repository is required" .Values.image.repository }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      {{- /* TODO 2: Only add serviceAccountName if serviceAccount.create is true */}}
+      {{- if ??? }}
+      serviceAccountName: {{ .Release.Name }}-sa
+      {{- end }}
+      containers:
+        - name: app
+          image: "{{ $repo }}:{{ .Values.image.tag | default "latest" }}"
+          ports:
+            - containerPort: 80
+
+---
+{{- /* TODO 3: Only render ServiceAccount if serviceAccount.create is true */}}
+{{- if ??? }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-sa
+{{- end }}
+
+---
+{{- /* TODO 4: Only render Ingress if ingress.enabled is true */}}
+{{- if ??? }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}
+                port:
+                  number: 80
+{{- end }}

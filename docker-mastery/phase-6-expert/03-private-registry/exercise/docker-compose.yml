@@ -1,0 +1,28 @@
+# ============================================================================
+# Exercise 6.3 — Local Private Registry
+# ============================================================================
+
+version: "3.9"
+
+services:
+  registry:
+    image: registry:2
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry_data:/var/lib/registry
+
+  # Optional: registry UI
+  registry-ui:
+    image: joxit/docker-registry-ui:latest
+    ports:
+      - "8080:80"
+    environment:
+      - SINGLE_REGISTRY=true
+      - REGISTRY_TITLE=My Local Registry
+      - NGINX_PROXY_PASS_URL=http://registry:5000
+    depends_on:
+      - registry
+
+volumes:
+  registry_data:

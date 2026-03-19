@@ -1,0 +1,11 @@
+replicaCount: 1
+
+image:
+  tag: "dev"
+
+config:
+  logLevel: "debug"
+  debug: true
+
+ingress:
+  enabled: false

@@ -1,0 +1,23 @@
+# ============================================================================
+# Solution 4.2 — Sidecar Pattern
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    image: node:18-alpine
+    command: sh -c "while true; do echo \"[$(date)] Request served\" >> /var/log/app/app.log; sleep 2; done"
+    volumes:
+      - log-data:/var/log/app       # Main app writes logs
+
+  log-shipper:
+    image: busybox
+    volumes:
+      - log-data:/var/log/app:ro    # Sidecar reads logs (read-only)
+    command: tail -f /var/log/app/app.log
+    depends_on:
+      - web
+
+volumes:
+  log-data:    # Shared between web and log-shipper

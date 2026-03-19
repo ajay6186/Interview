@@ -1,0 +1,6 @@
+apiVersion: v2
+name: tpl-function
+description: Exercise 3.3 - tpl Function
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

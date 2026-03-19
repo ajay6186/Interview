@@ -1,0 +1,12 @@
+# TODO: Override for dev — 1 replica, debug logging, no ingress, no HPA
+replicaCount: ???
+
+config:
+  logLevel: ???
+  environment: ???
+
+ingress:
+  enabled: ???
+
+hpa:
+  enabled: ???

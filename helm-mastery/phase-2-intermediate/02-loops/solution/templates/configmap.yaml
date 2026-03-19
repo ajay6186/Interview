@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  {{- range $key, $val := .Values.envVars }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+
+  ALLOWED_HOSTS: {{ .Values.allowedHosts | join ", " | quote }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-ports
+data:
+  {{- range .Values.extraPorts }}
+  port-{{ . }}: "enabled for {{ $.Release.Name }}"
+  {{- /* Use $.Release.Name because inside range, . is the current list item */}}
+  {{- end }}

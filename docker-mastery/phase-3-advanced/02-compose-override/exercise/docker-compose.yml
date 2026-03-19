@@ -1,0 +1,13 @@
+# ============================================================================
+# Exercise 3.2 — Base (production-like). Don't edit this file.
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production

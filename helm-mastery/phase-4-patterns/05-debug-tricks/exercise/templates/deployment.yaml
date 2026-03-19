@@ -1,0 +1,35 @@
+# BUG HUNT: This file has bugs. Use "helm template" and "helm lint" to find them.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  # BUG 1: replicaCount is not quoted but this value needs the int — actually look closer
+  replicas: {{ .Values.replicacount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: GREETING
+              # BUG 2: missing | quote — string values must be quoted
+              value: {{ .Values.config.greeting }}
+            - name: MAX_CONN
+              value: {{ .Values.config.maxConnections | quote }}
+          resources:
+            requests:
+              # BUG 3: wrong indentation — resources block is misaligned
+             cpu: "100m"
+             memory: "128Mi"
+            limits:
+             cpu: "500m"
+             memory: "256Mi"

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  # TODO 1: Render app.url using tpl (it contains {{ .Release.Name }})
+  # Without tpl: app.url would be the literal string "https://{{ .Release.Name }}.example.com"
+  # With tpl:    app.url becomes "https://my-release.example.com"
+  APP_URL: {{ tpl ??? . | quote }}
+
+  # TODO 2: Render app.greeting using tpl
+  GREETING: {{ tpl ??? . | quote }}
+
+  # TODO 3: Render image.tagTemplate using tpl to get the dynamic image tag
+  IMAGE_TAG: {{ tpl ??? . | quote }}
+
+  # This one does NOT need tpl — it's a plain value:
+  APP_NAME: {{ .Values.app.name | quote }}

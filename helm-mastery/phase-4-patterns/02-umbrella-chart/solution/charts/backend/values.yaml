@@ -1,0 +1,11 @@
+replicaCount: 1
+
+image:
+  repository: mybackend
+  tag: "latest"
+
+service:
+  port: 8080
+
+config:
+  databaseUrl: ""

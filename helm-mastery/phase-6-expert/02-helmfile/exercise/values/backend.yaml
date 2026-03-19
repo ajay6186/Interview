@@ -1,0 +1,4 @@
+replicaCount: 3
+image:
+  repository: mybackend
+  tag: "1.0.0"

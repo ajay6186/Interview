@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME   = 'myorg/myapp'
+        HELM_RELEASE = 'myapp'
+        HELM_NS      = 'default'
+        CHART_PATH   = './helm/myapp'
+    }
+
+    stages {
+        stage('Build & Push') {
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                    sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} ."
+                }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'U', passwordVariable: 'P')]) {
+                    sh "docker login -u $U -p $P && docker push ${IMAGE_NAME}:${env.GIT_SHA}"
+                }
+            }
+        }
+
+        stage('Helm Diff') {
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        helm diff upgrade ${HELM_RELEASE} ${CHART_PATH} \
+                          --set image.tag=${env.GIT_SHA} \
+                          -n ${HELM_NS} \
+                          --kubeconfig=$KUBECONFIG || true
+                    """
+                }
+            }
+        }
+
+        stage('Helm Deploy') {
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        helm upgrade --install ${HELM_RELEASE} ${CHART_PATH} \
+                          --set image.tag=${env.GIT_SHA} \
+                          --atomic \
+                          --timeout 5m \
+                          -n ${HELM_NS} \
+                          --kubeconfig=$KUBECONFIG
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        failure {
+            withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                sh "helm rollback ${HELM_RELEASE} 0 -n ${HELM_NS} --kubeconfig=$KUBECONFIG || true"
+            }
+        }
+    }
+}

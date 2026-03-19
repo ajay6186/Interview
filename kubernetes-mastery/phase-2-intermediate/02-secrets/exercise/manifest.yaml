@@ -1,0 +1,58 @@
+# ============================================================================
+# Exercise 2.2 — Secrets
+# ============================================================================
+
+apiVersion: v1
+# TODO: Set kind to "Secret"
+kind: ???
+metadata:
+  name: db-secret
+# TODO: Set the Secret type to "Opaque" (general-purpose)
+type: ???
+
+# TODO: Use stringData (plain text — K8s base64-encodes automatically)
+# Add:
+#   username: admin
+#   password: super-secret-pass
+#   database: myapp_db
+stringData:
+  username: ???
+  password: ???
+  database: ???
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: nginx:alpine
+          env:
+            # TODO: Inject DB_PASSWORD from the secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  # TODO: Secret name and key
+                  name: ???
+                  key: ???
+          volumeMounts:
+            - name: secret-vol
+              mountPath: /etc/secrets
+              # TODO: Set readOnly to true (best practice for secret mounts)
+              readOnly: ???
+      volumes:
+        - name: secret-vol
+          secret:
+            # TODO: Reference the secret name
+            secretName: ???

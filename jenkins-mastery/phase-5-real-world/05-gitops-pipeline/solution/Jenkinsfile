@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME  = 'myorg/myapp'
+        CONFIG_REPO = 'git@github.com:myorg/k8s-config.git'
+        VALUES_FILE = 'apps/myapp/values.yaml'
+    }
+
+    stages {
+        stage('Build & Push') {
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                    sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} ."
+                }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'U', passwordVariable: 'P')]) {
+                    sh "docker login -u $U -p $P && docker push ${IMAGE_NAME}:${env.GIT_SHA}"
+                }
+            }
+        }
+
+        stage('Update GitOps Repo') {
+            when { branch 'main' }
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-deploy-key',
+                    keyFileVariable: 'GIT_KEY')]) {
+                    sh '''
+                        export GIT_SSH_COMMAND="ssh -i $GIT_KEY -o StrictHostKeyChecking=no"
+                        git clone ${CONFIG_REPO} config
+                        cd config
+                        sed -i "s|  tag: .*|  tag: ${GIT_SHA}|g" ${VALUES_FILE}
+                        git config user.email "jenkins@ci"
+                        git config user.name "Jenkins CI"
+                        git add ${VALUES_FILE}
+                        git commit -m "chore: update myapp image to ${GIT_SHA} [ci skip]"
+                        git push origin main
+                    '''
+                }
+            }
+        }
+    }
+}

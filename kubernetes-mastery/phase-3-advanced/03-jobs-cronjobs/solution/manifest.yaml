@@ -1,0 +1,51 @@
+# ============================================================================
+# Solution 3.3 — Jobs and CronJobs
+# ============================================================================
+
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: batch-job
+
+spec:
+  completions: 3        # Total number of successful completions needed
+  parallelism: 2        # Run up to 2 pods simultaneously
+  backoffLimit: 2       # Retry each failed pod up to 2 times
+
+  template:
+    spec:
+      containers:
+        - name: worker
+          image: busybox
+          command: ["sh", "-c", "echo Job started; sleep 5; echo Job done"]
+      restartPolicy: Never   # Options: Never | OnFailure (not Always)
+
+---
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: cleanup-job
+
+spec:
+  schedule: "*/1 * * * *"   # Every minute  (min hour dom month dow)
+  concurrencyPolicy: Forbid  # Don't start new job if previous is still running
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: cleanup
+              image: busybox
+              command: ["sh", "-c", "echo Running cleanup at $(date)"]
+          restartPolicy: OnFailure
+
+# CRON CHEAT SHEET:
+#   "*/5 * * * *"   every 5 minutes
+#   "0 2 * * *"     every day at 2am
+#   "0 0 * * 0"     every Sunday at midnight
+#   "0 9-17 * * 1-5" every hour 9am-5pm weekdays

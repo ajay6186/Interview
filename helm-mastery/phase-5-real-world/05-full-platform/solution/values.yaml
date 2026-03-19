@@ -1,0 +1,48 @@
+global:
+  environment: "production"
+  imageRegistry: "docker.io/mycompany"
+
+frontend:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: frontend
+    tag: "1.0.0"
+  service:
+    port: 80
+  ingress:
+    enabled: true
+    host: myapp.example.com
+    tls:
+      enabled: false
+      issuer: "letsencrypt-prod"
+
+backend:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: backend
+    tag: "1.0.0"
+  service:
+    port: 8080
+  config:
+    logLevel: "info"
+  secrets:
+    dbSecretName: "platform-db-credentials"
+
+database:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "15-alpine"
+  auth:
+    postgresPassword: ""
+    database: "platform"
+    username: "appuser"
+    password: ""
+  storage:
+    size: "5Gi"
+
+monitoring:
+  enabled: false
+  metricsPort: 9090

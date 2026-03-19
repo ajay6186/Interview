@@ -1,0 +1,50 @@
+# ============================================================================
+# Exercise 5.4 — ResourceQuota
+# ============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-a
+
+---
+# TODO: Set apiVersion for ResourceQuota (hint: v1)
+apiVersion: ???
+kind: ResourceQuota
+metadata:
+  name: team-quota
+  namespace: team-a
+spec:
+  hard:
+    # TODO: Limit total CPU requests to 2 cores across all pods
+    requests.cpu: ???
+    # TODO: Limit total memory requests to 2Gi
+    requests.memory: ???
+    # TODO: Limit total CPU limits to 4 cores
+    limits.cpu: ???
+    # TODO: Limit total memory limits to 4Gi
+    limits.memory: ???
+    # TODO: Allow max 10 pods in this namespace
+    count/pods: ???
+    # TODO: Allow max 5 deployments
+    count/deployments.apps: ???
+    # TODO: Allow max 5 services
+    count/services: ???
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limits
+  namespace: team-a
+spec:
+  limits:
+    - type: Container
+      default:
+        # TODO: Set default memory limit to 256Mi and cpu to 200m
+        memory: ???
+        cpu: ???
+      defaultRequest:
+        # TODO: Set default memory request to 128Mi and cpu to 100m
+        memory: ???
+        cpu: ???

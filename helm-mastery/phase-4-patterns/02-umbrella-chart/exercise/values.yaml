@@ -1,0 +1,23 @@
+# Global values — accessible in all subcharts as .Values.global
+global:
+  # TODO: Set shared image registry (e.g. "docker.io/mycompany")
+  imageRegistry: ???
+  # TODO: Set environment name (e.g. "production")
+  environment: ???
+
+# TODO: Configure frontend subchart
+# Values are nested under the subchart name
+frontend:
+  replicaCount: ???
+  image:
+    repository: ???
+    tag: ???
+
+# TODO: Configure backend subchart
+backend:
+  replicaCount: ???
+  image:
+    repository: ???
+    tag: ???
+  config:
+    databaseUrl: ???

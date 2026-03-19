@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME  = 'myorg/myapp'
+        DEPLOY_HOST = 'deploy@prod.example.com'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                    echo "Building ${IMAGE_NAME}:${env.GIT_SHA}"
+                    sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} -t ${IMAGE_NAME}:latest ."
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh "docker run --rm ${IMAGE_NAME}:${env.GIT_SHA} npm test"
+            }
+        }
+
+        stage('Push') {
+            when { branch 'main' }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                    sh "docker push ${IMAGE_NAME}:${env.GIT_SHA}"
+                    sh "docker push ${IMAGE_NAME}:latest"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            when { branch 'main' }
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'deploy-ssh-key',
+                    keyFileVariable: 'SSH_KEY')]) {
+                    sh """
+                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${DEPLOY_HOST} \\
+                          "docker pull ${IMAGE_NAME}:${env.GIT_SHA} && \\
+                           docker stop myapp || true && \\
+                           docker run -d --name myapp --rm -p 3000:3000 ${IMAGE_NAME}:${env.GIT_SHA}"
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh "docker rmi ${IMAGE_NAME}:${env.GIT_SHA} || true"
+        }
+    }
+}

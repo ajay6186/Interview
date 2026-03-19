@@ -1,0 +1,46 @@
+// Exercise 3.4 — Input Step (Manual Approval)
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Build & Test') {
+            steps {
+                echo 'Building and testing...'
+                sh 'echo "All checks passed"'
+            }
+        }
+
+        stage('Approve Production Deploy') {
+            steps {
+                script {
+                    // TODO: Wrap input with a 24-hour timeout
+                    // If timeout expires, the pipeline should abort
+                    timeout(time: ???, unit: ???) {
+                        // TODO: Ask for approval
+                        // message: "Deploy to production?"
+                        // ok button label: "Deploy"
+                        // submitter: "ops-team" (only ops-team can approve)
+                        def approval = input(
+                            message: ???,
+                            ok: ???,
+                            submitter: ???,
+                            parameters: [
+                                // TODO: Add a choice parameter for deploy slot
+                                // name: SLOT, choices: blue/green
+                                choice(name: ???, choices: ???, description: 'Deploy slot')
+                            ]
+                        )
+                        echo "Approved! Deploying to slot: ${approval}"
+                    }
+                }
+            }
+        }
+
+        stage('Production Deploy') {
+            steps {
+                echo 'Deploying to production...'
+            }
+        }
+    }
+}

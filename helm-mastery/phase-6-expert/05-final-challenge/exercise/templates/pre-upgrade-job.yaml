@@ -1,0 +1,24 @@
+{{- if .Values.migration.enabled }}
+# TODO: Create a pre-upgrade hook Job that runs database migrations
+# Use helm.sh/hook: pre-upgrade
+# Use helm.sh/hook-weight: "-5"
+# Use helm.sh/hook-delete-policy: before-hook-creation
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "app.fullname" . }}-migrate
+  annotations:
+    helm.sh/hook: ???
+    helm.sh/hook-weight: ???
+    helm.sh/hook-delete-policy: ???
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: {{ .Values.migration.image | quote }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "app.fullname" . }}-config
+{{- end }}

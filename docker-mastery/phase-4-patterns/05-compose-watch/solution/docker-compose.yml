@@ -1,0 +1,18 @@
+# ============================================================================
+# Solution 4.5 — Docker Compose Watch
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    develop:
+      watch:
+        - action: sync          # Copy file changes without rebuild
+          path: ./src
+          target: /app/src
+        - action: rebuild       # Full rebuild when dependencies change
+          path: package.json

@@ -1,0 +1,24 @@
+# ============================================================================
+# Exercise 6.4 — Dev overlay kustomization.yaml
+# ============================================================================
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# TODO: Reference the base (relative path)
+bases:
+  - ???
+
+# TODO: Add commonLabels to tag all resources with env=dev
+commonLabels:
+  env: ???
+
+# TODO: Add a patch to set replicas to 1 for dev
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: web-app
+      spec:
+        replicas: ???

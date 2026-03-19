@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            # TODO: Reference DB_PASSWORD from the dbSecretName secret, key "db-password"
+            # Use valueFrom.secretKeyRef pattern
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ???
+                  key: ???
+
+            # TODO: Reference API_KEY from the apiSecretName secret, key "api-key"
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ???
+                  key: ???
+
+            # TODO: Reference DB_HOST from the dbSecretName secret, key "db-host"
+            # Make it optional so the pod starts even if the key is missing
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: ???
+                  key: ???
+                  optional: ???

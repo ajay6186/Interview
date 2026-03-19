@@ -1,0 +1,39 @@
+# ============================================================================
+# Solution 6.4 — Security Hardening
+# ============================================================================
+
+version: "3.9"
+
+services:
+  app:
+    image: node:18-alpine
+    command: >
+      sh -c "node -e \"
+        require('http').createServer((req,res)=>{
+          res.end('Secure app running!\\n');
+        }).listen(3000);
+        console.log('App started on port 3000');
+      \""
+    ports:
+      - "3000:3000"
+    user: "nobody"                    # Non-root user
+
+    read_only: true                   # Block writes to container filesystem
+
+    tmpfs:
+      - /tmp                          # Allow writing only to /tmp (in memory)
+
+    cap_drop:
+      - ALL                           # Remove all Linux capabilities
+
+    # cap_add:                        # Add back only what's needed
+    #   - NET_BIND_SERVICE            # Needed to bind to ports < 1024
+
+    security_opt:
+      - no-new-privileges:true        # Block setuid/setgid privilege escalation
+
+# DEFENSE IN DEPTH:
+# Each option adds a layer — use all together for maximum hardening
+# - read_only:       attacker can't write malware to disk
+# - cap_drop ALL:    limits what syscalls processes can make
+# - no-new-privs:    su/sudo/setuid tricks won't work

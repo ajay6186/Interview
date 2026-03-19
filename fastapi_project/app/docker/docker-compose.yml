@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  
+  api:
+    build:
+      context: ../..
+      dockerfile: app/docker/Dockerfile
+    ports:
+      - "8000:8000"
+
+  postgres:
+    image: postgres
+
+  redis:
+    image: redis

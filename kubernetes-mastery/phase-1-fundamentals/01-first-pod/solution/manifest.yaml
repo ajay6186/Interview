@@ -1,0 +1,18 @@
+# ============================================================================
+# Solution 1.1 — Your First Pod
+# ============================================================================
+
+apiVersion: v1       # Core API group — Pod, Service, ConfigMap, Secret, etc.
+kind: Pod
+
+metadata:
+  name: my-first-pod
+  labels:
+    app: nginx       # Labels are key/value pairs — used for selection and filtering
+
+spec:
+  containers:
+    - name: nginx
+      image: nginx:alpine
+      ports:
+        - containerPort: 80   # Documents intent — does NOT publish to host

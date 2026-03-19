@@ -1,0 +1,25 @@
+# ============================================================================
+# Exercise 1.1 — Your First Pod
+# ============================================================================
+
+# TODO: Set the correct apiVersion for a Pod (hint: v1)
+apiVersion: ???
+
+# TODO: Set the kind to Pod
+kind: ???
+
+metadata:
+  # TODO: Name the pod "my-first-pod"
+  name: ???
+  labels:
+    # TODO: Add a label: app=nginx
+    ???: ???
+
+spec:
+  containers:
+    # TODO: Define a container named "nginx" using image "nginx:alpine"
+    - name: ???
+      image: ???
+      ports:
+        # TODO: Set containerPort to 80
+        - containerPort: ???

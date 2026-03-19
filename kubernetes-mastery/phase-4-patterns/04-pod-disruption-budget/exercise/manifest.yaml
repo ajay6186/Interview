@@ -1,0 +1,43 @@
+# ============================================================================
+# Exercise 4.4 — PodDisruptionBudget
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      containers:
+        - name: app
+          image: nginx:alpine
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+
+---
+# TODO: Set apiVersion for PodDisruptionBudget (hint: policy/v1)
+apiVersion: ???
+kind: PodDisruptionBudget
+
+metadata:
+  name: web-app-pdb
+
+spec:
+  # TODO: Set minAvailable to 3 (at least 3 pods must remain available during disruption)
+  # With 5 replicas, this means at most 2 can be disrupted at once
+  minAvailable: ???
+
+  selector:
+    matchLabels:
+      # TODO: Match the web-app pods
+      app: ???

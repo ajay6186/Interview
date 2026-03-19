@@ -1,0 +1,35 @@
+# ============================================================================
+# Exercise 5.2 — PostgreSQL Stack
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      # TODO: Set DATABASE_URL using the db service name as the host
+      # Format: postgres://USER:PASSWORD@HOST:PORT/DBNAME
+      # DATABASE_URL: postgres://myuser:mypassword@db:5432/mydb
+      DATABASE_URL: ""
+    # TODO: Add depends_on so web starts after db
+    # depends_on:
+    #   - db
+
+  db:
+    image: postgres:15-alpine
+    # TODO: Set postgres environment variables
+    # environment:
+    #   POSTGRES_DB: mydb
+    #   POSTGRES_USER: myuser
+    #   POSTGRES_PASSWORD: mypassword
+
+    # TODO: Mount a named volume to persist data at /var/lib/postgresql/data
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
+
+# TODO: Declare the named volume (required for named volumes)
+# volumes:
+#   postgres_data:

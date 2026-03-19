@@ -1,0 +1,14 @@
+# Exclude local node_modules — container installs its own
+node_modules
+
+# Exclude git history
+.git
+.gitignore
+
+# Exclude log files
+*.log
+npm-debug.log*
+
+# Never copy secrets into images
+.env
+.env.*

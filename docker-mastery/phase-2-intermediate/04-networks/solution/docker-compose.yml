@@ -1,0 +1,31 @@
+# ============================================================================
+# Solution 2.4 — Docker Networks
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    networks:
+      - frontend      # web can reach api but NOT db
+
+  api:
+    image: node:18-alpine
+    command: sh -c "while true; do sleep 1; done"
+    networks:
+      - frontend      # reachable by web
+      - backend       # can reach db
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: secret
+    networks:
+      - backend       # isolated from web
+
+networks:
+  frontend:
+  backend:

@@ -1,0 +1,62 @@
+# ============================================================================
+# Exercise 3.5 — Network Policies
+# ============================================================================
+
+# Default deny: block ALL ingress traffic in the namespace
+# Then we'll whitelist specific connections below
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  # TODO: Select ALL pods (empty podSelector = all pods)
+  podSelector: {}
+  # TODO: Specify policyTypes as Ingress to control incoming traffic
+  policyTypes:
+    - ???
+
+---
+# Allow: only the "api" pod can reach the "db" pod on port 5432
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-api-to-db
+spec:
+  # TODO: Select the db pod (label app=db)
+  podSelector:
+    matchLabels:
+      ???: ???
+  policyTypes:
+    - Ingress
+  ingress:
+    # TODO: Allow ingress from pods with label app=api
+    - from:
+        - podSelector:
+            matchLabels:
+              ???: ???
+      ports:
+        # TODO: Allow on TCP port 5432
+        - protocol: TCP
+          port: ???
+
+---
+# Allow: the "frontend" pod can reach the "api" pod on port 3000
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-api
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  policyTypes:
+    - Ingress
+  ingress:
+    # TODO: Allow from pods with label app=frontend on port 3000
+    - from:
+        - podSelector:
+            matchLabels:
+              app: ???
+      ports:
+        - protocol: TCP
+          port: ???

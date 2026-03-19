@@ -1,0 +1,18 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.25"
+
+service:
+  port: 80
+
+ingress:
+  enabled: true
+  host: myapp.example.com
+  tls:
+    enabled: false
+    # cert-manager ClusterIssuer name
+    issuer: "letsencrypt-prod"
+    # TLS secret name (auto-created by cert-manager)
+    secretName: ""

@@ -1,0 +1,49 @@
+// Exercise 2.4 — Parallel Stages
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo "Building..." && mkdir -p build && echo "app" > build/app.zip'
+                // TODO: Stash the build output so parallel test stages can access it
+                stash name: ???, includes: ???
+            }
+        }
+
+        stage('Quality Gate') {
+            // TODO: Run these three stages in parallel using parallel {}
+            // Stage 1: "Unit Tests"        — unstash build, sh 'echo "Unit tests..."'
+            // Stage 2: "Integration Tests" — unstash build, sh 'echo "Integration tests..."'
+            // Stage 3: "Lint"              — sh 'echo "Linting code..."'
+            // Set failFast: true
+            parallel {
+                stage(???) {
+                    steps {
+                        ???
+                        sh 'echo "Unit tests passed"'
+                    }
+                }
+                stage(???) {
+                    steps {
+                        ???
+                        sh 'echo "Integration tests passed"'
+                    }
+                }
+                stage(???) {
+                    steps {
+                        sh 'echo "Linting code..."'
+                        sh 'echo "Lint passed"'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+            }
+        }
+    }
+}

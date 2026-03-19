@@ -1,0 +1,22 @@
+{{- if and .Values.monitoring.enabled .Values.monitoring.serviceMonitor.enabled }}
+# ServiceMonitor is a Prometheus Operator CRD
+# TODO: Fill in the ServiceMonitor resource
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-monitor
+  # TODO: Set namespace to .Values.monitoring.serviceMonitor.namespace
+  namespace: ???
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  # TODO: Set selector to match the app service label
+  selector:
+    matchLabels:
+      app: ???
+  endpoints:
+    - port: metrics
+      # TODO: Set the scrape interval from .Values.monitoring.serviceMonitor.interval
+      interval: ???
+      path: {{ .Values.monitoring.metricsPath }}
+{{- end }}

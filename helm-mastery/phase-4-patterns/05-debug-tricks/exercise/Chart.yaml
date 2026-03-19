@@ -1,0 +1,6 @@
+apiVersion: v2
+name: debug-tricks
+description: Exercise 4.5 - Debug Tricks (buggy chart — find the 5 bugs)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

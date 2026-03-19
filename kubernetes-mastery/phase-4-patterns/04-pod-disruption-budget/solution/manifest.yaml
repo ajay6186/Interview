@@ -1,0 +1,47 @@
+# ============================================================================
+# Solution 4.4 — PodDisruptionBudget
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      containers:
+        - name: app
+          image: nginx:alpine
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+
+metadata:
+  name: web-app-pdb
+
+spec:
+  minAvailable: 3       # At least 3 pods must be available (5 replicas - 3 = 2 can be disrupted)
+  # Alternative: maxUnavailable: 2   (equivalent)
+  # Alternative: minAvailable: "80%" (percentage — at least 4 of 5 must be up)
+
+  selector:
+    matchLabels:
+      app: web-app
+
+# HOW IT WORKS:
+# - Node drain requests to evict pods → K8s checks PDB
+# - If eviction would violate PDB → drain is blocked until PDB is satisfied
+# - Protects against: node drains, cluster upgrades, kubectl delete pod
+# - Does NOT protect against: node crash, OOMKill (involuntary disruptions)

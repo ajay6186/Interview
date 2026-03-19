@@ -1,0 +1,53 @@
+// Exercise 4.2 — Docker Build and Push
+
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY    = 'docker.io'
+        IMAGE_NAME  = 'myorg/myapp'
+        // TODO: Set IMAGE_TAG to the first 7 chars of the git commit SHA
+        // Hint: use sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+        // For environment block, use: IMAGE_TAG = sh(...)  — NOTE: use script{} block instead
+    }
+
+    stages {
+        stage('Build Image') {
+            steps {
+                script {
+                    // TODO: Capture short git SHA and set it as IMAGE_TAG
+                    def gitSha = sh(script: ???, returnStdout: true).trim()
+                    env.IMAGE_TAG = gitSha
+                    echo "Building image: ${IMAGE_NAME}:${IMAGE_TAG}"
+                    // TODO: Build the Docker image with two tags: git-sha and "latest"
+                    sh "docker build -t ${IMAGE_NAME}:${???} -t ${IMAGE_NAME}:latest ."
+                }
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                // TODO: Use withCredentials to get docker-hub-creds and push both tags
+                withCredentials([usernamePassword(
+                    credentialsId: ???,
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                    // TODO: Push the git-sha tagged image
+                    sh "docker push ???"
+                    // TODO: Push the latest tagged image
+                    sh "docker push ???"
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                // TODO: Remove local images to free disk space
+                sh "docker rmi ${IMAGE_NAME}:${env.IMAGE_TAG} || true"
+                sh "docker rmi ${IMAGE_NAME}:latest || true"
+            }
+        }
+    }
+}

@@ -1,0 +1,48 @@
+# ============================================================================
+# Solution 2.2 — Secrets
+# ============================================================================
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque    # General-purpose secret type
+
+stringData:     # Plain text — Kubernetes base64-encodes on creation
+  username: admin
+  password: super-secret-pass
+  database: myapp_db
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: nginx:alpine
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+          volumeMounts:
+            - name: secret-vol
+              mountPath: /etc/secrets    # Each key becomes a file: /etc/secrets/password
+              readOnly: true             # Prevent the app from writing to the secret mount
+      volumes:
+        - name: secret-vol
+          secret:
+            secretName: db-secret
+            defaultMode: 0400           # Files readable only by owner (extra security)

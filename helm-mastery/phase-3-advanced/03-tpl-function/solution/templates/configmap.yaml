@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  APP_URL: {{ tpl .Values.app.url . | quote }}
+  GREETING: {{ tpl .Values.app.greeting . | quote }}
+  IMAGE_TAG: {{ tpl .Values.image.tagTemplate . | quote }}
+  APP_NAME: {{ .Values.app.name | quote }}
+
+  # OUTPUT (with helm install my-release):
+  # APP_URL:   "https://my-release.example.com"
+  # GREETING:  "Hello from myapp chart!"
+  # IMAGE_TAG: "1.0.0-alpine"
+  # APP_NAME:  "myapp"

@@ -1,0 +1,49 @@
+# ============================================================================
+# Solution 6.3 — Priority Classes
+# ============================================================================
+
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 1000000         # 0–1,000,000,000 range (system uses 2B)
+globalDefault: false
+description: "High priority for critical workloads"
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: low-priority
+value: 100
+globalDefault: true    # Pods without priorityClassName get this
+description: "Default low priority"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: high-priority-pod
+spec:
+  priorityClassName: high-priority   # This pod can preempt low-priority pods
+  containers:
+    - name: app
+      image: nginx:alpine
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "100m"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: low-priority-pod
+spec:
+  containers:
+    - name: app
+      image: nginx:alpine
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "100m"

@@ -1,0 +1,56 @@
+# ============================================================================
+# Exercise 3.3 — Jobs and CronJobs
+# ============================================================================
+
+# A Job runs a task to completion
+# TODO: Set apiVersion for Job (hint: batch/v1)
+apiVersion: ???
+kind: Job
+
+metadata:
+  name: batch-job
+
+spec:
+  # TODO: Set completions to 3 (run 3 times total)
+  completions: ???
+  # TODO: Set parallelism to 2 (run 2 at a time)
+  parallelism: ???
+  # TODO: Set backoffLimit to 2 (retry up to 2 times per failure)
+  backoffLimit: ???
+
+  template:
+    spec:
+      containers:
+        - name: worker
+          image: busybox
+          command: ["sh", "-c", "echo Job started; sleep 5; echo Job done"]
+      # TODO: Set restartPolicy to Never (required for Jobs)
+      restartPolicy: ???
+
+---
+# A CronJob runs a Job on a schedule
+# TODO: Set apiVersion for CronJob (hint: batch/v1)
+apiVersion: ???
+kind: CronJob
+
+metadata:
+  name: cleanup-job
+
+spec:
+  # TODO: Set schedule to run every minute (cron: "*/1 * * * *")
+  schedule: ???
+  # TODO: Set concurrencyPolicy to Forbid (skip if previous is still running)
+  concurrencyPolicy: ???
+  # Keep last 3 successful and 1 failed job for debugging
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: cleanup
+              image: busybox
+              command: ["sh", "-c", "echo Running cleanup at $(date)"]
+          restartPolicy: OnFailure

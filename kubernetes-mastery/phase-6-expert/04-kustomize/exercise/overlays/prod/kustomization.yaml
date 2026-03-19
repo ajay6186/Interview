@@ -1,0 +1,25 @@
+# ============================================================================
+# Exercise 6.4 — Prod overlay kustomization.yaml
+# ============================================================================
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+  - ../../base
+
+commonLabels:
+  env: prod
+
+# TODO: Patch replicas to 5 for prod
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: web-app
+      spec:
+        replicas: ???
+
+# TODO: Add a namePrefix so prod resources are named "prod-web-app"
+namePrefix: ???

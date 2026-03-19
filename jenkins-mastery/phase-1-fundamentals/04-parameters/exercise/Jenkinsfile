@@ -1,0 +1,48 @@
+// Exercise 1.4 — Parameters
+
+pipeline {
+    agent any
+
+    // TODO: Declare three parameters:
+    // 1. String:  DEPLOY_ENV   default "dev"         description "Target environment"
+    // 2. Boolean: RUN_TESTS    default true           description "Run test suite"
+    // 3. Choice:  IMAGE_TAG    choices dev/staging/1.0.0  description "Image tag"
+    parameters {
+        string(
+            name: ???,
+            defaultValue: ???,
+            description: ???
+        )
+        booleanParam(
+            name: ???,
+            defaultValue: ???,
+            description: ???
+        )
+        choice(
+            name: ???,
+            choices: ???,
+            description: ???
+        )
+    }
+
+    stages {
+        stage('Show Parameters') {
+            steps {
+                // TODO: Print each parameter value using params.NAME syntax
+                echo "Deploying to: ${???}"
+                echo "Image tag: ${???}"
+                echo "Running tests: ${???}"
+            }
+        }
+
+        stage('Conditional Test') {
+            // TODO: Only run this stage when RUN_TESTS parameter is true
+            when {
+                expression { return ??? }
+            }
+            steps {
+                echo 'Running the test suite...'
+            }
+        }
+    }
+}

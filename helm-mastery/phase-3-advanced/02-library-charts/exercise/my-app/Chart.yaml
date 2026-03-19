@@ -1,0 +1,16 @@
+apiVersion: v2
+name: my-app
+description: Exercise 3.2 - Uses my-library
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  # TODO: Add my-library as a dependency
+  # Use file:// path since it's local
+  # - name: my-library
+  #   version: "0.1.0"
+  #   repository: "file://../my-library"
+  - name: ???
+    version: ???
+    repository: ???

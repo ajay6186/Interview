@@ -1,0 +1,40 @@
+# ============================================================================
+# Exercise 1.2 — Labels and Selectors
+# ============================================================================
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  # TODO: Add these labels:
+  #   app: myapp
+  #   env: staging
+  #   version: v1
+  labels:
+    ???: ???
+    ???: ???
+    ???: ???
+  # TODO: Add an annotation:
+  #   description: "Learning labels and selectors"
+  annotations:
+    ???: ???
+
+spec:
+  containers:
+    - name: app
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  # TODO: Add selector to match pods with label app=myapp
+  selector:
+    ???: ???
+  ports:
+    - port: 80
+      targetPort: 80

@@ -1,0 +1,51 @@
+# ============================================================================
+# Solution 2.3 — Persistent Volumes
+# ============================================================================
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-pv
+spec:
+  capacity:
+    storage: 1Gi                      # Total capacity of this PV
+  accessModes:
+    - ReadWriteOnce                   # Only one node can mount read/write at a time
+  persistentVolumeReclaimPolicy: Retain  # Keep data when PVC deleted (vs Delete)
+  hostPath:
+    path: /tmp/my-pv-data             # Node path — dev only, not for production
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce                   # Must match the PV access mode
+  resources:
+    requests:
+      storage: 500Mi                  # K8s finds a PV with >= 500Mi capacity
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pv-pod
+spec:
+  containers:
+    - name: app
+      image: busybox
+      command: ["sh", "-c", "echo 'Data persists!' > /data/info.txt && sleep 3600"]
+      volumeMounts:
+        - name: storage
+          mountPath: /data            # PVC is accessible at this path
+  volumes:
+    - name: storage
+      persistentVolumeClaim:
+        claimName: my-pvc            # Reference the PVC by name
+
+# ACCESS MODES:
+#   ReadWriteOnce (RWO)  — one node, read+write
+#   ReadOnlyMany  (ROX)  — many nodes, read only
+#   ReadWriteMany (RWX)  — many nodes, read+write (needs NFS/CephFS etc.)

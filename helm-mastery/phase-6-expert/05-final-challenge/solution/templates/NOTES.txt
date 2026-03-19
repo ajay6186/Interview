@@ -1,0 +1,25 @@
+Release {{ .Release.Name }} deployed successfully!
+
+Application: {{ .Chart.Name }} v{{ .Chart.AppVersion }}
+Namespace:   {{ .Release.Namespace }}
+
+{{- if .Values.ingress.enabled }}
+Access URL:
+  {{- if .Values.ingress.tls.enabled }}
+  https://{{ .Values.ingress.host }}
+  {{- else }}
+  http://{{ .Values.ingress.host }}
+  {{- end }}
+{{- else }}
+To access locally:
+  kubectl port-forward svc/{{ include "app.fullname" . }} 8080:{{ .Values.service.port }} -n {{ .Release.Namespace }}
+  Then open: http://localhost:8080
+{{- end }}
+
+{{- if .Values.hpa.enabled }}
+
+Autoscaling: enabled ({{ .Values.hpa.minReplicas }}–{{ .Values.hpa.maxReplicas }} replicas)
+{{- end }}
+
+Run tests:
+  helm test {{ .Release.Name }}

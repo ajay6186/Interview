@@ -1,0 +1,11 @@
+# ============================================================================
+# Exercise 6.4 — Base kustomization.yaml
+# ============================================================================
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# TODO: List the base resources
+resources:
+  - deployment.yaml
+  - service.yaml

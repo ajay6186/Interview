@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-db-migrate
+  annotations:
+    helm.sh/hook: pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-migrate
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: {{ .Values.migration.image | quote }}
+          args:
+            - "-path"
+            - {{ .Values.migration.dir | quote }}
+            - "-database"
+            - "postgresql://$(DB_HOST)/$(DB_NAME)?sslmode=disable"
+            - "up"
+          env:
+            - name: DB_HOST
+              value: {{ .Values.database.host | quote }}
+            - name: DB_NAME
+              value: {{ .Values.database.name | quote }}

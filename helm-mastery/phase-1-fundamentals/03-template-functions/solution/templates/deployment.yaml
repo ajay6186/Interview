@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: app
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" | quote }}
+          {{- /* default: if tag is empty string or nil, use "latest" */}}
+          {{- /* quote: wraps in double quotes (safe for strings that may look like numbers) */}}
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+            {{- /* toYaml: converts .Values.resources map to YAML string */}}
+            {{- /* nindent 12: adds newline then 12 spaces of indentation */}}
+
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+            {{- /* renders the env list as proper YAML */}}

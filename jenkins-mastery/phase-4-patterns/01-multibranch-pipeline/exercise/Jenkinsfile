@@ -1,0 +1,58 @@
+// Exercise 4.1 — Multibranch Pipeline
+// One Jenkinsfile handles feature/*, main, and release/* branches differently
+
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'myapp'
+        IMAGE    = "myorg/${APP_NAME}"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo "Building ${APP_NAME} on branch: ${env.BRANCH_NAME}"
+                sh 'echo "Build complete"'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'echo "Running tests..."'
+                sh 'echo "Tests passed"'
+            }
+        }
+
+        stage('Deploy Staging') {
+            // TODO: Only run this stage on the "main" branch OR any "release/*" branch
+            when {
+                ???
+            }
+            steps {
+                echo "Deploying to staging from branch: ${env.BRANCH_NAME}"
+            }
+        }
+
+        stage('Deploy Production') {
+            // TODO: Only run this stage on "release/*" branches
+            when {
+                branch ???
+            }
+            steps {
+                // TODO: Add a 1-hour manual approval timeout before deploying to prod
+                script {
+                    timeout(time: ???, unit: ???) {
+                        input message: ???, ok: ???
+                    }
+                }
+                echo "Deploying to PRODUCTION from ${env.BRANCH_NAME}"
+            }
+        }
+    }
+
+    post {
+        success { echo "Pipeline succeeded on ${env.BRANCH_NAME}" }
+        failure { echo "Pipeline FAILED on ${env.BRANCH_NAME}" }
+    }
+}

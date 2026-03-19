@@ -1,0 +1,36 @@
+// Exercise 3.3 — Stash / Unstash
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mkdir -p dist && echo "compiled-app" > dist/app.zip'
+                sh 'echo "Build complete"'
+                // TODO: Stash the dist/ directory as "app-dist"
+                stash name: ???, includes: ???
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // TODO: Unstash "app-dist" so we can verify the artifact
+                ???
+                sh 'ls -la dist/'
+                sh 'echo "Tests passed against dist/app.zip"'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                // TODO: Unstash "app-dist" again for deployment
+                ???
+                sh 'echo "Deploying dist/app.zip to server..."'
+                // TODO: Archive the artifact permanently
+                // Archive 'dist/**' with fingerprinting enabled
+                archiveArtifacts artifacts: ???, fingerprint: ???
+            }
+        }
+    }
+}

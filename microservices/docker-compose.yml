@@ -1,0 +1,272 @@
+version: '3.9'
+
+services:
+
+  # ─── API Gateway ───────────────────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - user-service
+      - auth-service
+      - order-service
+      - payment-service
+    networks:
+      - ms-net
+    restart: unless-stopped
+
+  # ─── Databases (Database-per-service pattern) ──────────────────────────────
+  user-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: user_svc
+      POSTGRES_PASSWORD: ${USER_DB_PASSWORD}
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    networks: [ms-net]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_svc -d userdb"]
+      interval: 10s
+      retries: 5
+
+  auth-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: auth_svc
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    networks: [ms-net]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_svc -d authdb"]
+      interval: 10s
+      retries: 5
+
+  order-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: orderdb
+      POSTGRES_USER: order_svc
+      POSTGRES_PASSWORD: ${ORDER_DB_PASSWORD}
+    volumes:
+      - order-db-data:/var/lib/postgresql/data
+    networks: [ms-net]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U order_svc -d orderdb"]
+      interval: 10s
+      retries: 5
+
+  payment-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: paymentdb
+      POSTGRES_USER: payment_svc
+      POSTGRES_PASSWORD: ${PAYMENT_DB_PASSWORD}
+    volumes:
+      - payment-db-data:/var/lib/postgresql/data
+    networks: [ms-net]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payment_svc -d paymentdb"]
+      interval: 10s
+      retries: 5
+
+  # ─── Message Broker ────────────────────────────────────────────────────────
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "15672:15672"   # Management UI (dev only — remove in prod)
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks: [ms-net]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      retries: 5
+
+  # ─── Cache / Token blacklist ───────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks: [ms-net]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      retries: 5
+
+  # ─── Logging Stack ─────────────────────────────────────────────────────────
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - cluster.name=microservices-logs
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks: [ms-net]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health | grep -qE '\"status\":\"(green|yellow)\"'"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.0
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+    ports:
+      - "5000:5000"   # TCP input — Python services send JSON logs here
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    depends_on:
+      elasticsearch: { condition: service_healthy }
+    networks: [ms-net]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.3.1
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - elasticsearch
+    networks: [ms-net]
+    restart: unless-stopped
+
+  # ─── Application Services ──────────────────────────────────────────────────
+  user-service:
+    build: ./user-service
+    environment:
+      DATABASE_URL: postgresql://user_svc:${USER_DB_PASSWORD}@user-db:5432/userdb
+      JWT_SECRET: ${JWT_SECRET}
+      SERVICE_NAME: user-service
+      LOGSTASH_HOST: logstash
+      LOGSTASH_PORT: "5000"
+    depends_on:
+      user-db: { condition: service_healthy }
+    networks: [ms-net]
+    restart: unless-stopped
+
+  auth-service:
+    build: ./auth-service
+    environment:
+      DATABASE_URL: postgresql://auth_svc:${AUTH_DB_PASSWORD}@auth-db:5432/authdb
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      USER_SERVICE_URL: http://user-service:3001
+      SERVICE_NAME: auth-service
+      LOGSTASH_HOST: logstash
+      LOGSTASH_PORT: "5000"
+    depends_on:
+      auth-db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [ms-net]
+    restart: unless-stopped
+
+  order-service:
+    build: ./order-service
+    environment:
+      DATABASE_URL: postgresql://order_svc:${ORDER_DB_PASSWORD}@order-db:5432/orderdb
+      RABBITMQ_URL: amqp://admin:${RABBITMQ_PASSWORD}@rabbitmq:5672
+      JWT_SECRET: ${JWT_SECRET}
+      PAYMENT_SERVICE_URL: http://payment-service:3004
+      SERVICE_NAME: order-service
+      LOGSTASH_HOST: logstash
+      LOGSTASH_PORT: "5000"
+    depends_on:
+      order-db: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    networks: [ms-net]
+    restart: unless-stopped
+
+  payment-service:
+    build: ./payment-service
+    environment:
+      DATABASE_URL: postgresql://payment_svc:${PAYMENT_DB_PASSWORD}@payment-db:5432/paymentdb
+      RABBITMQ_URL: amqp://admin:${RABBITMQ_PASSWORD}@rabbitmq:5672
+      JWT_SECRET: ${JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      # ── Gateway selection: set to "stripe" or "razorpay" ──────────────
+      PAYMENT_GATEWAY: ${PAYMENT_GATEWAY:-stripe}
+      # Stripe
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      # Razorpay
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET}
+      RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET}
+      # Paytm
+      PAYTM_MERCHANT_ID: ${PAYTM_MERCHANT_ID}
+      PAYTM_MERCHANT_KEY: ${PAYTM_MERCHANT_KEY}
+      PAYTM_WEBSITE: ${PAYTM_WEBSITE:-WEBSTAGING}
+      PAYTM_INDUSTRY_TYPE: ${PAYTM_INDUSTRY_TYPE:-Retail}
+      PAYTM_CHANNEL_ID: ${PAYTM_CHANNEL_ID:-WEB}
+      PAYTM_CALLBACK_URL: ${PAYTM_CALLBACK_URL}
+      PAYTM_BASE_URL: ${PAYTM_BASE_URL:-https://securegw-stage.paytm.in}
+      SERVICE_NAME: payment-service
+      LOGSTASH_HOST: logstash
+      LOGSTASH_PORT: "5000"
+    depends_on:
+      payment-db: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    networks: [ms-net]
+    restart: unless-stopped
+
+  notification-service:
+    build: ./notification-service
+    environment:
+      RABBITMQ_URL: amqp://admin:${RABBITMQ_PASSWORD}@rabbitmq:5672
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      FROM_EMAIL: ${FROM_EMAIL}
+      SERVICE_NAME: notification-service
+      LOGSTASH_HOST: logstash
+      LOGSTASH_PORT: "5000"
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+    networks: [ms-net]
+    restart: unless-stopped
+
+volumes:
+  user-db-data:
+  auth-db-data:
+  order-db-data:
+  payment-db-data:
+  rabbitmq-data:
+  redis-data:
+  elasticsearch-data:
+  grafana-data:
+
+networks:
+  ms-net:
+    driver: bridge

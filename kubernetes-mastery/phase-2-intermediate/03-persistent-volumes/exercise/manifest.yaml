@@ -1,0 +1,56 @@
+# ============================================================================
+# Exercise 2.3 — Persistent Volumes
+# ============================================================================
+
+# A PersistentVolume is a cluster-wide storage resource
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-pv
+spec:
+  # TODO: Set storage capacity to "1Gi"
+  capacity:
+    storage: ???
+  # TODO: Set accessModes to ReadWriteOnce (one node can read/write)
+  accessModes:
+    - ???
+  # TODO: Set reclaimPolicy to Retain (keep data when PVC is deleted)
+  persistentVolumeReclaimPolicy: ???
+  # Using hostPath for local development (not for production)
+  hostPath:
+    path: /tmp/my-pv-data
+
+---
+# A PersistentVolumeClaim is a request for storage by a pod
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  # TODO: Set accessModes to ReadWriteOnce (must match PV)
+  accessModes:
+    - ???
+  resources:
+    requests:
+      # TODO: Request 500Mi of storage
+      storage: ???
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pv-pod
+spec:
+  containers:
+    - name: app
+      image: busybox
+      command: ["sh", "-c", "echo 'Data persists!' > /data/info.txt && sleep 3600"]
+      volumeMounts:
+        # TODO: Mount the PVC at /data
+        - name: storage
+          mountPath: ???
+  volumes:
+    # TODO: Reference the PVC
+    - name: storage
+      persistentVolumeClaim:
+        claimName: ???

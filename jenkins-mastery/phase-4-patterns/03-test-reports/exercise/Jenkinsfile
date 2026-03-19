@@ -1,0 +1,41 @@
+// Exercise 4.3 — Test Reports and Artifacts
+
+pipeline {
+    agent {
+        docker { image 'node:18-alpine' }
+    }
+
+    stages {
+        stage('Install') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // Tests write JUnit XML to test-results/junit.xml
+                sh 'npm test -- --reporter=junit --reporter-option output=test-results/junit.xml'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+    }
+
+    post {
+        always {
+            // TODO: Publish JUnit XML test results
+            // File pattern: 'test-results/**/*.xml'
+            // Allow empty results so build doesn't fail if file is missing
+            junit testResults: ???, allowEmptyResults: ???
+
+            // TODO: Archive build artifacts from 'dist/**'
+            // with fingerprint: true
+            archiveArtifacts artifacts: ???, fingerprint: ???, allowEmptyArchive: true
+        }
+    }
+}

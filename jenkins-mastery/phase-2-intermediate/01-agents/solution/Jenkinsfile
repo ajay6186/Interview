@@ -1,0 +1,33 @@
+pipeline {
+    agent none
+
+    stages {
+        stage('On Any Node') {
+            agent any
+            steps {
+                sh 'echo "Running on: $(hostname)"'
+            }
+        }
+
+        stage('On Linux Node') {
+            agent {
+                label 'linux'
+            }
+            steps {
+                sh 'uname -s'
+            }
+        }
+
+        stage('Inside Docker') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                }
+            }
+            steps {
+                sh 'node --version'
+                sh 'npm --version'
+            }
+        }
+    }
+}

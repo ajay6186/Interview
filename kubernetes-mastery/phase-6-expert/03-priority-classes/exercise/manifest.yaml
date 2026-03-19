@@ -1,0 +1,54 @@
+# ============================================================================
+# Exercise 6.3 — Priority Classes
+# ============================================================================
+
+# TODO: Set apiVersion for PriorityClass (hint: scheduling.k8s.io/v1)
+apiVersion: ???
+kind: PriorityClass
+metadata:
+  name: high-priority
+# TODO: Set value to 1000000 (higher = more important)
+value: ???
+# TODO: Set globalDefault to false (not the default for all pods)
+globalDefault: ???
+description: "High priority for critical workloads"
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: low-priority
+value: 100
+globalDefault: true    # Default for pods without priorityClassName
+description: "Default low priority"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: high-priority-pod
+spec:
+  # TODO: Set priorityClassName to high-priority
+  priorityClassName: ???
+  containers:
+    - name: app
+      image: nginx:alpine
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "100m"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: low-priority-pod
+spec:
+  # low-priority is globalDefault, so this is automatically applied
+  containers:
+    - name: app
+      image: nginx:alpine
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "100m"

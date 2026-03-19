@@ -1,0 +1,25 @@
+# ============================================================================
+# Exercise 4.2 — Sidecar Pattern
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    image: node:18-alpine
+    command: sh -c "while true; do echo \"[$(date)] Request served\" >> /var/log/app/app.log; sleep 2; done"
+    volumes:
+      - log-data:/var/log/app    # Web writes logs here
+
+  log-shipper:
+    image: busybox
+    # TODO: Mount the same log-data volume (read-only) and tail the log file
+    # volumes:
+    #   - log-data:/var/log/app:ro
+    # command: tail -f /var/log/app/app.log
+    depends_on:
+      - web
+
+volumes:
+  # TODO: Declare log-data volume
+  # log-data:

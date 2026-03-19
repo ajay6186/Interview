@@ -1,0 +1,53 @@
+// Exercise 3.5 — Timeout and Retry
+
+pipeline {
+    agent any
+
+    // TODO: Set a pipeline-level timeout of 1 hour
+    options {
+        timeout(time: ???, unit: ???)
+    }
+
+    stages {
+        stage('Flaky Test') {
+            steps {
+                // TODO: Retry this block up to 3 times on failure
+                ???(???) {
+                    sh '''
+                        echo "Attempting flaky test..."
+                        # Simulate random failure (remove this in real pipeline)
+                        if [ $((RANDOM % 2)) -eq 0 ]; then
+                            echo "Test passed!"
+                        else
+                            echo "Test flaked, retrying..."
+                            exit 1
+                        fi
+                    '''
+                }
+            }
+        }
+
+        stage('Slow Deploy') {
+            steps {
+                // TODO: Abort this stage if it takes more than 5 minutes
+                ???(time: ???, unit: ???) {
+                    sh 'echo "Deploying (simulating slow operation)..."'
+                    sh 'sleep 10'
+                    sh 'echo "Deploy complete"'
+                }
+            }
+        }
+
+        stage('Optional Scan') {
+            steps {
+                // TODO: Run a security scan but if it fails, mark build as UNSTABLE
+                // instead of FAILED, so the pipeline continues
+                catchError(buildResult: ???, stageResult: ???) {
+                    sh 'echo "Running security scan..."'
+                    sh 'exit 1'  // simulate scan failure
+                }
+                echo 'Pipeline continues despite scan failure'
+            }
+        }
+    }
+}

@@ -1,0 +1,51 @@
+pipeline {
+    agent {
+        docker {
+            image 'node:18-alpine'
+            args '-v npm-cache:/root/.npm'
+        }
+    }
+
+    environment {
+        CI = 'true'
+    }
+
+    stages {
+        stage('Install') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                sh 'npm run lint'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'npm test -- --reporter=junit --reporter-option output=test-results/junit.xml'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+    }
+
+    post {
+        always {
+            junit testResults: 'test-results/**/*.xml', allowEmptyResults: true
+            archiveArtifacts artifacts: 'dist/**', allowEmptyArchive: true
+        }
+        success {
+            echo "Node.js CI passed for build #${env.BUILD_NUMBER}"
+        }
+        failure {
+            echo "Node.js CI FAILED — check lint/test output above"
+        }
+    }
+}

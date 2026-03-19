@@ -1,0 +1,75 @@
+# ============================================================================
+# Exercise 5.2 — PostgreSQL StatefulSet
+# ============================================================================
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+type: Opaque
+stringData:
+  # TODO: Add POSTGRES_DB=mydb, POSTGRES_USER=myuser, POSTGRES_PASSWORD=mysecretpass
+  POSTGRES_DB: ???
+  POSTGRES_USER: ???
+  POSTGRES_PASSWORD: ???
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-headless
+spec:
+  clusterIP: None
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  serviceName: postgres-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          # TODO: Inject all keys from the secret as env vars
+          envFrom:
+            - secretRef:
+                name: ???
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            # TODO: Request 2Gi storage
+            storage: ???

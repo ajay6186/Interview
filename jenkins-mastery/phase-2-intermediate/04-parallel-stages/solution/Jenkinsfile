@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo "Building..." && mkdir -p build && echo "app" > build/app.zip'
+                stash name: 'build-output', includes: 'build/**'
+            }
+        }
+
+        stage('Quality Gate') {
+            parallel {
+                stage('Unit Tests') {
+                    steps {
+                        unstash 'build-output'
+                        sh 'echo "Unit tests passed"'
+                    }
+                }
+                stage('Integration Tests') {
+                    steps {
+                        unstash 'build-output'
+                        sh 'echo "Integration tests passed"'
+                    }
+                }
+                stage('Lint') {
+                    steps {
+                        sh 'echo "Linting code..."'
+                        sh 'echo "Lint passed"'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+            }
+        }
+    }
+}

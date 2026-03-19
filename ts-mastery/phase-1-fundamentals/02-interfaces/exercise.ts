@@ -1,0 +1,81 @@
+// ============================================================================
+// Exercise 1.2 — Interfaces
+// ============================================================================
+// Learn to define and compose interfaces for structuring object types.
+//
+// Instructions: Fill in every TODO so the file compiles and all assertions pass.
+// ============================================================================
+
+type Expect<T extends true> = T;
+type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false;
+
+// ---------------------------------------------------------------------------
+// 1. Define a basic interface
+// ---------------------------------------------------------------------------
+
+// TODO: Define an interface `Product` with:
+//   - name: string
+//   - price: number
+//   - inStock: boolean
+
+const laptop: Product = { name: "Laptop", price: 999, inStock: true };
+const phone: Product = { name: "Phone", price: 699, inStock: false };
+
+// ---------------------------------------------------------------------------
+// 2. Optional and readonly properties
+// ---------------------------------------------------------------------------
+
+// TODO: Define an interface `Config` with:
+//   - readonly host: string
+//   - readonly port: number
+//   - debug?: boolean  (optional)
+
+const config: Config = { host: "localhost", port: 3000 };
+// config.host = "other"; // This should cause a compile error
+
+// ---------------------------------------------------------------------------
+// 3. Extending interfaces
+// ---------------------------------------------------------------------------
+
+// TODO: Define `Animal` with name: string and sound: string
+// TODO: Define `Pet` extending Animal with owner: string
+
+const myPet: Pet = { name: "Rex", sound: "Woof", owner: "Alice" };
+
+// ---------------------------------------------------------------------------
+// 4. Index signatures
+// ---------------------------------------------------------------------------
+
+// TODO: Define `Dictionary` interface with string keys and string values
+
+const dict: Dictionary = {};
+dict["hello"] = "world";
+dict["foo"] = "bar";
+
+// ---------------------------------------------------------------------------
+// 5. Interface with methods
+// ---------------------------------------------------------------------------
+
+// TODO: Define `Calculator` interface with:
+//   - add(a: number, b: number): number
+//   - subtract(a: number, b: number): number
+
+const calc: Calculator = {
+  add: (a, b) => a + b,
+  subtract: (a, b) => a - b,
+};
+
+// ---------------------------------------------------------------------------
+// Runtime tests
+// ---------------------------------------------------------------------------
+console.assert(laptop.price === 999, "laptop.price should be 999");
+console.assert(phone.inStock === false, "phone.inStock should be false");
+console.assert(config.port === 3000, "config.port should be 3000");
+console.assert(myPet.owner === "Alice", "myPet.owner should be Alice");
+console.assert(dict["hello"] === "world", 'dict["hello"] should be "world"');
+console.assert(calc.add(2, 3) === 5, "calc.add(2,3) should be 5");
+console.assert(calc.subtract(10, 4) === 6, "calc.subtract(10,4) should be 6");
+
+console.log("Exercise 1.2 — All assertions passed!");
+
+export {};

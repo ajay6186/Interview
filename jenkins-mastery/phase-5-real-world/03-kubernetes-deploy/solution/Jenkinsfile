@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME  = 'myorg/myapp'
+        K8S_NS      = 'production'
+        DEPLOY_NAME = 'myapp'
+    }
+
+    stages {
+        stage('Build & Push') {
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                    sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} ."
+                }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'U', passwordVariable: 'P')]) {
+                    sh 'docker login -u $U -p $P'
+                    sh "docker push ${IMAGE_NAME}:${env.GIT_SHA}"
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        kubectl set image deployment/${DEPLOY_NAME} \
+                          ${DEPLOY_NAME}=${IMAGE_NAME}:${env.GIT_SHA} \
+                          -n ${K8S_NS} \
+                          --kubeconfig=$KUBECONFIG
+                    """
+                    sh "kubectl rollout status deployment/${DEPLOY_NAME} -n ${K8S_NS} --kubeconfig=$KUBECONFIG --timeout=5m"
+                }
+            }
+        }
+    }
+}

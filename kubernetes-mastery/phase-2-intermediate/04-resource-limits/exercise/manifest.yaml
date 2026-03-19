@@ -1,0 +1,43 @@
+# ============================================================================
+# Exercise 2.4 — Resource Requests and Limits
+# ============================================================================
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resource-pod
+spec:
+  containers:
+    - name: app
+      image: nginx:alpine
+      resources:
+        requests:
+          # TODO: Request 128Mi memory and 250m CPU
+          memory: ???
+          cpu: ???
+        limits:
+          # TODO: Limit to 256Mi memory and 500m CPU
+          memory: ???
+          cpu: ???
+
+---
+# LimitRange: sets default requests/limits for ALL pods in the namespace
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limits
+spec:
+  limits:
+    - type: Container
+      # TODO: Set default memory request to "128Mi"
+      defaultRequest:
+        memory: ???
+        cpu: ???
+      # TODO: Set default memory limit to "256Mi"
+      default:
+        memory: ???
+        cpu: ???
+      # TODO: Set max allowed memory to "1Gi" and CPU to "2"
+      max:
+        memory: ???
+        cpu: ???

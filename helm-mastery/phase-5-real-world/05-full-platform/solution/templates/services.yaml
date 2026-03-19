@@ -1,0 +1,54 @@
+{{- if .Values.frontend.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Release.Name }}-frontend
+  ports:
+    - port: {{ .Values.frontend.service.port }}
+      targetPort: {{ .Values.frontend.service.port }}
+{{- end }}
+{{- if .Values.backend.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Release.Name }}-backend
+  ports:
+    - port: {{ .Values.backend.service.port }}
+      targetPort: {{ .Values.backend.service.port }}
+{{- end }}
+{{- if .Values.database.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgresql-headless
+spec:
+  clusterIP: None
+  selector:
+    app: {{ .Release.Name }}-postgresql
+  ports:
+    - port: 5432
+      name: postgresql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgresql
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Release.Name }}-postgresql
+  ports:
+    - port: 5432
+      name: postgresql
+{{- end }}

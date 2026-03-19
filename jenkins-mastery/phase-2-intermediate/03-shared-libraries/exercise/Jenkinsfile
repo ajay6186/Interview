@@ -1,0 +1,28 @@
+// Exercise 2.3 — Shared Libraries
+// Load the local library from the exercise/library directory
+
+// TODO: Load the shared library named "my-pipeline-lib"
+// (In real Jenkins this is configured under Global Libraries)
+@Library(???) _
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Use Library') {
+            steps {
+                // TODO: Call the sayHello() function from vars/sayHello.groovy
+                // with argument "Jenkins"
+                ???('Jenkins')
+            }
+        }
+
+        stage('Build with Helper') {
+            steps {
+                // TODO: Call buildAndPush() from vars/buildAndPush.groovy
+                // with image: "myapp", tag: "1.0.0"
+                ???(image: ???, tag: ???)
+            }
+        }
+    }
+}

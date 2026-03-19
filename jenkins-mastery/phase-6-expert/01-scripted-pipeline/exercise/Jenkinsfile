@@ -1,0 +1,39 @@
+// Exercise 6.1 — Scripted Pipeline
+// Rewrite this CI pipeline using scripted syntax (node/stage/try-catch)
+// No "pipeline {}" block allowed!
+
+// TODO: Use node{} to allocate an executor on any agent
+???('???') {
+
+    def appName = 'myapp'
+
+    // TODO: Add a "Checkout" stage
+    ???('Checkout') {
+        checkout scm
+    }
+
+    // TODO: Wrap remaining stages in try-catch-finally for error handling
+    ???  {
+        ???('Build') {
+            sh 'echo "Building ${appName}..."'
+            sh 'mkdir -p dist && echo artifact > dist/app.zip'
+        }
+
+        ???('Test') {
+            sh 'echo "Running tests..."'
+        }
+
+        ???('Deploy') {
+            sh 'echo "Deploying..."'
+        }
+
+    } ??? (Exception e) {
+        // TODO: Mark build as FAILED and re-throw the exception
+        currentBuild.result = ???
+        throw e
+
+    } ??? {
+        // TODO: Always clean the workspace
+        ???
+    }
+}

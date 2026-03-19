@@ -1,0 +1,11 @@
+app:
+  name: myapp
+  # This value contains a Go template expression!
+  # tpl will render {{ .Release.Name }} when called
+  url: "https://{{ .Release.Name }}.example.com"
+  greeting: "Hello from {{ .Values.app.name }} chart!"
+
+image:
+  repository: nginx
+  # Dynamic tag that references chart version
+  tagTemplate: "{{ .Chart.AppVersion }}-alpine"

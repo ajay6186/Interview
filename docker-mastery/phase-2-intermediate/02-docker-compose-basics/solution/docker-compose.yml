@@ -1,0 +1,20 @@
+# ============================================================================
+# Solution 2.2 — Docker Compose Basics
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: ./web          # Build image from the web/ directory
+    ports:
+      - "3000:3000"       # host:container
+    environment:
+      - REDIS_HOST=redis  # "redis" resolves via Docker Compose DNS
+    depends_on:
+      - redis             # Start redis before web
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"

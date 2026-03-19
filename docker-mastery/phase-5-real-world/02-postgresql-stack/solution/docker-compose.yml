@@ -1,0 +1,29 @@
+# ============================================================================
+# Solution 5.2 — PostgreSQL Stack
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      # Service name "db" resolves to the postgres container's IP via Docker DNS
+      DATABASE_URL: postgres://myuser:mypassword@db:5432/mydb
+    depends_on:
+      - db          # Ensures db container starts first (not necessarily ready)
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data   # Data survives container restarts
+
+# Named volumes must be declared at top level
+volumes:
+  postgres_data:

@@ -1,0 +1,66 @@
+# ============================================================================
+# Exercise 5.5 — Multi-Tenant RBAC
+# ============================================================================
+
+# Team A namespace + ServiceAccount
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-a
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: team-a-developer
+  namespace: team-a
+---
+# TODO: Create a Role for team-a that allows full pod management in team-a namespace
+# Verbs: get, list, watch, create, update, delete
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: team-a-role
+  namespace: team-a
+rules:
+  - apiGroups: ["", "apps"]
+    resources: ["pods", "deployments", "services"]
+    verbs: [???]   # TODO: fill in the verbs
+---
+# TODO: Bind the Role to the ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: team-a-binding
+  namespace: team-a
+subjects:
+  - kind: ServiceAccount
+    name: ???
+    namespace: team-a
+roleRef:
+  kind: Role
+  name: ???
+  apiGroup: rbac.authorization.k8s.io
+---
+# Shared read-only ClusterRole for all team members to view cluster resources
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-reader
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "namespaces"]
+    verbs: ["get", "list", "watch"]
+---
+# TODO: Bind cluster-reader to team-a-developer (ClusterRoleBinding)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: team-a-cluster-reader
+subjects:
+  - kind: ServiceAccount
+    name: ???
+    namespace: team-a
+roleRef:
+  kind: ClusterRole
+  name: ???
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,49 @@
+# ============================================================================
+# Exercise 4.1 — RBAC
+# ============================================================================
+
+# Step 1: Create a ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  # TODO: Name it "pod-reader"
+  name: ???
+  namespace: default
+
+---
+# Step 2: Create a Role with read-only permissions on pods
+# TODO: Set apiVersion for Role (hint: rbac.authorization.k8s.io/v1)
+apiVersion: ???
+kind: Role
+metadata:
+  name: pod-reader-role
+  namespace: default
+
+rules:
+  - # TODO: Set the API group for pods (hint: "" for core API group)
+    apiGroups: ["???"]
+    # TODO: Set the resource to "pods"
+    resources: ["???"]
+    # TODO: Set verbs to get, list, watch (read-only)
+    verbs: ["???", "???", "???"]
+
+---
+# Step 3: Bind the Role to the ServiceAccount
+# TODO: Set apiVersion for RoleBinding
+apiVersion: ???
+kind: RoleBinding
+metadata:
+  name: pod-reader-binding
+  namespace: default
+
+subjects:
+  # TODO: Reference the ServiceAccount
+  - kind: ServiceAccount
+    name: ???
+    namespace: default
+
+roleRef:
+  # TODO: Bind to the Role we created
+  kind: Role
+  name: ???
+  apiGroup: rbac.authorization.k8s.io

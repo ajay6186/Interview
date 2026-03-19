@@ -1,0 +1,68 @@
+# ============================================================================
+# Exercise 5.1 — Node.js Deployment Stack
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-api-config
+data:
+  # TODO: Add NODE_ENV=production and LOG_LEVEL=info
+  NODE_ENV: ???
+  LOG_LEVEL: ???
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-api
+  labels:
+    app: node-api
+spec:
+  # TODO: Set replicas to 3
+  replicas: ???
+  selector:
+    matchLabels:
+      app: node-api
+  template:
+    metadata:
+      labels:
+        app: node-api
+    spec:
+      containers:
+        - name: api
+          image: node:18-alpine
+          command: ["node", "-e", "require('http').createServer((req,res)=>{if(req.url==='/health')return res.end('ok');res.end('API: '+process.env.NODE_ENV)}).listen(3000)"]
+          ports:
+            - containerPort: 3000
+          # TODO: Inject all keys from the ConfigMap as env vars
+          envFrom:
+            - configMapRef:
+                name: ???
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          # TODO: Add readinessProbe (HTTP GET /health on port 3000)
+          readinessProbe:
+            httpGet:
+              path: ???
+              port: ???
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-api-service
+spec:
+  # TODO: Select pods with app=node-api
+  selector:
+    app: ???
+  ports:
+    - port: 80
+      targetPort: 3000

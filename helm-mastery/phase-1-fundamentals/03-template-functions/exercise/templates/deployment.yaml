@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: app
+          {{- /* TODO 1: Use default "latest" if .Values.image.tag is empty, then quote the result */}}
+          image: {{ .Values.image.repository }}:{{ ??? | default "latest" | quote }}
+
+          {{- /* TODO 2: Render .Values.resources as YAML, indented 12 spaces */}}
+          {{- /* Hint: resources:\n{{ .Values.resources | toYaml | indent 12 }} */}}
+          resources:
+{{ ??? | toYaml | indent 12 }}
+
+          {{- /* TODO 3: Render .Values.env as a list, indented 12 spaces */}}
+          env:
+{{ ??? | toYaml | indent 12 }}

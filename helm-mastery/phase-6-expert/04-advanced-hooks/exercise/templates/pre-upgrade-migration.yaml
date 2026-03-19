@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-db-migrate
+  annotations:
+    # TODO: Set hook to run before upgrade
+    helm.sh/hook: ???
+    # TODO: Set hook-weight to -5 so it runs before other pre-upgrade hooks
+    helm.sh/hook-weight: ???
+    # TODO: Set delete policy to clean up old Job before creating a new one
+    helm.sh/hook-delete-policy: ???
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-migrate
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: {{ .Values.migration.image | quote }}
+          args:
+            - "-path"
+            - {{ .Values.migration.dir | quote }}
+            - "-database"
+            - "postgresql://$(DB_HOST)/$(DB_NAME)?sslmode=disable"
+            - "up"
+          env:
+            - name: DB_HOST
+              value: {{ .Values.database.host | quote }}
+            - name: DB_NAME
+              value: {{ .Values.database.name | quote }}

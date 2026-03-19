@@ -1,0 +1,7 @@
+@Library('pipeline-templates') _
+
+standardCiPipeline(
+    image:    'node:18-alpine',
+    testCmd:  'npm test',
+    buildCmd: 'npm run build'
+)

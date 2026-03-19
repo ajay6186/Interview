@@ -1,0 +1,19 @@
+@Library('my-pipeline-lib') _
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Use Library') {
+            steps {
+                sayHello('Jenkins')
+            }
+        }
+
+        stage('Build with Helper') {
+            steps {
+                buildAndPush(image: 'myapp', tag: '1.0.0')
+            }
+        }
+    }
+}

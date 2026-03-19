@@ -1,0 +1,17 @@
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: "1.25"
+
+service:
+  type: ClusterIP
+  port: 80
+
+config:
+  greeting: "Hello World"
+  maxConnections: 100
+
+ingress:
+  enabled: true
+  host: myapp.example.com

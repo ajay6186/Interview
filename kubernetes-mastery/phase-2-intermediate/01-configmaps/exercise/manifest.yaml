@@ -1,0 +1,63 @@
+# ============================================================================
+# Exercise 2.1 — ConfigMaps
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # TODO: Name the ConfigMap "app-config"
+  name: ???
+data:
+  # TODO: Add these key-value pairs:
+  #   APP_COLOR: blue
+  #   APP_MODE: production
+  #   app.properties: |
+  #     color=blue
+  #     mode=production
+  ???: ???
+  ???: ???
+  app.properties: |
+    color=???
+    mode=???
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: nginx:alpine
+          env:
+            # Method 1: inject a single key from ConfigMap
+            - name: APP_COLOR
+              valueFrom:
+                configMapKeyRef:
+                  # TODO: Reference the ConfigMap by name
+                  name: ???
+                  # TODO: Reference the key "APP_COLOR"
+                  key: ???
+          # Method 2: inject ALL keys from ConfigMap as env vars
+          # TODO: Uncomment and complete:
+          # envFrom:
+          #   - configMapRef:
+          #       name: ???
+          volumeMounts:
+            # Method 3: mount as file
+            - name: config-vol
+              mountPath: /etc/config
+      volumes:
+        - name: config-vol
+          configMap:
+            # TODO: Reference the ConfigMap name here
+            name: ???

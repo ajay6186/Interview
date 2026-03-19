@@ -1,0 +1,62 @@
+// Exercise 6.3 — Security Scanning
+
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'myorg/myapp'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                }
+                sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} ."
+            }
+        }
+
+        stage('Security Scans') {
+            parallel {
+                stage('Dependency Audit') {
+                    agent { docker { image 'node:18-alpine' } }
+                    steps {
+                        // TODO: Run npm audit — fail on critical, warn on high
+                        // Use catchError for high-severity warnings
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                            sh ???
+                        }
+                    }
+                }
+
+                stage('Image Vulnerability Scan') {
+                    steps {
+                        // TODO: Run Trivy to scan the Docker image
+                        // Exit code 1 on CRITICAL vulnerabilities (fail build)
+                        // Only warn (UNSTABLE) on HIGH
+                        sh """
+                            docker run --rm \\
+                              -v /var/run/docker.sock:/var/run/docker.sock \\
+                              aquasec/trivy image \\
+                              --exit-code 1 \\
+                              --severity ??? \\
+                              ${IMAGE_NAME}:${env.GIT_SHA}
+                        """
+                    }
+                }
+
+                stage('Secret Detection') {
+                    agent { docker { image 'zricethezav/gitleaks:latest' } }
+                    steps {
+                        // TODO: Run gitleaks to detect secrets in the repo
+                        // Use catchError so a finding marks build UNSTABLE not FAILED
+                        catchError(buildResult: ???, stageResult: ???) {
+                            sh 'gitleaks detect --source . --verbose'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

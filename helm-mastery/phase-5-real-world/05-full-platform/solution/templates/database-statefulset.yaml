@@ -1,0 +1,44 @@
+{{- if .Values.database.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-postgresql
+  labels:
+    {{- include "platform.labels" . | nindent 4 }}
+    component: database
+spec:
+  serviceName: {{ .Release.Name }}-postgresql-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-postgresql
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+          ports:
+            - name: postgresql
+              containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.backend.secrets.dbSecretName }}
+                  key: postgres-password
+            - name: POSTGRES_USER
+              value: {{ .Values.database.auth.username | quote }}
+            - name: POSTGRES_DB
+              value: {{ .Values.database.auth.database | quote }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.database.storage.size }}
+{{- end }}

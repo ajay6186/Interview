@@ -1,0 +1,51 @@
+# ============================================================================
+# Solution 2.1 — ConfigMaps
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  APP_COLOR: blue
+  APP_MODE: production
+  app.properties: |          # Multi-line value — becomes a file when volume-mounted
+    color=blue
+    mode=production
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: nginx:alpine
+          env:
+            # Method 1: single key as env var
+            - name: APP_COLOR
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: APP_COLOR
+          envFrom:
+            # Method 2: ALL keys as env vars (APP_COLOR, APP_MODE both injected)
+            - configMapRef:
+                name: app-config
+          volumeMounts:
+            - name: config-vol
+              mountPath: /etc/config   # app.properties appears as /etc/config/app.properties
+      volumes:
+        - name: config-vol
+          configMap:
+            name: app-config

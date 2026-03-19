@@ -1,0 +1,55 @@
+// Exercise 4.4 — Notifications
+
+pipeline {
+    agent any
+
+    environment {
+        SLACK_CHANNEL = '#ci-builds'
+        NOTIFY_EMAIL  = 'team@example.com'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building application...'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+            }
+        }
+    }
+
+    post {
+        success {
+            // TODO: Send a green Slack message
+            // color: 'good' (green)
+            // message: "✅ Build #<BUILD_NUMBER> PASSED — <JOB_NAME> (<BUILD_URL>)"
+            slackSend(
+                channel: ???,
+                color: ???,
+                message: ???
+            )
+        }
+
+        failure {
+            // TODO: Send a red Slack message
+            // color: 'danger' (red)
+            slackSend(
+                channel: ???,
+                color: ???,
+                message: ???
+            )
+            // TODO: Send failure email using emailext
+            // subject: "FAILED: <JOB_NAME> #<BUILD_NUMBER>"
+            // body: include BUILD_URL in the email body
+            emailext(
+                subject: ???,
+                body: ???,
+                to: ???
+            )
+        }
+    }
+}

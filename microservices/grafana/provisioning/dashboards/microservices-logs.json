@@ -1,0 +1,267 @@
+{
+  "id": null,
+  "uid": "microservices-logs",
+  "title": "Microservices Logs",
+  "tags": ["microservices", "logs", "elasticsearch"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "logs",
+      "title": "Live Log Stream",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+          "query": "*",
+          "metrics": [{ "type": "logs", "id": "1" }],
+          "bucketAggs": [],
+          "timeField": "@timestamp"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Log Volume Over Time (by Level)",
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 12 },
+      "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+      "fieldConfig": {
+        "defaults": { "custom": { "lineWidth": 2, "fillOpacity": 15 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "ERROR" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "#e02f44" } }] },
+          { "matcher": { "id": "byName", "options": "WARNING" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "#ff9900" } }] },
+          { "matcher": { "id": "byName", "options": "INFO" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "#37872d" } }] },
+          { "matcher": { "id": "byName", "options": "DEBUG" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "#8ab8ff" } }] }
+        ]
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+          "query": "",
+          "timeField": "@timestamp",
+          "metrics": [{ "type": "count", "id": "1" }],
+          "bucketAggs": [
+            { "type": "terms", "field": "level.keyword", "id": "2",
+              "settings": { "size": "10", "order": "desc", "orderBy": "1", "min_doc_count": "0" } },
+            { "type": "date_histogram", "field": "@timestamp", "id": "3",
+              "settings": { "interval": "auto", "min_doc_count": "0", "trimEdges": "0" } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "piechart",
+      "title": "Log Level Distribution",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 12 },
+      "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+      "options": { "pieType": "donut", "displayLabels": ["name", "percent"] },
+      "fieldConfig": {
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "ERROR" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "#e02f44" } }] },
+          { "matcher": { "id": "byName", "options": "WARNING" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "#ff9900" } }] },
+          { "matcher": { "id": "byName", "options": "INFO" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "#37872d" } }] },
+          { "matcher": { "id": "byName", "options": "DEBUG" },
+            "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "#8ab8ff" } }] }
+        ]
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+          "query": "",
+          "timeField": "@timestamp",
+          "metrics": [{ "type": "count", "id": "1" }],
+          "bucketAggs": [
+            { "type": "terms", "field": "level.keyword", "id": "2",
+              "settings": { "size": "10", "order": "desc", "orderBy": "1" } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "barchart",
+      "title": "Logs per Service",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+      "options": { "barWidth": 0.6, "groupWidth": 0.7, "fillOpacity": 80, "gradientMode": "none" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+          "query": "",
+          "timeField": "@timestamp",
+          "metrics": [{ "type": "count", "id": "1" }],
+          "bucketAggs": [
+            { "type": "terms", "field": "service.keyword", "id": "2",
+              "settings": { "size": "20", "order": "desc", "orderBy": "1" } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Error Rate per Service",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+      "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+      "fieldConfig": {
+        "defaults": { "custom": { "lineWidth": 2, "fillOpacity": 10 } }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+          "query": "level:ERROR",
+          "timeField": "@timestamp",
+          "metrics": [{ "type": "count", "id": "1" }],
+          "bucketAggs": [
+            { "type": "terms", "field": "service.keyword", "id": "2",
+              "settings": { "size": "10", "order": "desc", "orderBy": "1" } },
+            { "type": "date_histogram", "field": "@timestamp", "id": "3",
+              "settings": { "interval": "auto", "min_doc_count": "0" } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Total Errors (last 1h)",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 28 },
+      "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+      "options": { "colorMode": "background", "graphMode": "none" },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "value": null, "color": "green" },
+            { "value": 1,    "color": "red" }
+          ]},
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+          "query": "level:ERROR",
+          "timeField": "@timestamp",
+          "metrics": [{ "type": "count", "id": "1" }],
+          "bucketAggs": []
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Total Warnings (last 1h)",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 28 },
+      "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+      "options": { "colorMode": "background", "graphMode": "none" },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "value": null, "color": "green" },
+            { "value": 1,    "color": "orange" }
+          ]},
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+          "query": "level:WARNING",
+          "timeField": "@timestamp",
+          "metrics": [{ "type": "count", "id": "1" }],
+          "bucketAggs": []
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Total Logs (last 1h)",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 28 },
+      "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+      "options": { "colorMode": "value", "graphMode": "area" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+          "query": "*",
+          "timeField": "@timestamp",
+          "metrics": [{ "type": "count", "id": "1" }],
+          "bucketAggs": []
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Active Services",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 28 },
+      "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+      "options": { "colorMode": "value", "graphMode": "none" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+          "query": "*",
+          "timeField": "@timestamp",
+          "metrics": [{ "type": "cardinality", "field": "service.keyword", "id": "1" }],
+          "bucketAggs": []
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "table",
+      "title": "Recent HTTP Requests",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 32 },
+      "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+      "options": { "sortBy": [{ "displayName": "@timestamp", "desc": true }] },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "elasticsearch", "uid": "microservices-es" },
+          "query": "method:* AND path:*",
+          "timeField": "@timestamp",
+          "metrics": [{ "type": "logs", "id": "1", "settings": { "limit": "50" } }],
+          "bucketAggs": []
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": {
+          "excludeByName": { "_id": true, "_index": true, "_type": true, "sort": true, "logger": true },
+          "indexByName": {},
+          "renameByName": { "@timestamp": "Time", "service": "Service", "method": "Method", "path": "Path", "status_code": "Status", "duration_ms": "Duration (ms)", "level": "Level", "message": "Message" }
+        }}
+      ]
+    }
+  ]
+}

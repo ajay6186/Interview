@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'myapp'
+        IMAGE    = "myorg/${APP_NAME}"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo "Building ${APP_NAME} on branch: ${env.BRANCH_NAME}"
+                sh 'echo "Build complete"'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'echo "Running tests..."'
+                sh 'echo "Tests passed"'
+            }
+        }
+
+        stage('Deploy Staging') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'release/*'
+                }
+            }
+            steps {
+                echo "Deploying to staging from branch: ${env.BRANCH_NAME}"
+            }
+        }
+
+        stage('Deploy Production') {
+            when {
+                branch 'release/*'
+            }
+            steps {
+                script {
+                    timeout(time: 1, unit: 'HOURS') {
+                        input message: 'Deploy to production?', ok: 'Deploy'
+                    }
+                }
+                echo "Deploying to PRODUCTION from ${env.BRANCH_NAME}"
+            }
+        }
+    }
+
+    post {
+        success { echo "Pipeline succeeded on ${env.BRANCH_NAME}" }
+        failure { echo "Pipeline FAILED on ${env.BRANCH_NAME}" }
+    }
+}

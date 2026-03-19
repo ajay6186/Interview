@@ -1,0 +1,31 @@
+# ============================================================================
+# Solution 4.2 — Security Context
+# ============================================================================
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-pod
+spec:
+  securityContext:
+    runAsUser: 1000         # UID for all container processes
+    runAsGroup: 3000        # GID for all container processes
+    fsGroup: 2000           # Files in volumes owned by GID 2000
+    runAsNonRoot: true      # K8s rejects pod if image runs as root (UID 0)
+
+  containers:
+    - name: app
+      image: busybox
+      command: ["sh", "-c", "echo Secure pod running; sleep 3600"]
+      securityContext:
+        readOnlyRootFilesystem: true     # Cannot write to image filesystem
+        capabilities:
+          drop: [ALL]                    # Remove all Linux capabilities
+        allowPrivilegeEscalation: false  # su/sudo won't grant new privileges
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp               # App can write here despite read-only rootfs
+
+  volumes:
+    - name: tmp
+      emptyDir: {}                      # In-memory writable space

@@ -1,0 +1,138 @@
+// Exercise 6.4 — Pipeline as Code (Everything Combined)
+// Fill in all ??? placeholders
+
+pipeline {
+    // TODO: Use agent none (each stage defines its own)
+    agent ???
+
+    // TODO: Add options:
+    // - disableConcurrentBuilds()
+    // - buildDiscarder(logRotator(numToKeepStr: '10'))
+    // - timeout for the whole pipeline: 1 hour
+    options {
+        ???
+        ???
+        timeout(time: ???, unit: ???)
+    }
+
+    environment {
+        IMAGE_NAME   = 'myorg/myapp'
+        HELM_RELEASE = 'myapp'
+        SLACK_CHANNEL = '#ci-builds'
+    }
+
+    stages {
+        stage('Build & Test') {
+            // TODO: Run inside node:18-alpine Docker container
+            agent { docker { image ??? } }
+            steps {
+                sh 'npm ci'
+                sh 'npm run lint'
+                sh 'npm test'
+                sh 'npm run build'
+                stash name: 'build', includes: 'dist/**'
+            }
+            post {
+                always {
+                    junit testResults: 'test-results/**/*.xml', allowEmptyResults: true
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            agent any
+            // TODO: Run security scan and coverage check in PARALLEL
+            ???  {
+                stage('Security Scan') {
+                    steps {
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                            sh 'npm audit --audit-level=critical'
+                        }
+                    }
+                }
+                stage('Coverage Check') {
+                    steps {
+                        unstash 'build'
+                        sh 'echo "Coverage: 87% — threshold: 80% — PASSED"'
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build & Push') {
+            agent any
+            // TODO: Only run on main branch
+            when { branch ??? }
+            steps {
+                script {
+                    env.GIT_SHA = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
+                    sh "docker build -t ${IMAGE_NAME}:${env.GIT_SHA} -t ${IMAGE_NAME}:latest ."
+                }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'U', passwordVariable: 'P')]) {
+                    sh "docker login -u $U -p $P"
+                    sh "docker push ${IMAGE_NAME}:${env.GIT_SHA}"
+                    sh "docker push ${IMAGE_NAME}:latest"
+                }
+            }
+        }
+
+        stage('Deploy Staging') {
+            agent any
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        helm upgrade --install ${HELM_RELEASE} ./helm/myapp \\
+                          --set image.tag=${env.GIT_SHA} \\
+                          --atomic --timeout 5m \\
+                          -n staging --kubeconfig=$KUBECONFIG
+                    """
+                }
+            }
+        }
+
+        stage('Approve Production') {
+            when { branch 'main' }
+            steps {
+                script {
+                    // TODO: Manual approval with 2-hour timeout
+                    timeout(time: ???, unit: ???) {
+                        input message: ???, ok: ???
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Production') {
+            agent any
+            when { branch 'main' }
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        helm upgrade --install ${HELM_RELEASE} ./helm/myapp \\
+                          --set image.tag=${env.GIT_SHA} \\
+                          --atomic --timeout 5m \\
+                          -n production --kubeconfig=$KUBECONFIG
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh "docker rmi ${IMAGE_NAME}:${env.GIT_SHA} || true"
+        }
+        success {
+            // TODO: Send green Slack notification
+            slackSend(channel: env.SLACK_CHANNEL, color: ???,
+                message: ???)
+        }
+        failure {
+            // TODO: Send red Slack notification
+            slackSend(channel: env.SLACK_CHANNEL, color: ???,
+                message: ???)
+        }
+    }
+}

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: rolling-update
+description: Exercise 4.4 - Rolling Update Strategy
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

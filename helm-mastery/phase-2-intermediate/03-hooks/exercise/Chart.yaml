@@ -1,0 +1,6 @@
+apiVersion: v2
+name: hooks
+description: Exercise 2.3 - Lifecycle Hooks
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-pre-install
+  annotations:
+    "helm.sh/hook": pre-install           # Run before any resources are created
+    "helm.sh/hook-weight": "0"            # Lower weight = runs first
+    "helm.sh/hook-delete-policy": hook-succeeded  # Clean up after success
+
+    # Other delete policies:
+    # hook-failed         → delete if hook fails
+    # before-hook-creation → delete old hook resource before creating a new one
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: pre-install
+          image: busybox
+          command: ["sh", "-c", "echo 'Running pre-install checks...' && sleep 2 && echo 'Pre-install done!'"]
+
+# HOOK ORDER:
+#   pre-install → (resources created) → post-install
+#   pre-upgrade → (resources updated) → post-upgrade
+#   pre-delete  → (resources deleted) → post-delete

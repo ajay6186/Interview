@@ -1,0 +1,23 @@
+# ============================================================================
+# Solution 5.4 — Redis Caching
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      REDIS_URL: redis://redis:6379   # "redis" = service name, resolves via Docker DNS
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data             # Persist cache across container restarts
+
+volumes:
+  redis_data:

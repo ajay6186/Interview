@@ -1,0 +1,27 @@
+# Base values — shared defaults for all environments
+replicaCount: 1
+
+image:
+  repository: myapp
+  tag: "latest"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+
+ingress:
+  enabled: false
+  host: ""
+
+config:
+  logLevel: "info"
+  debug: false

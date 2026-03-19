@@ -1,0 +1,5 @@
+apiVersion: v2
+name: my-library
+description: Shared template helpers
+type: library       # Cannot be installed — only used as a dependency
+version: 0.1.0

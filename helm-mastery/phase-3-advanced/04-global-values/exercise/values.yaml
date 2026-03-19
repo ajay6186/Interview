@@ -1,0 +1,17 @@
+# Global values — accessible from this chart AND all subcharts
+global:
+  # TODO: Set imageRegistry to "docker.io"
+  imageRegistry: ???
+  # TODO: Set environment to "production"
+  environment: ???
+  # TODO: Set domain to "example.com"
+  domain: ???
+
+# Chart-specific values
+frontend:
+  image: nginx
+  tag: alpine
+
+api:
+  image: node
+  tag: "18-alpine"

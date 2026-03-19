@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-global-config
+data:
+  # TODO: Render global.environment
+  ENVIRONMENT: {{ ??? | quote }}
+  # TODO: Render global.domain
+  DOMAIN: {{ ??? | quote }}
+
+  # TODO: Build full image refs using global.imageRegistry
+  FRONTEND_IMAGE: "{{ ??? }}/{{ .Values.frontend.image }}:{{ .Values.frontend.tag }}"
+  API_IMAGE: "{{ ??? }}/{{ .Values.api.image }}:{{ .Values.api.tag }}"
+
+  # TODO: Build APP_URL using global.domain
+  APP_URL: "https://{{ ??? }}"

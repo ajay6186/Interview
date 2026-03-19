@@ -1,0 +1,12 @@
+replicaCount: 2
+
+image:
+  tag: "staging"
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  host: staging.myapp.example.com
+
+config:
+  logLevel: "info"

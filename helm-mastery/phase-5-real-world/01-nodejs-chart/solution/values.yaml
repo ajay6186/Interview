@@ -1,0 +1,39 @@
+replicaCount: 2
+
+image:
+  repository: node
+  tag: "18-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+
+config:
+  nodeEnv: "production"
+  port: "3000"
+  logLevel: "info"
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+
+probes:
+  liveness:
+    path: /healthz
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readiness:
+    path: /ready
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+hpa:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70

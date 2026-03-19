@@ -1,0 +1,8 @@
+# ============================================================================
+# Solution 1.2 — Base Image: Slim
+# Slim removes unnecessary packages. Good balance of size & compatibility.
+# ============================================================================
+FROM python:3.11-slim
+WORKDIR /app
+COPY app.py .
+CMD ["python3", "app.py"]

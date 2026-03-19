@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    options {
+        timeout(time: 1, unit: 'HOURS')
+    }
+
+    stages {
+        stage('Flaky Test') {
+            steps {
+                retry(3) {
+                    sh '''
+                        echo "Attempting flaky test..."
+                        if [ $((RANDOM % 2)) -eq 0 ]; then
+                            echo "Test passed!"
+                        else
+                            echo "Test flaked, retrying..."
+                            exit 1
+                        fi
+                    '''
+                }
+            }
+        }
+
+        stage('Slow Deploy') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh 'echo "Deploying (simulating slow operation)..."'
+                    sh 'sleep 10'
+                    sh 'echo "Deploy complete"'
+                }
+            }
+        }
+
+        stage('Optional Scan') {
+            steps {
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    sh 'echo "Running security scan..."'
+                    sh 'exit 1'
+                }
+                echo 'Pipeline continues despite scan failure'
+            }
+        }
+    }
+}

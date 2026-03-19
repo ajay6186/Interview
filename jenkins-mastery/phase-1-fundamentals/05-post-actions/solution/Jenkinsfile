@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo "Building..." && mkdir -p dist && echo "artifact" > dist/app.zip'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'echo "Testing..."'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up workspace...'
+            archiveArtifacts artifacts: 'dist/**', allowEmptyArchive: true
+        }
+        success {
+            echo 'Build SUCCEEDED — ready to deploy'
+        }
+        failure {
+            echo 'Build FAILED — check the logs'
+        }
+    }
+}

@@ -1,0 +1,24 @@
+# ============================================================================
+# Solution 2.3 — Volumes and Bind Mounts
+# ============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web:/app    # Bind mount: changes on host are instantly visible in container
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: mydb
+    volumes:
+      - db-data:/var/lib/postgresql/data  # Named volume: data survives container restarts
+
+volumes:
+  db-data:    # Docker manages this volume

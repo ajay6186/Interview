@@ -1,0 +1,56 @@
+// Exercise 2.5 — When Conditions
+
+pipeline {
+    agent any
+
+    parameters {
+        booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip test stage')
+        booleanParam(name: 'DEPLOY',     defaultValue: false, description: 'Run deployment')
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+            }
+        }
+
+        stage('Test') {
+            // TODO: Skip this stage when params.SKIP_TESTS is true
+            // Use when { expression { ... } }
+            when {
+                expression { return ??? }
+            }
+            steps {
+                echo 'Running tests...'
+            }
+        }
+
+        stage('Deploy to Staging') {
+            // TODO: Only run on branch "main" OR "release/*"
+            // Hint: use when { anyOf { branch '...'; branch '...' } }
+            when {
+                ???
+            }
+            steps {
+                echo "Deploying to staging from branch: ${env.BRANCH_NAME}"
+            }
+        }
+
+        stage('Deploy to Production') {
+            // TODO: Run only when ALL of these are true:
+            // 1. Branch is "main"
+            // 2. params.DEPLOY is true
+            // Use when { allOf { ... } }
+            when {
+                allOf {
+                    branch ???
+                    expression { return ??? }
+                }
+            }
+            steps {
+                echo 'Deploying to PRODUCTION!'
+            }
+        }
+    }
+}

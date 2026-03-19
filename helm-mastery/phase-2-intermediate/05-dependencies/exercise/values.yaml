@@ -1,0 +1,14 @@
+app:
+  replicaCount: 1
+  image: nginx:alpine
+
+# Redis subchart values (prefixed with subchart name)
+redis:
+  # TODO: Set enabled to true
+  enabled: ???
+  # Override redis subchart values:
+  auth:
+    enabled: false   # Disable auth for dev
+  master:
+    persistence:
+      enabled: false # Disable PVC for dev

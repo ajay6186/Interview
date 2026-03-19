@@ -1,0 +1,15 @@
+# ============================================================================
+# Exercise 1.2 — Base Image: Alpine
+# ============================================================================
+
+# TODO: Use python:3.11-alpine as the base image (NOT ubuntu)
+FROM ubuntu:22.04
+
+# TODO: Set /app as working directory
+# WORKDIR ...
+
+# TODO: Copy app.py
+# COPY ...
+
+# TODO: Run the app
+# CMD ...

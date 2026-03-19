@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(
+            name: 'DEPLOY_ENV',
+            defaultValue: 'dev',
+            description: 'Target environment'
+        )
+        booleanParam(
+            name: 'RUN_TESTS',
+            defaultValue: true,
+            description: 'Run test suite'
+        )
+        choice(
+            name: 'IMAGE_TAG',
+            choices: ['dev', 'staging', '1.0.0'],
+            description: 'Image tag'
+        )
+    }
+
+    stages {
+        stage('Show Parameters') {
+            steps {
+                echo "Deploying to: ${params.DEPLOY_ENV}"
+                echo "Image tag: ${params.IMAGE_TAG}"
+                echo "Running tests: ${params.RUN_TESTS}"
+            }
+        }
+
+        stage('Conditional Test') {
+            when {
+                expression { return params.RUN_TESTS }
+            }
+            steps {
+                echo 'Running the test suite...'
+            }
+        }
+    }
+}

@@ -1,0 +1,41 @@
+# ============================================================================
+# Exercise 4.2 — Security Context
+# ============================================================================
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-pod
+spec:
+  # Pod-level security context (applies to all containers)
+  securityContext:
+    # TODO: Run all containers as user 1000
+    runAsUser: ???
+    # TODO: Run as group 3000
+    runAsGroup: ???
+    # TODO: Set fsGroup to 2000 (files created belong to this group)
+    fsGroup: ???
+    # TODO: Prevent privilege escalation
+    runAsNonRoot: ???
+
+  containers:
+    - name: app
+      image: busybox
+      command: ["sh", "-c", "echo Secure pod running; sleep 3600"]
+      securityContext:
+        # TODO: Make the container filesystem read-only
+        readOnlyRootFilesystem: ???
+        # TODO: Drop ALL capabilities
+        capabilities:
+          drop:
+            - ???
+        # TODO: Set allowPrivilegeEscalation to false
+        allowPrivilegeEscalation: ???
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp    # writable temp space (read-only rootfs still needs tmp)
+
+  volumes:
+    - name: tmp
+      # TODO: Use an emptyDir volume for /tmp
+      emptyDir: {}

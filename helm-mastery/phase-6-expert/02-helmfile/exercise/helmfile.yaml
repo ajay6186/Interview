@@ -1,0 +1,41 @@
+# Exercise 6.2 — Helmfile
+# Fill in all ??? placeholders
+
+# TODO: Declare Helm chart repositories
+repositories:
+  # TODO: Add bitnami repo
+  - name: ???
+    url: ???
+
+# TODO: Define releases
+releases:
+  # Frontend release
+  - name: frontend
+    # TODO: Set namespace to "default"
+    namespace: ???
+    # TODO: Point to a local chart (path: ./charts/frontend)
+    chart: ???
+    # TODO: Set values from the frontend values file
+    values:
+      - ???
+
+  # Backend release
+  - name: backend
+    namespace: ???
+    chart: ???
+    values:
+      - ???
+    # TODO: Declare that backend depends on frontend being deployed first
+    needs:
+      - ???
+
+  # Database release using bitnami postgresql
+  - name: database
+    namespace: ???
+    # TODO: Use bitnami/postgresql chart version 13.0.0
+    chart: ???
+    version: ???
+    set:
+      # TODO: Set auth.postgresPassword
+      - name: ???
+        value: ???

@@ -1,0 +1,19 @@
+{{- if .Values.ingress.enabled }}
+# BUG 5: wrong apiVersion for Ingress (extensions/v1beta1 was removed in k8s 1.22+)
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-svc
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}
