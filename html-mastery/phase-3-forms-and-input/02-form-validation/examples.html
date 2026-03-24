@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 3.2 — Form Validation
+  ============================================================================
+  50 runnable examples covering HTML5 built-in form validation attributes,
+  constraint validation API, and accessible error patterns.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 3.2 — Form Validation</title>
+  <style>
+    body { font-family: sans-serif; max-width: 860px; margin: 0 auto; padding: 16px; }
+    h2 { margin-top: 32px; border-bottom: 2px solid #333; padding-bottom: 4px; }
+    .example { background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; padding: 12px 16px; margin: 10px 0; }
+    .example h3 { margin: 0 0 8px; font-size: 14px; color: #555; }
+    input, textarea, select { padding: 5px 8px; border: 1px solid #ccc; border-radius: 3px; margin: 2px 0; }
+    input:invalid { border-color: #e74c3c; }
+    input:valid:not(:placeholder-shown) { border-color: #27ae60; }
+    .error { color: red; font-size: 13px; }
+    .hint { color: #666; font-size: 12px; }
+    label { display: block; font-size: 14px; margin-top: 8px; }
+    button { padding: 6px 14px; margin-top: 8px; }
+    code { background: #eee; padding: 1px 4px; border-radius: 3px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<h1>Examples 3.2 — Form Validation</h1>
+
+<!-- ============================================================ -->
+<h2>BASIC (Examples 1–13)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>1. required attribute</h3>
+  <form>
+    <label for="r1">Name *</label>
+    <input type="text" id="r1" name="name" required placeholder="Required field">
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div class="example">
+  <h3>2. minlength and maxlength</h3>
+  <label for="r2">Username (3–20 chars)</label>
+  <input type="text" id="r2" name="username" minlength="3" maxlength="20" placeholder="3 to 20 characters">
+</div>
+
+<div class="example">
+  <h3>3. min and max on number input</h3>
+  <label for="r3">Age (18–65)</label>
+  <input type="number" id="r3" name="age" min="18" max="65">
+</div>
+
+<div class="example">
+  <h3>4. pattern attribute — only letters</h3>
+  <label for="r4">First name (letters only)</label>
+  <input type="text" id="r4" name="firstname" pattern="[A-Za-z]+" title="Letters only">
+</div>
+
+<div class="example">
+  <h3>5. pattern for ZIP code</h3>
+  <label for="r5">ZIP Code</label>
+  <input type="text" id="r5" name="zip" pattern="[0-9]{5}" title="5-digit ZIP" placeholder="12345">
+</div>
+
+<div class="example">
+  <h3>6. type="email" built-in validation</h3>
+  <label for="r6">Email</label>
+  <input type="email" id="r6" name="email" placeholder="user@example.com">
+</div>
+
+<div class="example">
+  <h3>7. type="url" built-in validation</h3>
+  <label for="r7">Website</label>
+  <input type="url" id="r7" name="url" placeholder="https://example.com">
+</div>
+
+<div class="example">
+  <h3>8. novalidate — disable browser validation</h3>
+  <form novalidate>
+    <label for="r8">Email (novalidate — no browser popup)</label>
+    <input type="email" id="r8" name="email" required placeholder="Any value accepted">
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div class="example">
+  <h3>9. formnovalidate on submit button</h3>
+  <form>
+    <input type="email" name="email" required placeholder="email@example.com">
+    <button type="submit">Validate</button>
+    <button type="submit" formnovalidate>Save Draft (skip validation)</button>
+  </form>
+</div>
+
+<div class="example">
+  <h3>10. step constraint on number</h3>
+  <label for="r10">Amount (multiples of 5)</label>
+  <input type="number" id="r10" name="amount" min="0" max="100" step="5">
+</div>
+
+<div class="example">
+  <h3>11. min/max on date input</h3>
+  <label for="r11">Booking date</label>
+  <input type="date" id="r11" name="booking" min="2024-01-01" max="2024-12-31">
+</div>
+
+<div class="example">
+  <h3>12. title attribute as validation hint tooltip</h3>
+  <label for="r12">Phone (format: 555-000-0000)</label>
+  <input type="tel" id="r12" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+         title="Format: 555-000-0000" placeholder="555-000-0000">
+</div>
+
+<div class="example">
+  <h3>13. :invalid and :valid CSS pseudo-classes</h3>
+  <style>
+    #r13-form input:invalid { outline: 2px solid red; }
+    #r13-form input:valid { outline: 2px solid green; }
+  </style>
+  <form id="r13-form">
+    <label for="r13">Email (styled by validity)</label>
+    <input type="email" id="r13" name="email" placeholder="Turns red/green as you type">
+  </form>
+</div>
+
+<!-- ============================================================ -->
+<h2>INTERMEDIATE (Examples 14–26)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>14. Constraint Validation API — checkValidity()</h3>
+  <label for="r14">Required field:</label>
+  <input type="text" id="r14" name="field" required>
+  <button onclick="alert('Valid: ' + document.getElementById('r14').checkValidity())">Check</button>
+</div>
+
+<div class="example">
+  <h3>15. Constraint Validation API — validity.valueMissing</h3>
+  <label for="r15">Name:</label>
+  <input type="text" id="r15" name="name" required>
+  <button onclick="
+    const i = document.getElementById('r15');
+    alert('valueMissing: ' + i.validity.valueMissing)
+  ">Check</button>
+</div>
+
+<div class="example">
+  <h3>16. setCustomValidity() for custom error messages</h3>
+  <label for="r16">Username (no spaces):</label>
+  <input type="text" id="r16" name="username"
+         oninput="this.setCustomValidity(this.value.includes(' ') ? 'No spaces allowed' : '')">
+  <button onclick="document.getElementById('r16').reportValidity()">Validate</button>
+</div>
+
+<div class="example">
+  <h3>17. reportValidity() to trigger browser tooltip</h3>
+  <label for="r17">Email *</label>
+  <input type="email" id="r17" required placeholder="email@example.com">
+  <button onclick="document.getElementById('r17').reportValidity()">Show Error</button>
+</div>
+
+<div class="example">
+  <h3>18. aria-required for screen readers</h3>
+  <label for="r18">Full name</label>
+  <input type="text" id="r18" name="name" aria-required="true" required>
+  <p class="hint">Both <code>required</code> and <code>aria-required="true"</code> used.</p>
+</div>
+
+<div class="example">
+  <h3>19. aria-invalid to mark invalid state</h3>
+  <label for="r19">Email</label>
+  <input type="email" id="r19" name="email" aria-invalid="true" value="not-an-email"
+         style="border-color:red">
+  <p class="error" role="alert">Please enter a valid email address.</p>
+</div>
+
+<div class="example">
+  <h3>20. aria-describedby linking hint to input</h3>
+  <label for="r20">Password</label>
+  <input type="password" id="r20" name="password" aria-describedby="r20-hint" minlength="8">
+  <p id="r20-hint" class="hint">Minimum 8 characters required.</p>
+</div>
+
+<div class="example">
+  <h3>21. Live validation on blur</h3>
+  <label for="r21">Email:</label>
+  <input type="email" id="r21" name="email" required
+         onblur="
+           const msg = document.getElementById('r21-msg');
+           msg.textContent = this.checkValidity() ? '' : 'Invalid email address.';
+           msg.style.color = 'red';
+         ">
+  <p id="r21-msg" class="error" role="alert"></p>
+</div>
+
+<div class="example">
+  <h3>22. Matching passwords with setCustomValidity</h3>
+  <label for="r22a">Password:</label>
+  <input type="password" id="r22a" name="pwd">
+  <label for="r22b">Confirm:</label>
+  <input type="password" id="r22b" name="pwd2"
+         oninput="
+           const a = document.getElementById('r22a');
+           this.setCustomValidity(this.value !== a.value ? 'Passwords do not match' : '');
+         ">
+</div>
+
+<div class="example">
+  <h3>23. Textarea with minlength</h3>
+  <label for="r23">Bio (min 20 characters):</label>
+  <textarea id="r23" name="bio" minlength="20" rows="3" placeholder="Tell us about yourself..."></textarea>
+</div>
+
+<div class="example">
+  <h3>24. :placeholder-shown to avoid false :invalid on empty optional fields</h3>
+  <style>
+    #r24:not(:placeholder-shown):invalid { border-color: red; }
+    #r24:not(:placeholder-shown):valid { border-color: green; }
+  </style>
+  <label for="r24">Optional email (only styled after typing):</label>
+  <input type="email" id="r24" placeholder="optional@example.com">
+</div>
+
+<div class="example">
+  <h3>25. :focus-within to highlight form group on focus</h3>
+  <style>
+    .fgroup:focus-within { background: #eef6ff; border-radius: 4px; padding: 4px; }
+  </style>
+  <div class="fgroup">
+    <label for="r25">Name:</label>
+    <input type="text" id="r25" name="name">
+  </div>
+</div>
+
+<div class="example">
+  <h3>26. required on select element</h3>
+  <label for="r26">Country *</label>
+  <select id="r26" name="country" required>
+    <option value="">-- Select country --</option>
+    <option value="us">United States</option>
+    <option value="uk">United Kingdom</option>
+    <option value="ca">Canada</option>
+  </select>
+</div>
+
+<!-- ============================================================ -->
+<h2>NESTED (Examples 27–38)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>27. Full inline validation with live feedback</h3>
+  <form id="r27-form" novalidate>
+    <label for="r27-e">Email *</label>
+    <input type="email" id="r27-e" required aria-describedby="r27-msg">
+    <p id="r27-msg" role="alert" style="font-size:13px;color:red;min-height:1em"></p>
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('r27-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const inp = document.getElementById('r27-e');
+      const msg = document.getElementById('r27-msg');
+      if (!inp.checkValidity()) {
+        msg.textContent = inp.validationMessage;
+        inp.setAttribute('aria-invalid', 'true');
+      } else {
+        msg.textContent = 'Form submitted successfully!';
+        msg.style.color = 'green';
+        inp.setAttribute('aria-invalid', 'false');
+      }
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>28. Multi-field form validation with summary</h3>
+  <form id="r28-form" novalidate>
+    <label for="r28-n">Name *</label>
+    <input type="text" id="r28-n" required name="name">
+    <label for="r28-e">Email *</label>
+    <input type="email" id="r28-e" required name="email">
+    <div id="r28-errors" role="alert" style="color:red;font-size:13px"></div>
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('r28-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const errors = [];
+      this.querySelectorAll('[required]').forEach(function(inp) {
+        if (!inp.checkValidity()) errors.push(inp.name + ': ' + inp.validationMessage);
+      });
+      document.getElementById('r28-errors').textContent = errors.join(' | ');
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>29. validity.typeMismatch for email/url</h3>
+  <label for="r29">URL:</label>
+  <input type="url" id="r29" value="not-a-url">
+  <button onclick="
+    const v = document.getElementById('r29').validity;
+    alert('typeMismatch: ' + v.typeMismatch)
+  ">Check</button>
+</div>
+
+<div class="example">
+  <h3>30. validity.tooShort and validity.tooLong</h3>
+  <label for="r30">Message (10–100 chars):</label>
+  <input type="text" id="r30" minlength="10" maxlength="100" placeholder="Type here">
+  <button onclick="
+    const v = document.getElementById('r30').validity;
+    alert('tooShort: ' + v.tooShort + ', tooLong: ' + v.tooLong)
+  ">Check</button>
+</div>
+
+<div class="example">
+  <h3>31. validity.rangeUnderflow and validity.rangeOverflow</h3>
+  <label for="r31">Score (0–100):</label>
+  <input type="number" id="r31" min="0" max="100" value="150">
+  <button onclick="
+    const v = document.getElementById('r31').validity;
+    alert('rangeOverflow: ' + v.rangeOverflow)
+  ">Check</button>
+</div>
+
+<div class="example">
+  <h3>32. validity.patternMismatch</h3>
+  <label for="r32">Code (3 uppercase letters):</label>
+  <input type="text" id="r32" pattern="[A-Z]{3}" value="abc">
+  <button onclick="
+    alert('patternMismatch: ' + document.getElementById('r32').validity.patternMismatch)
+  ">Check</button>
+</div>
+
+<div class="example">
+  <h3>33. validity.stepMismatch</h3>
+  <label for="r33">Even number only (step=2):</label>
+  <input type="number" id="r33" min="0" step="2" value="3">
+  <button onclick="
+    alert('stepMismatch: ' + document.getElementById('r33').validity.stepMismatch)
+  ">Check</button>
+</div>
+
+<div class="example">
+  <h3>34. validity.badInput for non-numeric in number field</h3>
+  <label for="r34">Number field (try typing letters):</label>
+  <input type="number" id="r34">
+  <button onclick="
+    alert('badInput: ' + document.getElementById('r34').validity.badInput)
+  ">Check</button>
+</div>
+
+<div class="example">
+  <h3>35. Form-level submit listener with full validity check</h3>
+  <form id="r35-form" novalidate>
+    <label for="r35-u">Username (letters/numbers, 3–15):</label>
+    <input type="text" id="r35-u" required pattern="[a-zA-Z0-9]{3,15}"
+           title="3–15 alphanumeric characters" aria-describedby="r35-err">
+    <p id="r35-err" role="alert" style="color:red;font-size:13px"></p>
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('r35-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const inp = document.getElementById('r35-u');
+      document.getElementById('r35-err').textContent = inp.checkValidity()
+        ? '' : inp.validationMessage;
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>36. Progressive enhancement: native + JS validation</h3>
+  <form id="r36-form" novalidate>
+    <label for="r36-e">Email *</label>
+    <input type="email" id="r36-e" required>
+    <button type="submit">Go</button>
+  </form>
+  <script>
+    document.getElementById('r36-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const inp = document.getElementById('r36-e');
+      if (!inp.checkValidity()) { inp.reportValidity(); return; }
+      alert('Submitted: ' + inp.value);
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>37. Dependent field validation (conditional required)</h3>
+  <label><input type="checkbox" id="r37-chk"> I have a referral code</label>
+  <label for="r37-code" id="r37-label" style="display:none">Referral Code *</label>
+  <input type="text" id="r37-code" name="code" style="display:none">
+  <script>
+    document.getElementById('r37-chk').addEventListener('change', function() {
+      const code = document.getElementById('r37-code');
+      const lbl = document.getElementById('r37-label');
+      code.style.display = lbl.style.display = this.checked ? 'block' : 'none';
+      code.required = this.checked;
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>38. Textarea character counter with maxlength feedback</h3>
+  <label for="r38">Bio (max 200 chars): <span id="r38-count">200</span> remaining</label>
+  <textarea id="r38" maxlength="200" rows="3"
+            oninput="document.getElementById('r38-count').textContent = 200 - this.value.length"></textarea>
+</div>
+
+<!-- ============================================================ -->
+<h2>ADVANCED (Examples 39–50)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>39. Full registration form with JS validation</h3>
+  <form id="r39-form" novalidate>
+    <label for="r39-u">Username *</label>
+    <input type="text" id="r39-u" required minlength="3" maxlength="20" pattern="[a-z0-9_]+"
+           title="Lowercase letters, numbers, underscores" aria-describedby="r39-u-err">
+    <p id="r39-u-err" role="alert" style="color:red;font-size:12px;min-height:1em"></p>
+
+    <label for="r39-e">Email *</label>
+    <input type="email" id="r39-e" required aria-describedby="r39-e-err">
+    <p id="r39-e-err" role="alert" style="color:red;font-size:12px;min-height:1em"></p>
+
+    <label for="r39-p">Password *</label>
+    <input type="password" id="r39-p" required minlength="8" aria-describedby="r39-p-err">
+    <p id="r39-p-err" role="alert" style="color:red;font-size:12px;min-height:1em"></p>
+
+    <button type="submit">Register</button>
+  </form>
+  <script>
+    document.getElementById('r39-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      let ok = true;
+      [['r39-u','r39-u-err'],['r39-e','r39-e-err'],['r39-p','r39-p-err']].forEach(function([id,errId]) {
+        const inp = document.getElementById(id);
+        const err = document.getElementById(errId);
+        if (!inp.checkValidity()) { err.textContent = inp.validationMessage; ok = false; }
+        else { err.textContent = ''; }
+      });
+      if (ok) alert('Registration successful!');
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>40. async availability check with setCustomValidity</h3>
+  <label for="r40">Username (try "admin"):</label>
+  <input type="text" id="r40" required
+         oninput="
+           const inp = this;
+           setTimeout(function() {
+             inp.setCustomValidity(inp.value === 'admin' ? 'Username already taken' : '');
+           }, 300);
+         ">
+  <button onclick="document.getElementById('r40').reportValidity()">Check</button>
+</div>
+
+<div class="example">
+  <h3>41. LUHN check for credit card via setCustomValidity</h3>
+  <label for="r41">Credit card number:</label>
+  <input type="text" id="r41" name="cc" inputmode="numeric" pattern="[0-9 ]{13,19}"
+         oninput="
+           const digits = this.value.replace(/\D/g,'');
+           let sum = 0, alt = false;
+           for (let i = digits.length - 1; i >= 0; i--) {
+             let n = parseInt(digits[i]);
+             if (alt) { n *= 2; if (n > 9) n -= 9; }
+             sum += n; alt = !alt;
+           }
+           this.setCustomValidity(digits.length > 0 && sum % 10 !== 0 ? 'Invalid card number' : '');
+         ">
+  <p class="hint">Try: 4111 1111 1111 1111 (valid Visa test number)</p>
+</div>
+
+<div class="example">
+  <h3>42. Date range validation (end after start)</h3>
+  <form id="r42-form" novalidate>
+    <label for="r42-s">Start date *</label>
+    <input type="date" id="r42-s" required>
+    <label for="r42-e">End date *</label>
+    <input type="date" id="r42-e" required>
+    <p id="r42-err" style="color:red;font-size:13px"></p>
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('r42-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const s = document.getElementById('r42-s').value;
+      const en = document.getElementById('r42-e').value;
+      const err = document.getElementById('r42-err');
+      if (s && en && en <= s) {
+        err.textContent = 'End date must be after start date.';
+        document.getElementById('r42-e').setCustomValidity('End date must be after start date.');
+      } else {
+        err.textContent = '';
+        document.getElementById('r42-e').setCustomValidity('');
+        alert('Date range valid!');
+      }
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>43. Real-time password strength with visual indicator</h3>
+  <label for="r43">Password:</label>
+  <input type="password" id="r43" oninput="r43Strength(this.value)">
+  <div id="r43-bar" style="height:6px;width:0;background:red;transition:width 0.3s,background 0.3s;border-radius:3px;margin-top:4px"></div>
+  <p id="r43-label" style="font-size:12px;margin:2px 0"></p>
+  <script>
+    function r43Strength(val) {
+      const bar = document.getElementById('r43-bar');
+      const lbl = document.getElementById('r43-label');
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const levels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+      const colors = ['', 'red', 'orange', '#f0ad4e', 'green'];
+      bar.style.width = (score * 25) + '%';
+      bar.style.background = colors[score] || 'transparent';
+      lbl.textContent = val ? levels[score] || '' : '';
+    }
+  </script>
+</div>
+
+<div class="example">
+  <h3>44. accessibility: focus management after failed submit</h3>
+  <form id="r44-form" novalidate>
+    <label for="r44-n">Name *</label>
+    <input type="text" id="r44-n" required aria-describedby="r44-err">
+    <p id="r44-err" role="alert" style="color:red;font-size:13px"></p>
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('r44-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const inp = document.getElementById('r44-n');
+      const err = document.getElementById('r44-err');
+      if (!inp.checkValidity()) {
+        err.textContent = inp.validationMessage;
+        inp.focus(); // move focus to the invalid field
+      } else {
+        err.textContent = '';
+        alert('Submitted!');
+      }
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>45. Validation before leaving field (blur event)</h3>
+  <label for="r45">Email:</label>
+  <input type="email" id="r45" required aria-describedby="r45-msg"
+         onblur="
+           const msg = document.getElementById('r45-msg');
+           if (!this.checkValidity()) {
+             msg.textContent = this.validationMessage;
+             this.setAttribute('aria-invalid','true');
+           } else {
+             msg.textContent = '';
+             this.setAttribute('aria-invalid','false');
+           }
+         ">
+  <p id="r45-msg" role="alert" style="color:red;font-size:13px;min-height:1em"></p>
+</div>
+
+<div class="example">
+  <h3>46. Checkbox must be checked (required)</h3>
+  <form id="r46-form" novalidate>
+    <label>
+      <input type="checkbox" id="r46-terms" required>
+      I agree to the <a href="#">terms</a> *
+    </label>
+    <p id="r46-err" style="color:red;font-size:13px"></p>
+    <button type="submit">Continue</button>
+  </form>
+  <script>
+    document.getElementById('r46-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const cb = document.getElementById('r46-terms');
+      document.getElementById('r46-err').textContent = cb.checked ? '' : 'You must accept the terms.';
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>47. Email confirmation — must match</h3>
+  <label for="r47-e1">Email *</label>
+  <input type="email" id="r47-e1" required>
+  <label for="r47-e2">Confirm Email *</label>
+  <input type="email" id="r47-e2" required aria-describedby="r47-err"
+         oninput="
+           const match = this.value === document.getElementById('r47-e1').value;
+           this.setCustomValidity(match ? '' : 'Email addresses do not match');
+         ">
+  <p id="r47-err" style="font-size:12px;color:#666">Must match the email above.</p>
+</div>
+
+<div class="example">
+  <h3>48. International phone pattern validation</h3>
+  <label for="r48">International phone:</label>
+  <input type="tel" id="r48" pattern="\+[0-9]{1,3}[0-9 \-()]{6,15}"
+         title="International format starting with country code, e.g. +1 555 000 0000"
+         placeholder="+1 555 000 0000">
+</div>
+
+<div class="example">
+  <h3>49. Dynamic pattern based on selection</h3>
+  <label for="r49-type">ID type:</label>
+  <select id="r49-type" onchange="
+    const patterns = { ssn: '[0-9]{3}-[0-9]{2}-[0-9]{4}', ein: '[0-9]{2}-[0-9]{7}' };
+    const inp = document.getElementById('r49-val');
+    inp.pattern = patterns[this.value] || '';
+    inp.placeholder = this.value === 'ssn' ? '123-45-6789' : '12-3456789';
+  ">
+    <option value="">-- Select --</option>
+    <option value="ssn">SSN</option>
+    <option value="ein">EIN</option>
+  </select>
+  <label for="r49-val">ID Number:</label>
+  <input type="text" id="r49-val" name="id-value">
+</div>
+
+<div class="example">
+  <h3>50. Complete accessible form with full validation suite</h3>
+  <form id="r50-form" novalidate>
+    <div id="r50-summary" role="alert" aria-live="assertive" style="color:red;font-size:13px;margin-bottom:8px"></div>
+
+    <label for="r50-n">Name *</label>
+    <input type="text" id="r50-n" name="name" required minlength="2" aria-required="true">
+
+    <label for="r50-e">Email *</label>
+    <input type="email" id="r50-e" name="email" required aria-required="true">
+
+    <label for="r50-p">Password * (min 8 chars)</label>
+    <input type="password" id="r50-p" name="password" required minlength="8" aria-required="true">
+
+    <label for="r50-age">Age (18+)</label>
+    <input type="number" id="r50-age" name="age" min="18" max="120">
+
+    <label>
+      <input type="checkbox" id="r50-terms" required aria-required="true">
+      I accept the terms *
+    </label>
+
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('r50-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const errors = [];
+      this.querySelectorAll('input').forEach(function(inp) {
+        if (!inp.checkValidity()) {
+          errors.push((inp.labels[0]?.textContent || inp.name) + ': ' + inp.validationMessage);
+          inp.setAttribute('aria-invalid', 'true');
+        } else {
+          inp.setAttribute('aria-invalid', 'false');
+        }
+      });
+      const summary = document.getElementById('r50-summary');
+      if (errors.length) {
+        summary.innerHTML = errors.join('<br>');
+        this.querySelector('input:invalid')?.focus();
+      } else {
+        summary.textContent = '';
+        summary.style.color = 'green';
+        summary.textContent = 'Form submitted successfully!';
+      }
+    });
+  </script>
+</div>
+
+</body>
+</html>

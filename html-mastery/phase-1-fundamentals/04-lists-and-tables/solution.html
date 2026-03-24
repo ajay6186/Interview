@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 1.4 — Lists & Tables
+  ============================================================================
+  Complete solution with all TODOs filled in correctly.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 1.4 — Lists &amp; Tables</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; margin-bottom: 24px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    thead th { background: #f0f0f0; }
+    tfoot td { background: #f9f9f9; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h1>Lists &amp; Tables Exercise</h1>
+
+<!-- Section 1: Unordered List -->
+<h2>Web Technologies</h2>
+<ul>
+  <li>HTML — Structure</li>
+  <li>CSS — Presentation</li>
+  <li>JavaScript — Behaviour</li>
+  <li>HTTP — Protocol</li>
+</ul>
+
+<!-- Section 2: Ordered List -->
+<h2>Getting Started Steps</h2>
+<ol>
+  <li>Open your text editor</li>
+  <li>Create a new file</li>
+  <li>Save it as <code>index.html</code></li>
+  <li>Open the file in a browser</li>
+</ol>
+
+<!-- Section 3: Definition List -->
+<h2>HTML Glossary</h2>
+<dl>
+  <dt>DOCTYPE</dt>
+  <dd>Declares the document type and instructs the browser to use standards mode.</dd>
+
+  <dt>Attribute</dt>
+  <dd>Additional information attached to an HTML element, written inside the opening tag.</dd>
+
+  <dt>Semantic HTML</dt>
+  <dd>Using HTML elements that convey meaning about the content they contain, not just appearance.</dd>
+
+  <dt>Void element</dt>
+  <dd>An element with no children or closing tag, such as &lt;br&gt;, &lt;img&gt;, or &lt;input&gt;.</dd>
+</dl>
+
+<!-- Section 4: Product Comparison Table -->
+<h2>Product Comparison</h2>
+<table>
+  <caption>Product Comparison</caption>
+  <thead>
+    <tr>
+      <th scope="col">Feature</th>
+      <th scope="col">Basic Plan</th>
+      <th scope="col">Pro Plan</th>
+      <th scope="col">Enterprise Plan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Storage</td>
+      <td>5 GB</td>
+      <td>50 GB</td>
+      <td>Unlimited</td>
+    </tr>
+    <tr>
+      <td>Users</td>
+      <td>1</td>
+      <td>5</td>
+      <td>Unlimited</td>
+    </tr>
+    <tr>
+      <td>Support</td>
+      <td>Email</td>
+      <td>Email + Chat</td>
+      <td>24/7 Phone</td>
+    </tr>
+    <tr>
+      <td>API Access</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Monthly Price</td>
+      <td>$0</td>
+      <td>$29</td>
+      <td>$199</td>
+    </tr>
+  </tfoot>
+</table>
+
+<!-- Section 5: Table with scope="row" -->
+<h2>Team Overview</h2>
+<table>
+  <caption>Team Members by Department</caption>
+  <thead>
+    <tr>
+      <th scope="col">Department</th>
+      <th scope="col">Head</th>
+      <th scope="col">Members</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Engineering</th>
+      <td>Alice Johnson</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th scope="row">Design</th>
+      <td>Bob Chen</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th scope="row">Marketing</th>
+      <td>Carol Smith</td>
+      <td>8</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 1.4 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // 1. ul with at least 3 li
+  const ulEl = document.querySelector("ul");
+  assert(ulEl !== null && ulEl.querySelectorAll("li").length >= 3, "<ul> with at least 3 <li> items exists");
+
+  // 2. ol with at least 3 li
+  const olEl = document.querySelector("ol");
+  assert(olEl !== null && olEl.querySelectorAll("li").length >= 3, "<ol> with at least 3 <li> items exists");
+
+  // 3. dl, dt, dd exist
+  const dlEl = document.querySelector("dl");
+  assert(dlEl !== null, "<dl> element exists");
+  assert(dlEl !== null && dlEl.querySelector("dt") !== null, "<dt> exists inside <dl>");
+  assert(dlEl !== null && dlEl.querySelector("dd") !== null, "<dd> exists inside <dl>");
+
+  // 4. table structure
+  assert(document.querySelector("table") !== null, "<table> element exists");
+  assert(document.querySelector("thead") !== null, "<thead> element exists inside a table");
+  assert(document.querySelector("tbody") !== null, "<tbody> element exists inside a table");
+  assert(document.querySelector("tfoot") !== null, "<tfoot> element exists inside a table");
+  assert(document.querySelector("caption") !== null, "<caption> element exists inside a table");
+
+  // 5. scope attributes
+  const colTh = document.querySelector('th[scope="col"]');
+  assert(colTh !== null, '<th scope="col"> exists in the table');
+
+  const rowTh = document.querySelector('th[scope="row"]');
+  assert(rowTh !== null, '<th scope="row"> exists in the table');
+
+  // Summary
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 1.4 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 3.1 — Input Types
+  ============================================================================
+  Learn the many HTML5 input types and when to use each one. Proper input
+  types improve UX (mobile keyboards, date pickers) and built-in validation.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 3.1 — Input Types</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 16px; }
+    label { display: block; margin-top: 12px; font-weight: bold; font-size: 14px; }
+    input, textarea, select { display: block; margin-top: 4px; padding: 6px 8px; width: 100%; box-sizing: border-box; }
+    button { margin-top: 16px; padding: 8px 20px; }
+  </style>
+</head>
+<body>
+
+<h1>Input Types Exercise</h1>
+
+<form id="input-types-form" action="#" method="post" novalidate>
+
+  <!-- =========================================================
+       Section 1: Text-based inputs
+       ========================================================= -->
+
+  <!-- TODO: Add a <label> with for="full-name" and text "Full Name"
+       followed by <input type="text" id="full-name" name="full-name"
+       placeholder="Jane Doe" required> -->
+
+  <!-- TODO: Add a <label> with for="user-email" and text "Email Address"
+       followed by <input type="email" id="user-email" name="user-email"
+       placeholder="jane@example.com" required> -->
+
+  <!-- TODO: Add a <label> with for="user-phone" and text "Phone Number"
+       followed by <input type="tel" id="user-phone" name="user-phone"
+       placeholder="+1 555 000 0000"> -->
+
+  <!-- TODO: Add a <label> with for="website" and text "Website"
+       followed by <input type="url" id="website" name="website"
+       placeholder="https://example.com"> -->
+
+  <!-- =========================================================
+       Section 2: Numeric and range inputs
+       ========================================================= -->
+
+  <!-- TODO: Add a <label> with for="user-age" and text "Age"
+       followed by <input type="number" id="user-age" name="user-age"
+       min="1" max="120" step="1"> -->
+
+  <!-- TODO: Add a <label> with for="satisfaction" and text "Satisfaction (1–10)"
+       followed by <input type="range" id="satisfaction" name="satisfaction"
+       min="1" max="10" value="5"> -->
+
+  <!-- =========================================================
+       Section 3: Date and time inputs
+       ========================================================= -->
+
+  <!-- TODO: Add a <label> with for="birth-date" and text "Date of Birth"
+       followed by <input type="date" id="birth-date" name="birth-date"> -->
+
+  <!-- TODO: Add a <label> with for="appt-time" and text "Appointment Time"
+       followed by <input type="time" id="appt-time" name="appt-time"> -->
+
+  <!-- =========================================================
+       Section 4: Other input types
+       ========================================================= -->
+
+  <!-- TODO: Add a <label> with for="fav-color" and text "Favourite Colour"
+       followed by <input type="color" id="fav-color" name="fav-color" value="#3498db"> -->
+
+  <!-- TODO: Add a <label> with for="search-term" and text "Search"
+       followed by <input type="search" id="search-term" name="search-term"
+       placeholder="Search..."> -->
+
+  <button type="submit">Submit</button>
+</form>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 3.1 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  assert(document.querySelector('input[type="text"]') !== null, '<input type="text"> exists');
+  assert(document.querySelector('input[type="email"]') !== null, '<input type="email"> exists');
+  assert(document.querySelector('input[type="tel"]') !== null, '<input type="tel"> exists');
+  assert(document.querySelector('input[type="url"]') !== null, '<input type="url"> exists');
+  assert(document.querySelector('input[type="number"]') !== null, '<input type="number"> exists');
+  assert(document.querySelector('input[type="range"]') !== null, '<input type="range"> exists');
+  assert(document.querySelector('input[type="date"]') !== null, '<input type="date"> exists');
+  assert(document.querySelector('input[type="time"]') !== null, '<input type="time"> exists');
+  assert(document.querySelector('input[type="color"]') !== null, '<input type="color"> exists');
+  assert(document.querySelector('input[type="search"]') !== null, '<input type="search"> exists');
+
+  const numEl = document.querySelector('input[type="number"]');
+  assert(numEl !== null && numEl.hasAttribute("min") && numEl.hasAttribute("max"),
+    '<input type="number"> has min and max attributes');
+
+  const rangeEl = document.querySelector('input[type="range"]');
+  assert(rangeEl !== null && rangeEl.hasAttribute("min") && rangeEl.hasAttribute("max"),
+    '<input type="range"> has min and max attributes');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 3.1 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

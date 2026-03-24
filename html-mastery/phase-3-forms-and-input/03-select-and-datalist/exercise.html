@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 3.3 — Select and Datalist
+  ============================================================================
+  Learn to build dropdown menus with <select>/<option>/<optgroup> and
+  autocomplete inputs with <datalist>. Understand when to use each.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 3.3 — Select and Datalist</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 16px; }
+    label { display: block; margin-top: 14px; font-weight: bold; font-size: 14px; }
+    select, input { display: block; margin-top: 4px; padding: 6px 8px; width: 100%; box-sizing: border-box; }
+    button { margin-top: 16px; padding: 8px 20px; }
+  </style>
+</head>
+<body>
+
+<h1>Select and Datalist Exercise</h1>
+
+<form id="select-form" action="#" method="post">
+
+  <!-- =========================================================
+       Section 1: Basic select dropdown
+       ========================================================= -->
+
+  <!-- TODO: Add a <label for="country">Country</label>
+       followed by a <select id="country" name="country">
+       with a placeholder option <option value="">-- Select country --</option>
+       and at least 3 country options (e.g., US, UK, Canada) -->
+
+  <!-- =========================================================
+       Section 2: Select with optgroup
+       ========================================================= -->
+
+  <!-- TODO: Add a <label for="language">Programming Language</label>
+       followed by a <select id="language" name="language">
+       with two <optgroup> elements:
+       - <optgroup label="Frontend"> with HTML, CSS, JavaScript options
+       - <optgroup label="Backend"> with Python, Node.js, Ruby options -->
+
+  <!-- =========================================================
+       Section 3: Multi-select
+       ========================================================= -->
+
+  <!-- TODO: Add a <label for="skills">Skills (hold Ctrl/Cmd to select multiple)</label>
+       followed by a <select id="skills" name="skills" multiple size="5">
+       with at least 5 skill options -->
+
+  <!-- =========================================================
+       Section 4: Datalist for autocomplete
+       ========================================================= -->
+
+  <!-- TODO: Add a <label for="browser">Favourite Browser</label>
+       followed by <input type="text" id="browser" name="browser" list="browser-options">
+       and a <datalist id="browser-options"> with at least 4 browser options
+       (Chrome, Firefox, Safari, Edge) -->
+
+  <button type="submit">Submit</button>
+</form>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 3.3 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const countryEl = document.getElementById("country");
+  assert(countryEl !== null, '#country select exists');
+  assert(countryEl !== null && countryEl.tagName === "SELECT", '#country is a <select>');
+  assert(countryEl !== null && countryEl.options.length >= 3, '#country has at least 3 options');
+
+  const langEl = document.getElementById("language");
+  assert(langEl !== null, '#language select exists');
+  assert(langEl !== null && langEl.querySelectorAll("optgroup").length >= 2,
+    '#language has at least 2 <optgroup> elements');
+
+  const skillsEl = document.getElementById("skills");
+  assert(skillsEl !== null, '#skills select exists');
+  assert(skillsEl !== null && skillsEl.hasAttribute("multiple"), '#skills has multiple attribute');
+  assert(skillsEl !== null && skillsEl.options.length >= 5, '#skills has at least 5 options');
+
+  const browserEl = document.getElementById("browser");
+  assert(browserEl !== null, '#browser input exists');
+  assert(browserEl !== null && browserEl.hasAttribute("list"), '#browser input has list attribute');
+  const dlId = browserEl ? browserEl.getAttribute("list") : null;
+  const datalistEl = dlId ? document.getElementById(dlId) : null;
+  assert(datalistEl !== null, '<datalist> element exists and is linked');
+  assert(datalistEl !== null && datalistEl.querySelectorAll("option").length >= 4,
+    'datalist has at least 4 options');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 3.3 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

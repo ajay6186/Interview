@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 4.3 — Inline SVG
+  ============================================================================
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 4.3 — Inline SVG</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    svg { display: block; margin: 8px 0; border: 1px solid #eee; }
+  </style>
+</head>
+<body>
+
+<h1>Inline SVG — Solution</h1>
+
+<!-- Section 1: rect and circle -->
+<svg id="shapes-svg" viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="10" width="80" height="60" fill="steelblue" rx="4">
+  <circle cx="150" cy="50" r="40" fill="coral">
+</svg>
+
+<!-- Section 2: line and polygon -->
+<svg id="lines-svg" viewBox="0 0 200 100" width="200" height="100" xmlns="http://www.w3.org/2000/svg">
+  <line x1="10" y1="50" x2="190" y2="50" stroke="black" stroke-width="2">
+  <polygon points="100,10 190,90 10,90" fill="gold" stroke="orange" stroke-width="2">
+</svg>
+
+<!-- Section 3: text -->
+<svg id="text-svg" viewBox="0 0 200 60" width="200" height="60" xmlns="http://www.w3.org/2000/svg">
+  <text x="10" y="40" font-size="24" fill="navy">Hello SVG</text>
+</svg>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 4.3 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const shapesSvg = document.getElementById("shapes-svg");
+  assert(shapesSvg !== null, '#shapes-svg exists');
+  assert(shapesSvg && shapesSvg.tagName.toLowerCase() === "svg", '#shapes-svg is an <svg> element');
+  assert(shapesSvg && (shapesSvg.getAttribute("viewBox") || "").trim() !== "", '#shapes-svg has a viewBox attribute');
+  assert(shapesSvg && shapesSvg.hasAttribute("xmlns"), '#shapes-svg has xmlns attribute');
+  const rect = shapesSvg && shapesSvg.querySelector("rect");
+  assert(rect !== null, '#shapes-svg contains a <rect>');
+  assert(rect && rect.getAttribute("fill") === "steelblue", '<rect> has fill="steelblue"');
+  const circle = shapesSvg && shapesSvg.querySelector("circle");
+  assert(circle !== null, '#shapes-svg contains a <circle>');
+  assert(circle && circle.getAttribute("fill") === "coral", '<circle> has fill="coral"');
+
+  const linesSvg = document.getElementById("lines-svg");
+  assert(linesSvg !== null, '#lines-svg exists');
+  const line = linesSvg && linesSvg.querySelector("line");
+  assert(line !== null, '#lines-svg contains a <line>');
+  assert(line && (line.getAttribute("stroke") || "").trim() !== "", '<line> has a stroke attribute');
+  const polygon = linesSvg && linesSvg.querySelector("polygon");
+  assert(polygon !== null, '#lines-svg contains a <polygon>');
+  assert(polygon && (polygon.getAttribute("points") || "").trim() !== "", '<polygon> has a points attribute');
+
+  const textSvg = document.getElementById("text-svg");
+  assert(textSvg !== null, '#text-svg exists');
+  const svgText = textSvg && textSvg.querySelector("text");
+  assert(svgText !== null, '#text-svg contains a <text> element');
+  assert(svgText && svgText.textContent.trim() !== "", '<text> has non-empty text content');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 4.3 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

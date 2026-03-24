@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 2.2 — Article & Section
+  ============================================================================
+  Complete solution with all TODOs filled in correctly.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 2.2 — Article &amp; Section</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 16px; }
+    article { border: 1px solid #ddd; padding: 16px; margin: 12px 0; border-radius: 4px; }
+    section { margin: 24px 0; }
+    article header { margin-bottom: 8px; }
+    article footer { margin-top: 8px; font-size: 13px; color: #666; border-top: 1px solid #eee; padding-top: 8px; }
+  </style>
+</head>
+<body>
+
+<h1>Web Dev Weekly</h1>
+
+<!-- Section 1: Featured Section with Articles -->
+<section id="featured" aria-labelledby="featured-heading">
+  <h2 id="featured-heading">Featured Posts</h2>
+
+  <article>
+    <h3>The Power of Semantic HTML</h3>
+    <p>Semantic HTML is the foundation of accessible, SEO-friendly websites. Learn why choosing the right elements matters more than you think.</p>
+    <footer>
+      <time datetime="2026-03-24">March 24, 2026</time>
+    </footer>
+  </article>
+</section>
+
+<!-- Section 2: Recent Posts Section -->
+<section id="recent" aria-labelledby="recent-heading">
+  <h2 id="recent-heading">Recent Posts</h2>
+
+  <article>
+    <h3>CSS Grid vs Flexbox: When to Use Which</h3>
+    <p>Both CSS Grid and Flexbox are powerful layout tools, but they excel at different tasks. This guide helps you choose the right one.</p>
+  </article>
+
+  <article>
+    <h3>JavaScript Performance Tips for 2026</h3>
+    <p>From avoiding layout thrashing to using modern APIs like scheduler.postTask(), these tips will help you build faster web apps.</p>
+  </article>
+</section>
+
+<!-- Section 3: Single Full Article -->
+<article>
+  <header>
+    <h2>Getting Started with Web Components</h2>
+  </header>
+  <p>Web Components allow you to create reusable custom elements with their own encapsulated HTML, CSS, and JavaScript. The custom elements API, shadow DOM, and HTML templates work together to make this possible.</p>
+  <footer>
+    <address>By <a href="mailto:jane@webdevweekly.com">Jane Doe</a></address>
+  </footer>
+</article>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 2.2 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  assert(document.querySelector("section") !== null, "<section> element exists");
+  assert(document.querySelector("section[aria-labelledby]") !== null,
+    '<section aria-labelledby="..."> exists');
+  assert(document.querySelectorAll("article").length >= 3,
+    "At least 3 <article> elements exist on the page");
+  const articles = document.querySelectorAll("article");
+  let articlesHaveHeadings = Array.from(articles).every(a =>
+    a.querySelector("h1, h2, h3, h4, h5, h6") !== null
+  );
+  assert(articlesHaveHeadings, "Every <article> contains a heading element");
+  assert(document.querySelector("article time[datetime]") !== null,
+    "<time datetime> exists inside an <article>");
+  assert(document.querySelector("article header") !== null,
+    "<header> exists inside an <article>");
+  assert(document.querySelector("article footer") !== null,
+    "<footer> exists inside an <article>");
+  assert(document.querySelector("address") !== null, "<address> element exists");
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 2.2 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 2.5 — Inline Semantics
+  ============================================================================
+  Use semantic inline elements: time/datetime, address, abbr/title, dfn,
+  cite, q/blockquote, and small to properly mark up an article.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 2.5 — Inline Semantics</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 16px; }
+    abbr { text-decoration: underline dotted; cursor: help; }
+    address { font-style: italic; border-left: 3px solid #ccc; padding-left: 12px; }
+    blockquote { border-left: 4px solid #0066cc; margin: 16px 0; padding: 8px 16px; background: #f0f4ff; }
+    small { font-size: 0.8em; color: #666; }
+  </style>
+</head>
+<body>
+
+<h1>Inline Semantics Exercise</h1>
+
+<!-- =========================================================
+     Section 1: Article with time and abbr
+     ========================================================= -->
+
+<!-- TODO: Add an <article> containing:
+     - An <h2> with text "HTML5 and the Modern Web"
+     - A <p> that contains:
+         - The text "Published on "
+         - A <time datetime="2024-03-15">March 15, 2024</time>
+         - The text " by the W3C team"
+     - A <p> that uses <abbr title="HyperText Markup Language">HTML</abbr>
+       and <abbr title="World Wide Web Consortium">W3C</abbr> in a sentence
+       about web standards
+-->
+
+<!-- =========================================================
+     Section 2: Definitions and citations
+     ========================================================= -->
+
+<!-- TODO: Add a <section> containing:
+     - A <p> with a <dfn id="semantics">semantic HTML</dfn> definition sentence
+       (e.g., "The term <dfn id="semantics">semantic HTML</dfn> refers to
+       using HTML elements that convey meaning.")
+     - A <blockquote cite="https://www.w3.org/TR/html52/">
+         with a <p> quoting the W3C spec (any relevant text)
+         and a <footer>—<cite>W3C HTML 5.2 Specification</cite></footer>
+       </blockquote>
+-->
+
+<!-- =========================================================
+     Section 3: Address and small
+     ========================================================= -->
+
+<!-- TODO: Add an <address> element containing:
+     - Contact information such as an email link or author name
+     (e.g., <address>Contact: <a href="mailto:editor@example.com">editor@example.com</a></address>)
+-->
+
+<!-- TODO: Add a <p> that contains a <small> element with
+     legal/copyright text such as "© 2024 Example Corp. All rights reserved."
+-->
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 2.5 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // 1. time element with datetime attribute exists
+  const timeEl = document.querySelector("time[datetime]");
+  assert(timeEl !== null, "<time datetime> element exists");
+
+  // 2. datetime attribute has a value
+  assert(timeEl !== null && timeEl.getAttribute("datetime").trim() !== "",
+    "<time> has a non-empty datetime attribute");
+
+  // 3. abbr with title exists
+  const abbrEl = document.querySelector("abbr[title]");
+  assert(abbrEl !== null, "<abbr title> element exists");
+
+  // 4. abbr title is non-empty
+  assert(abbrEl !== null && abbrEl.getAttribute("title").trim() !== "",
+    "<abbr> has a non-empty title attribute");
+
+  // 5. dfn element exists
+  assert(document.querySelector("dfn") !== null, "<dfn> element exists");
+
+  // 6. blockquote exists
+  assert(document.querySelector("blockquote") !== null, "<blockquote> element exists");
+
+  // 7. cite element exists
+  assert(document.querySelector("cite") !== null, "<cite> element exists");
+
+  // 8. address element exists
+  assert(document.querySelector("address") !== null, "<address> element exists");
+
+  // 9. small element exists
+  assert(document.querySelector("small") !== null, "<small> element exists");
+
+  // Summary
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 2.5 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 3.1 — Input Types
+  ============================================================================
+  50 runnable examples covering all HTML5 input types and their attributes.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 3.1 — Input Types</title>
+  <style>
+    body { font-family: sans-serif; max-width: 860px; margin: 0 auto; padding: 16px; }
+    h2 { margin-top: 32px; border-bottom: 2px solid #333; padding-bottom: 4px; }
+    .example { background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; padding: 12px 16px; margin: 10px 0; }
+    .example h3 { margin: 0 0 8px; font-size: 14px; color: #555; }
+    label { display: inline-block; min-width: 160px; font-size: 14px; }
+    input, select, textarea { padding: 4px 8px; margin: 2px 0; }
+    code { background: #eee; padding: 1px 4px; border-radius: 3px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<h1>Examples 3.1 — Input Types</h1>
+
+<!-- ============================================================ -->
+<h2>BASIC (Examples 1–13)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>1. type="text" — single-line text input</h3>
+  <label for="e1">Name:</label>
+  <input type="text" id="e1" name="e1" placeholder="Enter your name">
+</div>
+
+<div class="example">
+  <h3>2. type="email" — email address with built-in validation</h3>
+  <label for="e2">Email:</label>
+  <input type="email" id="e2" name="e2" placeholder="you@example.com">
+</div>
+
+<div class="example">
+  <h3>3. type="password" — masked input</h3>
+  <label for="e3">Password:</label>
+  <input type="password" id="e3" name="e3" minlength="8">
+</div>
+
+<div class="example">
+  <h3>4. type="tel" — telephone number (triggers phone keyboard on mobile)</h3>
+  <label for="e4">Phone:</label>
+  <input type="tel" id="e4" name="e4" placeholder="+1 555 000 0000">
+</div>
+
+<div class="example">
+  <h3>5. type="url" — web address with validation</h3>
+  <label for="e5">Website:</label>
+  <input type="url" id="e5" name="e5" placeholder="https://example.com">
+</div>
+
+<div class="example">
+  <h3>6. type="number" — numeric input with min/max/step</h3>
+  <label for="e6">Quantity:</label>
+  <input type="number" id="e6" name="e6" min="0" max="100" step="1" value="1">
+</div>
+
+<div class="example">
+  <h3>7. type="range" — slider control</h3>
+  <label for="e7">Volume:</label>
+  <input type="range" id="e7" name="e7" min="0" max="100" value="50">
+</div>
+
+<div class="example">
+  <h3>8. type="date" — calendar date picker</h3>
+  <label for="e8">Date:</label>
+  <input type="date" id="e8" name="e8">
+</div>
+
+<div class="example">
+  <h3>9. type="time" — time picker</h3>
+  <label for="e9">Time:</label>
+  <input type="time" id="e9" name="e9">
+</div>
+
+<div class="example">
+  <h3>10. type="color" — color picker</h3>
+  <label for="e10">Color:</label>
+  <input type="color" id="e10" name="e10" value="#e74c3c">
+</div>
+
+<div class="example">
+  <h3>11. type="checkbox" — boolean on/off toggle</h3>
+  <label><input type="checkbox" name="agree" value="yes"> I agree to the terms</label>
+</div>
+
+<div class="example">
+  <h3>12. type="radio" — single selection from a group</h3>
+  <fieldset style="border:none;padding:0">
+    <legend style="font-size:14px">Preferred contact:</legend>
+    <label><input type="radio" name="contact" value="email"> Email</label>
+    <label><input type="radio" name="contact" value="phone"> Phone</label>
+    <label><input type="radio" name="contact" value="text"> Text</label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>13. type="submit" and type="reset"</h3>
+  <form>
+    <input type="text" name="demo" placeholder="Type something">
+    <input type="submit" value="Submit">
+    <input type="reset" value="Reset">
+  </form>
+</div>
+
+<!-- ============================================================ -->
+<h2>INTERMEDIATE (Examples 14–26)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>14. type="search" — search input (may show clear button)</h3>
+  <label for="e14">Search:</label>
+  <input type="search" id="e14" name="q" placeholder="Search products..." autocomplete="off">
+</div>
+
+<div class="example">
+  <h3>15. type="file" — file upload</h3>
+  <label for="e15">Upload file:</label>
+  <input type="file" id="e15" name="e15" accept=".pdf,.doc,.docx">
+</div>
+
+<div class="example">
+  <h3>16. type="file" multiple — upload multiple files</h3>
+  <label for="e16">Upload images:</label>
+  <input type="file" id="e16" name="images" accept="image/*" multiple>
+</div>
+
+<div class="example">
+  <h3>17. type="datetime-local" — date + time without timezone</h3>
+  <label for="e17">Schedule:</label>
+  <input type="datetime-local" id="e17" name="e17">
+</div>
+
+<div class="example">
+  <h3>18. type="month" — month and year picker</h3>
+  <label for="e18">Expiry month:</label>
+  <input type="month" id="e18" name="e18">
+</div>
+
+<div class="example">
+  <h3>19. type="week" — ISO week picker</h3>
+  <label for="e19">Sprint week:</label>
+  <input type="week" id="e19" name="e19">
+</div>
+
+<div class="example">
+  <h3>20. type="hidden" — data submitted with form but not shown</h3>
+  <form>
+    <input type="hidden" name="csrf_token" value="abc123xyz">
+    <input type="text" name="username" placeholder="Username">
+    <button type="submit">Login</button>
+  </form>
+  <p><code>type="hidden"</code> fields are invisible but included in form submission.</p>
+</div>
+
+<div class="example">
+  <h3>21. type="button" — button with no default behavior</h3>
+  <input type="button" value="Click Me" onclick="alert('Button clicked!')">
+</div>
+
+<div class="example">
+  <h3>22. type="image" — image as submit button</h3>
+  <form>
+    <input type="image" src="https://via.placeholder.com/80x30?text=Submit"
+           alt="Submit form" width="80" height="30">
+  </form>
+</div>
+
+<div class="example">
+  <h3>23. number input with step="0.01" for currency</h3>
+  <label for="e23">Price ($):</label>
+  <input type="number" id="e23" name="price" min="0" max="9999.99" step="0.01" value="9.99">
+</div>
+
+<div class="example">
+  <h3>24. range with datalist for tick marks</h3>
+  <label for="e24">Priority:</label>
+  <input type="range" id="e24" name="priority" min="1" max="5" step="1" list="priority-marks">
+  <datalist id="priority-marks">
+    <option value="1" label="Low">
+    <option value="3" label="Medium">
+    <option value="5" label="High">
+  </datalist>
+</div>
+
+<div class="example">
+  <h3>25. date with min/max constraints</h3>
+  <label for="e25">Event date (this year only):</label>
+  <input type="date" id="e25" name="event-date" min="2024-01-01" max="2024-12-31">
+</div>
+
+<div class="example">
+  <h3>26. email with multiple attribute (comma-separated emails)</h3>
+  <label for="e26">CC recipients:</label>
+  <input type="email" id="e26" name="cc" multiple placeholder="a@b.com, c@d.com">
+</div>
+
+<!-- ============================================================ -->
+<h2>NESTED (Examples 27–38)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>27. Input with autocomplete hint</h3>
+  <label for="e27">Street address:</label>
+  <input type="text" id="e27" name="street" autocomplete="street-address">
+</div>
+
+<div class="example">
+  <h3>28. Input with inputmode for custom keyboard on mobile</h3>
+  <label for="e28">Enter a decimal:</label>
+  <input type="text" id="e28" name="decimal" inputmode="decimal" placeholder="3.14">
+  <p><small><code>inputmode="decimal"</code> shows decimal keyboard on iOS/Android.</small></p>
+</div>
+
+<div class="example">
+  <h3>29. Input with pattern attribute for validation</h3>
+  <label for="e29">US ZIP code:</label>
+  <input type="text" id="e29" name="zip" pattern="[0-9]{5}" title="Five digit ZIP code" placeholder="12345">
+</div>
+
+<div class="example">
+  <h3>30. Input with spellcheck and autocorrect</h3>
+  <label for="e30">Username (no spellcheck):</label>
+  <input type="text" id="e30" name="username" spellcheck="false" autocorrect="off" autocapitalize="off">
+</div>
+
+<div class="example">
+  <h3>31. Input with aria-describedby for hint text</h3>
+  <label for="e31">Password</label>
+  <input type="password" id="e31" name="pwd" aria-describedby="pwd-hint" minlength="8">
+  <p id="pwd-hint" style="font-size:12px;color:#555">Must be at least 8 characters.</p>
+</div>
+
+<div class="example">
+  <h3>32. Input with aria-label (no visible label)</h3>
+  <input type="search" aria-label="Search the site" placeholder="Search...">
+</div>
+
+<div class="example">
+  <h3>33. Checkbox group with fieldset/legend</h3>
+  <fieldset>
+    <legend>Interests</legend>
+    <label><input type="checkbox" name="interests" value="html"> HTML</label><br>
+    <label><input type="checkbox" name="interests" value="css"> CSS</label><br>
+    <label><input type="checkbox" name="interests" value="js"> JavaScript</label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>34. Radio group — yes/no question</h3>
+  <fieldset>
+    <legend>Have you used HTML5 before?</legend>
+    <label><input type="radio" name="used-html5" value="yes"> Yes</label>
+    <label><input type="radio" name="used-html5" value="no"> No</label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>35. Input readonly vs disabled</h3>
+  <label for="e35a">Readonly (submits with form):</label>
+  <input type="text" id="e35a" value="Read-only value" readonly>
+  <label for="e35b">Disabled (not submitted):</label>
+  <input type="text" id="e35b" value="Disabled value" disabled>
+</div>
+
+<div class="example">
+  <h3>36. Input with list (datalist autocomplete)</h3>
+  <label for="e36">Browser:</label>
+  <input type="text" id="e36" name="browser" list="browser-list">
+  <datalist id="browser-list">
+    <option value="Chrome">
+    <option value="Firefox">
+    <option value="Safari">
+    <option value="Edge">
+  </datalist>
+</div>
+
+<div class="example">
+  <h3>37. Input with size and maxlength</h3>
+  <label for="e37">Short code (max 6 chars):</label>
+  <input type="text" id="e37" name="code" size="8" maxlength="6" placeholder="ABC123">
+</div>
+
+<div class="example">
+  <h3>38. Input with tabindex for custom focus order</h3>
+  <p>Custom tab order:</p>
+  <input type="text" tabindex="3" placeholder="Third (tabindex=3)">
+  <input type="text" tabindex="1" placeholder="First (tabindex=1)">
+  <input type="text" tabindex="2" placeholder="Second (tabindex=2)">
+</div>
+
+<!-- ============================================================ -->
+<h2>ADVANCED (Examples 39–50)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>39. Full contact form with semantic input types</h3>
+  <form>
+    <label for="a39-name">Full Name *</label>
+    <input type="text" id="a39-name" name="name" required autocomplete="name">
+
+    <label for="a39-email">Email *</label>
+    <input type="email" id="a39-email" name="email" required autocomplete="email">
+
+    <label for="a39-tel">Phone</label>
+    <input type="tel" id="a39-tel" name="tel" autocomplete="tel">
+
+    <label for="a39-url">Your website</label>
+    <input type="url" id="a39-url" name="url">
+
+    <label for="a39-msg">Message *</label>
+    <textarea id="a39-msg" name="message" rows="4" required></textarea>
+
+    <button type="submit">Send</button>
+  </form>
+</div>
+
+<div class="example">
+  <h3>40. Payment form input types</h3>
+  <form>
+    <label for="a40-cc">Card Number</label>
+    <input type="text" id="a40-cc" name="cc" autocomplete="cc-number" inputmode="numeric" pattern="[0-9 ]{13,19}" placeholder="4111 1111 1111 1111">
+
+    <label for="a40-exp">Expiry</label>
+    <input type="month" id="a40-exp" name="cc-exp" autocomplete="cc-exp">
+
+    <label for="a40-cvv">CVV</label>
+    <input type="text" id="a40-cvv" name="cvv" autocomplete="cc-csc" inputmode="numeric" pattern="[0-9]{3,4}" maxlength="4" placeholder="123">
+  </form>
+</div>
+
+<div class="example">
+  <h3>41. Date range: start and end date</h3>
+  <form>
+    <label for="a41-from">From:</label>
+    <input type="date" id="a41-from" name="from">
+    <label for="a41-to">To:</label>
+    <input type="date" id="a41-to" name="to">
+  </form>
+  <script>
+    document.getElementById('a41-from').addEventListener('change', function() {
+      document.getElementById('a41-to').min = this.value;
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>42. Live range value display</h3>
+  <label for="a42">Font size: <output id="a42-out">16</output>px</label>
+  <input type="range" id="a42" min="10" max="36" value="16"
+         oninput="document.getElementById('a42-out').value = this.value">
+</div>
+
+<div class="example">
+  <h3>43. Color input with live preview</h3>
+  <label for="a43">Pick a color:</label>
+  <input type="color" id="a43" value="#3498db"
+         oninput="document.getElementById('a43-preview').style.background = this.value">
+  <div id="a43-preview" style="width:100px;height:30px;background:#3498db;border:1px solid #ccc;margin-top:6px"></div>
+</div>
+
+<div class="example">
+  <h3>44. Custom file input with label trigger</h3>
+  <label for="a44" style="display:inline-block;padding:8px 16px;background:#0066cc;color:white;cursor:pointer;border-radius:4px">
+    Choose File
+  </label>
+  <input type="file" id="a44" name="file" style="position:absolute;left:-9999px" accept="image/*"
+         onchange="document.getElementById('a44-name').textContent = this.files[0]?.name || 'No file chosen'">
+  <span id="a44-name">No file chosen</span>
+</div>
+
+<div class="example">
+  <h3>45. Password strength indicator</h3>
+  <label for="a45">Password:</label>
+  <input type="password" id="a45" name="pwd" oninput="updateStrength(this.value)">
+  <p id="a45-strength" style="font-size:13px"></p>
+  <script>
+    function updateStrength(val) {
+      const el = document.getElementById('a45-strength');
+      if (!val) { el.textContent = ''; return; }
+      const strength = val.length >= 12 && /[A-Z]/.test(val) && /[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)
+        ? 'Strong' : val.length >= 8 ? 'Medium' : 'Weak';
+      el.textContent = 'Strength: ' + strength;
+      el.style.color = strength === 'Strong' ? 'green' : strength === 'Medium' ? 'orange' : 'red';
+    }
+  </script>
+</div>
+
+<div class="example">
+  <h3>46. Number input with custom step for fractions</h3>
+  <label for="a46">Rating (0.5 steps):</label>
+  <input type="number" id="a46" name="rating" min="0" max="5" step="0.5" value="3.5">
+</div>
+
+<div class="example">
+  <h3>47. Search input with keyboard shortcut</h3>
+  <label for="a47">Search <kbd>/</kbd>:</label>
+  <input type="search" id="a47" name="q" placeholder="Press / to focus">
+  <script>
+    document.addEventListener('keydown', function(e) {
+      if (e.key === '/' && document.activeElement !== document.getElementById('a47')) {
+        e.preventDefault();
+        document.getElementById('a47').focus();
+      }
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>48. tel input with pattern for international format</h3>
+  <label for="a48">International phone:</label>
+  <input type="tel" id="a48" name="phone"
+         pattern="\+[0-9]{1,3}[0-9 \-]{7,14}"
+         title="International format: +1 555 000 0000"
+         placeholder="+1 555 000 0000">
+</div>
+
+<div class="example">
+  <h3>49. Accessible email with error message via aria-describedby</h3>
+  <label for="a49">Email address *</label>
+  <input type="email" id="a49" name="email" required aria-describedby="a49-error" aria-invalid="false"
+         oninvalid="this.setAttribute('aria-invalid','true')"
+         oninput="this.setAttribute('aria-invalid','false')">
+  <p id="a49-error" role="alert" style="color:red;font-size:13px;display:none">
+    Please enter a valid email address.
+  </p>
+</div>
+
+<div class="example">
+  <h3>50. Full registration form — all input types combined</h3>
+  <form novalidate>
+    <label for="a50-name">Username *</label>
+    <input type="text" id="a50-name" required autocomplete="username" minlength="3" maxlength="20" pattern="[a-z0-9_]+" title="Lowercase letters, numbers, underscores">
+
+    <label for="a50-email">Email *</label>
+    <input type="email" id="a50-email" required autocomplete="email">
+
+    <label for="a50-pwd">Password *</label>
+    <input type="password" id="a50-pwd" required minlength="8" autocomplete="new-password">
+
+    <label for="a50-dob">Date of birth</label>
+    <input type="date" id="a50-dob" autocomplete="bday">
+
+    <label for="a50-gender">Profile color</label>
+    <input type="color" id="a50-gender" name="profile-color" value="#3498db">
+
+    <label><input type="checkbox" name="newsletter" value="1"> Subscribe to newsletter</label>
+
+    <label>
+      <input type="checkbox" name="terms" required>
+      I agree to the <a href="#">terms of service</a> *
+    </label>
+
+    <button type="submit">Create Account</button>
+  </form>
+</div>
+
+</body>
+</html>

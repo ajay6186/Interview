@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 1.5 — Forms Basic  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 1.5 — Forms Basic</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; margin-top: 6px; }
+    .output { background: #fafafa; border: 1px solid #eee; padding: 8px; border-radius: 3px; margin-top: 6px; }
+    .output label { display: block; margin-bottom: 4px; font-size: 13px; font-weight: bold; }
+    .output input, .output textarea, .output select { padding: 4px; font-size: 13px; }
+    .output button { padding: 4px 10px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 1.5 — Forms Basic</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Minimal form</h3>
+  <div class="output">
+    <form action="/submit" method="post">
+      <label for="ex1-name">Name:</label>
+      <input type="text" id="ex1-name" name="name">
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <p class="label">Minimal form: action, method, label[for] matching input[id], and a submit button.</p>
+</div>
+
+<div class="example">
+  <h3>2. input type="text"</h3>
+  <div class="output">
+    <label for="ex2-username">Username</label>
+    <input type="text" id="ex2-username" name="username" placeholder="Enter username">
+  </div>
+  <p class="label">type="text" is the default. placeholder shows ghost text when empty — not a substitute for a label.</p>
+</div>
+
+<div class="example">
+  <h3>3. input type="email"</h3>
+  <div class="output">
+    <label for="ex3-email">Email</label>
+    <input type="email" id="ex3-email" name="email" placeholder="you@example.com">
+  </div>
+  <p class="label">type="email" provides built-in validation and a custom keyboard on mobile devices.</p>
+</div>
+
+<div class="example">
+  <h3>4. input type="password"</h3>
+  <div class="output">
+    <label for="ex4-pw">Password</label>
+    <input type="password" id="ex4-pw" name="password">
+  </div>
+  <p class="label">type="password" masks the input. Always use autocomplete="current-password" or "new-password" to help password managers.</p>
+</div>
+
+<div class="example">
+  <h3>5. textarea</h3>
+  <div class="output">
+    <label for="ex5-bio">Bio</label>
+    <textarea id="ex5-bio" name="bio" rows="4" cols="40" placeholder="Tell us about yourself..."></textarea>
+  </div>
+  <p class="label">&lt;textarea&gt; is for multi-line text. rows and cols suggest initial size. CSS resize: vertical limits to vertical resize only.</p>
+</div>
+
+<div class="example">
+  <h3>6. button types</h3>
+  <div class="output">
+    <button type="submit">Submit Form</button>
+    <button type="reset">Reset Form</button>
+    <button type="button">Do Nothing (JS)</button>
+  </div>
+  <p class="label">submit = submits the form. reset = clears all fields (rarely useful). button = no default action, use for JS hooks.</p>
+</div>
+
+<div class="example">
+  <h3>7. Label wrapping input (implicit association)</h3>
+  <div class="output">
+    <label>
+      Full Name
+      <input type="text" name="fullname">
+    </label>
+  </div>
+  <p class="label">Wrapping &lt;input&gt; inside &lt;label&gt; creates an implicit association — no for/id needed. But explicit for/id is preferred.</p>
+</div>
+
+<div class="example">
+  <h3>8. input type="checkbox"</h3>
+  <div class="output">
+    <label><input type="checkbox" name="agree" value="yes"> I agree to the terms</label>
+  </div>
+  <p class="label">Checkboxes work best with wrapping labels for a larger click target.</p>
+</div>
+
+<div class="example">
+  <h3>9. Radio button group</h3>
+  <div class="output">
+    <p style="margin:0;font-size:13px;font-weight:bold">Preferred contact method:</p>
+    <label><input type="radio" name="contact" value="email"> Email</label>
+    <label><input type="radio" name="contact" value="phone"> Phone</label>
+    <label><input type="radio" name="contact" value="text"> Text message</label>
+  </div>
+  <p class="label">Radio buttons in a group must share the same name. Only one can be selected at a time.</p>
+</div>
+
+<div class="example">
+  <h3>10. select dropdown</h3>
+  <div class="output">
+    <label for="ex10-country">Country</label>
+    <select id="ex10-country" name="country">
+      <option value="">-- Select --</option>
+      <option value="us">United States</option>
+      <option value="gb">United Kingdom</option>
+      <option value="ca">Canada</option>
+    </select>
+  </div>
+  <p class="label">The first option with an empty value acts as a placeholder. Always include an associated label.</p>
+</div>
+
+<div class="example">
+  <h3>11. input type="number"</h3>
+  <div class="output">
+    <label for="ex11-qty">Quantity</label>
+    <input type="number" id="ex11-qty" name="quantity" min="1" max="100" value="1">
+  </div>
+  <p class="label">type="number" shows a numeric keyboard on mobile and browser spin buttons. Use min/max/step to constrain values.</p>
+</div>
+
+<div class="example">
+  <h3>12. input type="date"</h3>
+  <div class="output">
+    <label for="ex12-dob">Date of Birth</label>
+    <input type="date" id="ex12-dob" name="dob">
+  </div>
+  <p class="label">type="date" provides a native date picker in most browsers. Value format is always YYYY-MM-DD.</p>
+</div>
+
+<div class="example">
+  <h3>13. form with GET method</h3>
+  <div class="output">
+    <form action="/search" method="get" style="display:flex;gap:8px;align-items:center">
+      <label for="ex13-q" style="font-size:13px;font-weight:bold">Search:</label>
+      <input type="search" id="ex13-q" name="q" placeholder="Search...">
+      <button type="submit">Go</button>
+    </form>
+  </div>
+  <p class="label">GET method appends form data to the URL (?q=term). Use for search forms and bookmarkable queries.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. input type="tel"</h3>
+  <div class="output">
+    <label for="ex14-tel">Phone Number</label>
+    <input type="tel" id="ex14-tel" name="phone" placeholder="+1 (555) 000-0000">
+  </div>
+  <p class="label">type="tel" shows a phone keypad on mobile but doesn't validate format. Use pattern attribute to enforce format.</p>
+</div>
+
+<div class="example">
+  <h3>15. input type="url"</h3>
+  <div class="output">
+    <label for="ex15-url">Website URL</label>
+    <input type="url" id="ex15-url" name="website" placeholder="https://example.com">
+  </div>
+  <p class="label">type="url" requires a valid URL format (including protocol). Browsers show a URL keyboard on mobile.</p>
+</div>
+
+<div class="example">
+  <h3>16. input type="range"</h3>
+  <div class="output">
+    <label for="ex16-vol">Volume: <output id="ex16-vol-out">50</output></label>
+    <input type="range" id="ex16-vol" name="volume" min="0" max="100" value="50"
+           oninput="document.getElementById('ex16-vol-out').value = this.value">
+  </div>
+  <p class="label">type="range" renders a slider. Use &lt;output&gt; to display the current value alongside it.</p>
+</div>
+
+<div class="example">
+  <h3>17. input type="color"</h3>
+  <div class="output">
+    <label for="ex17-color">Brand Color</label>
+    <input type="color" id="ex17-color" name="brandColor" value="#0066cc">
+  </div>
+  <p class="label">type="color" opens a color picker. Value is always a hex color string (#rrggbb).</p>
+</div>
+
+<div class="example">
+  <h3>18. input type="file"</h3>
+  <div class="output">
+    <label for="ex18-file">Upload Profile Photo</label>
+    <input type="file" id="ex18-file" name="photo" accept="image/png, image/jpeg">
+  </div>
+  <p class="label">accept filters which file types the picker shows. For multiple files, add the multiple attribute. Requires enctype="multipart/form-data" on the form.</p>
+</div>
+
+<div class="example">
+  <h3>19. input type="hidden"</h3>
+  <pre>&lt;input type="hidden" name="csrf_token" value="abc123xyz"&gt;
+&lt;input type="hidden" name="redirect_to" value="/dashboard"&gt;</pre>
+  <p class="label">Hidden inputs submit data without user interaction. Common for CSRF tokens, page state, and back-end tracking values.</p>
+</div>
+
+<div class="example">
+  <h3>20. required and placeholder</h3>
+  <div class="output">
+    <label for="ex20-email">Email <span style="color:red">*</span></label>
+    <input type="email" id="ex20-email" name="email" required placeholder="Required">
+  </div>
+  <p class="label">required prevents form submission if empty. Combine with a visual indicator (*) for sighted users and aria-required for screen readers.</p>
+</div>
+
+<div class="example">
+  <h3>21. autocomplete attribute</h3>
+  <div class="output">
+    <label for="ex21-name">Full Name</label>
+    <input type="text" id="ex21-name" name="name" autocomplete="name">
+    <label for="ex21-email2">Email</label>
+    <input type="email" id="ex21-email2" name="email" autocomplete="email">
+  </div>
+  <p class="label">autocomplete tokens (name, email, street-address, etc.) help browsers and password managers fill in forms correctly.</p>
+</div>
+
+<div class="example">
+  <h3>22. autofocus</h3>
+  <div class="output">
+    <label for="ex22-search">Search</label>
+    <input type="search" id="ex22-search" name="q" autofocus placeholder="Focus is here on load">
+  </div>
+  <p class="label">autofocus moves keyboard focus to this field on page load. Use only when the primary purpose of the page is the form.</p>
+</div>
+
+<div class="example">
+  <h3>23. readonly vs disabled</h3>
+  <div class="output">
+    <label for="ex23-ro">Read-only (submits)</label>
+    <input type="text" id="ex23-ro" name="readonly_field" value="Cannot edit" readonly>
+    <label for="ex23-dis">Disabled (not submitted)</label>
+    <input type="text" id="ex23-dis" name="disabled_field" value="Cannot edit or submit" disabled>
+  </div>
+  <p class="label">readonly: user can't change the value but it IS submitted. disabled: grayed out, not interactive, and NOT submitted.</p>
+</div>
+
+<div class="example">
+  <h3>24. Multiple select</h3>
+  <div class="output">
+    <label for="ex24-skills">Skills (hold Ctrl/Cmd for multiple)</label>
+    <select id="ex24-skills" name="skills" multiple size="4">
+      <option value="html">HTML</option>
+      <option value="css">CSS</option>
+      <option value="js" selected>JavaScript</option>
+      <option value="py">Python</option>
+    </select>
+  </div>
+  <p class="label">multiple allows selecting several options. size controls how many rows are visible. Users hold Ctrl/Cmd to multi-select.</p>
+</div>
+
+<div class="example">
+  <h3>25. optgroup in select</h3>
+  <div class="output">
+    <label for="ex25-lang">Language</label>
+    <select id="ex25-lang" name="language">
+      <optgroup label="Frontend">
+        <option value="html">HTML</option>
+        <option value="css">CSS</option>
+        <option value="js">JavaScript</option>
+      </optgroup>
+      <optgroup label="Backend">
+        <option value="py">Python</option>
+        <option value="go">Go</option>
+      </optgroup>
+    </select>
+  </div>
+  <p class="label">&lt;optgroup&gt; groups related options under a non-selectable heading label.</p>
+</div>
+
+<div class="example">
+  <h3>26. datalist autocomplete</h3>
+  <div class="output">
+    <label for="ex26-browser">Favourite Browser</label>
+    <input type="text" id="ex26-browser" name="browser" list="browsers-list" placeholder="Start typing...">
+    <datalist id="browsers-list">
+      <option value="Chrome">
+      <option value="Firefox">
+      <option value="Safari">
+      <option value="Edge">
+      <option value="Opera">
+    </datalist>
+  </div>
+  <p class="label">&lt;datalist&gt; provides autocomplete suggestions while allowing free text. Connect via list attribute matching datalist id.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Fieldset with legend</h3>
+  <div class="output">
+    <fieldset>
+      <legend>Shipping Address</legend>
+      <label for="ex27-street">Street</label>
+      <input type="text" id="ex27-street" name="street"><br>
+      <label for="ex27-city">City</label>
+      <input type="text" id="ex27-city" name="city">
+    </fieldset>
+  </div>
+  <p class="label">&lt;fieldset&gt;/&lt;legend&gt; groups related controls. The legend is announced as the group label by screen readers.</p>
+</div>
+
+<div class="example">
+  <h3>28. Radio group inside fieldset</h3>
+  <div class="output">
+    <fieldset>
+      <legend>Subscription Plan</legend>
+      <label><input type="radio" name="plan" value="free"> Free</label><br>
+      <label><input type="radio" name="plan" value="pro"> Pro — $29/mo</label><br>
+      <label><input type="radio" name="plan" value="enterprise"> Enterprise — $199/mo</label>
+    </fieldset>
+  </div>
+  <p class="label">Radio groups should always be wrapped in &lt;fieldset&gt;/&lt;legend&gt; so screen readers announce the group question.</p>
+</div>
+
+<div class="example">
+  <h3>29. Multi-step form shell</h3>
+  <pre>&lt;form id="signup-form"&gt;
+  &lt;!-- Step 1 --&gt;
+  &lt;fieldset id="step-1"&gt;
+    &lt;legend&gt;Step 1 of 3: Account Details&lt;/legend&gt;
+    &lt;label for="s1-email"&gt;Email&lt;/label&gt;
+    &lt;input type="email" id="s1-email" name="email"&gt;
+  &lt;/fieldset&gt;
+  &lt;!-- Steps 2 and 3 hidden initially via JS --&gt;
+&lt;/form&gt;</pre>
+  <p class="label">Multi-step forms use fieldsets for each step. JS shows/hides steps. aria-current="step" can track progress.</p>
+</div>
+
+<div class="example">
+  <h3>30. Form with submit inside a section</h3>
+  <div class="output" style="font-size:13px">
+    <form action="/register" method="post">
+      <h2 style="margin:0 0 8px">Create Account</h2>
+      <label for="ex30-user">Username</label>
+      <input type="text" id="ex30-user" name="username" required autocomplete="username">
+      <label for="ex30-pw2">Password</label>
+      <input type="password" id="ex30-pw2" name="password" required autocomplete="new-password">
+      <label for="ex30-pwc">Confirm Password</label>
+      <input type="password" id="ex30-pwc" name="confirm" required autocomplete="new-password">
+      <button type="submit" style="margin-top:8px">Register</button>
+    </form>
+  </div>
+  <p class="label">Registration form with autocomplete values that guide password managers correctly.</p>
+</div>
+
+<div class="example">
+  <h3>31. Login form with remember me</h3>
+  <div class="output" style="font-size:13px">
+    <form action="/login" method="post">
+      <label for="ex31-email">Email</label>
+      <input type="email" id="ex31-email" name="email" required autocomplete="username">
+      <label for="ex31-pw3">Password</label>
+      <input type="password" id="ex31-pw3" name="password" required autocomplete="current-password">
+      <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-weight:normal">
+        <input type="checkbox" name="remember" value="1"> Remember me
+      </label>
+      <button type="submit" style="display:block;margin-top:8px">Log In</button>
+    </form>
+  </div>
+  <p class="label">autocomplete="username" on email and autocomplete="current-password" on password are essential for password managers.</p>
+</div>
+
+<div class="example">
+  <h3>32. Form with inline validation hint</h3>
+  <div class="output" style="font-size:13px">
+    <label for="ex32-uname">Username</label>
+    <input type="text" id="ex32-uname" name="username"
+           pattern="[a-zA-Z0-9_]{3,20}"
+           aria-describedby="ex32-hint"
+           required>
+    <small id="ex32-hint" style="color:#666">3–20 characters, letters, numbers, underscores only.</small>
+  </div>
+  <p class="label">aria-describedby links the input to the hint text so screen readers announce both the label and the hint.</p>
+</div>
+
+<div class="example">
+  <h3>33. File upload with drag and drop area (HTML only)</h3>
+  <div class="output">
+    <label for="ex33-upload" style="display:block;border:2px dashed #aaa;padding:20px;text-align:center;cursor:pointer;font-size:13px;font-weight:normal">
+      Drop a file here or click to browse
+      <input type="file" id="ex33-upload" name="upload" accept=".pdf,.docx"
+             style="position:absolute;left:-9999px">
+    </label>
+  </div>
+  <p class="label">Wrapping a visually hidden file input in a styled label creates a custom upload button without JavaScript.</p>
+</div>
+
+<div class="example">
+  <h3>34. Form with output element</h3>
+  <div class="output" style="font-size:13px">
+    <form oninput="ex34out.value = (+ex34a.value + +ex34b.value)">
+      <label for="ex34a">Value A: <input type="number" id="ex34a" value="5" style="width:60px"></label>
+      +
+      <label for="ex34b">Value B: <input type="number" id="ex34b" value="10" style="width:60px"></label>
+      = <output name="ex34out" id="ex34out" for="ex34a ex34b">15</output>
+    </form>
+  </div>
+  <p class="label">&lt;output&gt; is a semantic element for calculation results. The for attribute lists the input ids it depends on.</p>
+</div>
+
+<div class="example">
+  <h3>35. Progress and meter elements</h3>
+  <div class="output">
+    <p style="font-size:13px">Profile completion:</p>
+    <label for="ex35-prog" style="font-size:13px;font-weight:normal">70% complete</label>
+    <progress id="ex35-prog" value="70" max="100" style="width:200px"></progress>
+    <p style="font-size:13px">Disk usage:</p>
+    <meter value="0.72" min="0" max="1" low="0.33" high="0.66" optimum="0.1"
+           aria-label="Disk: 72% used" style="width:200px"></meter>
+  </div>
+  <p class="label">&lt;progress&gt; shows task completion. &lt;meter&gt; shows a value within a known range with low/high/optimum thresholds.</p>
+</div>
+
+<div class="example">
+  <h3>36. Search form with role="search"</h3>
+  <div class="output">
+    <form role="search" action="/search" method="get">
+      <label for="ex36-q" class="sr-only" style="position:absolute;left:-9999px">Search</label>
+      <input type="search" id="ex36-q" name="q" aria-label="Search" placeholder="Search...">
+      <button type="submit">Search</button>
+    </form>
+  </div>
+  <p class="label">role="search" identifies the form as a search landmark. The visually-hidden label or aria-label names the input for screen readers.</p>
+</div>
+
+<div class="example">
+  <h3>37. Form with time and datetime-local</h3>
+  <div class="output" style="font-size:13px">
+    <label for="ex37-dt">Meeting Time</label>
+    <input type="datetime-local" id="ex37-dt" name="meetingTime">
+    <label for="ex37-time2">Duration</label>
+    <input type="time" id="ex37-time2" name="duration" min="00:30" max="08:00">
+  </div>
+  <p class="label">datetime-local combines date and time in one picker. type="time" picks a time value (HH:MM format).</p>
+</div>
+
+<div class="example">
+  <h3>38. Form with week and month inputs</h3>
+  <div class="output" style="font-size:13px">
+    <label for="ex38-week">Week</label>
+    <input type="week" id="ex38-week" name="week">
+    <label for="ex38-month">Month</label>
+    <input type="month" id="ex38-month" name="month">
+  </div>
+  <p class="label">type="week" and type="month" are specialized date pickers. Browser support varies — provide text fallbacks if needed.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. form attribute to link input to external form</h3>
+  <pre>&lt;form id="main-form" action="/submit" method="post"&gt;
+  &lt;label for="ex39-name"&gt;Name&lt;/label&gt;
+  &lt;input type="text" id="ex39-name" name="name"&gt;
+&lt;/form&gt;
+
+&lt;!-- This input is OUTSIDE the form but still part of it --&gt;
+&lt;input type="email" name="email" form="main-form"&gt;
+&lt;button type="submit" form="main-form"&gt;Submit&lt;/button&gt;</pre>
+  <p class="label">The form attribute links any input/button to a form by ID, even if the element is outside the form in the DOM.</p>
+</div>
+
+<div class="example">
+  <h3>40. formaction and formmethod overrides</h3>
+  <pre>&lt;form action="/save-draft" method="post"&gt;
+  &lt;input type="text" name="content"&gt;
+  &lt;button type="submit"&gt;Save Draft&lt;/button&gt;
+  &lt;button type="submit" formaction="/publish" formmethod="post"&gt;Publish&lt;/button&gt;
+&lt;/form&gt;</pre>
+  <p class="label">formaction and formmethod on a submit button override the form's action and method for that specific submission.</p>
+</div>
+
+<div class="example">
+  <h3>41. Custom validity with setCustomValidity</h3>
+  <div class="output">
+    <label for="ex41-user2">Username (no spaces)</label>
+    <input type="text" id="ex41-user2" name="username2"
+           oninput="this.setCustomValidity(this.value.includes(' ') ? 'No spaces allowed' : '')">
+    <button onclick="document.getElementById('ex41-user2').form && document.getElementById('ex41-user2').reportValidity()">Check</button>
+  </div>
+  <p class="label">setCustomValidity() sets a custom browser validation message. Pass an empty string to clear it.</p>
+</div>
+
+<div class="example">
+  <h3>42. novalidate — disable browser validation</h3>
+  <pre>&lt;form action="/submit" method="post" novalidate&gt;
+  &lt;!-- Browser won't validate; use custom JS validation instead --&gt;
+  &lt;input type="email" name="email" required&gt;
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</pre>
+  <p class="label">novalidate disables browser-native validation. Use when implementing custom validation UI that replaces the browser's default popups.</p>
+</div>
+
+<div class="example">
+  <h3>43. FormData API</h3>
+  <pre>&lt;form id="ajax-form"&gt;
+  &lt;input type="text" name="username" value="Alice"&gt;
+  &lt;input type="email" name="email" value="alice@example.com"&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  const form = document.getElementById("ajax-form");
+  const data = new FormData(form);
+  for (const [key, value] of data.entries()) {
+    console.log(key, "=", value);
+  }
+  // Submit via fetch:
+  fetch("/api/submit", { method: "POST", body: data });
+&lt;/script&gt;</pre>
+  <p class="label">FormData serialises a form's values (including files) for fetch/XMLHttpRequest submission without page navigation.</p>
+</div>
+
+<div class="example">
+  <h3>44. Constraint validation API</h3>
+  <pre>&lt;input type="email" id="email-field" required&gt;
+&lt;script&gt;
+  const field = document.getElementById("email-field");
+  field.addEventListener("blur", () =&gt; {
+    if (!field.validity.valid) {
+      if (field.validity.valueMissing) showError("Email is required");
+      else if (field.validity.typeMismatch) showError("Enter a valid email");
+    }
+  });
+&lt;/script&gt;</pre>
+  <p class="label">The ValidityState object (field.validity) exposes specific constraint failures: valueMissing, typeMismatch, patternMismatch, tooLong, etc.</p>
+</div>
+
+<div class="example">
+  <h3>45. Accessible error message pattern</h3>
+  <pre>&lt;label for="email-acc"&gt;Email &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+&lt;input type="email" id="email-acc" name="email"
+       required
+       aria-required="true"
+       aria-invalid="true"
+       aria-errormessage="email-error"&gt;
+&lt;span id="email-error" role="alert"&gt;
+  Please enter a valid email address.
+&lt;/span&gt;</pre>
+  <p class="label">aria-invalid="true" and aria-errormessage (referencing the error element's ID) communicate errors to screen readers without relying on visual cues alone.</p>
+</div>
+
+<div class="example">
+  <h3>46. Password confirmation validation</h3>
+  <div class="output" style="font-size:13px">
+    <label for="ex46-pw">New Password</label>
+    <input type="password" id="ex46-pw" name="password" autocomplete="new-password">
+    <label for="ex46-pwc2">Confirm Password</label>
+    <input type="password" id="ex46-pwc2" name="confirm" autocomplete="new-password"
+           oninput="this.setCustomValidity(this.value !== document.getElementById('ex46-pw').value ? 'Passwords do not match' : '')">
+  </div>
+  <p class="label">Cross-field validation via oninput: check confirm matches password using setCustomValidity.</p>
+</div>
+
+<div class="example">
+  <h3>47. Form with ARIA live region for status</h3>
+  <pre>&lt;form id="contact-form"&gt;
+  ...fields...
+  &lt;button type="submit"&gt;Send&lt;/button&gt;
+&lt;/form&gt;
+&lt;div role="status" aria-live="polite" aria-atomic="true" id="form-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  document.getElementById("contact-form").addEventListener("submit", async e =&gt; {
+    e.preventDefault();
+    await submitForm();
+    document.getElementById("form-status").textContent = "Message sent successfully!";
+  });
+&lt;/script&gt;</pre>
+  <p class="label">role="status" with aria-live="polite" announces form submission outcomes to screen reader users without disrupting reading flow.</p>
+</div>
+
+<div class="example">
+  <h3>48. input with pattern and title</h3>
+  <div class="output" style="font-size:13px">
+    <label for="ex48-zip">ZIP Code</label>
+    <input type="text" id="ex48-zip" name="zip"
+           pattern="\d{5}(-\d{4})?"
+           title="5-digit ZIP code (e.g., 12345) or ZIP+4 (e.g., 12345-6789)"
+           placeholder="12345">
+  </div>
+  <p class="label">pattern accepts a JavaScript RegExp (without slashes). The title attribute becomes the browser's validation message tooltip.</p>
+</div>
+
+<div class="example">
+  <h3>49. Fieldset with disabled attribute</h3>
+  <div class="output" style="font-size:13px">
+    <fieldset disabled>
+      <legend>Payment (unavailable during review)</legend>
+      <label for="ex49-card">Card Number</label>
+      <input type="text" id="ex49-card" name="card" placeholder="**** **** **** ****">
+      <button type="submit">Pay Now</button>
+    </fieldset>
+  </div>
+  <p class="label">disabled on &lt;fieldset&gt; disables all controls inside it at once — a powerful way to lock sections of a form.</p>
+</div>
+
+<div class="example">
+  <h3>50. Complete accessible contact form</h3>
+  <div class="output" style="font-size:13px">
+    <form action="/contact" method="post" novalidate>
+      <fieldset>
+        <legend>Contact Us</legend>
+        <label for="ex50-name">
+          Full Name <span aria-hidden="true">*</span>
+        </label>
+        <input type="text" id="ex50-name" name="name"
+               required aria-required="true"
+               autocomplete="name">
+
+        <label for="ex50-email3">
+          Email <span aria-hidden="true">*</span>
+        </label>
+        <input type="email" id="ex50-email3" name="email"
+               required aria-required="true"
+               autocomplete="email">
+
+        <label for="ex50-subject">Subject</label>
+        <select id="ex50-subject" name="subject">
+          <option value="">-- Select a topic --</option>
+          <option value="sales">Sales inquiry</option>
+          <option value="support">Technical support</option>
+          <option value="billing">Billing question</option>
+        </select>
+
+        <label for="ex50-msg">Message <span aria-hidden="true">*</span></label>
+        <textarea id="ex50-msg" name="message" rows="4"
+                  required aria-required="true"></textarea>
+
+        <button type="submit">Send Message</button>
+      </fieldset>
+    </form>
+  </div>
+  <p class="label">Gold-standard contact form: fieldset/legend, every input has label + id + name + autocomplete, required with aria-required, novalidate for custom JS validation.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 4.5 — Embedded Content  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 4.5 — Embedded Content</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 4.5 — Embedded Content</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Minimal iframe</h3>
+  <pre>&lt;iframe src="https://example.com" width="600" height="400" title="Example website"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Always include title for accessibility. Always set width and height.</p>
+</div>
+
+<div class="example">
+  <h3>2. title attribute (required for accessibility)</h3>
+  <pre>&lt;iframe src="map.html" title="Interactive map of store locations"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">The title attribute describes the iframe's content to screen readers. Never omit it.</p>
+</div>
+
+<div class="example">
+  <h3>3. sandbox attribute</h3>
+  <pre>&lt;iframe src="widget.html" sandbox&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Empty sandbox blocks scripts, forms, popups, same-origin access, and more. The safest default.</p>
+</div>
+
+<div class="example">
+  <h3>4. sandbox with permissions</h3>
+  <pre>&lt;iframe src="widget.html" sandbox="allow-scripts allow-same-origin"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Re-grant specific permissions. Values: allow-scripts, allow-same-origin, allow-forms, allow-popups, allow-top-navigation.</p>
+</div>
+
+<div class="example">
+  <h3>5. loading="lazy" for iframes</h3>
+  <pre>&lt;iframe src="comments.html" loading="lazy" title="Comments section"
+        width="100%" height="500"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Defers loading until the iframe approaches the viewport. Great for below-fold content.</p>
+</div>
+
+<div class="example">
+  <h3>6. allow attribute (Feature Policy)</h3>
+  <pre>&lt;iframe src="video-player.html"
+        allow="fullscreen; autoplay; encrypted-media"
+        title="Video player"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">allow controls which browser features (camera, fullscreen, payment, etc.) the iframe can use.</p>
+</div>
+
+<div class="example">
+  <h3>7. name attribute for frame targeting</h3>
+  <pre>&lt;iframe name="content-frame" src="page.html" title="Content"&gt;&lt;/iframe&gt;
+&lt;a href="other-page.html" target="content-frame"&gt;Load other page&lt;/a&gt;</pre>
+  <p class="label">Named iframes can be targeted by links and forms using the target attribute.</p>
+</div>
+
+<div class="example">
+  <h3>8. srcdoc attribute</h3>
+  <pre>&lt;iframe srcdoc="&lt;p&gt;Hello &lt;strong&gt;world&lt;/strong&gt;!&lt;/p&gt;"
+        title="Inline content"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">srcdoc embeds HTML directly without a separate URL request. Automatically sandboxed.</p>
+</div>
+
+<div class="example">
+  <h3>9. referrerpolicy</h3>
+  <pre>&lt;iframe src="https://partner.com/widget"
+        referrerpolicy="no-referrer"
+        title="Partner widget"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Controls what referrer info is sent. no-referrer, origin, strict-origin-when-cross-origin, etc.</p>
+</div>
+
+<div class="example">
+  <h3>10. Blocking navigation with sandbox</h3>
+  <pre>&lt;iframe src="user-content.html"
+        sandbox="allow-scripts"
+        title="User content"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Without allow-top-navigation, the iframe cannot redirect the parent page.</p>
+</div>
+
+<div class="example">
+  <h3>11. iframe with style</h3>
+  <pre>&lt;iframe src="sidebar.html"
+        title="Sidebar"
+        style="border: none; width: 300px; height: 100vh;"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Use border: none to remove the default iframe border. Control dimensions with CSS.</p>
+</div>
+
+<div class="example">
+  <h3>12. Embedding a YouTube video</h3>
+  <pre>&lt;iframe width="560" height="315"
+        src="https://www.youtube.com/embed/VIDEO_ID"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen&gt;&lt;/iframe&gt;</pre>
+  <p class="label">YouTube's standard embed code. frameborder="0" is deprecated; use CSS border: none instead.</p>
+</div>
+
+<div class="example">
+  <h3>13. about:blank iframe</h3>
+  <pre>&lt;iframe id="sandbox" src="about:blank" sandbox title="Sandbox"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+const frame = document.getElementById('sandbox');
+frame.srcdoc = '&lt;p&gt;Dynamically injected content&lt;/p&gt;';
+&lt;/script&gt;</pre>
+  <p class="label">about:blank loads an empty page. Use srcdoc to inject content dynamically.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. postMessage communication</h3>
+  <pre>// Parent → iframe:
+iframe.contentWindow.postMessage({ action: 'setTheme', value: 'dark' }, 'https://widget.com');
+
+// Inside iframe:
+window.addEventListener('message', e =&gt; {
+  if (e.origin !== 'https://parent.com') return; // always verify origin
+  console.log(e.data);
+});</pre>
+  <p class="label">postMessage is the secure way to communicate cross-origin. Always verify e.origin.</p>
+</div>
+
+<div class="example">
+  <h3>15. Receiving messages from iframe</h3>
+  <pre>// In parent:
+window.addEventListener('message', e =&gt; {
+  if (e.origin !== 'https://widget.com') return;
+  if (e.data.type === 'resize') {
+    iframe.height = e.data.height + 'px';
+  }
+});
+
+// In iframe (to auto-resize parent):
+parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');</pre>
+  <p class="label">Auto-resizing iframe: iframe posts its height to parent, parent adjusts the iframe element.</p>
+</div>
+
+<div class="example">
+  <h3>16. Embedding Google Maps</h3>
+  <pre>&lt;iframe
+  src="https://www.google.com/maps/embed?pb=..."
+  width="600" height="450"
+  style="border:0"
+  allowfullscreen
+  loading="lazy"
+  referrerpolicy="no-referrer-when-downgrade"
+  title="Store location map"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Google Maps embed pattern. loading="lazy" defers it until near viewport.</p>
+</div>
+
+<div class="example">
+  <h3>17. Responsive iframe wrapper</h3>
+  <pre>&lt;style&gt;
+.iframe-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+.iframe-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+&lt;/style&gt;
+&lt;div class="iframe-wrap"&gt;
+  &lt;iframe src="video.html" title="Video"&gt;&lt;/iframe&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Same 16:9 padding-bottom trick as for video. Makes iframe aspect-ratio responsive.</p>
+</div>
+
+<div class="example">
+  <h3>18. Embedding a PDF</h3>
+  <pre>&lt;iframe src="document.pdf" width="100%" height="600px"
+        title="Annual report PDF"&gt;
+  &lt;p&gt;Your browser doesn't support PDFs.
+     &lt;a href="document.pdf"&gt;Download the PDF&lt;/a&gt;.&lt;/p&gt;
+&lt;/iframe&gt;</pre>
+  <p class="label">Browsers render PDFs inline. Provide a download fallback for browsers that don't support it.</p>
+</div>
+
+<div class="example">
+  <h3>19. Content Security Policy for iframes</h3>
+  <pre>&lt;!-- In HTTP response headers: --&gt;
+Content-Security-Policy: frame-ancestors 'self' https://partner.com
+
+&lt;!-- Or in meta tag (limited): --&gt;
+&lt;meta http-equiv="Content-Security-Policy"
+      content="frame-src 'self' https://youtube.com"&gt;</pre>
+  <p class="label">frame-ancestors restricts who can embed your page. frame-src restricts what your page can embed.</p>
+</div>
+
+<div class="example">
+  <h3>20. X-Frame-Options header</h3>
+  <pre>&lt;!-- HTTP response header: --&gt;
+X-Frame-Options: DENY           &lt;!-- never embeddable --&gt;
+X-Frame-Options: SAMEORIGIN     &lt;!-- only same origin --&gt;
+X-Frame-Options: ALLOW-FROM https://partner.com  &lt;!-- deprecated --&gt;</pre>
+  <p class="label">X-Frame-Options prevents clickjacking by controlling iframe embedding. Use CSP frame-ancestors instead.</p>
+</div>
+
+<div class="example">
+  <h3>21. Intersection Observer to lazy-load iframe</h3>
+  <pre>&lt;iframe data-src="heavy-widget.html" title="Widget" class="lazy-frame"&gt;&lt;/iframe&gt;
+&lt;script&gt;
+const obs = new IntersectionObserver(entries =&gt; {
+  entries.forEach(e =&gt; {
+    if (e.isIntersecting) {
+      e.target.src = e.target.dataset.src;
+      obs.unobserve(e.target);
+    }
+  });
+});
+document.querySelectorAll('.lazy-frame').forEach(f =&gt; obs.observe(f));
+&lt;/script&gt;</pre>
+  <p class="label">Native loading="lazy" has limited support; IntersectionObserver provides a reliable polyfill.</p>
+</div>
+
+<div class="example">
+  <h3>22. iframe security checklist</h3>
+  <pre>&lt;!-- Secure iframe pattern: --&gt;
+&lt;iframe
+  src="https://trusted-vendor.com/widget"
+  sandbox="allow-scripts allow-same-origin allow-forms"
+  allow="payment"
+  referrerpolicy="strict-origin-when-cross-origin"
+  loading="lazy"
+  title="Payment widget"
+  width="400" height="300"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Security checklist: sandbox, specific allow, strict referrer, title for a11y, lazy loading.</p>
+</div>
+
+<div class="example">
+  <h3>23. Detecting iframe load</h3>
+  <pre>const iframe = document.getElementById('my-frame');
+iframe.addEventListener('load', () =&gt; {
+  console.log('iframe loaded:', iframe.src);
+  // Can now access same-origin iframe:
+  // iframe.contentDocument, iframe.contentWindow
+});
+iframe.addEventListener('error', () =&gt; {
+  console.error('iframe failed to load');
+});</pre>
+  <p class="label">Use load event to know when iframe content is ready. Cross-origin iframes limit DOM access.</p>
+</div>
+
+<div class="example">
+  <h3>24. Accessing same-origin iframe DOM</h3>
+  <pre>const frame = document.getElementById('my-frame');
+frame.addEventListener('load', () =&gt; {
+  const doc = frame.contentDocument;
+  const heading = doc.querySelector('h1');
+  heading.textContent = 'Modified by parent';
+});
+// or: frame.contentWindow.document</pre>
+  <p class="label">Same-origin iframes allow full DOM access. Cross-origin iframes block this for security.</p>
+</div>
+
+<div class="example">
+  <h3>25. object element (legacy)</h3>
+  <pre>&lt;object data="presentation.pdf" type="application/pdf"
+        width="600" height="400"&gt;
+  &lt;p&gt;Alternative: &lt;a href="presentation.pdf"&gt;Download PDF&lt;/a&gt;&lt;/p&gt;
+&lt;/object&gt;</pre>
+  <p class="label">object embeds external resources. Prefer iframe for HTML content; use object for PDFs and legacy plugins.</p>
+</div>
+
+<div class="example">
+  <h3>26. embed element (legacy)</h3>
+  <pre>&lt;embed src="animation.swf" type="application/x-shockwave-flash"
+       width="550" height="400"&gt;</pre>
+  <p class="label">embed is void element with no fallback content. Flash is dead; use it for SVG or plugin content only.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Lazy-loaded YouTube with facade</h3>
+  <pre>&lt;style&gt;
+.yt-facade { position:relative; cursor:pointer; background:#000; }
+.yt-facade img { width:100%; opacity:0.8; }
+.yt-facade::after { content:"▶"; position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%); font-size:60px; color:white; }
+&lt;/style&gt;
+&lt;div class="yt-facade" data-video-id="dQw4w9WgXcQ"
+     onclick="this.innerHTML='&lt;iframe src=\'https://www.youtube.com/embed/'+this.dataset.videoId+'?autoplay=1\' ...&gt;&lt;/iframe&gt;'"&gt;
+  &lt;img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="Video thumbnail"&gt;
+&lt;/div&gt;</pre>
+  <p class="label">YouTube facade pattern: show thumbnail, load real iframe on click. Saves ~500KB per embed.</p>
+</div>
+
+<div class="example">
+  <h3>28. Codepen-style split editor</h3>
+  <pre>&lt;div style="display:grid; grid-template-columns: 1fr 1fr; height:400px"&gt;
+  &lt;textarea id="code" style="height:100%; font-family:monospace"&gt;&lt;/textarea&gt;
+  &lt;iframe id="preview" title="Preview" style="border:none; height:100%"&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;script&gt;
+document.getElementById('code').addEventListener('input', e =&gt; {
+  document.getElementById('preview').srcdoc = e.target.value;
+});
+&lt;/script&gt;</pre>
+  <p class="label">Live preview using srcdoc: update iframe content on every keystroke in the textarea.</p>
+</div>
+
+<div class="example">
+  <h3>29. iframe in a modal dialog</h3>
+  <pre>&lt;dialog id="modal"&gt;
+  &lt;iframe id="modal-frame" src="" title="Modal content"
+          width="600" height="400"&gt;&lt;/iframe&gt;
+  &lt;button onclick="closeModal()"&gt;Close&lt;/button&gt;
+&lt;/dialog&gt;
+&lt;script&gt;
+function openModal(url) {
+  document.getElementById('modal-frame').src = url;
+  document.getElementById('modal').showModal();
+}
+function closeModal() {
+  document.getElementById('modal-frame').src = '';
+  document.getElementById('modal').close();
+}
+&lt;/script&gt;</pre>
+  <p class="label">Clear iframe src on close to stop media playback. Set src on open for clean load.</p>
+</div>
+
+<div class="example">
+  <h3>30. Sandboxed code execution</h3>
+  <pre>function runCode(code) {
+  const iframe = document.createElement('iframe');
+  iframe.sandbox = 'allow-scripts';
+  iframe.srcdoc = `&lt;script&gt;
+    try {
+      const result = eval(${JSON.stringify(code)});
+      parent.postMessage({ type: 'result', value: String(result) }, '*');
+    } catch(e) {
+      parent.postMessage({ type: 'error', value: e.message }, '*');
+    }
+  &lt;/script&gt;`;
+  document.body.appendChild(iframe);
+  setTimeout(() =&gt; iframe.remove(), 5000);
+}</pre>
+  <p class="label">Safe code execution: run untrusted code in a sandboxed iframe, receive results via postMessage.</p>
+</div>
+
+<div class="example">
+  <h3>31. iframe resize observer</h3>
+  <pre>// Inside the iframe:
+const resizeObserver = new ResizeObserver(() =&gt; {
+  parent.postMessage({
+    type: 'resize',
+    height: document.documentElement.scrollHeight
+  }, '*');
+});
+resizeObserver.observe(document.documentElement);
+
+// In parent:
+window.addEventListener('message', e =&gt; {
+  if (e.data.type === 'resize') {
+    iframe.style.height = e.data.height + 'px';
+  }
+});</pre>
+  <p class="label">Auto-height iframe: observe content height changes and notify parent to resize.</p>
+</div>
+
+<div class="example">
+  <h3>32. Codesandbox-style iframe preview</h3>
+  <pre>const files = {
+  'index.html': '&lt;link rel="stylesheet" href="style.css"&gt;&lt;h1&gt;Hello&lt;/h1&gt;',
+  'style.css': 'h1 { color: coral; }'
+};
+// Serve files from a Service Worker or blob URLs
+const htmlBlob = new Blob([files['index.html']], { type: 'text/html' });
+iframe.src = URL.createObjectURL(htmlBlob);</pre>
+  <p class="label">Multiple file preview: create blob URLs for each file; link them from the HTML blob.</p>
+</div>
+
+<div class="example">
+  <h3>33. iframe with CSP header response</h3>
+  <pre>&lt;!-- In the embedded page's HTTP response: --&gt;
+Content-Security-Policy: default-src 'self'; script-src 'none'; frame-ancestors https://parent.com
+
+&lt;!-- In the parent page: --&gt;
+&lt;iframe src="https://secure-widget.com" title="Widget" sandbox="allow-same-origin"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Double protection: the embedded page uses CSP to restrict itself, plus the parent sandboxes it.</p>
+</div>
+
+<div class="example">
+  <h3>34. iframe focus management</h3>
+  <pre>// Send focus into iframe:
+iframe.contentWindow.focus();
+
+// Detect when iframe gets focus (same-origin only):
+iframe.addEventListener('load', () =&gt; {
+  iframe.contentWindow.addEventListener('focus', () =&gt; {
+    console.log('iframe focused');
+  });
+});
+
+// Trap focus inside iframe for modals (custom logic needed)</pre>
+  <p class="label">Focus management between parent and iframe is tricky. Tab order continues into iframe naturally.</p>
+</div>
+
+<div class="example">
+  <h3>35. Embedding Stripe payment</h3>
+  <pre>&lt;!-- Stripe handles iframe creation automatically --&gt;
+&lt;div id="payment-element"&gt;&lt;/div&gt;
+&lt;script src="https://js.stripe.com/v3/"&gt;&lt;/script&gt;
+&lt;script&gt;
+const stripe = Stripe('pk_test_...');
+const elements = stripe.elements({ clientSecret });
+const paymentEl = elements.create('payment');
+paymentEl.mount('#payment-element');
+// Stripe injects a sandboxed iframe with allow="payment"
+&lt;/script&gt;</pre>
+  <p class="label">Payment SDKs inject their own sandboxed iframes. This is why allow="payment" exists.</p>
+</div>
+
+<div class="example">
+  <h3>36. Object element for SVG</h3>
+  <pre>&lt;object data="diagram.svg" type="image/svg+xml"
+        width="400" height="300"
+        aria-label="Architecture diagram"&gt;
+  &lt;img src="diagram.png" alt="Architecture diagram (fallback)"&gt;
+&lt;/object&gt;</pre>
+  <p class="label">object with type="image/svg+xml" embeds an SVG file. img inside is the fallback.</p>
+</div>
+
+<div class="example">
+  <h3>37. Printing iframe content</h3>
+  <pre>function printFrame() {
+  const frame = document.getElementById('report-frame');
+  frame.contentWindow.print();
+}
+// For cross-origin iframes, this won't work — need server-side solution</pre>
+  <p class="label">Same-origin iframes can be printed via contentWindow.print(). Cross-origin iframes cannot.</p>
+</div>
+
+<div class="example">
+  <h3>38. iframe performance impact</h3>
+  <pre>&lt;!-- Bad: loads immediately, blocks page --&gt;
+&lt;iframe src="heavy-app.html"&gt;&lt;/iframe&gt;
+
+&lt;!-- Good: lazy load --&gt;
+&lt;iframe src="heavy-app.html" loading="lazy"&gt;&lt;/iframe&gt;
+
+&lt;!-- Best: load on user interaction --&gt;
+&lt;button onclick="loadWidget()"&gt;Load widget&lt;/button&gt;
+&lt;div id="widget-slot"&gt;&lt;/div&gt;
+&lt;script&gt;
+function loadWidget() {
+  document.getElementById('widget-slot').innerHTML =
+    '&lt;iframe src="widget.html" title="Widget"&gt;&lt;/iframe&gt;';
+}
+&lt;/script&gt;</pre>
+  <p class="label">Each iframe is a full browsing context with its own memory and parsing. Defer loading whenever possible.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Federated identity (Login with X)</h3>
+  <pre>&lt;!-- The browser handles the iframe for FedCM --&gt;
+const credential = await navigator.credentials.get({
+  federated: {
+    providers: [{ url: 'https://accounts.google.com', clientId: '...' }]
+  }
+});
+// No iframe to manage directly — FedCM replaces the popup/iframe pattern</pre>
+  <p class="label">FedCM (Federated Credential Management) replaces iframes for identity login flows.</p>
+</div>
+
+<div class="example">
+  <h3>40. iframe Permissions Policy</h3>
+  <pre>&lt;iframe src="app.html"
+        allow="camera 'none'; microphone 'none'; geolocation 'none';
+               fullscreen 'self'; payment https://stripe.com"
+        title="Application"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">Permissions Policy (formerly Feature Policy) grants or denies access to browser features per-origin.</p>
+</div>
+
+<div class="example">
+  <h3>41. BroadcastChannel for iframe communication</h3>
+  <pre>// Works between same-origin iframes on the same origin
+const channel = new BroadcastChannel('app-channel');
+channel.postMessage({ type: 'theme-change', value: 'dark' });
+channel.onmessage = e =&gt; console.log(e.data);</pre>
+  <p class="label">BroadcastChannel communicates between same-origin tabs, iframes, and workers without postMessage chains.</p>
+</div>
+
+<div class="example">
+  <h3>42. SharedWorker across iframes</h3>
+  <pre>// In each same-origin iframe:
+const worker = new SharedWorker('shared.js');
+worker.port.start();
+worker.port.postMessage({ type: 'register' });
+worker.port.onmessage = e =&gt; console.log(e.data);</pre>
+  <p class="label">SharedWorker instances are shared across same-origin pages/iframes — useful for shared state.</p>
+</div>
+
+<div class="example">
+  <h3>43. iframe storage isolation</h3>
+  <pre>&lt;!-- Cross-origin iframes are storage-partitioned in modern browsers --&gt;
+&lt;!-- Third-party cookies blocked by default in Chrome 120+ --&gt;
+&lt;!-- Use Storage Access API to request first-party storage access --&gt;
+&lt;script&gt;
+// Inside the iframe:
+document.requestStorageAccess().then(() =&gt; {
+  // Now can access cookies and localStorage as if first-party
+});
+&lt;/script&gt;</pre>
+  <p class="label">Storage partitioning prevents cross-site tracking. Use Storage Access API for legitimate cross-origin storage needs.</p>
+</div>
+
+<div class="example">
+  <h3>44. Portals API (experimental)</h3>
+  <pre>&lt;portal id="portal" src="next-page.html"&gt;&lt;/portal&gt;
+&lt;script&gt;
+const portal = document.getElementById('portal');
+portal.addEventListener('click', async () =&gt; {
+  await portal.activate(); // instant page transition
+});
+&lt;/script&gt;</pre>
+  <p class="label">Portals enable instant page transitions by pre-rendering the next page (experimental, Chrome only).</p>
+</div>
+
+<div class="example">
+  <h3>45. Fenced frames (Privacy Sandbox)</h3>
+  <pre>&lt;!-- Experimental: for ads without cross-site tracking --&gt;
+&lt;fencedframe src="ad.html" mode="opaque-ads"&gt;&lt;/fencedframe&gt;</pre>
+  <p class="label">Fenced frames embed content without the embedded page knowing the embedding context. Part of Privacy Sandbox.</p>
+</div>
+
+<div class="example">
+  <h3>46. Service Worker intercepting iframe requests</h3>
+  <pre>// SW intercepts all fetch requests including those from iframes
+self.addEventListener('fetch', e =&gt; {
+  if (e.request.mode === 'navigate' && new URL(e.request.url).origin === location.origin) {
+    e.respondWith(caches.match(e.request).then(r =&gt; r || fetch(e.request)));
+  }
+});</pre>
+  <p class="label">Service Workers control all same-origin fetches, including iframe navigation requests.</p>
+</div>
+
+<div class="example">
+  <h3>47. iframe in Shadow DOM</h3>
+  <pre>class EmbeddedWidget extends HTMLElement {
+  connectedCallback() {
+    const shadow = this.attachShadow({ mode: 'closed' });
+    const frame = document.createElement('iframe');
+    frame.src = this.getAttribute('src');
+    frame.title = this.getAttribute('label') || 'Widget';
+    frame.setAttribute('sandbox', 'allow-scripts');
+    shadow.appendChild(frame);
+  }
+}
+customElements.define('embedded-widget', EmbeddedWidget);</pre>
+  <p class="label">Encapsulate iframes inside custom elements with Shadow DOM for clean component APIs.</p>
+</div>
+
+<div class="example">
+  <h3>48. Clickjacking protection in practice</h3>
+  <pre>&lt;!-- Attacker page (what you must prevent): --&gt;
+&lt;style&gt;iframe { opacity: 0; position: absolute; top: 0; left: 0; }&lt;/style&gt;
+&lt;button&gt;Click here to win!&lt;/button&gt;
+&lt;iframe src="https://bank.com/transfer"&gt;&lt;/iframe&gt;
+
+&lt;!-- Defense (on bank.com): --&gt;
+Content-Security-Policy: frame-ancestors 'none'
+X-Frame-Options: DENY</pre>
+  <p class="label">Clickjacking overlays a transparent iframe over a decoy button. Prevent with CSP frame-ancestors.</p>
+</div>
+
+<div class="example">
+  <h3>49. Testing iframes in Cypress</h3>
+  <pre>// cypress/support/commands.js
+Cypress.Commands.add('getIframeBody', (iframeSelector) =&gt; {
+  return cy.get(iframeSelector)
+    .its('0.contentDocument.body')
+    .should('not.be.empty')
+    .then(cy.wrap);
+});
+
+// In test:
+cy.getIframeBody('#my-frame').find('button').click();</pre>
+  <p class="label">Cypress can interact with same-origin iframes by accessing their contentDocument directly.</p>
+</div>
+
+<div class="example">
+  <h3>50. Complete safe embed pattern</h3>
+  <pre>&lt;figure&gt;
+  &lt;div class="embed-wrapper" style="position:relative;padding-bottom:56.25%;height:0"&gt;
+    &lt;iframe
+      style="position:absolute;top:0;left:0;width:100%;height:100%;border:0"
+      src="https://www.youtube.com/embed/VIDEO_ID?rel=0&amp;modestbranding=1"
+      title="Product demo video"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+      loading="lazy"
+      referrerpolicy="strict-origin-when-cross-origin"&gt;
+    &lt;/iframe&gt;
+  &lt;/div&gt;
+  &lt;figcaption&gt;Product demo — recorded January 2026&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Complete production pattern: responsive wrapper, security attributes, lazy loading, accessibility, figcaption.</p>
+</div>
+
+</body>
+</html>

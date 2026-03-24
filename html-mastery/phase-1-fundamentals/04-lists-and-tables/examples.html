@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 1.4 — Lists & Tables  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 1.4 — Lists &amp; Tables</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; margin-top: 6px; }
+    .output { background: #fafafa; border: 1px solid #eee; padding: 8px; border-radius: 3px; margin-top: 6px; }
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; font-size: 13px; }
+    thead th { background: #f0f0f0; }
+    tfoot { background: #f9f9f9; font-weight: bold; }
+  </style>
+</head>
+<body>
+<h1>Examples 1.4 — Lists &amp; Tables</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Unordered list</h3>
+  <div class="output">
+    <ul>
+      <li>HTML</li>
+      <li>CSS</li>
+      <li>JavaScript</li>
+    </ul>
+  </div>
+  <p class="label">&lt;ul&gt; for unordered items. Renders as bullet points. Use when order doesn't matter.</p>
+</div>
+
+<div class="example">
+  <h3>2. Ordered list</h3>
+  <div class="output">
+    <ol>
+      <li>Preheat oven to 375°F</li>
+      <li>Mix ingredients</li>
+      <li>Bake for 25 minutes</li>
+    </ol>
+  </div>
+  <p class="label">&lt;ol&gt; for ordered steps. Renders with numbers by default. Use when sequence matters.</p>
+</div>
+
+<div class="example">
+  <h3>3. Definition list</h3>
+  <div class="output">
+    <dl>
+      <dt>HTML</dt>
+      <dd>HyperText Markup Language — the structure of web pages.</dd>
+      <dt>CSS</dt>
+      <dd>Cascading Style Sheets — the presentation of web pages.</dd>
+    </dl>
+  </div>
+  <p class="label">&lt;dl&gt; for term/description pairs. &lt;dt&gt; = term, &lt;dd&gt; = description.</p>
+</div>
+
+<div class="example">
+  <h3>4. Minimal table</h3>
+  <div class="output">
+    <table>
+      <tr><th>Name</th><th>Age</th></tr>
+      <tr><td>Alice</td><td>30</td></tr>
+      <tr><td>Bob</td><td>25</td></tr>
+    </table>
+  </div>
+  <p class="label">Minimal table without thead/tbody. Acceptable for very simple cases but add structure for data tables.</p>
+</div>
+
+<div class="example">
+  <h3>5. Table with thead, tbody, tfoot</h3>
+  <div class="output">
+    <table>
+      <thead><tr><th>Item</th><th>Price</th></tr></thead>
+      <tbody>
+        <tr><td>Widget</td><td>$9.99</td></tr>
+        <tr><td>Gadget</td><td>$14.99</td></tr>
+      </tbody>
+      <tfoot><tr><td>Total</td><td>$24.98</td></tr></tfoot>
+    </table>
+  </div>
+  <p class="label">thead/tbody/tfoot add semantic structure and enable independent scrolling of tbody in some browsers.</p>
+</div>
+
+<div class="example">
+  <h3>6. Table caption</h3>
+  <div class="output">
+    <table>
+      <caption>Monthly Sales Data</caption>
+      <thead><tr><th>Month</th><th>Sales</th></tr></thead>
+      <tbody>
+        <tr><td>January</td><td>$12,400</td></tr>
+        <tr><td>February</td><td>$9,800</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label">&lt;caption&gt; provides a title for the table — announced by screen readers before the table content.</p>
+</div>
+
+<div class="example">
+  <h3>7. th with scope="col"</h3>
+  <div class="output">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Country</th>
+          <th scope="col">Capital</th>
+          <th scope="col">Population</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>France</td><td>Paris</td><td>68M</td></tr>
+        <tr><td>Germany</td><td>Berlin</td><td>84M</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label">scope="col" tells assistive tech that this header applies to all cells in the column below it.</p>
+</div>
+
+<div class="example">
+  <h3>8. th with scope="row"</h3>
+  <div class="output">
+    <table>
+      <thead><tr><th scope="col">Metric</th><th scope="col">Q1</th><th scope="col">Q2</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Revenue</th><td>$1.2M</td><td>$1.5M</td></tr>
+        <tr><th scope="row">Expenses</th><td>$0.8M</td><td>$0.9M</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label">scope="row" identifies a header for all cells in the same row — used in tables with row labels.</p>
+</div>
+
+<div class="example">
+  <h3>9. colspan — merging columns</h3>
+  <div class="output">
+    <table>
+      <thead>
+        <tr><th colspan="2">Personal Info</th><th colspan="2">Contact</th></tr>
+        <tr><th>First</th><th>Last</th><th>Email</th><th>Phone</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Alice</td><td>Smith</td><td>alice@example.com</td><td>555-1234</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label">colspan merges cells horizontally. The number specifies how many columns to span.</p>
+</div>
+
+<div class="example">
+  <h3>10. rowspan — merging rows</h3>
+  <div class="output">
+    <table>
+      <thead><tr><th>Dept</th><th>Employee</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="2">Engineering</td><td>Alice</td><td>Lead</td></tr>
+        <tr><td>Bob</td><td>Developer</td></tr>
+        <tr><td rowspan="2">Design</td><td>Carol</td><td>Lead</td></tr>
+        <tr><td>Dave</td><td>Designer</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label">rowspan merges cells vertically across the specified number of rows.</p>
+</div>
+
+<div class="example">
+  <h3>11. Ordered list starting at a different number</h3>
+  <div class="output">
+    <p>Continued from previous list:</p>
+    <ol start="4">
+      <li>Add the eggs</li>
+      <li>Stir well</li>
+      <li>Pour into pan</li>
+    </ol>
+  </div>
+  <p class="label">The start attribute on &lt;ol&gt; sets the starting number. Useful for split lists.</p>
+</div>
+
+<div class="example">
+  <h3>12. Ordered list with reversed attribute</h3>
+  <div class="output">
+    <p>Top 3 movies (worst to best):</p>
+    <ol reversed>
+      <li>Movie C</li>
+      <li>Movie B</li>
+      <li>Movie A</li>
+    </ol>
+  </div>
+  <p class="label">The reversed attribute counts down instead of up — useful for countdowns and rankings.</p>
+</div>
+
+<div class="example">
+  <h3>13. List item with value override</h3>
+  <div class="output">
+    <ol>
+      <li>First item (1)</li>
+      <li value="5">Jump to five</li>
+      <li>Continues from 6</li>
+    </ol>
+  </div>
+  <p class="label">The value attribute on &lt;li&gt; inside &lt;ol&gt; overrides the counter for that item and continues from there.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Nested unordered list</h3>
+  <div class="output">
+    <ul>
+      <li>Frontend
+        <ul>
+          <li>HTML</li>
+          <li>CSS</li>
+          <li>JavaScript</li>
+        </ul>
+      </li>
+      <li>Backend
+        <ul>
+          <li>Node.js</li>
+          <li>Python</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <p class="label">Nested lists are created by placing a &lt;ul&gt; or &lt;ol&gt; inside an &lt;li&gt;.</p>
+</div>
+
+<div class="example">
+  <h3>15. Mixed nested lists</h3>
+  <div class="output">
+    <ol>
+      <li>Plan the project
+        <ul>
+          <li>Define requirements</li>
+          <li>Estimate timeline</li>
+        </ul>
+      </li>
+      <li>Build the project</li>
+      <li>Test and deploy</li>
+    </ol>
+  </div>
+  <p class="label">Ordered and unordered lists can be freely mixed when nesting.</p>
+</div>
+
+<div class="example">
+  <h3>16. Definition list with multiple dd per dt</h3>
+  <div class="output">
+    <dl>
+      <dt>JavaScript frameworks</dt>
+      <dd>React</dd>
+      <dd>Vue</dd>
+      <dd>Angular</dd>
+      <dt>CSS preprocessors</dt>
+      <dd>Sass</dd>
+      <dd>Less</dd>
+    </dl>
+  </div>
+  <p class="label">One &lt;dt&gt; can have multiple &lt;dd&gt; elements. Useful for listing multiple definitions or values.</p>
+</div>
+
+<div class="example">
+  <h3>17. Table with colgroup and col</h3>
+  <div class="output">
+    <table>
+      <colgroup>
+        <col style="background:#fff9e6">
+        <col style="background:#e6f3ff">
+        <col style="background:#e6ffe6">
+      </colgroup>
+      <thead><tr><th>Name</th><th>Score</th><th>Grade</th></tr></thead>
+      <tbody>
+        <tr><td>Alice</td><td>92</td><td>A</td></tr>
+        <tr><td>Bob</td><td>78</td><td>C</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label">&lt;colgroup&gt; and &lt;col&gt; apply styles to entire columns without repeating styles on every cell.</p>
+</div>
+
+<div class="example">
+  <h3>18. Accessible table with aria-describedby</h3>
+  <pre>&lt;p id="table-desc"&gt;This table shows Q1 sales by region.&lt;/p&gt;
+&lt;table aria-describedby="table-desc"&gt;
+  &lt;caption&gt;Q1 Sales by Region&lt;/caption&gt;
+  ...
+&lt;/table&gt;</pre>
+  <p class="label">aria-describedby links the table to explanatory text outside the table element.</p>
+</div>
+
+<div class="example">
+  <h3>19. Table with headers attribute for complex headers</h3>
+  <pre>&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th id="h-name" scope="col"&gt;Name&lt;/th&gt;
+      &lt;th id="h-q1" scope="col"&gt;Q1&lt;/th&gt;
+      &lt;th id="h-q2" scope="col"&gt;Q2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th id="row-alice" scope="row"&gt;Alice&lt;/th&gt;
+      &lt;td headers="row-alice h-q1"&gt;$1.2M&lt;/td&gt;
+      &lt;td headers="row-alice h-q2"&gt;$1.5M&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+  <p class="label">The headers attribute explicitly associates a cell with its headers by ID — for complex tables with multi-level headers.</p>
+</div>
+
+<div class="example">
+  <h3>20. ol type attribute for list style</h3>
+  <div class="output">
+    <ol type="A"><li>First</li><li>Second</li><li>Third</li></ol>
+    <ol type="i"><li>Introduction</li><li>Methods</li><li>Results</li></ol>
+  </div>
+  <p class="label">type="A" = uppercase letters, type="a" = lowercase, type="I" = uppercase Roman, type="i" = lowercase Roman.</p>
+</div>
+
+<div class="example">
+  <h3>21. Custom list markers with CSS</h3>
+  <div class="output">
+    <ul style="list-style-type: '→ '">
+      <li>Feature one</li>
+      <li>Feature two</li>
+      <li>Feature three</li>
+    </ul>
+  </div>
+  <p class="label">CSS list-style-type accepts a custom string as bullet. Also supports emoji: '🔹 '.</p>
+</div>
+
+<div class="example">
+  <h3>22. No-bullet list (navigation pattern)</h3>
+  <div class="output">
+    <ul style="list-style:none;padding:0;display:flex;gap:16px">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Products</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+  <p class="label">list-style:none removes bullets. This is the standard approach for navigation menus while keeping semantic &lt;ul&gt; structure.</p>
+</div>
+
+<div class="example">
+  <h3>23. Responsive table with scroll wrapper</h3>
+  <pre>&lt;div style="overflow-x: auto;" role="region" aria-label="Sales data table" tabindex="0"&gt;
+  &lt;table&gt;
+    ...many columns...
+  &lt;/table&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Wrapping a wide table in a scrollable div prevents it from breaking layout. role="region" + aria-label makes the scroll container discoverable.</p>
+</div>
+
+<div class="example">
+  <h3>24. Table zebra striping</h3>
+  <div class="output">
+    <table>
+      <thead><tr><th>Name</th><th>Dept</th></tr></thead>
+      <tbody>
+        <tr style="background:#fff"><td>Alice</td><td>Engineering</td></tr>
+        <tr style="background:#f5f5f5"><td>Bob</td><td>Design</td></tr>
+        <tr style="background:#fff"><td>Carol</td><td>Marketing</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label">Alternating row colors improve readability. Use CSS :nth-child(odd/even) instead of inline styles.</p>
+</div>
+
+<div class="example">
+  <h3>25. dl as a metadata list</h3>
+  <div class="output">
+    <dl style="display:grid;grid-template-columns:auto 1fr;gap:4px 16px">
+      <dt style="font-weight:bold">Author</dt>
+      <dd>Jane Doe</dd>
+      <dt style="font-weight:bold">Published</dt>
+      <dd>March 24, 2026</dd>
+      <dt style="font-weight:bold">Category</dt>
+      <dd>Technology</dd>
+    </dl>
+  </div>
+  <p class="label">CSS grid on &lt;dl&gt; creates a two-column key–value layout — popular for article metadata and settings panels.</p>
+</div>
+
+<div class="example">
+  <h3>26. Table with summary via aria-label</h3>
+  <pre>&lt;table aria-label="Top 5 programming languages by popularity in 2026"&gt;
+  &lt;thead&gt;...&lt;/thead&gt;
+  &lt;tbody&gt;...&lt;/tbody&gt;
+&lt;/table&gt;</pre>
+  <p class="label">aria-label provides a summary for screen reader users when &lt;caption&gt; is not used visually.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Table with colspan and rowspan combined</h3>
+  <div class="output">
+    <table>
+      <caption>Employee Schedule</caption>
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Mon</th>
+          <th scope="col">Tue</th>
+          <th scope="col">Wed</th>
+          <th scope="col">Thu</th>
+          <th scope="col">Fri</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Alice</th>
+          <td colspan="2">Off-site training</td>
+          <td>Office</td>
+          <td colspan="2">Remote</td>
+        </tr>
+        <tr>
+          <th scope="row">Bob</th>
+          <td>Office</td>
+          <td rowspan="2">Conference</td>
+          <td>Office</td>
+          <td>Office</td>
+          <td>Office</td>
+        </tr>
+        <tr>
+          <th scope="row">Carol</th>
+          <td>Remote</td>
+          <td>Office</td>
+          <td>Office</td>
+          <td>Office</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label">Combining colspan and rowspan for complex schedule-style tables.</p>
+</div>
+
+<div class="example">
+  <h3>28. Nested list — Table of contents</h3>
+  <div class="output">
+    <nav aria-label="Table of Contents">
+      <ol>
+        <li><a href="#">Introduction</a></li>
+        <li><a href="#">Getting Started</a>
+          <ol>
+            <li><a href="#">Installation</a></li>
+            <li><a href="#">Configuration</a></li>
+          </ol>
+        </li>
+        <li><a href="#">Core Concepts</a>
+          <ol>
+            <li><a href="#">Components</a></li>
+            <li><a href="#">State Management</a></li>
+            <li><a href="#">Routing</a></li>
+          </ol>
+        </li>
+        <li><a href="#">API Reference</a></li>
+      </ol>
+    </nav>
+  </div>
+  <p class="label">Nested &lt;ol&gt; is the correct structure for hierarchical table of contents.</p>
+</div>
+
+<div class="example">
+  <h3>29. Feature list with nested details</h3>
+  <div class="output">
+    <ul>
+      <li><strong>Performance</strong>
+        <ul>
+          <li>Sub-100ms load time</li>
+          <li>Lighthouse score 95+</li>
+        </ul>
+      </li>
+      <li><strong>Accessibility</strong>
+        <ul>
+          <li>WCAG 2.1 AA compliant</li>
+          <li>Full keyboard navigation</li>
+        </ul>
+      </li>
+      <li><strong>Security</strong>
+        <ul>
+          <li>CSP headers enabled</li>
+          <li>HTTPS enforced</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <p class="label">Nested lists with strong headings at the parent level for structured feature documentation.</p>
+</div>
+
+<div class="example">
+  <h3>30. Data table with totals row and column</h3>
+  <div class="output">
+    <table>
+      <caption>Quarterly Revenue by Region</caption>
+      <thead>
+        <tr>
+          <th scope="col">Region</th>
+          <th scope="col">Q1</th>
+          <th scope="col">Q2</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">North</th><td>$1.2M</td><td>$1.4M</td><td>$2.6M</td></tr>
+        <tr><th scope="row">South</th><td>$0.8M</td><td>$1.0M</td><td>$1.8M</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><th scope="row">Total</th><td>$2.0M</td><td>$2.4M</td><td>$4.4M</td></tr>
+      </tfoot>
+    </table>
+  </div>
+  <p class="label">Both row and column headers with totals in tfoot. All headers have appropriate scope attributes.</p>
+</div>
+
+<div class="example">
+  <h3>31. Sortable table headers (pattern)</h3>
+  <pre>&lt;th scope="col"&gt;
+  &lt;button onclick="sortBy('name')" aria-sort="ascending"&gt;
+    Name &lt;span aria-hidden="true"&gt;↑&lt;/span&gt;
+  &lt;/button&gt;
+&lt;/th&gt;</pre>
+  <p class="label">aria-sort on &lt;th&gt; (ascending/descending/none/other) communicates sort state to screen readers.</p>
+</div>
+
+<div class="example">
+  <h3>32. List with checkboxes (todo list)</h3>
+  <div class="output">
+    <ul style="list-style:none;padding:0">
+      <li><label><input type="checkbox" checked> Buy groceries</label></li>
+      <li><label><input type="checkbox"> Write tests</label></li>
+      <li><label><input type="checkbox"> Deploy to production</label></li>
+    </ul>
+  </div>
+  <p class="label">A todo list: &lt;ul&gt; with checkbox inputs inside &lt;label&gt; elements. Labels wrap the input for click target accessibility.</p>
+</div>
+
+<div class="example">
+  <h3>33. Icon list</h3>
+  <div class="output">
+    <ul style="list-style:none;padding:0">
+      <li>✅ HTML fundamentals</li>
+      <li>✅ CSS basics</li>
+      <li>🔄 JavaScript (in progress)</li>
+      <li>⬜ React</li>
+      <li>⬜ TypeScript</li>
+    </ul>
+  </div>
+  <p class="label">Custom emoji bullets via list content. For accessibility, consider adding sr-only text to clarify status.</p>
+</div>
+
+<div class="example">
+  <h3>34. Complex dl with grouped terms</h3>
+  <div class="output" style="font-size:14px">
+    <dl>
+      <div style="border-bottom:1px solid #eee;padding-bottom:8px;margin-bottom:8px">
+        <dt><strong>GET</strong></dt>
+        <dd>Retrieve a resource. Safe and idempotent.</dd>
+        <dd>Example: <code>GET /users/42</code></dd>
+      </div>
+      <div style="border-bottom:1px solid #eee;padding-bottom:8px;margin-bottom:8px">
+        <dt><strong>POST</strong></dt>
+        <dd>Create a new resource. Not idempotent.</dd>
+        <dd>Example: <code>POST /users</code></dd>
+      </div>
+      <div>
+        <dt><strong>DELETE</strong></dt>
+        <dd>Remove a resource. Idempotent.</dd>
+        <dd>Example: <code>DELETE /users/42</code></dd>
+      </div>
+    </dl>
+  </div>
+  <p class="label">Grouping dt/dd pairs in &lt;div&gt; inside &lt;dl&gt; is valid HTML5 and allows per-entry styling.</p>
+</div>
+
+<div class="example">
+  <h3>35. Numbered steps with descriptions</h3>
+  <div class="output">
+    <ol style="font-size:14px">
+      <li>
+        <strong>Fork the repository</strong>
+        <p style="margin:4px 0">Click the Fork button on GitHub to create your own copy.</p>
+      </li>
+      <li>
+        <strong>Clone your fork</strong>
+        <p style="margin:4px 0">Run <code>git clone https://github.com/you/repo.git</code></p>
+      </li>
+      <li>
+        <strong>Create a branch</strong>
+        <p style="margin:4px 0">Use <code>git checkout -b feature/my-feature</code></p>
+      </li>
+    </ol>
+  </div>
+  <p class="label">List items can contain block elements like &lt;p&gt; for richer instructional content.</p>
+</div>
+
+<div class="example">
+  <h3>36. Table as a calendar grid</h3>
+  <div class="output">
+    <table style="text-align:center">
+      <caption>March 2026</caption>
+      <thead>
+        <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+      </thead>
+      <tbody>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td></tr>
+        <tr><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr>
+        <tr><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td></tr>
+        <tr><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td></tr>
+        <tr><td style="background:#e0f0ff"><strong>23</strong></td><td style="background:#e0f0ff"><strong>24</strong></td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td></tr>
+        <tr><td>30</td><td>31</td><td></td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="label">A calendar is a valid table use case — days have a clear row/column relationship.</p>
+</div>
+
+<div class="example">
+  <h3>37. Expandable tree list (details/summary)</h3>
+  <div class="output">
+    <ul style="list-style:none;padding:0">
+      <li>
+        <details>
+          <summary>src/</summary>
+          <ul>
+            <li>
+              <details>
+                <summary>components/</summary>
+                <ul>
+                  <li>Button.tsx</li>
+                  <li>Card.tsx</li>
+                </ul>
+              </details>
+            </li>
+            <li>index.ts</li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>tests/</summary>
+          <ul><li>Button.test.tsx</li></ul>
+        </details>
+      </li>
+    </ul>
+  </div>
+  <p class="label">Combining &lt;details&gt;/&lt;summary&gt; with nested &lt;ul&gt; creates an expandable file tree — no JS needed.</p>
+</div>
+
+<div class="example">
+  <h3>38. Table inside a figure</h3>
+  <div class="output">
+    <figure>
+      <table>
+        <caption>Table 1: Browser market share (2026)</caption>
+        <thead><tr><th scope="col">Browser</th><th scope="col">Share</th></tr></thead>
+        <tbody>
+          <tr><td>Chrome</td><td>65%</td></tr>
+          <tr><td>Safari</td><td>19%</td></tr>
+          <tr><td>Firefox</td><td>4%</td></tr>
+        </tbody>
+      </table>
+      <figcaption>Source: StatCounter, January 2026</figcaption>
+    </figure>
+  </div>
+  <p class="label">Wrapping a table in &lt;figure&gt;/&lt;figcaption&gt; adds an external caption with source citation.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Sortable table with JavaScript</h3>
+  <div class="output">
+    <table id="sortable-table">
+      <thead>
+        <tr>
+          <th scope="col" style="cursor:pointer" onclick="sortTable(0)">Name ↕</th>
+          <th scope="col" style="cursor:pointer" onclick="sortTable(1)">Score ↕</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Charlie</td><td>85</td></tr>
+        <tr><td>Alice</td><td>92</td></tr>
+        <tr><td>Bob</td><td>78</td></tr>
+      </tbody>
+    </table>
+    <script>
+      function sortTable(col) {
+        const tbl = document.getElementById("sortable-table");
+        const rows = Array.from(tbl.tBodies[0].rows);
+        rows.sort((a, b) => {
+          const av = a.cells[col].textContent.trim();
+          const bv = b.cells[col].textContent.trim();
+          return isNaN(av) ? av.localeCompare(bv) : Number(av) - Number(bv);
+        });
+        rows.forEach(r => tbl.tBodies[0].appendChild(r));
+      }
+    </script>
+  </div>
+  <p class="label">Clickable column headers trigger JavaScript sort. Real implementations use aria-sort attributes.</p>
+</div>
+
+<div class="example">
+  <h3>40. dl as a FAQ list</h3>
+  <div class="output" style="font-size:14px">
+    <dl>
+      <dt style="font-weight:bold;margin-top:12px">What is HTML?</dt>
+      <dd>HTML (HyperText Markup Language) is the standard language for creating web pages. It describes the structure of content on the web.</dd>
+
+      <dt style="font-weight:bold;margin-top:12px">Is HTML a programming language?</dt>
+      <dd>No, HTML is a markup language, not a programming language. It does not have conditionals, loops, or functions.</dd>
+    </dl>
+  </div>
+  <p class="label">&lt;dl&gt; is semantically appropriate for FAQ content — questions are terms, answers are descriptions.</p>
+</div>
+
+<div class="example">
+  <h3>41. Infinite nested list depth</h3>
+  <div class="output">
+    <ul>
+      <li>Level 1
+        <ul>
+          <li>Level 2
+            <ul>
+              <li>Level 3
+                <ul>
+                  <li>Level 4</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <p class="label">HTML supports unlimited list nesting. Browsers cycle through bullet styles automatically. Accessibility: avoid nesting deeper than 4 levels.</p>
+</div>
+
+<div class="example">
+  <h3>42. Multi-column list layout</h3>
+  <div class="output">
+    <ul style="columns:2;list-style:disc;padding-left:20px">
+      <li>React</li>
+      <li>Vue</li>
+      <li>Angular</li>
+      <li>Svelte</li>
+      <li>Solid</li>
+      <li>Qwik</li>
+    </ul>
+  </div>
+  <p class="label">CSS columns property distributes list items into multiple columns. The HTML list structure remains unchanged.</p>
+</div>
+
+<div class="example">
+  <h3>43. Table with sticky header</h3>
+  <pre>&lt;div style="max-height: 200px; overflow-y: auto;"&gt;
+  &lt;table&gt;
+    &lt;thead style="position: sticky; top: 0; background: white;"&gt;
+      &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Score&lt;/th&gt;&lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      ... many rows ...
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</pre>
+  <p class="label">position: sticky on &lt;thead&gt; keeps headers visible while scrolling long tables.</p>
+</div>
+
+<div class="example">
+  <h3>44. Dynamically generated table with JS</h3>
+  <div class="output">
+    <div id="gen-table-wrapper"></div>
+    <script>
+      (function() {
+        const data = [["Alice", "Engineering", "$120k"], ["Bob", "Design", "$95k"]];
+        const headers = ["Name", "Dept", "Salary"];
+        const table = document.createElement("table");
+        const thead = table.createTHead();
+        const hrow = thead.insertRow();
+        headers.forEach(h => { const th = document.createElement("th"); th.scope = "col"; th.textContent = h; hrow.appendChild(th); });
+        const tbody = table.createTBody();
+        data.forEach(row => { const tr = tbody.insertRow(); row.forEach(cell => { tr.insertCell().textContent = cell; }); });
+        document.getElementById("gen-table-wrapper").appendChild(table);
+      })();
+    </script>
+  </div>
+  <p class="label">Tables can be built programmatically using createElement, createTHead(), createTBody(), insertRow(), insertCell().</p>
+</div>
+
+<div class="example">
+  <h3>45. Print-friendly table</h3>
+  <pre>&lt;style&gt;
+  @media print {
+    table { page-break-inside: avoid; }
+    thead { display: table-header-group; } /* repeat header on each page */
+    tfoot { display: table-footer-group; }
+  }
+&lt;/style&gt;</pre>
+  <p class="label">display: table-header-group repeats the table header on each printed page. page-break-inside: avoid keeps small tables together.</p>
+</div>
+
+<div class="example">
+  <h3>46. Accessible table for screen readers — summary pattern</h3>
+  <pre>&lt;!-- Legacy: summary attribute (deprecated but still read by some screen readers) --&gt;
+&lt;table summary="Rows represent employees; columns show department and salary."&gt;
+  &lt;caption&gt;Employee Data&lt;/caption&gt;
+  ...
+&lt;/table&gt;
+
+&lt;!-- Modern: use aria-describedby with an external paragraph --&gt;
+&lt;p id="tbl-info"&gt;Table shows each employee's department and salary.&lt;/p&gt;
+&lt;table aria-describedby="tbl-info"&gt;...&lt;/table&gt;</pre>
+  <p class="label">The summary attribute is obsolete in HTML5. Use &lt;caption&gt; or aria-describedby instead.</p>
+</div>
+
+<div class="example">
+  <h3>47. Role="list" on styled list</h3>
+  <pre>&lt;!-- Some browsers (e.g. Safari) remove list semantics when list-style:none is set --&gt;
+&lt;ul role="list" style="list-style: none; padding: 0;"&gt;
+  &lt;li&gt;Item A&lt;/li&gt;
+  &lt;li&gt;Item B&lt;/li&gt;
+&lt;/ul&gt;</pre>
+  <p class="label">Adding role="list" restores list semantics in Safari VoiceOver when CSS list-style has been removed.</p>
+</div>
+
+<div class="example">
+  <h3>48. Comparison table with aria-label on cells</h3>
+  <pre>&lt;table&gt;
+  &lt;caption&gt;Plan Comparison&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;Feature&lt;/th&gt;
+      &lt;th scope="col"&gt;Free&lt;/th&gt;
+      &lt;th scope="col"&gt;Pro&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;API Access&lt;/th&gt;
+      &lt;td aria-label="API Access: not included"&gt;✗&lt;/td&gt;
+      &lt;td aria-label="API Access: included"&gt;✓&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+  <p class="label">aria-label on cells gives context to symbolic values (✓/✗) that screen readers would otherwise read as "check mark" without context.</p>
+</div>
+
+<div class="example">
+  <h3>49. Step-by-step numbered list with rich content</h3>
+  <div class="output" style="font-size:13px">
+    <ol>
+      <li>
+        <details>
+          <summary><strong>Install Node.js</strong></summary>
+          <p>Download from <a href="#">nodejs.org</a> and run the installer.</p>
+          <p>Verify: <code>node --version</code></p>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary><strong>Create your project</strong></summary>
+          <p>Run: <code>npm create vite@latest my-app</code></p>
+        </details>
+      </li>
+    </ol>
+  </div>
+  <p class="label">Combining &lt;ol&gt; with &lt;details&gt;/&lt;summary&gt; creates expandable step guides — no JavaScript needed.</p>
+</div>
+
+<div class="example">
+  <h3>50. Complete accessible data table</h3>
+  <div class="output">
+    <figure>
+      <table aria-describedby="tbl50-desc">
+        <caption>Table 3: Q1 2026 Sales Performance</caption>
+        <colgroup>
+          <col>
+          <col span="3" style="background:#f9fafb">
+          <col style="font-weight:bold">
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col">Sales Rep</th>
+            <th scope="col">January</th>
+            <th scope="col">February</th>
+            <th scope="col">March</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Alice</th>
+            <td>$42,000</td><td>$38,500</td><td>$51,000</td><td>$131,500</td>
+          </tr>
+          <tr>
+            <th scope="row">Bob</th>
+            <td>$31,000</td><td>$29,800</td><td>$44,000</td><td>$104,800</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row">Totals</th>
+            <td>$73,000</td><td>$68,300</td><td>$95,000</td><td>$236,300</td>
+          </tr>
+        </tfoot>
+      </table>
+      <figcaption id="tbl50-desc">Monthly sales figures in USD for Q1 2026.</figcaption>
+    </figure>
+  </div>
+  <p class="label">Gold-standard accessible data table: caption, colgroup, scope on all th, tfoot totals, aria-describedby, wrapped in figure.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<!--
+  Examples 5.5 — Accessible Forms
+  50 examples covering labels, descriptions, error messages, required fields,
+  inline validation, ARIA attributes, and best practices.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 5.5 — Accessible Forms</title>
+  <style>
+    body { font-family: sans-serif; max-width: 860px; margin: 0 auto; padding: 16px; }
+    h1 { font-size: 1.5em; }
+    h2 { font-size: 1.1em; margin: 28px 0 4px; color: #333; border-bottom: 1px solid #ddd; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 13px; }
+    .note { background: #fffbea; border-left: 4px solid #f0c040; padding: 8px 12px; margin: 6px 0; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<h1>Accessible Forms — 50 Examples</h1>
+
+<!-- 1 -->
+<h2>1. Label with for/id association</h2>
+<pre><code>&lt;label for="username"&gt;Username&lt;/label&gt;
+&lt;input id="username" type="text" name="username"&gt;</code></pre>
+
+<!-- 2 -->
+<h2>2. Label wrapping the input (implicit association)</h2>
+<pre><code>&lt;label&gt;
+  Username
+  &lt;input type="text" name="username"&gt;
+&lt;/label&gt;</code></pre>
+
+<!-- 3 -->
+<h2>3. aria-label — when no visible label exists</h2>
+<pre><code>&lt;input type="search" aria-label="Search the site" name="q"&gt;</code></pre>
+
+<!-- 4 -->
+<h2>4. aria-labelledby — label from existing element</h2>
+<pre><code>&lt;h2 id="billing-heading"&gt;Billing Address&lt;/h2&gt;
+&lt;input aria-labelledby="billing-heading" type="text" name="street"&gt;</code></pre>
+
+<!-- 5 -->
+<h2>5. Placeholder is NOT a label</h2>
+<pre><code>&lt;!-- BAD: placeholder disappears on input --&gt;
+&lt;input type="email" placeholder="email@example.com"&gt;
+
+&lt;!-- GOOD: visible label + placeholder as hint --&gt;
+&lt;label for="email"&gt;Email&lt;/label&gt;
+&lt;input id="email" type="email" placeholder="email@example.com"&gt;</code></pre>
+
+<!-- 6 -->
+<h2>6. Marking fields as required</h2>
+<pre><code>&lt;label for="name"&gt;Full name &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+&lt;input id="name" type="text" required aria-required="true"&gt;
+&lt;p&gt;&lt;span aria-hidden="true"&gt;*&lt;/span&gt; Required fields&lt;/p&gt;</code></pre>
+
+<!-- 7 -->
+<h2>7. aria-required vs required attribute</h2>
+<pre><code>&lt;!-- HTML5 required: browser validates and blocks submit --&gt;
+&lt;input required&gt;
+
+&lt;!-- aria-required: informational only for screen readers --&gt;
+&lt;input aria-required="true"&gt;
+
+&lt;!-- Use both for maximum compatibility --&gt;
+&lt;input required aria-required="true"&gt;</code></pre>
+
+<!-- 8 -->
+<h2>8. Hint text with aria-describedby</h2>
+<pre><code>&lt;label for="password"&gt;Password&lt;/label&gt;
+&lt;input id="password" type="password" aria-describedby="pw-hint"&gt;
+&lt;p id="pw-hint"&gt;At least 8 characters, including a number.&lt;/p&gt;</code></pre>
+
+<!-- 9 -->
+<h2>9. Multiple descriptors — aria-describedby with list</h2>
+<pre><code>&lt;input id="email"
+       aria-describedby="email-hint email-error"
+       type="email"&gt;
+&lt;p id="email-hint"&gt;We'll send a confirmation link.&lt;/p&gt;
+&lt;p id="email-error" role="alert" hidden&gt;Please enter a valid email.&lt;/p&gt;</code></pre>
+
+<!-- 10 -->
+<h2>10. Inline error message with role="alert"</h2>
+<pre><code>&lt;span id="name-error" role="alert" aria-live="polite"&gt;&lt;/span&gt;
+
+&lt;script&gt;
+  function showError(msg) {
+    document.getElementById('name-error').textContent = msg;
+  }
+&lt;/script&gt;</code></pre>
+
+<!-- 11 -->
+<h2>11. aria-invalid to mark invalid fields</h2>
+<pre><code>&lt;input id="email" type="email"
+       aria-invalid="true"
+       aria-describedby="email-error"&gt;
+&lt;span id="email-error" role="alert"&gt;Invalid email address.&lt;/span&gt;</code></pre>
+
+<!-- 12 -->
+<h2>12. aria-invalid states</h2>
+<pre><code>aria-invalid="false"    — field is valid (default)
+aria-invalid="true"     — field is invalid
+aria-invalid="grammar"  — grammar error
+aria-invalid="spelling" — spelling error</code></pre>
+
+<!-- 13 -->
+<h2>13. Reset aria-invalid after correction</h2>
+<pre><code>input.addEventListener('input', () => {
+  if (input.validity.valid) {
+    input.setAttribute('aria-invalid', 'false');
+    errorEl.textContent = '';
+  }
+});</code></pre>
+
+<!-- 14 -->
+<h2>14. Fieldset and legend for grouped controls</h2>
+<pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Preferred contact method&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="radio" name="contact" value="email"&gt; Email&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="contact" value="phone"&gt; Phone&lt;/label&gt;
+&lt;/fieldset&gt;</code></pre>
+
+<!-- 15 -->
+<h2>15. Checkbox group with fieldset</h2>
+<pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Dietary requirements&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="checkbox" name="diet" value="vegan"&gt; Vegan&lt;/label&gt;
+  &lt;label&gt;&lt;input type="checkbox" name="diet" value="gf"&gt; Gluten-free&lt;/label&gt;
+&lt;/fieldset&gt;</code></pre>
+
+<!-- 16 -->
+<h2>16. Select with label</h2>
+<pre><code>&lt;label for="country"&gt;Country&lt;/label&gt;
+&lt;select id="country" name="country"&gt;
+  &lt;option value=""&gt;-- Please select --&lt;/option&gt;
+  &lt;option value="us"&gt;United States&lt;/option&gt;
+  &lt;option value="gb"&gt;United Kingdom&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+
+<!-- 17 -->
+<h2>17. Textarea with label and description</h2>
+<pre><code>&lt;label for="bio"&gt;Bio&lt;/label&gt;
+&lt;textarea id="bio" name="bio" rows="4"
+          aria-describedby="bio-hint"&gt;&lt;/textarea&gt;
+&lt;p id="bio-hint"&gt;Maximum 200 characters.&lt;/p&gt;</code></pre>
+
+<!-- 18 -->
+<h2>18. Character count live region</h2>
+<pre><code>&lt;label for="bio"&gt;Bio&lt;/label&gt;
+&lt;textarea id="bio" maxlength="200"&gt;&lt;/textarea&gt;
+&lt;p aria-live="polite" aria-atomic="true"&gt;
+  &lt;span id="chars-remaining"&gt;200&lt;/span&gt; characters remaining
+&lt;/p&gt;
+
+&lt;script&gt;
+  bio.addEventListener('input', () => {
+    document.getElementById('chars-remaining').textContent =
+      200 - bio.value.length;
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 19 -->
+<h2>19. Form validation — show errors on submit</h2>
+<pre><code>form.addEventListener('submit', e => {
+  const errors = validate(form);
+  if (errors.length) {
+    e.preventDefault();
+    displayErrors(errors);
+    errors[0].field.focus(); // move focus to first invalid field
+  }
+});</code></pre>
+
+<!-- 20 -->
+<h2>20. Error summary at top of form</h2>
+<pre><code>&lt;div id="error-summary" role="alert" aria-live="assertive" hidden&gt;
+  &lt;h2&gt;Please fix the following errors:&lt;/h2&gt;
+  &lt;ul id="error-list"&gt;&lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+<div class="note">Link each error in the summary to the relevant field with &lt;a href="#field-id"&gt;.</div>
+
+<!-- 21 -->
+<h2>21. Error summary with links</h2>
+<pre><code>function showSummary(errors) {
+  const list = document.getElementById('error-list');
+  list.innerHTML = errors.map(e =>
+    `&lt;li&gt;&lt;a href="#${e.id}"&gt;${e.message}&lt;/a&gt;&lt;/li&gt;`
+  ).join('');
+  const summary = document.getElementById('error-summary');
+  summary.hidden = false;
+  summary.focus();
+}</code></pre>
+
+<!-- 22 -->
+<h2>22. Autocomplete attribute for user data</h2>
+<pre><code>&lt;input type="text"   name="name"     autocomplete="name"&gt;
+&lt;input type="email"  name="email"    autocomplete="email"&gt;
+&lt;input type="tel"    name="phone"    autocomplete="tel"&gt;
+&lt;input type="text"   name="address"  autocomplete="street-address"&gt;</code></pre>
+
+<!-- 23 -->
+<h2>23. Password autocomplete</h2>
+<pre><code>&lt;!-- Login --&gt;
+&lt;input type="password" autocomplete="current-password"&gt;
+
+&lt;!-- New password / registration --&gt;
+&lt;input type="password" autocomplete="new-password"&gt;</code></pre>
+
+<!-- 24 -->
+<h2>24. Input type for mobile keyboards</h2>
+<pre><code>&lt;input type="tel"    inputmode="tel"&gt;     &lt;!-- phone keypad --&gt;
+&lt;input type="number" inputmode="numeric"&gt; &lt;!-- numeric keypad --&gt;
+&lt;input type="text"   inputmode="email"&gt;   &lt;!-- email keyboard --&gt;
+&lt;input type="text"   inputmode="url"&gt;     &lt;!-- URL keyboard --&gt;</code></pre>
+
+<!-- 25 -->
+<h2>25. enterkeyhint for mobile submit button label</h2>
+<pre><code>&lt;input type="search" enterkeyhint="search"&gt;
+&lt;!-- Shows "Search" on mobile return key instead of "Return" --&gt;
+
+&lt;!-- Values: enter, done, go, next, previous, search, send --&gt;</code></pre>
+
+<!-- 26 -->
+<h2>26. Button type — always specify type</h2>
+<pre><code>&lt;!-- Submit (default when no type specified inside a form) --&gt;
+&lt;button type="submit"&gt;Submit&lt;/button&gt;
+
+&lt;!-- Reset form --&gt;
+&lt;button type="reset"&gt;Clear&lt;/button&gt;
+
+&lt;!-- No form action --&gt;
+&lt;button type="button" onclick="doSomething()"&gt;Action&lt;/button&gt;</code></pre>
+
+<!-- 27 -->
+<h2>27. Accessible loading state on submit</h2>
+<pre><code>form.addEventListener('submit', async e => {
+  e.preventDefault();
+  submitBtn.setAttribute('aria-busy', 'true');
+  submitBtn.textContent = 'Saving...';
+  await saveData();
+  submitBtn.removeAttribute('aria-busy');
+  submitBtn.textContent = 'Save';
+});</code></pre>
+
+<!-- 28 -->
+<h2>28. Date input with accessible label</h2>
+<pre><code>&lt;label for="dob"&gt;Date of birth (YYYY-MM-DD)&lt;/label&gt;
+&lt;input id="dob" type="date" name="dob"
+       aria-describedby="dob-hint"&gt;
+&lt;p id="dob-hint"&gt;Format: Year-Month-Day, e.g. 1990-06-15&lt;/p&gt;</code></pre>
+
+<!-- 29 -->
+<h2>29. Range input with visible value</h2>
+<pre><code>&lt;label for="volume"&gt;Volume: &lt;output id="vol-out"&gt;50&lt;/output&gt;&lt;/label&gt;
+&lt;input id="volume" type="range" min="0" max="100" value="50"
+       oninput="document.getElementById('vol-out').value = this.value"&gt;</code></pre>
+
+<!-- 30 -->
+<h2>30. Custom styled checkbox — accessible pattern</h2>
+<pre><code>&lt;!-- Use native checkbox, style visually --&gt;
+&lt;label class="custom-checkbox"&gt;
+  &lt;input type="checkbox" class="sr-only"&gt;
+  &lt;span class="checkbox-visual" aria-hidden="true"&gt;&lt;/span&gt;
+  Subscribe to newsletter
+&lt;/label&gt;</code></pre>
+
+<!-- 31 -->
+<h2>31. Custom radio buttons</h2>
+<pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Size&lt;/legend&gt;
+  &lt;label class="radio"&gt;
+    &lt;input type="radio" name="size" value="s" class="sr-only"&gt;
+    &lt;span class="radio-visual" aria-hidden="true"&gt;&lt;/span&gt;
+    Small
+  &lt;/label&gt;
+&lt;/fieldset&gt;</code></pre>
+
+<!-- 32 -->
+<h2>32. Combobox (autocomplete widget) pattern</h2>
+<pre><code>&lt;label for="fruit"&gt;Fruit&lt;/label&gt;
+&lt;input id="fruit" type="text"
+       role="combobox"
+       aria-expanded="false"
+       aria-autocomplete="list"
+       aria-controls="fruit-list"&gt;
+&lt;ul id="fruit-list" role="listbox" hidden&gt;
+  &lt;li role="option"&gt;Apple&lt;/li&gt;
+  &lt;li role="option"&gt;Banana&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+
+<!-- 33 -->
+<h2>33. Multi-step form — progress indicator</h2>
+<pre><code>&lt;nav aria-label="Form progress"&gt;
+  &lt;ol&gt;
+    &lt;li aria-current="step"&gt;Personal info&lt;/li&gt;
+    &lt;li&gt;Address&lt;/li&gt;
+    &lt;li&gt;Payment&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;</code></pre>
+
+<!-- 34 -->
+<h2>34. Associating form label with section heading</h2>
+<pre><code>&lt;section aria-labelledby="personal-heading"&gt;
+  &lt;h2 id="personal-heading"&gt;Personal Information&lt;/h2&gt;
+  &lt;label for="first-name"&gt;First name&lt;/label&gt;
+  &lt;input id="first-name" type="text"&gt;
+&lt;/section&gt;</code></pre>
+
+<!-- 35 -->
+<h2>35. Read-only fields</h2>
+<pre><code>&lt;label for="ref"&gt;Reference number&lt;/label&gt;
+&lt;input id="ref" type="text" value="REF-12345"
+       readonly aria-readonly="true"&gt;</code></pre>
+
+<!-- 36 -->
+<h2>36. Disabled fields — accessibility note</h2>
+<pre><code>&lt;!-- Disabled fields are not announced by screen readers --&gt;
+&lt;input disabled value="Cannot change"&gt;
+
+&lt;!-- Use aria-disabled for informational purposes --&gt;
+&lt;input aria-disabled="true" value="Context-only" onclick="explainWhy()"&gt;</code></pre>
+
+<!-- 37 -->
+<h2>37. Hidden label for icon button in form</h2>
+<pre><code>&lt;button type="button" aria-label="Toggle password visibility"&gt;
+  👁 &lt;span aria-hidden="true"&gt;&lt;/span&gt;
+&lt;/button&gt;</code></pre>
+
+<!-- 38 -->
+<h2>38. Currency input</h2>
+<pre><code>&lt;label for="amount"&gt;Amount (USD)&lt;/label&gt;
+&lt;input id="amount" type="number" name="amount"
+       min="0" step="0.01"
+       aria-describedby="amount-hint"&gt;
+&lt;p id="amount-hint"&gt;Enter amount in dollars, e.g. 10.99&lt;/p&gt;</code></pre>
+
+<!-- 39 -->
+<h2>39. Form with aria-busy during submission</h2>
+<pre><code>&lt;form aria-busy="false" id="my-form"&gt;...&lt;/form&gt;
+
+&lt;script&gt;
+  myForm.addEventListener('submit', async () => {
+    myForm.setAttribute('aria-busy', 'true');
+    await submit();
+    myForm.setAttribute('aria-busy', 'false');
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 40 -->
+<h2>40. Success confirmation message</h2>
+<pre><code>&lt;div id="success-msg" role="status" aria-live="polite" hidden&gt;
+  Your form has been submitted successfully.
+&lt;/div&gt;
+
+&lt;script&gt;
+  async function onSubmit() {
+    await save();
+    const msg = document.getElementById('success-msg');
+    msg.hidden = false;
+    msg.focus();
+  }
+&lt;/script&gt;</code></pre>
+
+<!-- 41 -->
+<h2>41. Conditional field visibility</h2>
+<pre><code>&lt;input type="checkbox" id="ship-diff" onchange="toggleShipping()"&gt;
+&lt;label for="ship-diff"&gt;Ship to different address&lt;/label&gt;
+
+&lt;div id="shipping-fields" hidden&gt;...&lt;/div&gt;
+
+&lt;script&gt;
+  function toggleShipping() {
+    const show = document.getElementById('ship-diff').checked;
+    document.getElementById('shipping-fields').hidden = !show;
+  }
+&lt;/script&gt;</code></pre>
+
+<!-- 42 -->
+<h2>42. File input with accessible label</h2>
+<pre><code>&lt;label for="avatar"&gt;Profile picture (JPEG or PNG, max 2MB)&lt;/label&gt;
+&lt;input id="avatar" type="file"
+       accept="image/jpeg, image/png"
+       aria-describedby="avatar-hint"&gt;
+&lt;p id="avatar-hint"&gt;Supported formats: JPEG, PNG&lt;/p&gt;</code></pre>
+
+<!-- 43 -->
+<h2>43. Time input</h2>
+<pre><code>&lt;label for="appt-time"&gt;Appointment time&lt;/label&gt;
+&lt;input id="appt-time" type="time" name="appt-time"
+       min="09:00" max="18:00"&gt;</code></pre>
+
+<!-- 44 -->
+<h2>44. Pattern validation with description</h2>
+<pre><code>&lt;label for="postcode"&gt;Postcode&lt;/label&gt;
+&lt;input id="postcode" type="text"
+       pattern="[A-Z]{1,2}[0-9]{1,2} ?[0-9][A-Z]{2}"
+       aria-describedby="postcode-hint"&gt;
+&lt;p id="postcode-hint"&gt;UK postcode format, e.g. SW1A 1AA&lt;/p&gt;</code></pre>
+
+<!-- 45 -->
+<h2>45. Inline validation — debounced</h2>
+<pre><code>let timer;
+emailInput.addEventListener('input', () => {
+  clearTimeout(timer);
+  timer = setTimeout(() => validateEmail(emailInput), 600);
+});</code></pre>
+
+<!-- 46 -->
+<h2>46. Form accessibility checklist</h2>
+<pre><code>// ✓ Every input has a visible label
+// ✓ Required fields are indicated textually
+// ✓ Error messages are linked via aria-describedby
+// ✓ Errors appear as role="alert" or aria-live
+// ✓ Focus moves to first error on submit
+// ✓ Success confirmation is announced
+// ✓ Fieldsets group related controls</code></pre>
+
+<!-- 47 -->
+<h2>47. Testing with screen reader</h2>
+<pre><code>// Manual test steps:
+// 1. Tab to each field — is the label announced?
+// 2. Are required fields identified?
+// 3. Submit empty form — are errors announced?
+// 4. Are error messages linked to the fields?
+// 5. Is success confirmed after valid submission?</code></pre>
+
+<!-- 48 -->
+<h2>48. axe-core form rules</h2>
+<pre><code>// axe checks for forms:
+// - label: every input has a label
+// - autocomplete-valid: autocomplete attribute is valid
+// - select-name: select has accessible name
+// - aria-required-attr: aria-required is valid</code></pre>
+
+<!-- 49 -->
+<h2>49. label[for] vs aria-label precedence</h2>
+<pre><code>// Precedence: aria-labelledby > aria-label > label[for] > title
+// Use label[for] as default; override with aria-* only when needed</code></pre>
+
+<!-- 50 -->
+<h2>50. Complete accessible form pattern</h2>
+<pre><code>&lt;form novalidate onsubmit="handleSubmit(event)"&gt;
+  &lt;div&gt;
+    &lt;label for="name"&gt;Name &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+    &lt;input id="name" type="text" name="name"
+           required aria-required="true"
+           aria-describedby="name-error"&gt;
+    &lt;span id="name-error" role="alert" aria-live="polite"&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+</body>
+</html>

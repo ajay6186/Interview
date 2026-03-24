@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 5.4 — Landmark Roles
+  ============================================================================
+  Structure a page with HTML5 landmark elements and their ARIA roles so
+  screen reader users can navigate directly between page sections.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 5.4 — Landmark Roles</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    header, nav, main, aside, footer { padding: 16px; margin-bottom: 8px; border-radius: 4px; }
+    header { background: #e8f4f8; }
+    nav { background: #f0f8e8; }
+    main { background: #fff8e8; }
+    aside { background: #f8e8f8; }
+    footer { background: #e8e8f8; }
+    form { background: #f0f0f0; padding: 12px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- =========================================================
+     Section 1: Page header (banner landmark)
+     ========================================================= -->
+
+<!-- TODO: Add a <header> with:
+     - id="page-header"
+     - role="banner"
+     Containing an <h1>My Website</h1>
+-->
+
+
+<!-- =========================================================
+     Section 2: Main navigation
+     ========================================================= -->
+
+<!-- TODO: Add a <nav> with:
+     - id="main-nav"
+     - role="navigation"
+     - aria-label="Main navigation"
+     Containing a <ul> with 3 <li><a href="#">...</a></li> items
+-->
+
+
+<!-- =========================================================
+     Section 3: Search form
+     ========================================================= -->
+
+<!-- TODO: Add a <form> with:
+     - id="search-form"
+     - role="search"
+     - aria-label="Site search"
+     Containing an <input type="search" aria-label="Search"> and
+     a <button type="submit">Search</button>
+-->
+
+
+<!-- =========================================================
+     Section 4: Main content
+     ========================================================= -->
+
+<!-- TODO: Add a <main> with:
+     - id="main-content"
+     - role="main"
+     Containing an <h2>Welcome</h2> and a <p>
+-->
+
+
+<!-- =========================================================
+     Section 5: Complementary sidebar
+     ========================================================= -->
+
+<!-- TODO: Add an <aside> with:
+     - id="sidebar"
+     - role="complementary"
+     - aria-label="Related links"
+     Containing an <h2>Related</h2> and a <ul> with one <li>
+-->
+
+
+<!-- =========================================================
+     Section 6: Page footer (contentinfo landmark)
+     ========================================================= -->
+
+<!-- TODO: Add a <footer> with:
+     - id="page-footer"
+     - role="contentinfo"
+     Containing a <p> with copyright text
+-->
+
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 5.4 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // Section 1: banner
+  const pageHeader = document.getElementById("page-header");
+  assert(pageHeader !== null, '#page-header exists');
+  assert(pageHeader && pageHeader.getAttribute("role") === "banner", '#page-header has role="banner"');
+  assert(pageHeader && pageHeader.querySelector("h1") !== null, '#page-header contains an <h1>');
+
+  // Section 2: navigation
+  const mainNav = document.getElementById("main-nav");
+  assert(mainNav !== null, '#main-nav exists');
+  assert(mainNav && mainNav.getAttribute("role") === "navigation", '#main-nav has role="navigation"');
+  assert(mainNav && (mainNav.getAttribute("aria-label") || "").trim() !== "", '#main-nav has a non-empty aria-label');
+  const navLinks = mainNav && mainNav.querySelectorAll("a");
+  assert(navLinks && navLinks.length >= 3, 'Main nav contains at least 3 <a> links');
+
+  // Section 3: search
+  const searchForm = document.getElementById("search-form");
+  assert(searchForm !== null, '#search-form exists');
+  assert(searchForm && searchForm.getAttribute("role") === "search", '#search-form has role="search"');
+  assert(searchForm && (searchForm.getAttribute("aria-label") || "").trim() !== "", '#search-form has a non-empty aria-label');
+
+  // Section 4: main
+  const mainContent = document.getElementById("main-content");
+  assert(mainContent !== null, '#main-content exists');
+  assert(mainContent && mainContent.getAttribute("role") === "main", '#main-content has role="main"');
+
+  // Section 5: complementary
+  const sidebar = document.getElementById("sidebar");
+  assert(sidebar !== null, '#sidebar exists');
+  assert(sidebar && sidebar.getAttribute("role") === "complementary", '#sidebar has role="complementary"');
+  assert(sidebar && (sidebar.getAttribute("aria-label") || "").trim() !== "", '#sidebar has a non-empty aria-label');
+
+  // Section 6: contentinfo
+  const pageFooter = document.getElementById("page-footer");
+  assert(pageFooter !== null, '#page-footer exists');
+  assert(pageFooter && pageFooter.getAttribute("role") === "contentinfo", '#page-footer has role="contentinfo"');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 5.4 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

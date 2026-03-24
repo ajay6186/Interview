@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 1.5 — Forms Basic
+  ============================================================================
+  Complete solution with all TODOs filled in correctly.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 1.5 — Forms Basic</title>
+  <style>
+    form { max-width: 480px; }
+    label { display: block; margin-top: 12px; font-weight: bold; }
+    input, textarea { display: block; width: 100%; box-sizing: border-box; padding: 6px; margin-top: 4px; }
+    button { margin-top: 16px; padding: 8px 20px; }
+  </style>
+</head>
+<body>
+
+<h1>Contact Form Exercise</h1>
+
+<form action="/submit" method="post">
+
+  <!-- Section 2: Name Field -->
+  <label for="name">Full Name</label>
+  <input type="text" id="name" name="name">
+
+  <!-- Section 3: Email Field -->
+  <label for="email">Email Address</label>
+  <input type="email" id="email" name="email">
+
+  <!-- Section 4: Message Textarea -->
+  <label for="message">Message</label>
+  <textarea id="message" name="message" rows="5"></textarea>
+
+  <!-- Section 5: Submit Button -->
+  <button type="submit">Send Message</button>
+
+</form>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 1.5 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // 1. form element exists with action attribute
+  const formEl = document.querySelector("form[action]");
+  assert(formEl !== null, '<form action="..."> exists');
+
+  // 2. form has method="post"
+  assert(formEl !== null && formEl.getAttribute("method") === "post",
+    '<form method="post"> is set');
+
+  // 3. label with for="name" exists
+  assert(document.querySelector('label[for="name"]') !== null,
+    '<label for="name"> exists');
+
+  // 4. input type="text" with id="name" exists
+  const nameInput = document.querySelector('input[type="text"][id="name"]');
+  assert(nameInput !== null, '<input type="text" id="name"> exists');
+
+  // 5. label with for="email" exists
+  assert(document.querySelector('label[for="email"]') !== null,
+    '<label for="email"> exists');
+
+  // 6. input type="email" with id="email" exists
+  const emailInput = document.querySelector('input[type="email"][id="email"]');
+  assert(emailInput !== null, '<input type="email" id="email"> exists');
+
+  // 7. label with for="message" exists
+  assert(document.querySelector('label[for="message"]') !== null,
+    '<label for="message"> exists');
+
+  // 8. textarea with id="message" exists
+  const textareaEl = document.querySelector('textarea[id="message"]');
+  assert(textareaEl !== null, '<textarea id="message"> exists');
+
+  // 9. submit button exists
+  const submitBtn = document.querySelector('button[type="submit"]');
+  assert(submitBtn !== null, '<button type="submit"> exists');
+
+  // 10. all inputs have id attributes
+  const allInputs = document.querySelectorAll("input, textarea");
+  let allHaveId = true;
+  allInputs.forEach(inp => { if (!inp.id) allHaveId = false; });
+  assert(allHaveId, "All <input> and <textarea> elements have id attributes");
+
+  // Summary
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 1.5 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

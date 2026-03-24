@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+  Examples 5.3 — Keyboard Navigation  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================ -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 5.3 — Keyboard Navigation</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 5.3 — Keyboard Navigation</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. tabindex="0" — making a div keyboard focusable</h3>
+  <pre>&lt;!-- WITHOUT tabindex: not reachable by Tab key --&gt;
+&lt;div class="card"&gt;Product card&lt;/div&gt;
+
+&lt;!-- WITH tabindex="0": enters the natural tab order --&gt;
+&lt;div
+  class="card"
+  tabindex="0"
+  role="button"
+  aria-label="Widget A — $29.99, click to view details"
+&gt;
+  Widget A — $29.99
+&lt;/div&gt;
+
+&lt;!-- tabindex="0" places the element in tab order
+     at its natural DOM position. It does NOT jump
+     ahead of other elements. --&gt;</pre>
+  <p class="label">tabindex="0" adds an element to the page's tab order at its natural DOM position. Required whenever a non-interactive element (div, span, li) is given an interactive role like button, checkbox, or option. Always pair with an appropriate ARIA role.</p>
+</div>
+
+<div class="example">
+  <h3>2. tabindex="-1" — focusable by JS, not by Tab</h3>
+  <pre>&lt;!-- Modal dialog: focus target, not in natural tab order --&gt;
+&lt;div
+  role="dialog"
+  id="modal"
+  aria-modal="true"
+  aria-labelledby="modal-title"
+  tabindex="-1"
+&gt;
+  &lt;h2 id="modal-title"&gt;Confirm action&lt;/h2&gt;
+  &lt;p&gt;Are you sure you want to continue?&lt;/p&gt;
+  &lt;button&gt;Confirm&lt;/button&gt;
+  &lt;button&gt;Cancel&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function openModal() {
+    const modal = document.getElementById('modal');
+    modal.hidden = false;
+    modal.focus(); // Programmatic focus via tabindex="-1"
+  }
+&lt;/script&gt;</pre>
+  <p class="label">tabindex="-1" allows programmatic focus via JS .focus() but removes the element from the natural Tab sequence. Essential for dialog containers, headings that receive focus after navigation, and offscreen elements that should never be reached by Tab.</p>
+</div>
+
+<div class="example">
+  <h3>3. Positive tabindex — why to avoid it</h3>
+  <pre>&lt;!-- BAD: positive tabindex disrupts natural tab order --&gt;
+&lt;button tabindex="3"&gt;First in visual order&lt;/button&gt;
+&lt;button tabindex="1"&gt;Second in visual order — but focused FIRST&lt;/button&gt;
+&lt;button tabindex="2"&gt;Third in visual order — focused SECOND&lt;/button&gt;
+
+&lt;!-- The Tab sequence becomes: tabindex=1, tabindex=2, tabindex=3,
+     then all tabindex=0 elements, then DOM order for the rest.
+     This creates a confusing, unpredictable order. --&gt;
+
+&lt;!-- GOOD: Reorder the DOM instead --&gt;
+&lt;button&gt;Focused first (DOM order = visual order)&lt;/button&gt;
+&lt;button&gt;Focused second&lt;/button&gt;
+&lt;button&gt;Focused third&lt;/button&gt;</pre>
+  <p class="label">Positive tabindex values create a separate tab order "pool" that is visited before any tabindex="0" elements, completely breaking the expected Tab sequence. The fix is always to reorder the DOM to match the visual reading order, not to patch it with positive values.</p>
+</div>
+
+<div class="example">
+  <h3>4. Skip navigation link</h3>
+  <pre>&lt;!-- First element in body — visually hidden until focused --&gt;
+&lt;a href="#main-content" class="skip-link"&gt;
+  Skip to main content
+&lt;/a&gt;
+
+&lt;nav&gt;
+  &lt;!-- 50+ navigation links... --&gt;
+&lt;/nav&gt;
+
+&lt;main id="main-content" tabindex="-1"&gt;
+  &lt;h1&gt;Page title&lt;/h1&gt;
+  &lt;!-- Page content --&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 100;
+  }
+  .skip-link:focus {
+    top: 0; /* Revealed on focus */
+  }
+&lt;/style&gt;</pre>
+  <p class="label">Skip links allow keyboard users to bypass repetitive navigation and jump directly to main content. The link is visually hidden off-screen until focused, then slides into view. The main element needs tabindex="-1" so it can receive programmatic focus from the anchor.</p>
+</div>
+
+<div class="example">
+  <h3>5. :focus styles — never suppress the focus ring</h3>
+  <pre>&lt;style&gt;
+  /* BAD: removes focus visibility entirely */
+  *:focus { outline: none; }
+  button:focus { outline: 0; }
+
+  /* GOOD: customise the focus ring with a visible style */
+  :focus-visible {
+    outline: 3px solid #005fcc;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* GOOD: enhanced focus ring for interactive elements */
+  button:focus-visible,
+  a:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 3px solid #005fcc;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px rgba(0, 95, 204, 0.3);
+  }
+&lt;/style&gt;</pre>
+  <p class="label">Removing focus outlines is one of the most harmful accessibility mistakes. 2.6% of users navigate by keyboard only. Use :focus-visible to show a clear ring only for keyboard navigation (not mouse clicks). WCAG 2.4.11 requires 3:1 contrast ratio for focus indicators.</p>
+</div>
+
+<div class="example">
+  <h3>6. :focus-visible — keyboard-only focus indicator</h3>
+  <pre>&lt;style&gt;
+  /* Applies only when the element was focused via keyboard or AT,
+     not when focused by mouse click */
+  button:focus-visible {
+    outline: 3px solid #0078d7;
+    outline-offset: 2px;
+  }
+
+  /* Remove outline for mouse users only (still shown for keyboard) */
+  button:focus:not(:focus-visible) {
+    outline: none;
+  }
+&lt;/style&gt;
+
+&lt;!-- :focus-visible is supported in all modern browsers.
+     For older browsers: use the focus-visible polyfill
+     (npm install focus-visible) which adds a .focus-visible class --&gt;</pre>
+  <p class="label">:focus-visible solves the UX problem of unwanted focus rings on mouse clicks while preserving them for keyboard navigation. Browsers apply it using heuristics: keyboard Tab always triggers it; mouse clicks on buttons typically don't.</p>
+</div>
+
+<div class="example">
+  <h3>7. accesskey attribute</h3>
+  <pre>&lt;!-- Provides a keyboard shortcut to focus/activate the element --&gt;
+&lt;a href="/search" accesskey="s"&gt;
+  &lt;u&gt;S&lt;/u&gt;earch
+&lt;/a&gt;
+
+&lt;button accesskey="n"&gt;
+  &lt;u&gt;N&lt;/u&gt;ew document
+&lt;/button&gt;
+
+&lt;!-- Activation shortcuts vary by OS + browser:
+     Windows/Linux: Alt + key (Chrome/Firefox)
+     Mac:          Ctrl + Option + key (Chrome)
+                   Ctrl + Alt    + key (Firefox)
+
+     Caveats:
+     - May conflict with browser/OS shortcuts
+     - Not predictable across platforms
+     - Rarely used correctly — document all shortcuts
+--&gt;</pre>
+  <p class="label">accesskey provides platform-specific keyboard shortcuts. Underline the access key letter for discoverability (u element, not text-decoration:underline). Use sparingly — conflicts with screen reader shortcut keys are common. Document all shortcuts in a visible keyboard reference.</p>
+</div>
+
+<div class="example">
+  <h3>8. Natural Tab order follows DOM order</h3>
+  <pre>&lt;!-- Tab visits elements in DOM source order --&gt;
+&lt;header&gt;
+  &lt;a href="/"&gt;Home&lt;/a&gt;          &lt;!-- Tab 1 --&gt;
+  &lt;a href="/about"&gt;About&lt;/a&gt;    &lt;!-- Tab 2 --&gt;
+&lt;/header&gt;
+&lt;main&gt;
+  &lt;h1&gt;Products&lt;/h1&gt;
+  &lt;button&gt;Filter&lt;/button&gt;       &lt;!-- Tab 3 --&gt;
+  &lt;a href="/item/1"&gt;Widget&lt;/a&gt;  &lt;!-- Tab 4 --&gt;
+  &lt;a href="/item/2"&gt;Gadget&lt;/a&gt;  &lt;!-- Tab 5 --&gt;
+&lt;/main&gt;
+&lt;footer&gt;
+  &lt;a href="/contact"&gt;Contact&lt;/a&gt;&lt;!-- Tab 6 --&gt;
+&lt;/footer&gt;
+
+&lt;!-- CSS order / transform / float do NOT affect Tab order.
+     Only DOM source order matters. --&gt;</pre>
+  <p class="label">The browser's Tab sequence follows DOM source order, regardless of visual positioning via CSS. Layouts achieved with CSS Grid or Flexbox order:N can create a mismatch between visual and keyboard order — a WCAG 1.3.2 / 2.4.3 violation. Keep DOM order meaningful.</p>
+</div>
+
+<div class="example">
+  <h3>9. Shift+Tab — reverse navigation</h3>
+  <pre>&lt;!-- Shift+Tab moves focus to the previous focusable element --&gt;
+&lt;!-- The order is the reverse of the Tab sequence (DOM order) --&gt;
+
+&lt;form&gt;
+  &lt;label for="first"&gt;First name&lt;/label&gt;
+  &lt;input id="first" type="text"&gt;     &lt;!-- Tab 1 / Shift+Tab 4 --&gt;
+
+  &lt;label for="last"&gt;Last name&lt;/label&gt;
+  &lt;input id="last" type="text"&gt;      &lt;!-- Tab 2 / Shift+Tab 3 --&gt;
+
+  &lt;button type="button"&gt;Cancel&lt;/button&gt; &lt;!-- Tab 3 / Shift+Tab 2 --&gt;
+  &lt;button type="submit"&gt;Save&lt;/button&gt;   &lt;!-- Tab 4 / Shift+Tab 1 --&gt;
+&lt;/form&gt;
+
+&lt;!-- Focus trap (modal): both Tab and Shift+Tab must remain
+     inside the dialog, wrapping around at boundaries --&gt;</pre>
+  <p class="label">Shift+Tab is the reverse Tab. Keyboard users rely on it to correct mistakes by moving backward through forms. Focus traps must intercept both Tab and Shift+Tab to keep focus within a modal dialog, preventing escape to the page behind.</p>
+</div>
+
+<div class="example">
+  <h3>10. Enter and Space on buttons</h3>
+  <pre>&lt;!-- Native button: Enter AND Space both activate it --&gt;
+&lt;button onclick="submit()"&gt;Submit&lt;/button&gt;
+
+&lt;!-- Native link: Enter activates it, Space scrolls page --&gt;
+&lt;a href="/next"&gt;Next&lt;/a&gt;
+
+&lt;!-- Custom button (div): you MUST add both --&gt;
+&lt;div
+  role="button"
+  tabindex="0"
+  id="custom"
+&gt;Custom&lt;/div&gt;
+
+&lt;script&gt;
+  document.getElementById('custom').addEventListener('keydown', e =&gt; {
+    if (e.key === 'Enter') { e.preventDefault(); activate(); }
+    if (e.key === ' ')     { e.preventDefault(); activate(); }
+    // Space preventDefault stops page scroll
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Native &lt;button&gt; fires click on both Enter and Space. Native &lt;a&gt; fires on Enter only. Custom role="button" elements must manually handle both keys. Forgetting Space is the most common keyboard bug in custom button implementations.</p>
+</div>
+
+<div class="example">
+  <h3>11. Focus visible check — testing keyboard navigation</h3>
+  <pre>&lt;!-- Keyboard navigation testing checklist:
+  1. Press Tab — every interactive element should receive visible focus
+  2. Press Shift+Tab — reverse order works correctly
+  3. No focus trap on the main page (Tab should never get stuck)
+  4. Modals/dropdowns trap focus correctly
+  5. Escape closes modal/dropdown and returns focus to trigger
+  6. Arrow keys work inside composite widgets
+  7. Enter/Space activate buttons and links
+  8. Form submit works with Enter in text fields
+--&gt;
+
+&lt;!-- Automated check: find all focusable elements --&gt;
+&lt;script&gt;
+  const focusable = document.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), ' +
+    'select:not([disabled]), textarea:not([disabled]), ' +
+    '[tabindex]:not([tabindex="-1"]), details &gt; summary'
+  );
+  console.log('Focusable elements:', focusable.length, focusable);
+&lt;/script&gt;</pre>
+  <p class="label">Manual keyboard testing is the most reliable method. Tab through the entire page and verify every interactive element is reachable and has a visible focus indicator. The JS snippet logs all focusable elements for auditing.</p>
+</div>
+
+<div class="example">
+  <h3>12. Enter in a text input submits the form</h3>
+  <pre>&lt;form id="search-form"&gt;
+  &lt;label for="q"&gt;Search&lt;/label&gt;
+  &lt;input type="search" id="q" name="q"&gt;
+  &lt;!-- Enter key in the input submits this form natively --&gt;
+  &lt;button type="submit"&gt;Search&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;!-- Prevent default submit while still allowing Enter: --&gt;
+&lt;script&gt;
+  document.getElementById('search-form').addEventListener('submit', e =&gt; {
+    e.preventDefault();
+    const query = document.getElementById('q').value;
+    performSearch(query);
+  });
+  // Do NOT intercept keydown on the input to prevent Enter submit —
+  // that breaks expected behavior for keyboard and AT users.
+&lt;/script&gt;</pre>
+  <p class="label">Pressing Enter while focus is in a text input submits the containing form — a universal browser convention. Never suppress this with a keydown listener on the input. Instead, handle the form's submit event, which fires for both Enter-key and button-click submissions.</p>
+</div>
+
+<div class="example">
+  <h3>13. tabindex on non-interactive elements — use sparingly</h3>
+  <pre>&lt;!-- Only make elements focusable if they are interactive --&gt;
+
+&lt;!-- BAD: paragraph in tab order serves no purpose --&gt;
+&lt;p tabindex="0"&gt;This is some information.&lt;/p&gt;
+
+&lt;!-- GOOD: heading as navigation target (tabindex="-1") --&gt;
+&lt;h2 tabindex="-1" id="results-heading"&gt;Search results&lt;/h2&gt;
+&lt;!-- Focused programmatically after search, not by Tab --&gt;
+
+&lt;!-- GOOD: scrollable region with keyboard-accessible scroll --&gt;
+&lt;div
+  tabindex="0"
+  role="region"
+  aria-label="Terms and conditions"
+  style="overflow-y: auto; max-height: 200px"
+&gt;
+  &lt;!-- Long text... --&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Add tabindex="0" only when: (a) the element has an interactive role, or (b) it is a scrollable region that must be keyboard-navigable. Content-only elements (paragraphs, headings) belong in the tab order only when they serve as programmatic focus targets (use tabindex="-1").</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Focus management in SPA routing</h3>
+  <pre>&lt;!-- Persistent route announcer --&gt;
+&lt;div role="status" id="route-announcer" class="sr-only"&gt;&lt;/div&gt;
+
+&lt;main id="main-content" tabindex="-1"&gt;
+  &lt;!-- Route content rendered here --&gt;
+&lt;/main&gt;
+
+&lt;script&gt;
+  // Called on every route change
+  function handleRouteChange(newPath, pageTitle) {
+    const main      = document.getElementById('main-content');
+    const announcer = document.getElementById('route-announcer');
+
+    // 1. Render new page content
+    renderPage(newPath);
+
+    // 2. Announce navigation
+    announcer.textContent = '';
+    setTimeout(() =&gt; {
+      announcer.textContent = `Navigated to ${pageTitle}`;
+    }, 100);
+
+    // 3. Move focus to main (users can then Tab into content)
+    main.focus();
+  }
+&lt;/script&gt;</pre>
+  <p class="label">SPA navigation must move focus and announce the new page. Without this, keyboard users stay focused on the clicked link (now on the old page). The sequence: render, announce (delayed), then focus main. This restores the experience of a full page load.</p>
+</div>
+
+<div class="example">
+  <h3>15. Focus trap in a modal dialog</h3>
+  <pre>&lt;div role="dialog" id="modal" aria-modal="true" aria-labelledby="modal-h" hidden&gt;
+  &lt;h2 id="modal-h"&gt;Delete account&lt;/h2&gt;
+  &lt;p&gt;This action is permanent.&lt;/p&gt;
+  &lt;button id="modal-cancel"&gt;Cancel&lt;/button&gt;
+  &lt;button id="modal-confirm"&gt;Delete&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+  function trapFocus(modal) {
+    const focusableEls = [...modal.querySelectorAll(FOCUSABLE)];
+    const first = focusableEls[0];
+    const last  = focusableEls[focusableEls.length - 1];
+
+    modal.addEventListener('keydown', function handler(e) {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
+      }
+    });
+  }
+
+  function openModal() {
+    const modal = document.getElementById('modal');
+    modal.hidden = false;
+    trapFocus(modal);
+    document.getElementById('modal-cancel').focus();
+  }
+&lt;/script&gt;</pre>
+  <p class="label">A focus trap intercepts Tab and Shift+Tab at the boundary elements, wrapping around instead of exiting. Focus must be moved inside on open and returned to the trigger on close. This is a WCAG 2.1.2 requirement — users must be able to navigate to and from every component.</p>
+</div>
+
+<div class="example">
+  <h3>16. Roving tabindex pattern</h3>
+  <pre>&lt;div role="toolbar" aria-label="Text formatting"&gt;
+  &lt;button tabindex="0"  id="tb-bold"   aria-pressed="false"&gt;Bold&lt;/button&gt;
+  &lt;button tabindex="-1" id="tb-italic" aria-pressed="false"&gt;Italic&lt;/button&gt;
+  &lt;button tabindex="-1" id="tb-under"  aria-pressed="false"&gt;Underline&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const toolbar = document.querySelector('[role="toolbar"]');
+  const buttons = [...toolbar.querySelectorAll('button')];
+
+  toolbar.addEventListener('keydown', e =&gt; {
+    const idx = buttons.indexOf(document.activeElement);
+    let next = idx;
+
+    if (e.key === 'ArrowRight') { e.preventDefault(); next = (idx + 1) % buttons.length; }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); next = (idx - 1 + buttons.length) % buttons.length; }
+    if (e.key === 'Home')       { e.preventDefault(); next = 0; }
+    if (e.key === 'End')        { e.preventDefault(); next = buttons.length - 1; }
+
+    if (next !== idx) {
+      buttons[idx].tabIndex = -1;  // Remove previous from tab order
+      buttons[next].tabIndex = 0;  // Add new to tab order
+      buttons[next].focus();
+    }
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Roving tabindex keeps exactly one tab stop in a composite widget. Only the active item has tabindex="0"; others have tabindex="-1". Arrow keys move focus between items, updating tabindex accordingly. Tab moves focus out of the widget entirely.</p>
+</div>
+
+<div class="example">
+  <h3>17. Arrow key patterns for composite widgets</h3>
+  <pre>&lt;!-- Pattern: single Tab stop into widget, then arrow keys inside --&gt;
+
+&lt;!-- Horizontal widget: Left/Right arrows --&gt;
+&lt;div role="tablist"&gt; &lt;!-- Left/Right arrows to switch tabs --&gt;&lt;/div&gt;
+
+&lt;!-- Vertical widget: Up/Down arrows --&gt;
+&lt;ul role="listbox"&gt; &lt;!-- Up/Down arrows to move options --&gt;&lt;/ul&gt;
+
+&lt;!-- Two-dimensional: all four arrow keys --&gt;
+&lt;table role="grid"&gt; &lt;!-- Arrow keys to move between cells --&gt;&lt;/table&gt;
+
+&lt;!-- Tree: Up/Down to move, Right to expand/move into, Left to collapse --&gt;
+&lt;ul role="tree"&gt;...&lt;/ul&gt;
+
+&lt;!-- Home: move to first item  / Ctrl+Home: first item in widget --&gt;
+&lt;!-- End:  move to last item   / Ctrl+End:  last item in widget  --&gt;
+&lt;!-- Enter/Space: activate selected item                         --&gt;
+&lt;!-- Escape: close popup / cancel operation                      --&gt;
+&lt;!-- Type-ahead: first character to jump to matching item        --&gt;</pre>
+  <p class="label">Composite widgets use internal arrow-key navigation to avoid polluting the page's Tab sequence. Each widget type has a specific keyboard pattern defined by ARIA Authoring Practices Guide (APG). Implementing these correctly provides a native-app experience.</p>
+</div>
+
+<div class="example">
+  <h3>18. Escape key handler</h3>
+  <pre>&lt;script&gt;
+  // Global Escape key handler
+  document.addEventListener('keydown', e =&gt; {
+    if (e.key !== 'Escape') return;
+
+    // Close modal if open
+    const modal = document.querySelector('[role="dialog"]:not([hidden])');
+    if (modal) { closeModal(modal); return; }
+
+    // Close dropdown if open
+    const dropdown = document.querySelector('[aria-expanded="true"]');
+    if (dropdown) { closeDropdown(dropdown); return; }
+
+    // Close tooltip if showing
+    const tooltip = document.querySelector('[role="tooltip"]:not([hidden])');
+    if (tooltip) { closeTooltip(tooltip); return; }
+  });
+
+  function closeModal(modal) {
+    modal.hidden = true;
+    // Return focus to the element that opened it
+    const trigger = document.getElementById(modal.dataset.triggerId);
+    trigger?.focus();
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Escape is the universal "exit" key for popups, dialogs, menus, and tooltips (WCAG 1.4.13 for non-hover content). Handle it globally and work outward from the most recently opened layer. Always return focus to the trigger element on close.</p>
+</div>
+
+<div class="example">
+  <h3>19. Focus return after modal close</h3>
+  <pre>&lt;button id="open-modal-btn" onclick="openModal(this)"&gt;
+  Edit profile
+&lt;/button&gt;
+
+&lt;div role="dialog" id="edit-modal" aria-modal="true" hidden
+     data-trigger-id="open-modal-btn"&gt;
+  &lt;h2&gt;Edit profile&lt;/h2&gt;
+  &lt;button onclick="closeModal('edit-modal')"&gt;Cancel&lt;/button&gt;
+  &lt;button onclick="saveAndClose('edit-modal')"&gt;Save&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  let returnFocusEl = null;
+
+  function openModal(trigger) {
+    returnFocusEl = trigger; // Save trigger reference
+    const modal = document.getElementById('edit-modal');
+    modal.hidden = false;
+    modal.querySelector('button').focus(); // Focus first button
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).hidden = true;
+    returnFocusEl?.focus(); // Return focus to trigger
+    returnFocusEl = null;
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Storing the trigger element before opening a modal and restoring focus to it on close is essential for orientation. Without this, keyboard users lose their place in the page after the modal closes — they would have to Tab from the beginning to find their context again.</p>
+</div>
+
+<div class="example">
+  <h3>20. Keyboard shortcuts with modifier keys</h3>
+  <pre>&lt;script&gt;
+  document.addEventListener('keydown', e =&gt; {
+    // Ignore shortcuts when typing in inputs
+    const tag = document.activeElement.tagName;
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
+    if (document.activeElement.isContentEditable) return;
+
+    // Ctrl/Cmd + S = Save
+    if ((e.ctrlKey || e.metaKey) &amp;&amp; e.key === 's') {
+      e.preventDefault();
+      saveDocument();
+    }
+
+    // Ctrl/Cmd + Z = Undo
+    if ((e.ctrlKey || e.metaKey) &amp;&amp; !e.shiftKey &amp;&amp; e.key === 'z') {
+      e.preventDefault();
+      undoAction();
+    }
+
+    // Ctrl/Cmd + Shift + Z = Redo
+    if ((e.ctrlKey || e.metaKey) &amp;&amp; e.shiftKey &amp;&amp; e.key === 'z') {
+      e.preventDefault();
+      redoAction();
+    }
+  });
+&lt;/script&gt;
+
+&lt;!-- Document shortcuts in a visible keyboard help panel --&gt;
+&lt;button onclick="showKeyboardHelp()"&gt;Keyboard shortcuts (?)&lt;/button&gt;</pre>
+  <p class="label">Custom keyboard shortcuts should: use modifier keys to avoid conflicts with AT shortcuts; ignore shortcuts when focus is in an input; mirror familiar conventions (Ctrl+S=save, Ctrl+Z=undo); and be discoverable via a documented keyboard shortcut help panel.</p>
+</div>
+
+<div class="example">
+  <h3>21. Skip nav for complex pages — multiple skip targets</h3>
+  <pre>&lt;!-- Multiple skip targets for complex page structures --&gt;
+&lt;div class="skip-links"&gt;
+  &lt;a href="#main-content"  class="skip-link"&gt;Skip to main content&lt;/a&gt;
+  &lt;a href="#site-search"   class="skip-link"&gt;Skip to search&lt;/a&gt;
+  &lt;a href="#site-nav"      class="skip-link"&gt;Skip to navigation&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;header&gt;
+  &lt;form id="site-search" role="search" aria-label="Site search"&gt;
+    &lt;!-- search --&gt;
+  &lt;/form&gt;
+  &lt;nav id="site-nav" aria-label="Main"&gt;
+    &lt;!-- navigation --&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;
+
+&lt;main id="main-content" tabindex="-1"&gt;
+  &lt;!-- content --&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+  .skip-links { position: absolute; }
+  .skip-link { position: absolute; top: -60px; }
+  .skip-link:focus { top: 0; }
+&lt;/style&gt;</pre>
+  <p class="label">Pages with large headers benefit from multiple skip targets. All skip links are revealed on focus and hidden via absolute positioning. Each target uses tabindex="-1" to accept programmatic focus from the anchor without appearing in the natural Tab sequence.</p>
+</div>
+
+<div class="example">
+  <h3>22. Type-ahead in a listbox</h3>
+  <pre>&lt;ul
+  role="listbox"
+  id="country-list"
+  tabindex="0"
+  aria-label="Select country"
+  aria-activedescendant=""
+&gt;
+  &lt;li role="option" id="opt-au"&gt;Australia&lt;/li&gt;
+  &lt;li role="option" id="opt-br"&gt;Brazil&lt;/li&gt;
+  &lt;li role="option" id="opt-ca"&gt;Canada&lt;/li&gt;
+  &lt;!-- ... 200 more countries --&gt;
+&lt;/ul&gt;
+
+&lt;script&gt;
+  let typeaheadBuffer = '';
+  let typeaheadTimer;
+
+  document.getElementById('country-list').addEventListener('keydown', e =&gt; {
+    if (e.key.length !== 1) return; // Ignore non-printable keys
+
+    typeaheadBuffer += e.key.toLowerCase();
+    clearTimeout(typeaheadTimer);
+    typeaheadTimer = setTimeout(() =&gt; { typeaheadBuffer = ''; }, 500);
+
+    const options = [...document.querySelectorAll('[role="option"]')];
+    const match = options.find(o =&gt;
+      o.textContent.trim().toLowerCase().startsWith(typeaheadBuffer)
+    );
+    if (match) {
+      document.getElementById('country-list')
+        .setAttribute('aria-activedescendant', match.id);
+      match.scrollIntoView({ block: 'nearest' });
+    }
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Type-ahead lets users jump to an option by typing its first character(s). A 500ms buffer allows multi-character prefix matching ("Ca" → Canada). This matches native &lt;select&gt; behavior that keyboard users rely on for long lists.</p>
+</div>
+
+<div class="example">
+  <h3>23. Focus indicator — high-contrast mode</h3>
+  <pre>&lt;style&gt;
+  /* Standard focus ring */
+  :focus-visible {
+    outline: 3px solid #0058cc;
+    outline-offset: 2px;
+  }
+
+  /* Windows High Contrast Mode (forced-colors) */
+  @media (forced-colors: active) {
+    :focus-visible {
+      /* Use system highlight color — don't override with a fixed color */
+      outline: 3px solid Highlight;
+      outline-offset: 2px;
+    }
+  }
+
+  /* Ensure focus ring is visible on dark AND light backgrounds */
+  :focus-visible {
+    outline: 3px solid #0058cc;
+    outline-offset: 2px;
+    /* Add white ring inside for dark backgrounds */
+    box-shadow:
+      0 0 0 1px #fff,
+      0 0 0 4px #0058cc;
+  }
+&lt;/style&gt;</pre>
+  <p class="label">Focus indicators must be visible in high-contrast mode. Use forced-colors media query and system color keywords (Highlight) rather than fixed colors. The double-ring technique (white then colored) ensures visibility on both dark and light backgrounds.</p>
+</div>
+
+<div class="example">
+  <h3>24. Programmatic focus with announcements</h3>
+  <pre>&lt;div id="wizard"&gt;
+  &lt;div id="step-1"&gt;
+    &lt;h2 tabindex="-1" id="step-1-h"&gt;Step 1: Personal details&lt;/h2&gt;
+    &lt;!-- form fields --&gt;
+    &lt;button onclick="goToStep(2)"&gt;Continue&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div id="step-2" hidden&gt;
+    &lt;h2 tabindex="-1" id="step-2-h"&gt;Step 2: Address&lt;/h2&gt;
+    &lt;!-- form fields --&gt;
+    &lt;button onclick="goToStep(3)"&gt;Continue&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div role="status" id="wizard-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  function goToStep(n) {
+    // Hide current step
+    document.getElementById(`step-${n-1}`).hidden = true;
+    // Show new step
+    const newStep = document.getElementById(`step-${n}`);
+    newStep.hidden = false;
+
+    // Announce then focus
+    document.getElementById('wizard-status').textContent =
+      `Step ${n} of 4`;
+    setTimeout(() =&gt; {
+      document.getElementById(`step-${n}-h`).focus();
+    }, 100);
+  }
+&lt;/script&gt;</pre>
+  <p class="label">When displaying new content sections (wizard steps, loaded panels), announce the change via a status region then move focus to the section heading after a small delay. The delay ensures the announcement is not interrupted by the focus event.</p>
+</div>
+
+<div class="example">
+  <h3>25. WCAG 2.1 keyboard requirements</h3>
+  <pre>&lt;!-- WCAG 2.1 keyboard-related success criteria:
+
+  1.3.1  Info &amp; Relationships (A) — Structure conveyed programmatically
+  1.3.2  Meaningful Sequence (A) — DOM order = logical reading order
+  1.4.11 Non-text Contrast (AA) — Focus indicator: 3:1 contrast
+  1.4.13 Content on Hover/Focus (AA) — Tooltips dismissible + hoverable
+  2.1.1  Keyboard (A) — ALL functionality via keyboard (no mouse-only paths)
+  2.1.2  No Keyboard Trap (A) — Users can always navigate away
+  2.1.4  Character Key Shortcuts (A) — Single-key shortcuts can be disabled
+  2.4.3  Focus Order (A) — Focus sequence is logical
+  2.4.7  Focus Visible (AA) — Keyboard focus always visible
+  2.4.11 Focus Appearance (AAA) — Focus indicator size and contrast
+  2.4.12 Focus Not Obscured (AA, WCAG 2.2) — Focus ring not hidden by sticky headers
+  3.2.1  On Focus (A) — Focus alone does not change context
+
+--&gt;</pre>
+  <p class="label">These WCAG criteria form the keyboard accessibility compliance checklist. 2.1.1 (keyboard access) and 2.1.2 (no keyboard trap) are Level A requirements — the absolute minimum. 2.4.7 (focus visible) is Level AA, required for most public-sector and large-enterprise applications.</p>
+</div>
+
+<div class="example">
+  <h3>26. Focus not obscured by sticky header (WCAG 2.4.12)</h3>
+  <pre>&lt;style&gt;
+  /* Sticky header that could hide focused elements */
+  header {
+    position: sticky;
+    top: 0;
+    height: 60px;
+    background: white;
+    z-index: 100;
+  }
+
+  /* Fix 1: scroll-padding-top ensures focused elements appear below header */
+  html {
+    scroll-padding-top: 70px; /* header height + buffer */
+  }
+
+  /* Fix 2: scroll-margin-top on interactive elements */
+  a:focus,
+  button:focus,
+  input:focus,
+  [tabindex]:focus {
+    scroll-margin-top: 70px;
+  }
+&lt;/style&gt;</pre>
+  <p class="label">WCAG 2.4.12 (WCAG 2.2, Level AA) requires that focused elements are not entirely obscured by sticky/fixed UI. scroll-padding-top on the html element is the simplest fix — browsers automatically scroll focused elements below the sticky header amount.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Modal dialog focus trap — complete implementation</h3>
+  <pre>&lt;button id="settings-trigger"&gt;Open settings&lt;/button&gt;
+
+&lt;div
+  id="settings-dialog"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="settings-title"
+  hidden
+&gt;
+  &lt;h2 id="settings-title" tabindex="-1"&gt;Settings&lt;/h2&gt;
+  &lt;label&gt;&lt;input type="checkbox"&gt; Dark mode&lt;/label&gt;
+  &lt;label&gt;&lt;input type="checkbox"&gt; Notifications&lt;/label&gt;
+  &lt;button id="settings-save"&gt;Save&lt;/button&gt;
+  &lt;button id="settings-close"&gt;Close&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const FOCUSABLE_SEL =
+    'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+  let returnTo = null;
+
+  function openDialog() {
+    returnTo = document.activeElement;
+    const dlg = document.getElementById('settings-dialog');
+    dlg.hidden = false;
+    dlg.querySelector(FOCUSABLE_SEL).focus();
+    dlg.addEventListener('keydown', trapHandler);
+  }
+
+  function closeDialog() {
+    const dlg = document.getElementById('settings-dialog');
+    dlg.hidden = true;
+    dlg.removeEventListener('keydown', trapHandler);
+    returnTo?.focus();
+    returnTo = null;
+  }
+
+  function trapHandler(e) {
+    const dlg = document.getElementById('settings-dialog');
+    const els = [...dlg.querySelectorAll(FOCUSABLE_SEL)];
+    const first = els[0], last = els[els.length - 1];
+
+    if (e.key === 'Escape') { e.preventDefault(); closeDialog(); return; }
+    if (e.key !== 'Tab') return;
+
+    if (e.shiftKey &amp;&amp; document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey &amp;&amp; document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  }
+
+  document.getElementById('settings-trigger').addEventListener('click', openDialog);
+  document.getElementById('settings-close').addEventListener('click', closeDialog);
+&lt;/script&gt;</pre>
+  <p class="label">Complete modal focus trap: save trigger reference, move focus to first focusable element on open, intercept Tab/Shift+Tab to wrap within the dialog, handle Escape to close, and return focus to the trigger. Remove the keydown listener on close to avoid memory leaks.</p>
+</div>
+
+<div class="example">
+  <h3>28. Menu keyboard pattern (Arrow/Escape/Home/End)</h3>
+  <pre>&lt;div class="menu-container"&gt;
+  &lt;button id="menu-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="nav-menu"&gt;
+    Navigation
+  &lt;/button&gt;
+  &lt;ul role="menu" id="nav-menu" aria-labelledby="menu-btn" hidden&gt;
+    &lt;li role="none"&gt;&lt;a role="menuitem" href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li role="none"&gt;&lt;a role="menuitem" href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;li role="none"&gt;&lt;a role="menuitem" href="/contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const btn  = document.getElementById('menu-btn');
+  const menu = document.getElementById('nav-menu');
+  const items = () =&gt; [...menu.querySelectorAll('[role="menuitem"]')];
+
+  btn.addEventListener('click', () =&gt; toggleMenu());
+  btn.addEventListener('keydown', e =&gt; {
+    if (e.key === 'ArrowDown') { e.preventDefault(); openMenu(); items()[0].focus(); }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); openMenu(); items().at(-1).focus(); }
+  });
+
+  menu.addEventListener('keydown', e =&gt; {
+    const all = items();
+    const idx = all.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown') { e.preventDefault(); all[(idx+1) % all.length].focus(); }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); all[(idx-1+all.length) % all.length].focus(); }
+    if (e.key === 'Home')      { e.preventDefault(); all[0].focus(); }
+    if (e.key === 'End')       { e.preventDefault(); all.at(-1).focus(); }
+    if (e.key === 'Escape')    { e.preventDefault(); closeMenu(); btn.focus(); }
+    if (e.key === 'Tab')       { closeMenu(); } // Allow Tab to exit normally
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Menu keyboard pattern: Down arrow on button opens menu and focuses first item; Up arrow opens and focuses last. Inside menu: Up/Down navigate items, Home/End jump to boundaries, Escape closes and returns focus to button. Tab exits the menu without closing.</p>
+</div>
+
+<div class="example">
+  <h3>29. Tab widget keyboard pattern</h3>
+  <pre>&lt;div role="tablist" aria-label="Account"&gt;
+  &lt;button role="tab" id="t1" aria-selected="true"  aria-controls="p1" tabindex="0"&gt;Profile&lt;/button&gt;
+  &lt;button role="tab" id="t2" aria-selected="false" aria-controls="p2" tabindex="-1"&gt;Security&lt;/button&gt;
+  &lt;button role="tab" id="t3" aria-selected="false" aria-controls="p3" tabindex="-1"&gt;Billing&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+
+  document.querySelector('[role="tablist"]').addEventListener('keydown', e =&gt; {
+    const idx = tabs.indexOf(document.activeElement);
+    let next = idx;
+
+    if (e.key === 'ArrowRight') next = (idx + 1) % tabs.length;
+    if (e.key === 'ArrowLeft')  next = (idx - 1 + tabs.length) % tabs.length;
+    if (e.key === 'Home')       next = 0;
+    if (e.key === 'End')        next = tabs.length - 1;
+
+    if (next !== idx) {
+      e.preventDefault();
+      activateTab(tabs[next]);
+    }
+  });
+
+  function activateTab(tab) {
+    tabs.forEach(t =&gt; {
+      t.setAttribute('aria-selected', 'false');
+      t.tabIndex = -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = true;
+    });
+    tab.setAttribute('aria-selected', 'true');
+    tab.tabIndex = 0;
+    tab.focus();
+    document.getElementById(tab.getAttribute('aria-controls')).hidden = false;
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Tab widget keyboard: Left/Right arrows move between tabs using roving tabindex; Home/End go to first/last. This example uses "automatic activation" (selecting on arrow key). An alternative is "manual activation" (arrow moves focus, Enter/Space selects) — useful when panels are expensive to load.</p>
+</div>
+
+<div class="example">
+  <h3>30. Accordion keyboard pattern</h3>
+  <pre>&lt;div class="accordion" id="faq"&gt;
+  &lt;h3&gt;
+    &lt;button id="a1-btn" aria-expanded="false" aria-controls="a1-body"&gt;
+      What is ARIA?
+    &lt;/button&gt;
+  &lt;/h3&gt;
+  &lt;div id="a1-body" role="region" aria-labelledby="a1-btn" hidden&gt;
+    &lt;p&gt;Accessible Rich Internet Applications...&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;h3&gt;
+    &lt;button id="a2-btn" aria-expanded="false" aria-controls="a2-body"&gt;
+      Why use semantic HTML?
+    &lt;/button&gt;
+  &lt;/h3&gt;
+  &lt;div id="a2-body" role="region" aria-labelledby="a2-btn" hidden&gt;
+    &lt;p&gt;Semantic HTML provides meaning to browsers and AT...&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Keyboard pattern for accordion buttons:
+  Tab / Shift+Tab — move between accordion headers
+  Enter / Space   — expand or collapse the panel
+  No arrow keys required (each button is its own tab stop)
+  Focus inside panel: Tab navigates content; Shift+Tab returns to header --&gt;</pre>
+  <p class="label">Accordion headers are individual tab stops (no roving tabindex needed). Enter or Space toggles panels. Unlike toolbars or tabs, accordions don't use arrow key navigation between headers — each button is independently focusable via Tab. This is the simplest keyboard composite pattern.</p>
+</div>
+
+<div class="example">
+  <h3>31. Date picker keyboard navigation</h3>
+  <pre>&lt;div role="dialog" aria-label="Choose date" id="datepicker" hidden&gt;
+  &lt;div class="dp-header"&gt;
+    &lt;button id="dp-prev" aria-label="Previous month"&gt;&amp;lt;&lt;/button&gt;
+    &lt;div aria-live="polite" id="dp-month-year"&gt;March 2026&lt;/div&gt;
+    &lt;button id="dp-next" aria-label="Next month"&gt;&amp;gt;&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;table role="grid" aria-labelledby="dp-month-year"&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;&lt;th abbr="Sunday"&gt;Su&lt;/th&gt;&lt;!-- ... --&gt;&lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        &lt;td&gt;&lt;button tabindex="-1" aria-label="March 1, 2026"&gt;1&lt;/button&gt;&lt;/td&gt;
+        &lt;td&gt;&lt;button tabindex="0"  aria-label="March 2, 2026" aria-current="date"&gt;2&lt;/button&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;
+
+&lt;!-- Keyboard:
+  Tab:        focus between prev/grid/next
+  Arrow keys: navigate days within grid
+  Enter:      select focused date
+  Page Up:    previous month | Page Down: next month
+  Home/End:   first/last day of week
+  Escape:     close picker
+--&gt;</pre>
+  <p class="label">Date pickers combine a dialog wrapper, a month/year live region, and a grid for day navigation. Arrow keys move within the grid using roving tabindex on day buttons. Page Up/Down navigate months. The live region announces month changes without moving focus.</p>
+</div>
+
+<div class="example">
+  <h3>32. Drag and drop with keyboard alternative</h3>
+  <pre>&lt;ul id="sortable-list" aria-label="Reorder items"&gt;
+  &lt;li
+    draggable="true"
+    tabindex="0"
+    aria-describedby="dnd-help"
+    data-index="0"
+  &gt;Item 1&lt;/li&gt;
+  &lt;li draggable="true" tabindex="0" aria-describedby="dnd-help" data-index="1"&gt;Item 2&lt;/li&gt;
+  &lt;li draggable="true" tabindex="0" aria-describedby="dnd-help" data-index="2"&gt;Item 3&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p id="dnd-help" class="sr-only"&gt;
+  Press Space to pick up. Use Up and Down arrow keys to move.
+  Press Space again to drop. Press Escape to cancel.
+&lt;/p&gt;
+
+&lt;div role="status" id="dnd-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  let pickedUp = null;
+
+  document.getElementById('sortable-list').addEventListener('keydown', e =&gt; {
+    const item = e.target.closest('li');
+    if (!item) return;
+
+    if (e.key === ' ') {
+      e.preventDefault();
+      if (!pickedUp) {
+        pickedUp = item;
+        item.setAttribute('aria-grabbed', 'true');
+        document.getElementById('dnd-status').textContent =
+          `Picked up ${item.textContent.trim()}. Use arrows to move.`;
+      } else {
+        pickedUp.removeAttribute('aria-grabbed');
+        document.getElementById('dnd-status').textContent =
+          `Dropped ${pickedUp.textContent.trim()} in new position.`;
+        pickedUp = null;
+      }
+    }
+
+    if (pickedUp &amp;&amp; e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = pickedUp.previousElementSibling;
+      if (prev) { pickedUp.parentNode.insertBefore(pickedUp, prev); }
+    }
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Keyboard drag-and-drop: Space picks up and drops; Arrow keys move the grabbed item; Escape cancels. A status live region announces each move. aria-grabbed indicates the pickup state. This satisfies WCAG 2.1.1 which requires all drag-and-drop to be operable by keyboard.</p>
+</div>
+
+<div class="example">
+  <h3>33. Data grid keyboard navigation</h3>
+  <pre>&lt;table role="grid" id="data-grid" aria-label="Products"&gt;
+  &lt;tbody&gt;
+    &lt;tr role="row"&gt;
+      &lt;td role="gridcell" tabindex="0"&gt;Widget A&lt;/td&gt;
+      &lt;td role="gridcell" tabindex="-1"&gt;$19.99&lt;/td&gt;
+      &lt;td role="gridcell" tabindex="-1"&gt;&lt;button tabindex="-1"&gt;Edit&lt;/button&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+      &lt;td role="gridcell" tabindex="-1"&gt;Gadget B&lt;/td&gt;
+      &lt;td role="gridcell" tabindex="-1"&gt;$29.99&lt;/td&gt;
+      &lt;td role="gridcell" tabindex="-1"&gt;&lt;button tabindex="-1"&gt;Edit&lt;/button&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;script&gt;
+  const grid = document.getElementById('data-grid');
+  const cells = () =&gt; [...grid.querySelectorAll('[role="gridcell"]')];
+
+  grid.addEventListener('keydown', e =&gt; {
+    const all = cells();
+    const idx = all.indexOf(document.activeElement);
+    const cols = grid.rows[0].cells.length;
+
+    const move = {
+      'ArrowRight': idx + 1,
+      'ArrowLeft':  idx - 1,
+      'ArrowDown':  idx + cols,
+      'ArrowUp':    idx - cols,
+    }[e.key];
+
+    if (move !== undefined &amp;&amp; all[move]) {
+      e.preventDefault();
+      all[idx].tabIndex = -1;
+      all[move].tabIndex = 0;
+      all[move].focus();
+    }
+
+    if (e.key === 'Enter') {
+      const btn = document.activeElement.querySelector('button');
+      btn?.focus();
+    }
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Grid navigation uses arrow keys to move between cells (roving tabindex). Enter moves focus into a cell's interactive content (e.g., Edit button). Escape should return focus to the cell. F2 can also be used to enter edit mode in spreadsheet-like grids.</p>
+</div>
+
+<div class="example">
+  <h3>34. Tree widget keyboard navigation</h3>
+  <pre>&lt;ul role="tree" id="file-tree" aria-label="Project files"&gt;
+  &lt;li role="treeitem" aria-expanded="true" tabindex="0" id="ti-src"&gt;
+    &lt;span&gt;src&lt;/span&gt;
+    &lt;ul role="group"&gt;
+      &lt;li role="treeitem" tabindex="-1" id="ti-index"&gt;&lt;span&gt;index.ts&lt;/span&gt;&lt;/li&gt;
+      &lt;li role="treeitem" aria-expanded="false" tabindex="-1" id="ti-comp"&gt;
+        &lt;span&gt;components&lt;/span&gt;
+        &lt;ul role="group" hidden&gt;
+          &lt;li role="treeitem" tabindex="-1"&gt;&lt;span&gt;Button.tsx&lt;/span&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Tree keyboard pattern:
+  Down arrow: move to next visible treeitem
+  Up arrow:   move to previous visible treeitem
+  Right arrow: if collapsed — expand; if expanded — move to first child
+  Left arrow:  if expanded — collapse; if collapsed — move to parent
+  Home:        move to first treeitem
+  End:         move to last visible treeitem
+  Enter/Space: select the treeitem
+  Type-ahead:  jump to matching label
+--&gt;</pre>
+  <p class="label">Tree keyboard navigation is the most complex composite widget pattern. Right arrow expands collapsed nodes or enters expanded ones; Left arrow collapses or moves to parent. All visible treeitems use roving tabindex. Hidden (collapsed) treeitems must be excluded from navigation.</p>
+</div>
+
+<div class="example">
+  <h3>35. Nested focus trap — stacked dialogs</h3>
+  <pre>&lt;div id="dialog-1" role="dialog" aria-modal="true" aria-labelledby="d1-title" hidden&gt;
+  &lt;h2 id="d1-title"&gt;Edit order&lt;/h2&gt;
+  &lt;button onclick="openDialog2()"&gt;Change shipping&lt;/button&gt;
+  &lt;button onclick="closeDialog1()"&gt;Close&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;div id="dialog-2" role="dialog" aria-modal="true" aria-labelledby="d2-title" hidden&gt;
+  &lt;h2 id="d2-title"&gt;Select shipping method&lt;/h2&gt;
+  &lt;button onclick="selectStandard()"&gt;Standard&lt;/button&gt;
+  &lt;button onclick="closeDialog2()"&gt;Cancel&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const trapStack = [];
+
+  function openDialog2() {
+    // Save current trap context and install new one
+    trapStack.push(document.getElementById('dialog-1'));
+    installTrap(document.getElementById('dialog-2'));
+    document.getElementById('dialog-2').hidden = false;
+    document.getElementById('dialog-2').querySelector('button').focus();
+  }
+
+  function closeDialog2() {
+    document.getElementById('dialog-2').hidden = true;
+    removeTrap();
+    // Return focus to dialog-1, not to the original page trigger
+    const prev = trapStack.pop();
+    prev?.querySelector('button')?.focus();
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Stacked dialogs require a trap stack. When a second dialog opens, push the first dialog context onto the stack. On close, pop it and return focus to the appropriate element within the previous layer. The first dialog's trap resumes naturally.</p>
+</div>
+
+<div class="example">
+  <h3>36. Combobox with keyboard navigation</h3>
+  <pre>&lt;label for="combo-input"&gt;Search products&lt;/label&gt;
+&lt;input
+  id="combo-input"
+  type="text"
+  role="combobox"
+  aria-autocomplete="list"
+  aria-expanded="false"
+  aria-controls="combo-list"
+  aria-activedescendant=""
+  autocomplete="off"
+&gt;
+&lt;ul role="listbox" id="combo-list" hidden&gt;
+  &lt;li role="option" id="co-0"&gt;Widget A&lt;/li&gt;
+  &lt;li role="option" id="co-1"&gt;Widget B&lt;/li&gt;
+  &lt;li role="option" id="co-2"&gt;Gadget Pro&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Combobox keyboard:
+  Type:        filter options, open listbox
+  Down arrow:  open listbox; move to next option
+  Up arrow:    move to previous option
+  Enter:       select focused option; close listbox
+  Escape:      close listbox; clear or restore input value
+  Tab:         accept focused option or close listbox
+  Alt+Down:    open listbox without filtering
+  Alt+Up:      select and close
+--&gt;</pre>
+  <p class="label">Combobox keyboard interactions are extensive. The input stays focused throughout — options are "virtually focused" via aria-activedescendant without real DOM focus movement. This preserves cursor position in the text field while allowing arrow-key option navigation.</p>
+</div>
+
+<div class="example">
+  <h3>37. Focus restoration after dynamic content changes</h3>
+  <pre>&lt;div id="item-list"&gt;
+  &lt;div class="item" data-id="1"&gt;
+    Item 1
+    &lt;button class="delete-btn" data-id="1"&gt;Delete&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="item" data-id="2"&gt;
+    Item 2
+    &lt;button class="delete-btn" data-id="2"&gt;Delete&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="item" data-id="3"&gt;
+    Item 3
+    &lt;button class="delete-btn" data-id="3"&gt;Delete&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  document.querySelectorAll('.delete-btn').forEach(btn =&gt; {
+    btn.addEventListener('click', e =&gt; {
+      const id      = e.target.dataset.id;
+      const item    = document.querySelector(`.item[data-id="${id}"]`);
+      const allBtns = [...document.querySelectorAll('.delete-btn')];
+      const idx     = allBtns.indexOf(e.target);
+
+      item.remove();
+
+      const remaining = document.querySelectorAll('.delete-btn');
+      if (remaining.length === 0) {
+        document.getElementById('item-list').focus();
+      } else {
+        const nextIdx = Math.min(idx, remaining.length - 1);
+        remaining[nextIdx].focus();
+      }
+    });
+  });
+&lt;/script&gt;</pre>
+  <p class="label">When an item containing the focused element is deleted, focus is lost to the body. The pattern: focus the next sibling's delete button, or if none exists, focus the previous one. If the list is empty, move focus to a logical container or "add" action.</p>
+</div>
+
+<div class="example">
+  <h3>38. Virtual scrolling keyboard access</h3>
+  <pre>&lt;div
+  id="virtual-list"
+  role="listbox"
+  tabindex="0"
+  aria-label="5000 employees"
+  aria-activedescendant="vl-item-0"
+  style="height: 400px; overflow-y: auto"
+&gt;
+  &lt;!-- Only 20 items rendered at a time --&gt;
+  &lt;div role="option" id="vl-item-0" aria-selected="true"&gt;Alice Johnson&lt;/div&gt;
+  &lt;div role="option" id="vl-item-1" aria-selected="false"&gt;Bob Smith&lt;/div&gt;
+  &lt;!-- ... 18 more rendered --&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  let activeIndex = 0;
+  const TOTAL = 5000;
+  const VISIBLE = 20;
+
+  document.getElementById('virtual-list').addEventListener('keydown', e =&gt; {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, TOTAL - 1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, 0);
+    } else if (e.key === 'Home') {
+      e.preventDefault(); activeIndex = 0;
+    } else if (e.key === 'End') {
+      e.preventDefault(); activeIndex = TOTAL - 1;
+    }
+
+    rerenderWindow(activeIndex);
+    document.getElementById('virtual-list')
+      .setAttribute('aria-activedescendant', `vl-item-${activeIndex}`);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Virtual scroll lists must still support full keyboard navigation across all items, even those not rendered. Maintain a numeric activeIndex representing position in the complete dataset. On key press, update the index, re-render the visible window around it, and update aria-activedescendant.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Virtual focus with aria-activedescendant</h3>
+  <pre>&lt;!-- Container holds real DOM focus; activeDescendant tracks virtual focus --&gt;
+&lt;div
+  id="autocomplete-list"
+  role="listbox"
+  tabindex="0"
+  aria-label="Search suggestions"
+  aria-activedescendant=""
+&gt;
+  &lt;div role="option" id="s-opt-0"&gt;Accessibility&lt;/div&gt;
+  &lt;div role="option" id="s-opt-1"&gt;Accessible design&lt;/div&gt;
+  &lt;div role="option" id="s-opt-2"&gt;ARIA authoring&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  let virtualIdx = -1;
+  const list = document.getElementById('autocomplete-list');
+  const opts = () =&gt; [...list.querySelectorAll('[role="option"]')];
+
+  list.addEventListener('keydown', e =&gt; {
+    const options = opts();
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      virtualIdx = (virtualIdx + 1) % options.length;
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      virtualIdx = (virtualIdx - 1 + options.length) % options.length;
+    }
+
+    options.forEach((o, i) =&gt; {
+      o.classList.toggle('highlighted', i === virtualIdx);
+    });
+
+    list.setAttribute('aria-activedescendant',
+      virtualIdx &gt;= 0 ? options[virtualIdx].id : ''
+    );
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Virtual focus keeps one real DOM focus point (the container) while ARIA tracks a virtual focus position via aria-activedescendant. Screen readers read the active descendant, not the container. This avoids janky focus movement in large lists and allows smooth keyboard traversal.</p>
+</div>
+
+<div class="example">
+  <h3>40. Focus-visible polyfill usage</h3>
+  <pre>&lt;!-- For older browsers that don't support :focus-visible --&gt;
+&lt;!-- npm install focus-visible --&gt;
+
+&lt;script src="focus-visible.js"&gt;&lt;/script&gt;
+&lt;!-- Or as ES module: import 'focus-visible'; --&gt;
+
+&lt;style&gt;
+  /* Polyfill adds/removes .focus-visible class on elements */
+
+  /* Hide focus ring by default */
+  :focus { outline: none; }
+
+  /* Show focus ring only for keyboard navigation */
+  :focus.focus-visible {
+    outline: 3px solid #005fcc;
+    outline-offset: 2px;
+  }
+
+  /* Modern approach (native, no polyfill needed) */
+  :focus-visible {
+    outline: 3px solid #005fcc;
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+&lt;/style&gt;</pre>
+  <p class="label">The focus-visible polyfill (wicg/focus-visible) adds .focus-visible CSS class for older browsers. For modern browser support (Chrome 86+, Firefox 85+, Safari 15.4+), use the native :focus-visible pseudo-class directly. Check caniuse.com before deciding whether to polyfill.</p>
+</div>
+
+<div class="example">
+  <h3>41. Custom focus ring styles for brand consistency</h3>
+  <pre>&lt;style&gt;
+  /* Base reset */
+  :focus-visible { outline: none; }
+
+  /* Primary action buttons */
+  .btn-primary:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+    box-shadow:
+      0 0 0 3px #fff,
+      0 0 0 5px #0058cc;
+  }
+
+  /* Inline links */
+  a:focus-visible {
+    background-color: #fd0;
+    color: #000;
+    outline: 3px solid #000;
+    outline-offset: 0;
+    text-decoration: none;
+  }
+
+  /* Text inputs */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+    border-color: #0058cc;
+    box-shadow: 0 0 0 3px rgba(0, 88, 204, 0.3);
+  }
+&lt;/style&gt;</pre>
+  <p class="label">Custom focus rings can be brand-consistent while meeting WCAG requirements: minimum 3:1 contrast ratio against adjacent colors, not fully obscured. The GOV.UK yellow-on-black focus style is highly visible. The double-ring technique ensures visibility on any background.</p>
+</div>
+
+<div class="example">
+  <h3>42. Character key shortcuts — WCAG 2.1.4</h3>
+  <pre>&lt;!-- WCAG 2.1.4: Single-key shortcuts must be remappable or disableable --&gt;
+
+&lt;div id="keyboard-settings" hidden&gt;
+  &lt;h2&gt;Keyboard shortcuts&lt;/h2&gt;
+  &lt;label&gt;
+    &lt;input type="checkbox" id="shortcuts-enabled" checked&gt;
+    Enable single-key shortcuts
+  &lt;/label&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  let shortcutsEnabled = true;
+
+  document.getElementById('shortcuts-enabled').addEventListener('change', e =&gt; {
+    shortcutsEnabled = e.target.checked;
+  });
+
+  document.addEventListener('keydown', e =&gt; {
+    // Ignore when in a form field
+    const tag = document.activeElement.tagName;
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
+    if (!shortcutsEnabled) return;
+
+    // Single-character shortcuts (must be disableable per WCAG 2.1.4)
+    if (!e.ctrlKey &amp;&amp; !e.metaKey &amp;&amp; !e.altKey) {
+      if (e.key === '/') { e.preventDefault(); focusSearch(); }
+      if (e.key === 'n') { e.preventDefault(); createNew(); }
+    }
+  });
+&lt;/script&gt;</pre>
+  <p class="label">WCAG 2.1.4 (Level A) requires that single-key shortcuts can be turned off, remapped, or only active on focus. Screen reader users press single keys for navigation commands (J for next heading, H for jump, etc.) — your app's shortcuts must not conflict or be disableable.</p>
+</div>
+
+<div class="example">
+  <h3>43. Keyboard testing automation with Playwright</h3>
+  <pre>&lt;!-- Playwright keyboard accessibility test --&gt;
+&lt;!--
+import { test, expect } from '@playwright/test';
+
+test('Tab order is correct in checkout form', async ({ page }) =&gt; {
+  await page.goto('/checkout');
+
+  await page.keyboard.press('Tab');
+  await expect(page.locator(':focus')).toHaveAttribute('id', 'first-name');
+
+  await page.keyboard.press('Tab');
+  await expect(page.locator(':focus')).toHaveAttribute('id', 'last-name');
+
+  await page.keyboard.press('Tab');
+  await expect(page.locator(':focus')).toHaveAttribute('id', 'email');
+});
+
+test('Modal traps focus correctly', async ({ page }) =&gt; {
+  await page.goto('/');
+  await page.click('#open-modal');
+
+  for (let i = 0; i &lt; 10; i++) {
+    await page.keyboard.press('Tab');
+    const focusedEl = await page.evaluate(() =&gt; document.activeElement.id);
+    expect(['modal-cancel', 'modal-confirm', 'modal-close'])
+      .toContain(focusedEl);
+  }
+
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#modal')).toBeHidden();
+  await expect(page.locator('#open-modal')).toBeFocused();
+});
+--&gt;</pre>
+  <p class="label">Playwright can automate keyboard navigation testing. Test that Tab order matches expected sequence, modals trap focus, Escape closes and restores focus, and arrow keys work in composite widgets. Automated keyboard tests catch regressions that manual testing might miss.</p>
+</div>
+
+<div class="example">
+  <h3>44. Scroll into view on focus</h3>
+  <pre>&lt;script&gt;
+  // Ensure focused elements are scrolled into view,
+  // accounting for sticky headers
+
+  const HEADER_HEIGHT = 64; // px
+
+  document.addEventListener('focusin', e =&gt; {
+    const el = e.target;
+
+    const rect = el.getBoundingClientRect();
+    const viewHeight = window.innerHeight;
+
+    if (rect.top &lt; HEADER_HEIGHT || rect.bottom &gt; viewHeight) {
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  });
+
+  // Alternative: CSS only (simpler, no JS needed)
+  // html { scroll-padding-top: 70px; }
+  // [tabindex]:focus { scroll-margin-top: 70px; }
+&lt;/script&gt;</pre>
+  <p class="label">Elements focused by Tab or programmatic focus must be visible on screen. The CSS scroll-padding-top / scroll-margin-top approach is simpler and works automatically. The JS approach offers more control for edge cases like dynamically revealed content.</p>
+</div>
+
+<div class="example">
+  <h3>45. Keyboard-only navigation audit checklist</h3>
+  <pre>&lt;!--
+KEYBOARD NAVIGATION AUDIT CHECKLIST
+
+FOCUS VISIBILITY
+[ ] All interactive elements have a visible focus ring
+[ ] Focus ring has 3:1 contrast ratio with adjacent colors
+[ ] Focus ring is not obscured by sticky/fixed headers (WCAG 2.4.12)
+
+TAB ORDER
+[ ] Tab order follows logical reading order
+[ ] No positive tabindex values used
+[ ] CSS visual order matches DOM order
+
+INTERACTIVE ELEMENTS
+[ ] Every interactive element reachable by Tab
+[ ] Buttons activate on both Enter and Space
+[ ] Links activate on Enter
+[ ] Custom widgets have appropriate arrow-key navigation
+
+SKIP LINKS
+[ ] Skip to main content link is present and functional
+[ ] Additional skip links for complex pages
+
+MODALS &amp; OVERLAYS
+[ ] Focus moves into modal on open
+[ ] Focus trapped within modal (Tab + Shift+Tab wrap)
+[ ] Escape closes modal and returns focus to trigger
+[ ] aria-modal="true" present
+
+COMPLEX WIDGETS
+[ ] Tabs: arrow keys navigate, Enter/Space selects
+[ ] Menus: arrow keys navigate, Escape closes
+[ ] Trees: arrow keys navigate, right/left expand/collapse
+[ ] Grids: arrow keys navigate cells
+
+FORMS
+[ ] All inputs reachable by Tab
+[ ] Form submittable by Enter in text fields
+[ ] Error focus management (focus first error on submit)
+
+DYNAMIC CONTENT
+[ ] Focus managed after route changes (SPA)
+[ ] Focus returned after modal close
+[ ] Focus managed after item deletion
+--&gt;</pre>
+  <p class="label">Use this checklist during development and QA. Each item maps to at least one WCAG success criterion. The most commonly failed items are: missing focus styles (2.4.7), positive tabindex (2.4.3), missing skip links (2.4.1), and broken modal focus traps (2.1.2).</p>
+</div>
+
+<div class="example">
+  <h3>46. Focus lock for off-canvas navigation</h3>
+  <pre>&lt;nav
+  id="sidebar"
+  aria-label="Site navigation"
+  aria-hidden="true"
+  inert
+&gt;
+  &lt;button id="sidebar-close" aria-label="Close navigation"&gt;✕&lt;/button&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;button id="open-sidebar" aria-expanded="false" aria-controls="sidebar"&gt;
+  Menu
+&lt;/button&gt;
+
+&lt;script&gt;
+  function openSidebar() {
+    const nav = document.getElementById('sidebar');
+    nav.removeAttribute('inert');
+    nav.removeAttribute('aria-hidden');
+    document.getElementById('open-sidebar').setAttribute('aria-expanded', 'true');
+    document.getElementById('sidebar-close').focus();
+    document.getElementById('main-content').inert = true;
+  }
+
+  function closeSidebar() {
+    const nav = document.getElementById('sidebar');
+    nav.inert = true;
+    nav.setAttribute('aria-hidden', 'true');
+    document.getElementById('main-content').removeAttribute('inert');
+    document.getElementById('open-sidebar').setAttribute('aria-expanded', 'false');
+    document.getElementById('open-sidebar').focus();
+  }
+&lt;/script&gt;</pre>
+  <p class="label">The inert attribute (HTML Living Standard) prevents focus and pointer events on an element and its subtree — ideal for off-canvas menus. Set the sidebar to inert when hidden; remove inert and aria-hidden when opened. Set the main content inert when sidebar is open for a clean focus trap.</p>
+</div>
+
+<div class="example">
+  <h3>47. Keyboard shortcut help dialog</h3>
+  <pre>&lt;button
+  aria-label="Keyboard shortcuts"
+  onclick="openShortcutsDialog()"
+  accesskey="?"
+&gt;
+  ? Shortcuts
+&lt;/button&gt;
+
+&lt;div
+  role="dialog"
+  id="shortcuts-dialog"
+  aria-modal="true"
+  aria-labelledby="shortcuts-title"
+  hidden
+&gt;
+  &lt;h2 id="shortcuts-title"&gt;Keyboard shortcuts&lt;/h2&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;&lt;th&gt;Key&lt;/th&gt;&lt;th&gt;Action&lt;/th&gt;&lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;kbd&gt;/&lt;/kbd&gt;&lt;/td&gt;&lt;td&gt;Focus search&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;kbd&gt;Esc&lt;/kbd&gt;&lt;/td&gt;&lt;td&gt;Close dialog / menu&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;S&lt;/kbd&gt;&lt;/td&gt;&lt;td&gt;Save document&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;kbd&gt;?&lt;/kbd&gt;&lt;/td&gt;&lt;td&gt;Show this help&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+  &lt;button onclick="closeShortcutsDialog()"&gt;Close&lt;/button&gt;
+&lt;/div&gt;</pre>
+  <p class="label">A keyboard shortcut reference dialog makes shortcuts discoverable. Use &lt;kbd&gt; elements for key labels (semantically meaningful and stylable). Include the help dialog shortcut in the shortcuts list. The dialog itself follows the standard modal focus trap pattern.</p>
+</div>
+
+<div class="example">
+  <h3>48. Reading order vs DOM order — detecting mismatches</h3>
+  <pre>&lt;!-- Visual order (CSS Grid) mismatches DOM order --&gt;
+&lt;style&gt;
+  .grid { display: grid; grid-template-areas: 'sidebar main'; }
+  .sidebar { grid-area: sidebar; }
+  .main    { grid-area: main; }
+&lt;/style&gt;
+
+&lt;div class="grid"&gt;
+  &lt;main class="main"&gt;
+    &lt;a href="/item1"&gt;Item 1&lt;/a&gt; &lt;!-- DOM first, visual right --&gt;
+  &lt;/main&gt;
+  &lt;aside class="sidebar"&gt;
+    &lt;a href="/filter"&gt;Filter&lt;/a&gt; &lt;!-- DOM second, visual left --&gt;
+  &lt;/aside&gt;
+&lt;/div&gt;
+&lt;!-- Tab order: Item 1 first, Filter second — WRONG --&gt;
+
+&lt;!-- Fix: reorder DOM to match visual order --&gt;
+&lt;div class="grid"&gt;
+  &lt;aside class="sidebar"&gt;
+    &lt;a href="/filter"&gt;Filter&lt;/a&gt; &lt;!-- DOM first, visual left --&gt;
+  &lt;/aside&gt;
+  &lt;main class="main"&gt;
+    &lt;a href="/item1"&gt;Item 1&lt;/a&gt; &lt;!-- DOM second, visual right --&gt;
+  &lt;/main&gt;
+&lt;/div&gt;
+&lt;!-- Tab order: Filter first, Item 1 second — CORRECT --&gt;</pre>
+  <p class="label">CSS Grid and Flexbox order properties change visual order without changing DOM order. Tab follows DOM order. When a sidebar is visually first but DOM-second, keyboard users encounter content in the wrong sequence — a WCAG 1.3.2 (Meaningful Sequence) and 2.4.3 (Focus Order) violation.</p>
+</div>
+
+<div class="example">
+  <h3>49. inert attribute for blocking keyboard access</h3>
+  <pre>&lt;!-- inert: prevents focus, pointer events, and AT discovery --&gt;
+
+&lt;!-- Background content when modal is open --&gt;
+&lt;div id="page-content" inert aria-hidden="true"&gt;
+  &lt;nav&gt;...&lt;/nav&gt;
+  &lt;main&gt;...&lt;/main&gt;
+&lt;/div&gt;
+
+&lt;!-- Active modal --&gt;
+&lt;div role="dialog" aria-modal="true"&gt;
+  &lt;!-- Only content here is keyboard-accessible --&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function openModal() {
+    document.getElementById('page-content').inert = true;
+    document.getElementById('page-content').setAttribute('aria-hidden', 'true');
+    document.getElementById('modal').hidden = false;
+    document.getElementById('modal').querySelector('[autofocus]')?.focus();
+  }
+
+  function closeModal() {
+    document.getElementById('modal').hidden = true;
+    document.getElementById('page-content').removeAttribute('inert');
+    document.getElementById('page-content').removeAttribute('aria-hidden');
+    returnFocusEl?.focus();
+  }
+&lt;/script&gt;</pre>
+  <p class="label">The inert attribute is the modern replacement for manual focus trap implementations. When a modal is open, set the entire page content inert — this blocks Tab, keyboard interaction, pointer events, and removes everything from the AT tree automatically. Supported in all major browsers since 2023.</p>
+</div>
+
+<div class="example">
+  <h3>50. Complete keyboard accessibility implementation guide</h3>
+  <pre>&lt;!--
+KEYBOARD ACCESSIBILITY — IMPLEMENTATION PRIORITY
+
+CRITICAL (fix before launch):
+1. All interactive elements have visible focus indicators
+2. No keyboard traps (except intentional modal dialogs)
+3. Skip link to main content present
+4. Tab order follows logical reading/visual order
+5. Enter and Space both activate custom buttons
+6. Modal dialogs trap focus and restore on close
+7. Escape closes menus, dialogs, tooltips
+
+IMPORTANT (fix before launch):
+8. Composite widgets (tabs, menus, trees) use arrow key navigation
+9. Arrow key navigation wraps at boundaries
+10. Type-ahead in list/tree/combobox widgets
+11. Focus managed after dynamic content changes
+12. Focus returned after item deletion
+
+ENHANCEMENT (prioritise for AA compliance):
+13. Keyboard shortcuts documented and discoverable
+14. Single-key shortcuts can be disabled (WCAG 2.1.4)
+15. Focus not obscured by sticky headers (WCAG 2.4.12)
+16. Custom focus ring meets contrast requirements (WCAG 2.4.11)
+17. High-contrast mode tested (forced-colors)
+
+TESTING:
+- Tab through entire page with mouse disconnected
+- Test with NVDA + Chrome
+- Test with VoiceOver + Safari (macOS + iOS)
+- Automated: Playwright keyboard tests + axe-core
+--&gt;</pre>
+  <p class="label">Prioritised keyboard accessibility implementation guide covering the most critical to enhancement-level requirements. The critical items cover WCAG Level A violations that block access entirely. Enhanced items target Level AA and AAA and improve the experience for power users and AT users.</p>
+</div>
+
+</body>
+</html>

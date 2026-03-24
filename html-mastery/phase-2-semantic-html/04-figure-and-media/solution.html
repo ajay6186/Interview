@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 2.4 — Figure & Media
+  ============================================================================
+  Complete solution with all TODOs filled in correctly.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 2.4 — Figure &amp; Media</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 16px; }
+    figure { border: 1px solid #ddd; padding: 8px; margin: 16px 0; display: inline-block; }
+    figcaption { font-size: 13px; color: #666; margin-top: 4px; }
+    video, audio { display: block; margin: 8px 0; }
+  </style>
+</head>
+<body>
+
+<h1>Figure &amp; Media Exercise</h1>
+
+<!-- Section 1: Figure with Figcaption -->
+<figure>
+  <img src="https://via.placeholder.com/400x250" alt="A placeholder chart image" width="400" height="250">
+  <figcaption>Figure 1: Monthly website traffic growth</figcaption>
+</figure>
+
+<!-- Section 2: Video Element -->
+<video controls poster="https://via.placeholder.com/640x360?text=Video+Thumbnail" width="640" height="360">
+  <source src="sample.mp4" type="video/mp4">
+  <p>Your browser does not support video.</p>
+</video>
+
+<!-- Section 3: Audio Element -->
+<audio controls>
+  <source src="audio-sample.mp3" type="audio/mpeg">
+  <p>Your browser does not support audio.</p>
+</audio>
+
+<!-- Section 4: Figure wrapping a Code Block -->
+<figure>
+  <pre><code>const greet = name =&gt; `Hello, ${name}!`;
+console.log(greet("World")); // Hello, World!</code></pre>
+  <figcaption>Listing 1: Example code</figcaption>
+</figure>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 2.4 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  assert(document.querySelector("figure") !== null, "<figure> element exists");
+  assert(document.querySelector("figure figcaption") !== null, "<figcaption> exists inside a <figure>");
+  const fig = document.querySelector("figure");
+  const cap = fig ? fig.querySelector(":scope > figcaption") : null;
+  assert(cap !== null, "<figcaption> is a direct child of <figure>");
+  const videoEl = document.querySelector("video[controls]");
+  assert(videoEl !== null, "<video controls> element exists");
+  assert(videoEl !== null && videoEl.hasAttribute("poster"), "<video> has a poster attribute");
+  const audioEl = document.querySelector("audio[controls]");
+  assert(audioEl !== null, "<audio controls> element exists");
+  const sources = document.querySelectorAll("video source, audio source");
+  assert(sources.length >= 2, "At least 2 <source> elements exist inside video and audio");
+  assert(document.querySelectorAll("figure").length >= 2, "At least 2 <figure> elements on the page");
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 2.4 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

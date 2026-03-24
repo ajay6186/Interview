@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 4.5 — Embedded Content
+  ============================================================================
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 4.5 — Embedded Content</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    iframe { display: block; margin: 8px 0; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+
+<h1>Embedded Content — Solution</h1>
+
+<!-- Section 1: Basic iframe with title -->
+<iframe id="main-iframe" src="https://example.com" width="600" height="400" title="Example website"></iframe>
+
+<!-- Section 2: Sandboxed iframe -->
+<iframe id="sandboxed-iframe" src="about:blank" sandbox="allow-scripts allow-same-origin" width="300" height="200" title="Sandboxed frame"></iframe>
+
+<!-- Section 3: Lazy-loaded iframe -->
+<iframe id="lazy-iframe" src="about:blank" loading="lazy" width="300" height="200" title="Lazy loaded frame"></iframe>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 4.5 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const mainIframe = document.getElementById("main-iframe");
+  assert(mainIframe !== null, '#main-iframe exists');
+  assert(mainIframe && mainIframe.tagName.toLowerCase() === "iframe", '#main-iframe is an <iframe> element');
+  assert(mainIframe && (mainIframe.getAttribute("src") || "").trim() !== "", '#main-iframe has a src attribute');
+  assert(mainIframe && mainIframe.getAttribute("width") === "600", '#main-iframe has width="600"');
+  assert(mainIframe && mainIframe.getAttribute("height") === "400", '#main-iframe has height="400"');
+  assert(mainIframe && (mainIframe.getAttribute("title") || "").trim() !== "", '#main-iframe has a non-empty title attribute');
+
+  const sandboxed = document.getElementById("sandboxed-iframe");
+  assert(sandboxed !== null, '#sandboxed-iframe exists');
+  assert(sandboxed && sandboxed.hasAttribute("sandbox"), '#sandboxed-iframe has a sandbox attribute');
+  assert(sandboxed && (sandboxed.getAttribute("sandbox") || "").includes("allow-scripts"), 'sandbox includes "allow-scripts"');
+  assert(sandboxed && (sandboxed.getAttribute("sandbox") || "").includes("allow-same-origin"), 'sandbox includes "allow-same-origin"');
+  assert(sandboxed && (sandboxed.getAttribute("title") || "").trim() !== "", '#sandboxed-iframe has a non-empty title');
+
+  const lazyIframe = document.getElementById("lazy-iframe");
+  assert(lazyIframe !== null, '#lazy-iframe exists');
+  assert(lazyIframe && lazyIframe.getAttribute("loading") === "lazy", '#lazy-iframe has loading="lazy"');
+  assert(lazyIframe && (lazyIframe.getAttribute("title") || "").trim() !== "", '#lazy-iframe has a non-empty title');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 4.5 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

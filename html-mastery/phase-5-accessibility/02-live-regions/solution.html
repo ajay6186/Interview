@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 5.2 — Live Regions
+  ============================================================================
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 5.2 — Live Regions</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    button { margin: 4px; padding: 8px 16px; }
+    .region { border: 1px solid #ccc; border-radius: 4px; padding: 12px; min-height: 2em; margin: 8px 0; }
+  </style>
+</head>
+<body>
+
+<h1>Live Regions — Solution</h1>
+
+<!-- Section 1: Polite status region -->
+<div id="status-region" role="status" aria-live="polite" aria-atomic="true" class="region"></div>
+<button id="update-status-btn" onclick="document.getElementById('status-region').textContent='Form saved successfully.'">Save</button>
+
+<!-- Section 2: Assertive alert region -->
+<div id="alert-region" role="alert" aria-live="assertive" class="region"></div>
+<button id="trigger-alert-btn" onclick="document.getElementById('alert-region').textContent='Error: Please fix the highlighted fields.'">Trigger Error</button>
+
+<!-- Section 3: Log region -->
+<div id="log-region" role="log" aria-live="polite" aria-relevant="additions" class="region"></div>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 5.2 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const statusRegion = document.getElementById("status-region");
+  assert(statusRegion !== null, '#status-region exists');
+  assert(statusRegion && statusRegion.getAttribute("role") === "status", '#status-region has role="status"');
+  assert(statusRegion && statusRegion.getAttribute("aria-live") === "polite", '#status-region has aria-live="polite"');
+  assert(statusRegion && statusRegion.getAttribute("aria-atomic") === "true", '#status-region has aria-atomic="true"');
+  const updateBtn = document.getElementById("update-status-btn");
+  assert(updateBtn !== null, '#update-status-btn exists');
+  if (updateBtn) updateBtn.click();
+  assert(statusRegion && statusRegion.textContent.trim() !== "", '#status-region has content after button click');
+
+  const alertRegion = document.getElementById("alert-region");
+  assert(alertRegion !== null, '#alert-region exists');
+  assert(alertRegion && alertRegion.getAttribute("role") === "alert", '#alert-region has role="alert"');
+  assert(alertRegion && alertRegion.getAttribute("aria-live") === "assertive", '#alert-region has aria-live="assertive"');
+  const alertBtn = document.getElementById("trigger-alert-btn");
+  assert(alertBtn !== null, '#trigger-alert-btn exists');
+
+  const logRegion = document.getElementById("log-region");
+  assert(logRegion !== null, '#log-region exists');
+  assert(logRegion && logRegion.getAttribute("role") === "log", '#log-region has role="log"');
+  assert(logRegion && logRegion.hasAttribute("aria-live"), '#log-region has aria-live attribute');
+  assert(logRegion && (logRegion.getAttribute("aria-relevant") || "").trim() !== "", '#log-region has aria-relevant attribute');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 5.2 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 2.5 — Inline Semantics
+  ============================================================================
+  50 runnable examples covering time, address, abbr, dfn, cite, q,
+  blockquote, small, and other inline semantic elements.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 2.5 — Inline Semantics</title>
+  <style>
+    body { font-family: sans-serif; max-width: 860px; margin: 0 auto; padding: 16px; }
+    h2 { margin-top: 32px; border-bottom: 2px solid #333; padding-bottom: 4px; }
+    .example { background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; padding: 12px 16px; margin: 10px 0; }
+    .example h3 { margin: 0 0 8px; font-size: 14px; color: #555; }
+    abbr { text-decoration: underline dotted; cursor: help; }
+    address { font-style: italic; }
+    blockquote { border-left: 4px solid #0066cc; margin: 8px 0; padding: 4px 12px; background: #f0f4ff; }
+    small { font-size: 0.8em; color: #666; }
+    mark { background: #fff3cd; padding: 0 2px; }
+    del { color: #c0392b; }
+    ins { color: #27ae60; text-decoration: underline; }
+    sub, sup { font-size: 0.75em; }
+    kbd { background: #eee; border: 1px solid #ccc; border-radius: 3px; padding: 1px 5px; font-family: monospace; }
+    var { font-style: italic; font-weight: bold; }
+    samp { font-family: monospace; background: #f4f4f4; padding: 1px 4px; }
+    s { color: #999; }
+    u { text-decoration: underline; text-decoration-color: red; }
+    bdi { unicode-bidi: isolate; }
+    ruby { font-size: 1.1em; }
+    rt { font-size: 0.6em; }
+  </style>
+</head>
+<body>
+
+<h1>Examples 2.5 — Inline Semantics</h1>
+
+<!-- ============================================================ -->
+<h2>BASIC (Examples 1–13)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>1. time with date</h3>
+  <p>The event is on <time datetime="2024-06-21">June 21, 2024</time>.</p>
+</div>
+
+<div class="example">
+  <h3>2. time with date and time</h3>
+  <p>The meeting starts at <time datetime="2024-06-21T14:30">2:30 PM on June 21</time>.</p>
+</div>
+
+<div class="example">
+  <h3>3. time with duration</h3>
+  <p>The course takes <time datetime="P3W2D">3 weeks and 2 days</time> to complete.</p>
+</div>
+
+<div class="example">
+  <h3>4. abbr with title</h3>
+  <p><abbr title="HyperText Markup Language">HTML</abbr> is the backbone of the web.</p>
+</div>
+
+<div class="example">
+  <h3>5. abbr for acronym</h3>
+  <p>The <abbr title="World Health Organization">WHO</abbr> released new guidelines.</p>
+</div>
+
+<div class="example">
+  <h3>6. address for author contact</h3>
+  <address>Written by <a href="mailto:author@example.com">Jane Doe</a>.</address>
+</div>
+
+<div class="example">
+  <h3>7. address with postal information</h3>
+  <address>
+    123 Main Street<br>
+    Springfield, IL 62701<br>
+    USA
+  </address>
+</div>
+
+<div class="example">
+  <h3>8. dfn for term definition</h3>
+  <p>A <dfn>cookie</dfn> is a small piece of data stored on the user's browser.</p>
+</div>
+
+<div class="example">
+  <h3>9. cite for book title</h3>
+  <p>I recommend reading <cite>The Pragmatic Programmer</cite> by Andrew Hunt and David Thomas.</p>
+</div>
+
+<div class="example">
+  <h3>10. cite for artwork</h3>
+  <p>The painting <cite>Starry Night</cite> by Van Gogh is in the MoMA collection.</p>
+</div>
+
+<div class="example">
+  <h3>11. blockquote basic</h3>
+  <blockquote>
+    <p>Any fool can write code that a computer can understand. Good programmers write code that humans can understand.</p>
+  </blockquote>
+</div>
+
+<div class="example">
+  <h3>12. q inline quotation</h3>
+  <p>She said <q>I'll be back by noon</q> and left the room.</p>
+</div>
+
+<div class="example">
+  <h3>13. small for fine print</h3>
+  <p>Buy now! <small>Terms and conditions apply. Offer ends Sunday.</small></p>
+</div>
+
+<!-- ============================================================ -->
+<h2>INTERMEDIATE (Examples 14–26)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>14. blockquote with cite attribute and footer</h3>
+  <blockquote cite="https://www.brainyquote.com/quotes/albert_einstein_148788">
+    <p>"Imagination is more important than knowledge."</p>
+    <footer>— <cite>Albert Einstein</cite></footer>
+  </blockquote>
+</div>
+
+<div class="example">
+  <h3>15. dfn with id for cross-referencing</h3>
+  <p>The term <dfn id="api">API</dfn> stands for Application Programming Interface.</p>
+  <p>Use an <a href="#api">API</a> to connect two systems programmatically.</p>
+</div>
+
+<div class="example">
+  <h3>16. abbr + dfn combined</h3>
+  <p><dfn><abbr title="Cascading Style Sheets">CSS</abbr></dfn> is used to style HTML documents.</p>
+</div>
+
+<div class="example">
+  <h3>17. time in an article byline</h3>
+  <article>
+    <h2 style="font-size:1em">Article Title</h2>
+    <p>By Alice — <time datetime="2024-01-10">January 10, 2024</time></p>
+  </article>
+</div>
+
+<div class="example">
+  <h3>18. time with machine-readable year only</h3>
+  <p>This project started in <time datetime="2020">2020</time>.</p>
+</div>
+
+<div class="example">
+  <h3>19. address inside article footer</h3>
+  <article>
+    <p>Article content goes here...</p>
+    <footer>
+      <address>Contact the author: <a href="mailto:writer@example.com">writer@example.com</a></address>
+    </footer>
+  </article>
+</div>
+
+<div class="example">
+  <h3>20. nested q inside q</h3>
+  <p>The reviewer wrote: <q>The author says <q>this is trivial</q> but the proof is not shown.</q></p>
+</div>
+
+<div class="example">
+  <h3>21. q with lang-based quotes</h3>
+  <p lang="fr">Il a dit : <q lang="fr">Bonjour le monde !</q></p>
+</div>
+
+<div class="example">
+  <h3>22. del and ins for edits</h3>
+  <p>The price is <del>$99</del> <ins>$79</ins> this weekend only.</p>
+</div>
+
+<div class="example">
+  <h3>23. del with datetime and cite</h3>
+  <p><del datetime="2024-02-01" cite="errata.html">Incorrect information was here.</del></p>
+  <p><ins datetime="2024-02-01">This is the corrected information.</ins></p>
+</div>
+
+<div class="example">
+  <h3>24. mark for highlighted search result</h3>
+  <p>Search results for "semantic": "Use <mark>semantic</mark> HTML to improve accessibility."</p>
+</div>
+
+<div class="example">
+  <h3>25. sub and sup</h3>
+  <p>Water is H<sub>2</sub>O. The area is 5m<sup>2</sup>. E = mc<sup>2</sup>.</p>
+</div>
+
+<div class="example">
+  <h3>26. kbd for keyboard input</h3>
+  <p>Press <kbd>Ctrl</kbd>+<kbd>S</kbd> to save. Press <kbd>F12</kbd> to open DevTools.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>NESTED (Examples 27–38)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>27. article with multiple inline semantics</h3>
+  <article>
+    <h2 style="font-size:1em">The Rise of <abbr title="Artificial Intelligence">AI</abbr></h2>
+    <p>Published <time datetime="2024-05-01">May 2024</time>.</p>
+    <p>
+      <dfn>Machine learning</dfn> is a subset of <abbr title="Artificial Intelligence">AI</abbr>
+      where systems learn from data. As <cite>Nature</cite> reported,
+      <q>the pace of progress is accelerating</q>.
+    </p>
+    <footer>
+      <address>Contact: <a href="mailto:ai-desk@example.com">ai-desk@example.com</a></address>
+      <small>© 2024 Tech News Inc.</small>
+    </footer>
+  </article>
+</div>
+
+<div class="example">
+  <h3>28. blockquote with nested cite and time</h3>
+  <blockquote cite="https://developer.mozilla.org">
+    <p>"The Web is for everyone — regardless of hardware, software, language, or ability."</p>
+    <footer>— <cite>W3C Web Accessibility Initiative</cite>, <time datetime="2023">2023</time></footer>
+  </blockquote>
+</div>
+
+<div class="example">
+  <h3>29. figure with figcaption containing cite</h3>
+  <figure>
+    <blockquote>
+      <p>"First, solve the problem. Then, write the code."</p>
+    </blockquote>
+    <figcaption>— <cite>John Johnson</cite></figcaption>
+  </figure>
+</div>
+
+<div class="example">
+  <h3>30. dfn with title attribute (tooltip definition)</h3>
+  <p>
+    A <dfn title="A software design pattern that separates concerns into Model, View, and Controller">
+      MVC pattern
+    </dfn> is widely used in web frameworks.
+  </p>
+</div>
+
+<div class="example">
+  <h3>31. var element for variables</h3>
+  <p>Let <var>x</var> be the unknown. Solve for <var>x</var> in the equation
+  <var>x</var><sup>2</sup> + 5<var>x</var> + 6 = 0.</p>
+</div>
+
+<div class="example">
+  <h3>32. samp for program output</h3>
+  <p>The compiler returned: <samp>error: undefined variable 'foo' at line 42</samp></p>
+</div>
+
+<div class="example">
+  <h3>33. s for no-longer-accurate content</h3>
+  <p><s>This product is available for $199.</s></p>
+  <p>This product has been discontinued.</p>
+</div>
+
+<div class="example">
+  <h3>34. u for annotated misspelling</h3>
+  <p>The word <u title="Possible spelling error: did you mean 'their'?">thier</u> is misspelled.</p>
+</div>
+
+<div class="example">
+  <h3>35. bdi for bidirectional text isolation</h3>
+  <p>User <bdi>إيان</bdi> has posted 42 comments.</p>
+  <p>User <bdi>John</bdi> has posted 15 comments.</p>
+</div>
+
+<div class="example">
+  <h3>36. ruby annotation for pronunciation</h3>
+  <ruby>漢 <rt>Kan</rt>字 <rt>ji</rt></ruby>
+</div>
+
+<div class="example">
+  <h3>37. wbr for word break opportunity</h3>
+  <p>The long URL is: https://www.example.com/very<wbr>/long<wbr>/url<wbr>/path<wbr>/here</p>
+</div>
+
+<div class="example">
+  <h3>38. time in nav breadcrumb with published date</h3>
+  <nav aria-label="Article metadata">
+    <p>
+      Category: <a href="#">Technology</a> |
+      Published: <time datetime="2024-07-04">July 4, 2024</time> |
+      Updated: <time datetime="2024-07-10">July 10, 2024</time>
+    </p>
+  </nav>
+</div>
+
+<!-- ============================================================ -->
+<h2>ADVANCED (Examples 39–50)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>39. Full article with rich inline semantics</h3>
+  <article>
+    <header>
+      <h2 style="font-size:1.1em"><cite>Clean Code</cite>: A Review</h2>
+      <p>By <a href="#">Bob Smith</a> · <time datetime="2024-09-15">September 15, 2024</time></p>
+    </header>
+    <p>
+      <cite>Clean Code</cite> by <abbr title="Robert Cecil Martin">Uncle Bob</abbr> is a
+      classic in software engineering. The <dfn id="clean-code">clean code</dfn> philosophy
+      emphasizes readability, simplicity, and maintainability.
+    </p>
+    <blockquote cite="https://www.goodreads.com/book/show/3735293">
+      <p><q>Clean code reads like well-written prose.</q></p>
+      <footer>— <cite>Robert C. Martin</cite></footer>
+    </blockquote>
+    <footer>
+      <address>Send feedback to <a href="mailto:reviews@example.com">reviews@example.com</a></address>
+      <small>© 2024 BookReviews.io. All rights reserved.</small>
+    </footer>
+  </article>
+</div>
+
+<div class="example">
+  <h3>40. time element with ISO 8601 week</h3>
+  <p>The sprint begins in <time datetime="2024-W30">week 30 of 2024</time>.</p>
+</div>
+
+<div class="example">
+  <h3>41. time element with timezone offset</h3>
+  <p>Webinar starts at <time datetime="2024-06-15T10:00-05:00">10:00 AM CDT</time>.</p>
+</div>
+
+<div class="example">
+  <h3>42. Multiple abbr for same acronym (first use defined)</h3>
+  <p>
+    <abbr title="Application Programming Interface">API</abbr> design matters.
+    A good API is intuitive. Poor API documentation frustrates developers.
+    Consider versioning your API from day one.
+  </p>
+</div>
+
+<div class="example">
+  <h3>43. Nested blockquote (quotation within quotation)</h3>
+  <blockquote>
+    <p>Alice wrote:</p>
+    <blockquote>
+      <p>"The original spec said: <q>all implementations MUST comply</q>."</p>
+    </blockquote>
+    <p>But this was misinterpreted.</p>
+  </blockquote>
+</div>
+
+<div class="example">
+  <h3>44. del/ins with structured change log</h3>
+  <section aria-label="Changelog">
+    <h3 style="font-size:1em">Version 2.0</h3>
+    <ul>
+      <li><ins datetime="2024-03-01">Added dark mode support</ins></li>
+      <li><ins datetime="2024-03-01">Improved performance by 40%</ins></li>
+      <li><del datetime="2024-03-01">Removed legacy IE11 support</del></li>
+    </ul>
+  </section>
+</div>
+
+<div class="example">
+  <h3>45. Scientific markup with sub, sup, abbr, dfn</h3>
+  <p>
+    The <dfn><abbr title="Deoxyribonucleic Acid">DNA</abbr></dfn> double helix has a
+    diameter of approximately 2 × 10<sup>−9</sup> m (2 nm).
+    It consists of nucleotide bases: adenine (A), thymine (T),
+    guanine (G), and cytosine (C).
+  </p>
+</div>
+
+<div class="example">
+  <h3>46. address wrapping multiple contact methods</h3>
+  <address>
+    <strong>Editorial Office</strong><br>
+    <a href="mailto:editorial@journal.org">editorial@journal.org</a><br>
+    <a href="tel:+15555551234">+1 (555) 555-1234</a><br>
+    100 Science Drive, Cambridge, MA 02139
+  </address>
+</div>
+
+<div class="example">
+  <h3>47. mark used in document highlighting context</h3>
+  <p>The committee found the following points <mark>critical</mark> for review:</p>
+  <ul>
+    <li>Budget allocation is <mark>underfunded by 30%</mark></li>
+    <li>Timeline has a <mark>6-week gap</mark> in Q3</li>
+  </ul>
+</div>
+
+<div class="example">
+  <h3>48. var and samp in code documentation</h3>
+  <p>Call the function with <var>n</var> items. If <var>n</var> exceeds 100, expect:</p>
+  <p><samp>Warning: Large dataset detected. Processing may be slow.</samp></p>
+</div>
+
+<div class="example">
+  <h3>49. cite in bibliography list</h3>
+  <ol>
+    <li>
+      <cite>You Don't Know JS</cite> by Kyle Simpson.
+      <small>Published <time datetime="2015">2015</time>, O'Reilly Media.</small>
+    </li>
+    <li>
+      <cite>JavaScript: The Good Parts</cite> by Douglas Crockford.
+      <small>Published <time datetime="2008">2008</time>, O'Reilly Media.</small>
+    </li>
+    <li>
+      <cite>Eloquent JavaScript</cite> by Marijn Haverbeke.
+      <small>Published <time datetime="2018">2018</time>, No Starch Press.</small>
+    </li>
+  </ol>
+</div>
+
+<div class="example">
+  <h3>50. Full semantic news article</h3>
+  <article>
+    <header>
+      <h2 style="font-size:1.05em">
+        <abbr title="European Union">EU</abbr> Passes New
+        <abbr title="Artificial Intelligence">AI</abbr> Regulation
+      </h2>
+      <p>
+        <time datetime="2024-08-01T09:00+02:00">August 1, 2024 at 9:00 AM CEST</time>
+        — <a href="#">Brussels</a>
+      </p>
+    </header>
+    <p>
+      The <dfn id="eu-ai-act">EU AI Act</dfn> — described by regulators as
+      <q>the world's first comprehensive AI law</q> — was formally enacted today.
+      <cite>Reuters</cite> reports that companies have <time datetime="P2Y">two years</time>
+      to comply with its provisions.
+    </p>
+    <blockquote cite="https://eur-lex.europa.eu/">
+      <p>"High-risk AI systems must meet strict requirements before being placed on the market."</p>
+      <footer>— <cite>Official Journal of the European Union</cite></footer>
+    </blockquote>
+    <p>
+      <del datetime="2024-08-02">An earlier draft exempted open-source models.</del>
+      <ins datetime="2024-08-02">The final text includes limited exemptions for open-source research.</ins>
+    </p>
+    <footer>
+      <address>Tip line: <a href="mailto:tips@example-news.com">tips@example-news.com</a></address>
+      <small>© 2024 Example News. <a href="#">Terms</a> · <a href="#">Privacy</a></small>
+    </footer>
+  </article>
+</div>
+
+</body>
+</html>

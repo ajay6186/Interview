@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 3.2 — Form Validation
+  ============================================================================
+  Use HTML5 built-in form validation: required, minlength, maxlength,
+  min, max, pattern, and novalidate. Understand how to provide accessible
+  error messages.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 3.2 — Form Validation</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 16px; }
+    label { display: block; margin-top: 14px; font-weight: bold; font-size: 14px; }
+    input, textarea { display: block; margin-top: 4px; padding: 6px 8px; width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    input:invalid { border-color: #e74c3c; }
+    input:valid { border-color: #27ae60; }
+    .hint { font-size: 12px; color: #666; margin-top: 2px; }
+    button { margin-top: 16px; padding: 8px 20px; }
+  </style>
+</head>
+<body>
+
+<h1>Form Validation Exercise</h1>
+
+<form id="validation-form" action="#" method="post" novalidate>
+
+  <!-- =========================================================
+       Section 1: Required fields
+       ========================================================= -->
+
+  <!-- TODO: Add a <label for="v-username">Username *</label>
+       followed by <input type="text" id="v-username" name="username" required>
+       and <p class="hint" id="v-username-hint">Username is required.</p>
+       The input should have aria-describedby="v-username-hint" -->
+
+  <!-- =========================================================
+       Section 2: Length constraints
+       ========================================================= -->
+
+  <!-- TODO: Add a <label for="v-password">Password *</label>
+       followed by <input type="password" id="v-password" name="password"
+       required minlength="8" maxlength="64">
+       with a hint saying "Must be 8–64 characters." -->
+
+  <!-- =========================================================
+       Section 3: Pattern validation
+       ========================================================= -->
+
+  <!-- TODO: Add a <label for="v-zip">US ZIP Code</label>
+       followed by <input type="text" id="v-zip" name="zip"
+       pattern="[0-9]{5}" title="Five digit ZIP code" placeholder="12345"> -->
+
+  <!-- =========================================================
+       Section 4: Numeric min/max
+       ========================================================= -->
+
+  <!-- TODO: Add a <label for="v-age">Age (18–99)</label>
+       followed by <input type="number" id="v-age" name="age"
+       min="18" max="99" required> -->
+
+  <!-- =========================================================
+       Section 5: Email validation
+       ========================================================= -->
+
+  <!-- TODO: Add a <label for="v-email">Email Address *</label>
+       followed by <input type="email" id="v-email" name="email" required
+       placeholder="you@example.com"> -->
+
+  <button type="submit">Submit</button>
+</form>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 3.2 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const form = document.getElementById("validation-form");
+  assert(form !== null, 'form#validation-form exists');
+  assert(form !== null && form.hasAttribute("novalidate"), 'form has novalidate attribute');
+
+  const usernameEl = document.getElementById("v-username");
+  assert(usernameEl !== null, '#v-username input exists');
+  assert(usernameEl !== null && usernameEl.hasAttribute("required"), '#v-username has required');
+
+  const pwdEl = document.getElementById("v-password");
+  assert(pwdEl !== null, '#v-password input exists');
+  assert(pwdEl !== null && pwdEl.hasAttribute("minlength"), '#v-password has minlength');
+  assert(pwdEl !== null && pwdEl.getAttribute("minlength") === "8", '#v-password minlength="8"');
+  assert(pwdEl !== null && pwdEl.hasAttribute("maxlength"), '#v-password has maxlength');
+
+  const zipEl = document.getElementById("v-zip");
+  assert(zipEl !== null, '#v-zip input exists');
+  assert(zipEl !== null && zipEl.hasAttribute("pattern"), '#v-zip has pattern attribute');
+
+  const ageEl = document.getElementById("v-age");
+  assert(ageEl !== null, '#v-age input exists');
+  assert(ageEl !== null && ageEl.getAttribute("min") === "18", '#v-age min="18"');
+  assert(ageEl !== null && ageEl.getAttribute("max") === "99", '#v-age max="99"');
+
+  const emailEl = document.getElementById("v-email");
+  assert(emailEl !== null, '#v-email input exists');
+  assert(emailEl !== null && emailEl.getAttribute("type") === "email", '#v-email type="email"');
+  assert(emailEl !== null && emailEl.hasAttribute("required"), '#v-email has required');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 3.2 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

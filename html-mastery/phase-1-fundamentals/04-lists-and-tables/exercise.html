@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 1.4 — Lists & Tables
+  ============================================================================
+  Create a product comparison table and a definition list. Practice ul/ol/li,
+  nested lists, dl/dt/dd, and table/thead/tbody/tfoot with thead, th[scope],
+  caption, colspan, and rowspan.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 1.4 — Lists &amp; Tables</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    thead th { background: #f0f0f0; }
+  </style>
+</head>
+<body>
+
+<h1>Lists &amp; Tables Exercise</h1>
+
+<!-- =========================================================
+     Section 1: Unordered List
+     ========================================================= -->
+
+<!-- TODO: Add a <ul> with at least 3 <li> items listing web technologies
+     (e.g., "HTML", "CSS", "JavaScript") -->
+
+<!-- =========================================================
+     Section 2: Ordered List
+     ========================================================= -->
+
+<!-- TODO: Add an <ol> with at least 3 <li> items showing steps in a process
+     (e.g., "Open your text editor", "Create a new file", "Save as index.html") -->
+
+<!-- =========================================================
+     Section 3: Definition List
+     ========================================================= -->
+
+<!-- TODO: Add a <dl> with at least 3 <dt>/<dd> pairs defining HTML terms
+     (e.g., dt: "DOCTYPE", dd: "Declares the document type and HTML version") -->
+
+<!-- =========================================================
+     Section 4: Product Comparison Table
+     ========================================================= -->
+
+<!-- TODO: Create a <table> for comparing 3 products with the following structure:
+     - A <caption> with text "Product Comparison"
+     - A <thead> with a row containing <th scope="col"> for columns:
+       "Feature", "Basic Plan", "Pro Plan", "Enterprise Plan"
+     - A <tbody> with at least 3 rows of data using <td> cells
+     - A <tfoot> with a row showing a total or summary
+     Each column header <th> must have scope="col"
+-->
+
+<!-- =========================================================
+     Section 5: Table with rowspan
+     ========================================================= -->
+
+<!-- TODO: Add a second small table that uses at least one <th scope="row">
+     (a row header with scope="row") -->
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 1.4 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // 1. ul exists with at least 3 li items
+  const ulEl = document.querySelector("ul");
+  assert(ulEl !== null && ulEl.querySelectorAll("li").length >= 3, "<ul> with at least 3 <li> items exists");
+
+  // 2. ol exists with at least 3 li items
+  const olEl = document.querySelector("ol");
+  assert(olEl !== null && olEl.querySelectorAll("li").length >= 3, "<ol> with at least 3 <li> items exists");
+
+  // 3. dl exists with at least one dt and dd
+  const dlEl = document.querySelector("dl");
+  assert(dlEl !== null, "<dl> element exists");
+  assert(dlEl !== null && dlEl.querySelector("dt") !== null, "<dt> exists inside <dl>");
+  assert(dlEl !== null && dlEl.querySelector("dd") !== null, "<dd> exists inside <dl>");
+
+  // 4. table with thead exists
+  const tableEl = document.querySelector("table");
+  assert(tableEl !== null, "<table> element exists");
+  assert(document.querySelector("thead") !== null, "<thead> element exists inside a table");
+
+  // 5. tbody exists
+  assert(document.querySelector("tbody") !== null, "<tbody> element exists inside a table");
+
+  // 6. tfoot exists
+  assert(document.querySelector("tfoot") !== null, "<tfoot> element exists inside a table");
+
+  // 7. caption exists
+  assert(document.querySelector("caption") !== null, "<caption> element exists inside a table");
+
+  // 8. th with scope="col" exists
+  const colTh = document.querySelector('th[scope="col"]');
+  assert(colTh !== null, '<th scope="col"> exists in the table');
+
+  // 9. th with scope="row" exists
+  const rowTh = document.querySelector('th[scope="row"]');
+  assert(rowTh !== null, '<th scope="row"> exists in the table');
+
+  // Summary
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 1.4 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

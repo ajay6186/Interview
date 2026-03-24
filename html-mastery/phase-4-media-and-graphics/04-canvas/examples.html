@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 4.4 — Canvas  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 4.4 — Canvas</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 4.4 — Canvas</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Minimal canvas element</h3>
+  <pre>&lt;canvas id="c" width="300" height="200"&gt;Canvas not supported.&lt;/canvas&gt;
+&lt;script&gt;
+const ctx = document.getElementById('c').getContext('2d');
+&lt;/script&gt;</pre>
+  <p class="label">Always set width/height attributes (not CSS). Fallback text displays in browsers without canvas support.</p>
+</div>
+
+<div class="example">
+  <h3>2. fillRect — filled rectangle</h3>
+  <pre>ctx.fillStyle = 'steelblue';
+ctx.fillRect(10, 10, 100, 60); // x, y, width, height</pre>
+  <p class="label">fillRect draws a filled rectangle. fillStyle accepts any CSS color string.</p>
+</div>
+
+<div class="example">
+  <h3>3. strokeRect — outline rectangle</h3>
+  <pre>ctx.strokeStyle = 'coral';
+ctx.lineWidth = 4;
+ctx.strokeRect(10, 10, 100, 60);</pre>
+  <p class="label">strokeRect draws only the border. lineWidth controls thickness.</p>
+</div>
+
+<div class="example">
+  <h3>4. clearRect — erase area</h3>
+  <pre>ctx.fillStyle = 'steelblue';
+ctx.fillRect(0, 0, 300, 200);
+ctx.clearRect(50, 50, 100, 60); // punches a hole</pre>
+  <p class="label">clearRect makes pixels transparent. Used for erasing and animation frame clearing.</p>
+</div>
+
+<div class="example">
+  <h3>5. Drawing a circle (arc)</h3>
+  <pre>ctx.beginPath();
+ctx.arc(100, 100, 60, 0, Math.PI * 2); // cx, cy, r, startAngle, endAngle
+ctx.fillStyle = 'coral';
+ctx.fill();</pre>
+  <p class="label">arc() draws circular arcs. Full circle: 0 to Math.PI*2. beginPath() starts a new path.</p>
+</div>
+
+<div class="example">
+  <h3>6. Stroke a circle</h3>
+  <pre>ctx.beginPath();
+ctx.arc(100, 100, 60, 0, Math.PI * 2);
+ctx.strokeStyle = 'navy';
+ctx.lineWidth = 4;
+ctx.stroke();</pre>
+  <p class="label">Use stroke() instead of fill() to draw only the circle outline.</p>
+</div>
+
+<div class="example">
+  <h3>7. Drawing text</h3>
+  <pre>ctx.font = 'bold 24px sans-serif';
+ctx.fillStyle = 'navy';
+ctx.fillText('Hello Canvas!', 20, 50);
+
+ctx.strokeStyle = 'coral';
+ctx.strokeText('Outlined', 20, 100);</pre>
+  <p class="label">fillText and strokeText draw text. font follows CSS font shorthand syntax.</p>
+</div>
+
+<div class="example">
+  <h3>8. Text alignment</h3>
+  <pre>ctx.textAlign = 'center';       // left | center | right | start | end
+ctx.textBaseline = 'middle';    // top | middle | bottom | alphabetic
+ctx.fillText('Centered', canvas.width/2, canvas.height/2);</pre>
+  <p class="label">textAlign controls horizontal position relative to x; textBaseline controls vertical position.</p>
+</div>
+
+<div class="example">
+  <h3>9. Drawing a line</h3>
+  <pre>ctx.beginPath();
+ctx.moveTo(10, 10);
+ctx.lineTo(200, 150);
+ctx.strokeStyle = 'black';
+ctx.lineWidth = 2;
+ctx.stroke();</pre>
+  <p class="label">moveTo sets the pen position without drawing; lineTo draws from current position. Always call stroke() to render.</p>
+</div>
+
+<div class="example">
+  <h3>10. Drawing a polygon (triangle)</h3>
+  <pre>ctx.beginPath();
+ctx.moveTo(100, 10);
+ctx.lineTo(190, 190);
+ctx.lineTo(10, 190);
+ctx.closePath();   // connects back to start
+ctx.fillStyle = 'gold';
+ctx.fill();
+ctx.strokeStyle = 'orange';
+ctx.stroke();</pre>
+  <p class="label">closePath() connects the last point to the first, closing the shape.</p>
+</div>
+
+<div class="example">
+  <h3>11. save() and restore()</h3>
+  <pre>ctx.fillStyle = 'blue';
+ctx.save();          // save state
+ctx.fillStyle = 'red';
+ctx.fillRect(10, 10, 50, 50); // red
+ctx.restore();       // restore state
+ctx.fillRect(70, 10, 50, 50); // blue again</pre>
+  <p class="label">save/restore push/pop the full canvas state (fillStyle, transform, clip, etc.) onto a stack.</p>
+</div>
+
+<div class="example">
+  <h3>12. globalAlpha for transparency</h3>
+  <pre>ctx.fillStyle = 'steelblue';
+ctx.fillRect(10, 10, 100, 100);
+
+ctx.globalAlpha = 0.5;
+ctx.fillStyle = 'coral';
+ctx.fillRect(60, 60, 100, 100); // 50% transparent
+ctx.globalAlpha = 1.0; // reset</pre>
+  <p class="label">globalAlpha affects all subsequent drawing operations. Reset to 1.0 when done.</p>
+</div>
+
+<div class="example">
+  <h3>13. Canvas fallback content</h3>
+  <pre>&lt;canvas width="400" height="300"&gt;
+  &lt;p&gt;Your browser doesn't support canvas.
+     &lt;a href="chart-data.html"&gt;View the data table instead.&lt;/a&gt;&lt;/p&gt;
+&lt;/canvas&gt;</pre>
+  <p class="label">Canvas fallback is shown in very old browsers. Provide a text or table alternative for accessibility.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Linear gradient</h3>
+  <pre>const grad = ctx.createLinearGradient(0, 0, 300, 0); // x0,y0,x1,y1
+grad.addColorStop(0, 'steelblue');
+grad.addColorStop(1, 'coral');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, 300, 100);</pre>
+  <p class="label">createLinearGradient takes start and end points. addColorStop(position 0-1, color).</p>
+</div>
+
+<div class="example">
+  <h3>15. Radial gradient</h3>
+  <pre>const grad = ctx.createRadialGradient(150, 100, 0, 150, 100, 100);
+grad.addColorStop(0, 'white');
+grad.addColorStop(1, 'steelblue');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, 300, 200);</pre>
+  <p class="label">createRadialGradient(x0,y0,r0, x1,y1,r1) — inner circle to outer circle.</p>
+</div>
+
+<div class="example">
+  <h3>16. Pattern fill</h3>
+  <pre>const img = new Image();
+img.onload = () =&gt; {
+  const pattern = ctx.createPattern(img, 'repeat'); // repeat|repeat-x|repeat-y|no-repeat
+  ctx.fillStyle = pattern;
+  ctx.fillRect(0, 0, 400, 300);
+};
+img.src = 'tile.png';</pre>
+  <p class="label">createPattern tiles an image, canvas, or video as a fill.</p>
+</div>
+
+<div class="example">
+  <h3>17. Shadows</h3>
+  <pre>ctx.shadowColor = 'rgba(0,0,0,0.5)';
+ctx.shadowBlur = 15;
+ctx.shadowOffsetX = 5;
+ctx.shadowOffsetY = 5;
+ctx.fillStyle = 'steelblue';
+ctx.fillRect(50, 50, 200, 100);</pre>
+  <p class="label">Shadow properties apply to all subsequent drawing. Reset to transparent/0 to disable.</p>
+</div>
+
+<div class="example">
+  <h3>18. translate transform</h3>
+  <pre>ctx.save();
+ctx.translate(150, 100); // move origin to center
+ctx.fillStyle = 'coral';
+ctx.fillRect(-50, -50, 100, 100); // draw centered rect
+ctx.restore();</pre>
+  <p class="label">translate moves the coordinate origin. Drawing at (−w/2, −h/2) then centers shapes around origin.</p>
+</div>
+
+<div class="example">
+  <h3>19. rotate transform</h3>
+  <pre>ctx.save();
+ctx.translate(150, 100);
+ctx.rotate(Math.PI / 4); // 45 degrees
+ctx.fillStyle = 'gold';
+ctx.fillRect(-50, -50, 100, 100);
+ctx.restore();</pre>
+  <p class="label">rotate() rotates around the current origin. Always translate to the center of rotation first.</p>
+</div>
+
+<div class="example">
+  <h3>20. scale transform</h3>
+  <pre>ctx.save();
+ctx.scale(2, 0.5); // 2x wide, half height
+ctx.fillStyle = 'steelblue';
+ctx.fillRect(50, 50, 100, 100);
+ctx.restore();</pre>
+  <p class="label">scale(x, y) stretches the coordinate space. scale(-1, 1) mirrors horizontally.</p>
+</div>
+
+<div class="example">
+  <h3>21. Drawing an image</h3>
+  <pre>const img = new Image();
+img.onload = () =&gt; {
+  ctx.drawImage(img, 0, 0);             // natural size
+  ctx.drawImage(img, 0, 0, 200, 150);   // scaled
+  ctx.drawImage(img, 10,10,80,60, 0,0,200,150); // crop+scale
+};
+img.src = 'photo.jpg';</pre>
+  <p class="label">drawImage has 3 overloads: position, position+size, crop+position+size.</p>
+</div>
+
+<div class="example">
+  <h3>22. Pixel manipulation with getImageData</h3>
+  <pre>const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+const data = imageData.data; // Uint8ClampedArray [r,g,b,a, r,g,b,a, ...]
+for (let i = 0; i &lt; data.length; i += 4) {
+  const avg = (data[i] + data[i+1] + data[i+2]) / 3;
+  data[i] = data[i+1] = data[i+2] = avg; // grayscale
+}
+ctx.putImageData(imageData, 0, 0);</pre>
+  <p class="label">Access and modify individual pixels. Each pixel = 4 bytes (RGBA). putImageData writes back.</p>
+</div>
+
+<div class="example">
+  <h3>23. Canvas to image data URL</h3>
+  <pre>const dataURL = canvas.toDataURL('image/png');
+const dataURLjpg = canvas.toDataURL('image/jpeg', 0.8); // 80% quality
+const link = document.createElement('a');
+link.href = dataURL;
+link.download = 'drawing.png';
+link.click();</pre>
+  <p class="label">toDataURL exports the canvas as a base64 data URL. Trigger download by clicking a hidden link.</p>
+</div>
+
+<div class="example">
+  <h3>24. canvas.toBlob for efficient export</h3>
+  <pre>canvas.toBlob(blob =&gt; {
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.src = url;
+}, 'image/webp', 0.9);</pre>
+  <p class="label">toBlob is more memory-efficient than toDataURL for large canvases.</p>
+</div>
+
+<div class="example">
+  <h3>25. requestAnimationFrame loop</h3>
+  <pre>let x = 0;
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'coral';
+  ctx.fillRect(x, 50, 60, 60);
+  x = (x + 2) % canvas.width;
+  requestAnimationFrame(draw);
+}
+draw();</pre>
+  <p class="label">requestAnimationFrame syncs to display refresh rate (60fps). Always clear before redrawing.</p>
+</div>
+
+<div class="example">
+  <h3>26. Bezier curve path</h3>
+  <pre>ctx.beginPath();
+ctx.moveTo(10, 100);
+ctx.bezierCurveTo(50, 10, 150, 10, 190, 100); // control1, control2, end
+ctx.strokeStyle = 'steelblue';
+ctx.lineWidth = 3;
+ctx.stroke();</pre>
+  <p class="label">bezierCurveTo draws a cubic Bezier curve with two control points.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Rounded rectangle (roundRect)</h3>
+  <pre>ctx.beginPath();
+ctx.roundRect(20, 20, 160, 100, 16); // x, y, w, h, radius
+ctx.fillStyle = 'steelblue';
+ctx.fill();</pre>
+  <p class="label">roundRect() is a modern API. For older browsers, use arcTo() to manually build rounded corners.</p>
+</div>
+
+<div class="example">
+  <h3>28. Clock face</h3>
+  <pre>const now = new Date();
+const hour = now.getHours() % 12;
+const min  = now.getMinutes();
+// Hour hand
+const hAngle = (hour / 12) * Math.PI * 2 - Math.PI / 2;
+ctx.beginPath();
+ctx.moveTo(cx, cy);
+ctx.lineTo(cx + Math.cos(hAngle) * 50, cy + Math.sin(hAngle) * 50);
+ctx.lineWidth = 6;
+ctx.stroke();</pre>
+  <p class="label">Convert clock hands to radians: (fraction * 2π − π/2) to start from 12 o'clock.</p>
+</div>
+
+<div class="example">
+  <h3>29. Particle system</h3>
+  <pre>const particles = Array.from({length: 100}, () =&gt; ({
+  x: Math.random() * 400, y: Math.random() * 300,
+  vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,
+  r: Math.random() * 4 + 1
+}));
+function update() {
+  ctx.clearRect(0, 0, 400, 300);
+  particles.forEach(p =&gt; {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x &lt; 0 || p.x &gt; 400) p.vx *= -1;
+    if (p.y &lt; 0 || p.y &gt; 300) p.vy *= -1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  requestAnimationFrame(update);
+}</pre>
+  <p class="label">Simple particle system: update positions, bounce off walls, redraw each frame.</p>
+</div>
+
+<div class="example">
+  <h3>30. Hit testing with isPointInPath</h3>
+  <pre>const circlePath = new Path2D();
+circlePath.arc(150, 100, 60, 0, Math.PI * 2);
+ctx.fill(circlePath);
+
+canvas.addEventListener('click', e =&gt; {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  if (ctx.isPointInPath(circlePath, x, y)) {
+    console.log('Circle clicked!');
+  }
+});</pre>
+  <p class="label">Path2D stores reusable paths. isPointInPath tests if a point is inside the path.</p>
+</div>
+
+<div class="example">
+  <h3>31. OffscreenCanvas for web workers</h3>
+  <pre>// main.js
+const offscreen = canvas.transferControlToOffscreen();
+const worker = new Worker('draw-worker.js');
+worker.postMessage({ canvas: offscreen }, [offscreen]);
+
+// draw-worker.js
+self.onmessage = ({ data }) =&gt; {
+  const ctx = data.canvas.getContext('2d');
+  // draw without blocking main thread
+};</pre>
+  <p class="label">OffscreenCanvas moves rendering to a Web Worker, keeping the main thread free for UI.</p>
+</div>
+
+<div class="example">
+  <h3>32. Composite operations</h3>
+  <pre>ctx.fillStyle = 'steelblue';
+ctx.fillRect(0, 0, 100, 100);
+
+ctx.globalCompositeOperation = 'xor'; // punch hole
+ctx.fillStyle = 'coral';
+ctx.beginPath();
+ctx.arc(70, 70, 50, 0, Math.PI * 2);
+ctx.fill();</pre>
+  <p class="label">globalCompositeOperation controls how new drawing interacts with existing pixels: source-over, multiply, screen, xor, etc.</p>
+</div>
+
+<div class="example">
+  <h3>33. Line cap and join styles</h3>
+  <pre>ctx.lineWidth = 20;
+ctx.lineCap = 'round';    // butt | round | square
+ctx.lineJoin = 'round';   // miter | round | bevel
+
+ctx.beginPath();
+ctx.moveTo(20, 50);
+ctx.lineTo(100, 20);
+ctx.lineTo(180, 50);
+ctx.stroke();</pre>
+  <p class="label">lineCap styles the ends of open paths; lineJoin styles corners where lines meet.</p>
+</div>
+
+<div class="example">
+  <h3>34. Dashed lines</h3>
+  <pre>ctx.setLineDash([10, 5]);      // [dash length, gap length]
+ctx.lineDashOffset = 0;        // phase offset for animation
+ctx.beginPath();
+ctx.moveTo(10, 50);
+ctx.lineTo(290, 50);
+ctx.stroke();
+ctx.setLineDash([]);           // reset to solid</pre>
+  <p class="label">setLineDash accepts an array of dash/gap lengths. Animate lineDashOffset for marching ants effect.</p>
+</div>
+
+<div class="example">
+  <h3>35. Clip region</h3>
+  <pre>ctx.save();
+ctx.beginPath();
+ctx.arc(150, 100, 80, 0, Math.PI * 2);
+ctx.clip(); // everything now clipped to circle
+ctx.drawImage(img, 0, 0, 300, 200);
+ctx.restore();</pre>
+  <p class="label">clip() restricts drawing to the current path shape. restore() removes the clip region.</p>
+</div>
+
+<div class="example">
+  <h3>36. measureText for layout</h3>
+  <pre>ctx.font = '24px sans-serif';
+const metrics = ctx.measureText('Hello World');
+const textWidth = metrics.width;
+// Center horizontally:
+ctx.fillText('Hello World', (canvas.width - textWidth) / 2, 100);</pre>
+  <p class="label">measureText returns text dimensions for precise layout calculations before drawing.</p>
+</div>
+
+<div class="example">
+  <h3>37. High-DPI canvas</h3>
+  <pre>const dpr = window.devicePixelRatio || 1;
+canvas.width  = 400 * dpr;
+canvas.height = 300 * dpr;
+canvas.style.width  = '400px';
+canvas.style.height = '300px';
+ctx.scale(dpr, dpr); // scale all drawing to match device pixels</pre>
+  <p class="label">Scale canvas buffer by devicePixelRatio for crisp rendering on Retina/HiDPI screens.</p>
+</div>
+
+<div class="example">
+  <h3>38. Canvas as WebGL surface</h3>
+  <pre>const gl = canvas.getContext('webgl');
+// or 'webgl2' for WebGL 2.0
+if (!gl) {
+  console.error('WebGL not supported');
+} else {
+  gl.clearColor(0.2, 0.4, 0.8, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+}</pre>
+  <p class="label">Canvas also supports WebGL for GPU-accelerated 3D graphics via getContext('webgl').</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Canvas sprite animation</h3>
+  <pre>const spriteSheet = new Image();
+spriteSheet.src = 'sprite.png';
+let frame = 0;
+const FRAME_W = 64, FRAME_H = 64, TOTAL_FRAMES = 8;
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(spriteSheet, frame * FRAME_W, 0, FRAME_W, FRAME_H, 0, 0, 64, 64);
+  frame = (frame + 1) % TOTAL_FRAMES;
+  requestAnimationFrame(animate);
+}
+spriteSheet.onload = animate;</pre>
+  <p class="label">Sprite animation: advance through frames of a sprite sheet each animation frame.</p>
+</div>
+
+<div class="example">
+  <h3>40. Canvas game loop with delta time</h3>
+  <pre>let lastTime = 0;
+function gameLoop(timestamp) {
+  const delta = timestamp - lastTime; // ms since last frame
+  lastTime = timestamp;
+  update(delta / 1000); // pass seconds
+  render();
+  requestAnimationFrame(gameLoop);
+}
+requestAnimationFrame(gameLoop);</pre>
+  <p class="label">Delta time makes animations frame-rate independent. Speed × deltaSeconds = consistent movement.</p>
+</div>
+
+<div class="example">
+  <h3>41. Path2D for reusable paths</h3>
+  <pre>const star = new Path2D('M 100 10 L 40 198 L 190 78 L 10 78 L 160 198 Z');
+ctx.fillStyle = 'gold';
+ctx.fill(star);
+// Reuse at different positions with transform
+ctx.save();
+ctx.translate(200, 0);
+ctx.fill(star);
+ctx.restore();</pre>
+  <p class="label">Path2D stores a reusable path definition. Accepts SVG path d string directly.</p>
+</div>
+
+<div class="example">
+  <h3>42. ImageData manipulation — invert</h3>
+  <pre>const d = ctx.getImageData(0, 0, w, h);
+for (let i = 0; i &lt; d.data.length; i += 4) {
+  d.data[i]   = 255 - d.data[i];   // R
+  d.data[i+1] = 255 - d.data[i+1]; // G
+  d.data[i+2] = 255 - d.data[i+2]; // B
+  // d.data[i+3] = alpha — unchanged
+}
+ctx.putImageData(d, 0, 0);</pre>
+  <p class="label">Invert filter: subtract each channel from 255. Alpha channel is left unchanged.</p>
+</div>
+
+<div class="example">
+  <h3>43. Canvas recording with MediaRecorder</h3>
+  <pre>const stream = canvas.captureStream(30); // 30 fps
+const recorder = new MediaRecorder(stream);
+const chunks = [];
+recorder.ondataavailable = e =&gt; chunks.push(e.data);
+recorder.onstop = () =&gt; {
+  const blob = new Blob(chunks, { type: 'video/webm' });
+  videoEl.src = URL.createObjectURL(blob);
+};
+recorder.start();
+setTimeout(() =&gt; recorder.stop(), 5000);</pre>
+  <p class="label">captureStream() converts canvas animation to a video stream that MediaRecorder can record.</p>
+</div>
+
+<div class="example">
+  <h3>44. Canvas-based QR code</h3>
+  <pre>// Using qrcode.js library:
+// &lt;script src="qrcode.min.js"&gt;&lt;/script&gt;
+const qr = new QRCode(document.getElementById('qr-canvas'), {
+  text: 'https://example.com',
+  width: 200,
+  height: 200
+});</pre>
+  <p class="label">Libraries like qrcode.js render QR codes directly to a canvas element.</p>
+</div>
+
+<div class="example">
+  <h3>45. Freehand drawing</h3>
+  <pre>let drawing = false;
+canvas.addEventListener('mousedown', e =&gt; { drawing = true; ctx.beginPath(); });
+canvas.addEventListener('mousemove', e =&gt; {
+  if (!drawing) return;
+  const r = canvas.getBoundingClientRect();
+  ctx.lineTo(e.clientX - r.left, e.clientY - r.top);
+  ctx.stroke();
+});
+canvas.addEventListener('mouseup', () =&gt; { drawing = false; });</pre>
+  <p class="label">Basic freehand drawing: track mouse down, draw lines on move, stop on mouse up.</p>
+</div>
+
+<div class="example">
+  <h3>46. Canvas blur effect</h3>
+  <pre>// CSS filter approach (fastest):
+canvas.style.filter = 'blur(5px)';
+
+// ImageData convolution (slow but more control):
+// Apply gaussian kernel to each pixel</pre>
+  <p class="label">For simple blur, CSS filter on the canvas element is fastest. For precise control, implement convolution manually.</p>
+</div>
+
+<div class="example">
+  <h3>47. Canvas hit regions (deprecated) → pointer events</h3>
+  <pre>// Modern approach: use pointer events and isPointInPath
+canvas.addEventListener('pointermove', e =&gt; {
+  const r = canvas.getBoundingClientRect();
+  const x = (e.clientX - r.left) * (canvas.width / r.width);
+  const y = (e.clientY - r.top) * (canvas.height / r.height);
+  // scale for HiDPI
+  canvas.style.cursor = ctx.isPointInPath(path, x, y) ? 'pointer' : 'default';
+});</pre>
+  <p class="label">Scale mouse coordinates by canvas/display ratio for accurate hit testing on HiDPI screens.</p>
+</div>
+
+<div class="example">
+  <h3>48. WebGL triangle</h3>
+  <pre>const gl = canvas.getContext('webgl');
+const vShader = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vShader, `
+  attribute vec2 pos;
+  void main() { gl_Position = vec4(pos, 0, 1); }
+`);
+gl.compileShader(vShader);
+// ... link program, bind buffer, draw</pre>
+  <p class="label">Minimal WebGL pipeline: vertex shader → fragment shader → program → buffer → draw.</p>
+</div>
+
+<div class="example">
+  <h3>49. canvas.getContext options</h3>
+  <pre>const ctx = canvas.getContext('2d', {
+  alpha: false,          // no transparency = faster compositing
+  desynchronized: true,  // low-latency mode for drawing apps
+  willReadFrequently: true // optimize for frequent getImageData
+});</pre>
+  <p class="label">Context creation options hint at intended usage for browser optimizations.</p>
+</div>
+
+<div class="example">
+  <h3>50. Canvas accessibility wrapper</h3>
+  <pre>&lt;canvas id="chart" width="400" height="300"
+        role="img"
+        aria-label="Bar chart: Jan 50, Feb 75, Mar 60"&gt;
+  &lt;table&gt;
+    &lt;caption&gt;Monthly data&lt;/caption&gt;
+    &lt;tr&gt;&lt;th&gt;Jan&lt;/th&gt;&lt;td&gt;50&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;th&gt;Feb&lt;/th&gt;&lt;td&gt;75&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;th&gt;Mar&lt;/th&gt;&lt;td&gt;60&lt;/td&gt;&lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/canvas&gt;</pre>
+  <p class="label">Canvas is not accessible to screen readers. Add role="img" + aria-label, plus a table fallback inside the element.</p>
+</div>
+
+</body>
+</html>

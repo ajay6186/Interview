@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 6.1 — Web Components
+  ============================================================================
+  Define custom HTML elements using the Custom Elements API. Register custom
+  elements with customElements.define() and implement connectedCallback.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 6.1 — Web Components</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+  </style>
+</head>
+<body>
+
+<h1>Web Components Exercise</h1>
+
+<!-- =========================================================
+     Section 1: Use the greeting-card custom element
+     ========================================================= -->
+
+<!-- TODO: Add two custom elements:
+     <greeting-card id="card1" name="Alice" role="Developer"></greeting-card>
+     <greeting-card id="card2" name="Bob" role="Designer"></greeting-card>
+-->
+
+
+<!-- =========================================================
+     Section 2: Use the info-badge custom element
+     ========================================================= -->
+
+<!-- TODO: Add a custom element:
+     <info-badge id="badge1" label="New" color="green"></info-badge>
+-->
+
+
+<!-- =========================================================
+     Section 3: Define both custom elements in a <script>
+     ========================================================= -->
+
+<!-- TODO: Add a <script> that defines two custom elements:
+
+     1. greeting-card:
+        class GreetingCard extends HTMLElement {
+          connectedCallback() {
+            const name = this.getAttribute('name') || 'Guest';
+            const role = this.getAttribute('role') || '';
+            this.innerHTML = `<div style="border:1px solid #ccc;padding:12px;border-radius:4px;margin:8px 0">
+              <h3 style="margin:0">${name}</h3>
+              <p style="margin:4px 0;color:#666">${role}</p>
+            </div>`;
+            this.dataset.initialized = 'true';
+          }
+        }
+        customElements.define('greeting-card', GreetingCard);
+
+     2. info-badge:
+        class InfoBadge extends HTMLElement {
+          connectedCallback() {
+            const label = this.getAttribute('label') || '';
+            const color = this.getAttribute('color') || 'blue';
+            this.innerHTML = `<span style="background:${color};color:white;padding:2px 8px;border-radius:10px;font-size:12px">${label}</span>`;
+            this.dataset.initialized = 'true';
+          }
+        }
+        customElements.define('info-badge', InfoBadge);
+-->
+
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 6.1 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // Custom element registration
+  assert(typeof customElements !== "undefined" && customElements.get("greeting-card") !== undefined,
+    '"greeting-card" custom element is registered');
+  assert(typeof customElements !== "undefined" && customElements.get("info-badge") !== undefined,
+    '"info-badge" custom element is registered');
+
+  // greeting-card elements
+  const card1 = document.getElementById("card1");
+  assert(card1 !== null, '#card1 element exists');
+  assert(card1 && card1.dataset.initialized === "true", '#card1 connectedCallback ran (dataset.initialized === "true")');
+  assert(card1 && card1.innerHTML.includes("Alice"), '#card1 inner HTML includes "Alice"');
+
+  const card2 = document.getElementById("card2");
+  assert(card2 !== null, '#card2 element exists');
+  assert(card2 && card2.dataset.initialized === "true", '#card2 connectedCallback ran (dataset.initialized === "true")');
+  assert(card2 && card2.innerHTML.includes("Bob"), '#card2 inner HTML includes "Bob"');
+
+  // info-badge
+  const badge1 = document.getElementById("badge1");
+  assert(badge1 !== null, '#badge1 element exists');
+  assert(badge1 && badge1.dataset.initialized === "true", '#badge1 connectedCallback ran (dataset.initialized === "true")');
+  assert(badge1 && badge1.innerHTML.includes("New"), '#badge1 inner HTML includes "New"');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 6.1 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

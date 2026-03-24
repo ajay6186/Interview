@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 2.2 — Article & Section  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 2.2 — Article &amp; Section</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; margin-top: 6px; }
+    .output { background: #fafafa; border: 1px solid #eee; padding: 8px; border-radius: 3px; margin-top: 6px; font-size: 13px; }
+    .output article { border: 1px solid #c8e6c9; padding: 8px; margin: 4px 0; border-radius: 3px; background: #f1f8e9; }
+    .output section { border: 1px dashed #90caf9; padding: 8px; margin: 4px 0; }
+    pre { background: #f5f5f5; padding: 8px; border-radius: 3px; overflow-x: auto; font-size: 12px; margin: 4px 0; }
+  </style>
+</head>
+<body>
+<h1>Examples 2.2 — Article &amp; Section</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Standalone article element</h3>
+  <div class="output">
+    <article>
+      <h2 style="margin:0 0 4px">My First Blog Post</h2>
+      <p style="margin:0">This is the article content. It's self-contained and could be republished elsewhere.</p>
+    </article>
+  </div>
+  <p class="label">&lt;article&gt; is for self-contained content: blog posts, news items, forum posts, product cards, comments.</p>
+</div>
+
+<div class="example">
+  <h3>2. Article with header, body, footer</h3>
+  <div class="output">
+    <article>
+      <header>
+        <h2 style="margin:0 0 2px">Article Title</h2>
+        <p style="margin:0;color:#666;font-size:12px">By Alice · <time datetime="2026-03-24">March 24, 2026</time></p>
+      </header>
+      <p>Article body content goes here...</p>
+      <footer>
+        <p style="margin:0;font-size:12px;color:#888">Tags: HTML, Semantics</p>
+      </footer>
+    </article>
+  </div>
+  <p class="label">An article commonly has a header (title/meta), body paragraphs, and footer (tags/links).</p>
+</div>
+
+<div class="example">
+  <h3>3. Section element with heading</h3>
+  <div class="output">
+    <section>
+      <h2 style="margin:0 0 4px">Our Services</h2>
+      <p style="margin:0">We offer web design, development, and consulting services.</p>
+    </section>
+  </div>
+  <p class="label">&lt;section&gt; is a thematic grouping that requires a heading. Without a heading, use &lt;div&gt; instead.</p>
+</div>
+
+<div class="example">
+  <h3>4. Multiple sections in main</h3>
+  <pre>&lt;main&gt;
+  &lt;section aria-labelledby="hero-h"&gt;
+    &lt;h2 id="hero-h"&gt;Welcome&lt;/h2&gt;...
+  &lt;/section&gt;
+  &lt;section aria-labelledby="features-h"&gt;
+    &lt;h2 id="features-h"&gt;Features&lt;/h2&gt;...
+  &lt;/section&gt;
+  &lt;section aria-labelledby="cta-h"&gt;
+    &lt;h2 id="cta-h"&gt;Get Started&lt;/h2&gt;...
+  &lt;/section&gt;
+&lt;/main&gt;</pre>
+  <p class="label">Multiple sections divide main content into named regions. aria-labelledby connects each section to its heading.</p>
+</div>
+
+<div class="example">
+  <h3>5. The article-section decision tree</h3>
+  <pre>&lt;!-- Is the content self-contained and syndicate-able? → &lt;article&gt; --&gt;
+&lt;!-- Is it a thematic grouping with a heading? → &lt;section&gt; --&gt;
+&lt;!-- Is it just for styling/layout? → &lt;div&gt; --&gt;
+&lt;!-- Does it apply to all? → none of the above --&gt;</pre>
+  <p class="label">Use this decision tree to choose between article, section, and div.</p>
+</div>
+
+<div class="example">
+  <h3>6. Section containing articles (blog listing)</h3>
+  <div class="output">
+    <section>
+      <h2 style="margin:0 0 8px">Latest Posts</h2>
+      <article><h3 style="margin:0">Post One</h3></article>
+      <article><h3 style="margin:0">Post Two</h3></article>
+      <article><h3 style="margin:0">Post Three</h3></article>
+    </section>
+  </div>
+  <p class="label">Section groups related articles. The section provides the thematic context; articles are the individual items.</p>
+</div>
+
+<div class="example">
+  <h3>7. hgroup — heading group</h3>
+  <div class="output">
+    <article>
+      <hgroup>
+        <h2 style="margin:0">Getting Started with React</h2>
+        <p style="margin:0;color:#666;font-size:12px">A beginner's guide to modern UI development</p>
+      </hgroup>
+      <p>React is a JavaScript library for building user interfaces...</p>
+    </article>
+  </div>
+  <p class="label">&lt;hgroup&gt; groups a heading with a subtitle/tagline. The p inside is a subtitle, not a new section.</p>
+</div>
+
+<div class="example">
+  <h3>8. Heading hierarchy in nested structures</h3>
+  <pre>&lt;body&gt;
+  &lt;h1&gt;Site Title&lt;/h1&gt;    &lt;!-- Page level --&gt;
+  &lt;main&gt;
+    &lt;h2&gt;Blog&lt;/h2&gt;        &lt;!-- Main section --&gt;
+    &lt;section&gt;
+      &lt;h3&gt;Featured&lt;/h3&gt; &lt;!-- Section within main --&gt;
+      &lt;article&gt;
+        &lt;h4&gt;Post Title&lt;/h4&gt; &lt;!-- Article within section --&gt;
+      &lt;/article&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+&lt;/body&gt;</pre>
+  <p class="label">Heading levels reflect nesting depth. Never skip levels. h2 inside article is fine if h1 is the page title.</p>
+</div>
+
+<div class="example">
+  <h3>9. Article for a comment</h3>
+  <div class="output">
+    <article style="border:1px solid #e0e0e0;padding:8px;background:#fff">
+      <header>
+        <strong>Alice Johnson</strong>
+        <time datetime="2026-03-24T10:30" style="font-size:12px;color:#888"> · 10:30 AM</time>
+      </header>
+      <p style="margin:4px 0">Great post! I learned a lot about semantic HTML today.</p>
+    </article>
+  </div>
+  <p class="label">Comments are self-contained, making them perfect for &lt;article&gt;. Each comment could theoretically stand alone.</p>
+</div>
+
+<div class="example">
+  <h3>10. Article for a product card</h3>
+  <div class="output">
+    <article style="border:1px solid #ddd;width:180px;padding:8px;background:#fff">
+      <img src="https://via.placeholder.com/160x100" alt="Widget Pro" width="160" height="100" style="display:block;width:100%">
+      <h3 style="margin:6px 0 2px;font-size:14px">Widget Pro</h3>
+      <p style="margin:0 0 6px;font-size:12px">The best widget for professionals.</p>
+      <strong>$49.99</strong>
+    </article>
+  </div>
+  <p class="label">Product cards are self-contained and can be syndicated to listings pages, making &lt;article&gt; appropriate.</p>
+</div>
+
+<div class="example">
+  <h3>11. Article for a tweet/post card</h3>
+  <pre>&lt;article&gt;
+  &lt;header&gt;
+    &lt;img src="avatar.jpg" alt="Alice Johnson"&gt;
+    &lt;span&gt;Alice Johnson&lt;/span&gt;
+    &lt;span&gt;@alice&lt;/span&gt;
+  &lt;/header&gt;
+  &lt;p&gt;Semantic HTML is the foundation of accessible web development. 🎉&lt;/p&gt;
+  &lt;footer&gt;
+    &lt;time datetime="2026-03-24T10:30"&gt;10:30 AM · Mar 24, 2026&lt;/time&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Social media post cards are classic article use cases — self-contained, with metadata in header/footer.</p>
+</div>
+
+<div class="example">
+  <h3>12. Section for a page's call-to-action</h3>
+  <pre>&lt;section aria-label="Sign up for our newsletter"&gt;
+  &lt;h2&gt;Stay in the Loop&lt;/h2&gt;
+  &lt;p&gt;Get the latest articles delivered to your inbox.&lt;/p&gt;
+  &lt;form&gt;
+    &lt;label for="nl-email"&gt;Email&lt;/label&gt;
+    &lt;input type="email" id="nl-email" name="email"&gt;
+    &lt;button type="submit"&gt;Subscribe&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/section&gt;</pre>
+  <p class="label">A newsletter sign-up section groups related content (heading + description + form) under a thematic umbrella.</p>
+</div>
+
+<div class="example">
+  <h3>13. When NOT to use article or section</h3>
+  <pre>&lt;!-- DON'T use section as a generic container --&gt;
+&lt;section class="wrapper"&gt;  &lt;!-- Wrong: no heading, just layout --&gt;
+
+&lt;!-- DO use div for layout/styling --&gt;
+&lt;div class="wrapper"&gt;      &lt;!-- Correct --&gt;
+
+&lt;!-- DON'T use article for non-self-contained content --&gt;
+&lt;article class="sidebar-widget"&gt; &lt;!-- Wrong if it's just related links --&gt;
+
+&lt;!-- DO use aside for tangential content --&gt;
+&lt;aside&gt;Related links&lt;/aside&gt;  &lt;!-- Correct --&gt;</pre>
+  <p class="label">Misusing section/article doesn't break the page but creates confusing landmark structure for AT users.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Article with figure</h3>
+  <div class="output">
+    <article>
+      <h2 style="margin:0 0 6px">Visualizing Data with SVG</h2>
+      <figure>
+        <img src="https://via.placeholder.com/300x150?text=Chart" alt="Bar chart showing monthly visitors" width="300" height="150" style="display:block;width:100%">
+        <figcaption style="font-size:12px">Figure 1: Monthly visitor data for Q1 2026.</figcaption>
+      </figure>
+      <p>SVG provides crisp, scalable charts for any screen density.</p>
+    </article>
+  </div>
+  <p class="label">Articles often contain figures. The figure caption supplements the alt text of the image.</p>
+</div>
+
+<div class="example">
+  <h3>15. Section with id for anchor links</h3>
+  <pre>&lt;nav aria-label="Page sections"&gt;
+  &lt;a href="#features"&gt;Features&lt;/a&gt;
+  &lt;a href="#pricing"&gt;Pricing&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;section id="features" aria-labelledby="features-h"&gt;
+  &lt;h2 id="features-h"&gt;Features&lt;/h2&gt;...
+&lt;/section&gt;
+&lt;section id="pricing" aria-labelledby="pricing-h"&gt;
+  &lt;h2 id="pricing-h"&gt;Pricing&lt;/h2&gt;...
+&lt;/section&gt;</pre>
+  <p class="label">Sections with IDs allow in-page navigation. The id and aria-labelledby heading id can differ.</p>
+</div>
+
+<div class="example">
+  <h3>16. Article nested inside section nested inside main</h3>
+  <pre>&lt;main&gt;
+  &lt;h1&gt;Blog&lt;/h1&gt;
+  &lt;section aria-labelledby="s-tutorials"&gt;
+    &lt;h2 id="s-tutorials"&gt;Tutorials&lt;/h2&gt;
+    &lt;article&gt;
+      &lt;h3&gt;CSS Grid Tutorial&lt;/h3&gt;
+      &lt;section aria-labelledby="s-basic"&gt;
+        &lt;h4 id="s-basic"&gt;Basic Concepts&lt;/h4&gt;
+        &lt;p&gt;...&lt;/p&gt;
+      &lt;/section&gt;
+      &lt;section aria-labelledby="s-adv"&gt;
+        &lt;h4 id="s-adv"&gt;Advanced Techniques&lt;/h4&gt;
+        &lt;p&gt;...&lt;/p&gt;
+      &lt;/section&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</pre>
+  <p class="label">Deep nesting is valid: section → article → section. Each level can use sections for further structure.</p>
+</div>
+
+<div class="example">
+  <h3>17. Related articles section (schema)</h3>
+  <pre>&lt;aside aria-label="Related articles"&gt;
+  &lt;h2&gt;You Might Also Like&lt;/h2&gt;
+  &lt;article&gt;
+    &lt;h3&gt;&lt;a href="#"&gt;Related Post 1&lt;/a&gt;&lt;/h3&gt;
+    &lt;p&gt;Short excerpt...&lt;/p&gt;
+  &lt;/article&gt;
+  &lt;article&gt;
+    &lt;h3&gt;&lt;a href="#"&gt;Related Post 2&lt;/a&gt;&lt;/h3&gt;
+    &lt;p&gt;Short excerpt...&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/aside&gt;</pre>
+  <p class="label">Related content in an aside uses articles too — they're still self-contained content items even in a sidebar context.</p>
+</div>
+
+<div class="example">
+  <h3>18. Schema.org markup with article</h3>
+  <pre>&lt;article itemscope itemtype="https://schema.org/BlogPosting"&gt;
+  &lt;h2 itemprop="headline"&gt;Article Title&lt;/h2&gt;
+  &lt;p&gt;
+    By &lt;span itemprop="author" itemscope itemtype="https://schema.org/Person"&gt;
+      &lt;span itemprop="name"&gt;Jane Doe&lt;/span&gt;
+    &lt;/span&gt;
+  &lt;/p&gt;
+  &lt;time itemprop="datePublished" datetime="2026-03-24"&gt;March 24, 2026&lt;/time&gt;
+  &lt;div itemprop="articleBody"&gt;
+    &lt;p&gt;Article content...&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Microdata attributes (itemscope, itemtype, itemprop) add structured data directly in HTML. Alternative to JSON-LD.</p>
+</div>
+
+<div class="example">
+  <h3>19. Pagination after article list</h3>
+  <pre>&lt;section aria-labelledby="posts-h"&gt;
+  &lt;h2 id="posts-h"&gt;All Posts&lt;/h2&gt;
+  &lt;article&gt;...&lt;/article&gt;
+  &lt;article&gt;...&lt;/article&gt;
+&lt;/section&gt;
+&lt;nav aria-label="Pagination"&gt;
+  &lt;a href="?page=1" aria-current="page"&gt;1&lt;/a&gt;
+  &lt;a href="?page=2"&gt;2&lt;/a&gt;
+  &lt;a href="?page=3"&gt;3&lt;/a&gt;
+  &lt;a href="?page=2" rel="next"&gt;Next →&lt;/a&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Pagination nav comes after the content section. rel="next" and rel="prev" tell search engines about pagination.</p>
+</div>
+
+<div class="example">
+  <h3>20. Section for tabbed content</h3>
+  <pre>&lt;div role="tablist"&gt;
+  &lt;button role="tab" aria-selected="true" aria-controls="panel-1"&gt;Overview&lt;/button&gt;
+  &lt;button role="tab" aria-selected="false" aria-controls="panel-2"&gt;Details&lt;/button&gt;
+&lt;/div&gt;
+&lt;section role="tabpanel" id="panel-1" aria-labelledby="tab-1"&gt;
+  &lt;h2 id="tab-1" class="sr-only"&gt;Overview&lt;/h2&gt;
+  ...
+&lt;/section&gt;
+&lt;section role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden&gt;
+  &lt;h2 id="tab-2" class="sr-only"&gt;Details&lt;/h2&gt;
+  ...
+&lt;/section&gt;</pre>
+  <p class="label">Tab panels use &lt;section&gt; with role="tabpanel". Each panel needs an accessible name via its heading.</p>
+</div>
+
+<div class="example">
+  <h3>21. Article with Open Graph meta</h3>
+  <pre>&lt;!-- In &lt;head&gt; --&gt;
+&lt;meta property="og:type" content="article"&gt;
+&lt;meta property="article:author" content="https://example.com/author/jane"&gt;
+&lt;meta property="article:published_time" content="2026-03-24T10:00:00Z"&gt;
+&lt;meta property="article:section" content="Technology"&gt;
+&lt;meta property="article:tag" content="HTML"&gt;
+&lt;meta property="article:tag" content="Semantics"&gt;
+
+&lt;!-- In &lt;body&gt; --&gt;
+&lt;article&gt;...&lt;/article&gt;</pre>
+  <p class="label">When the page is an article, use og:type="article" and article:* meta tags for richer social sharing previews.</p>
+</div>
+
+<div class="example">
+  <h3>22. Section for a wizard/form step</h3>
+  <pre>&lt;form&gt;
+  &lt;section aria-labelledby="step1-h" id="step-1"&gt;
+    &lt;h2 id="step1-h"&gt;Step 1: Personal Information&lt;/h2&gt;
+    ...fields...
+  &lt;/section&gt;
+  &lt;section aria-labelledby="step2-h" id="step-2" hidden&gt;
+    &lt;h2 id="step2-h"&gt;Step 2: Shipping Address&lt;/h2&gt;
+    ...fields...
+  &lt;/section&gt;
+&lt;/form&gt;</pre>
+  <p class="label">Multi-step forms use sections to group fields by step. Each section is shown/hidden via JS.</p>
+</div>
+
+<div class="example">
+  <h3>23. Article footer with reactions</h3>
+  <pre>&lt;article&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  &lt;div&gt;...article body...&lt;/div&gt;
+  &lt;footer&gt;
+    &lt;section aria-label="Article actions"&gt;
+      &lt;button type="button" aria-pressed="false"&gt;👍 Like (42)&lt;/button&gt;
+      &lt;button type="button"&gt;💬 Comment (7)&lt;/button&gt;
+      &lt;button type="button"&gt;🔗 Share&lt;/button&gt;
+    &lt;/section&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Article footers can contain reaction sections. aria-pressed tracks the toggled state of like buttons.</p>
+</div>
+
+<div class="example">
+  <h3>24. Section with role="doc-chapter"</h3>
+  <pre>&lt;main&gt;
+  &lt;section role="doc-chapter" aria-labelledby="ch1"&gt;
+    &lt;h2 id="ch1"&gt;Chapter 1: Introduction&lt;/h2&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/section&gt;
+  &lt;section role="doc-chapter" aria-labelledby="ch2"&gt;
+    &lt;h2 id="ch2"&gt;Chapter 2: Getting Started&lt;/h2&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</pre>
+  <p class="label">DPUB-ARIA roles like doc-chapter add digital publishing semantics for e-books and long-form documents.</p>
+</div>
+
+<div class="example">
+  <h3>25. Article with schema JSON-LD</h3>
+  <pre>&lt;article&gt;
+  &lt;h2&gt;Article Title&lt;/h2&gt;
+  &lt;p&gt;Content...&lt;/p&gt;
+&lt;/article&gt;
+
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Article Title",
+  "datePublished": "2026-03-24",
+  "author": { "@type": "Person", "name": "Jane Doe" },
+  "publisher": { "@type": "Organization", "name": "Tech Blog" }
+}
+&lt;/script&gt;</pre>
+  <p class="label">JSON-LD paired with HTML &lt;article&gt; provides structured data for Google's rich results (article cards in search).</p>
+</div>
+
+<div class="example">
+  <h3>26. Section for product gallery</h3>
+  <pre>&lt;section aria-labelledby="gallery-h"&gt;
+  &lt;h2 id="gallery-h"&gt;Product Photos&lt;/h2&gt;
+  &lt;div class="gallery-grid"&gt;
+    &lt;figure&gt;
+      &lt;img src="photo1.jpg" alt="Widget from front angle"&gt;
+      &lt;figcaption&gt;Front view&lt;/figcaption&gt;
+    &lt;/figure&gt;
+    &lt;figure&gt;
+      &lt;img src="photo2.jpg" alt="Widget from side angle"&gt;
+      &lt;figcaption&gt;Side view&lt;/figcaption&gt;
+    &lt;/figure&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre>
+  <p class="label">A product gallery is a thematic section (not self-contained articles) containing figure/figcaption pairs.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Full blog post structure</h3>
+  <pre>&lt;article&gt;
+  &lt;header&gt;
+    &lt;h1&gt;Mastering CSS Grid&lt;/h1&gt;
+    &lt;p&gt;
+      By &lt;address&gt;&lt;a href="/author/jane"&gt;Jane Doe&lt;/a&gt;&lt;/address&gt; ·
+      &lt;time datetime="2026-03-24"&gt;March 24, 2026&lt;/time&gt; ·
+      &lt;span&gt;8 min read&lt;/span&gt;
+    &lt;/p&gt;
+  &lt;/header&gt;
+
+  &lt;section aria-labelledby="intro-h"&gt;
+    &lt;h2 id="intro-h"&gt;Introduction&lt;/h2&gt;
+    &lt;p&gt;CSS Grid is the most powerful layout system available in CSS...&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;section aria-labelledby="basics-h"&gt;
+    &lt;h2 id="basics-h"&gt;Basic Concepts&lt;/h2&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;section aria-labelledby="adv-h"&gt;
+    &lt;h2 id="adv-h"&gt;Advanced Techniques&lt;/h2&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;Tags: &lt;a href="#"&gt;CSS&lt;/a&gt;, &lt;a href="#"&gt;Layout&lt;/a&gt;&lt;/p&gt;
+    &lt;p&gt;
+      &lt;a rel="prev" href="/post/flexbox"&gt;← Previous: Flexbox&lt;/a&gt;
+      &lt;a rel="next" href="/post/subgrid"&gt;Next: CSS Subgrid →&lt;/a&gt;
+    &lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Full blog post: article wraps everything, header with meta, multiple named sections, footer with tags and navigation.</p>
+</div>
+
+<div class="example">
+  <h3>28. News article with sidebar</h3>
+  <pre>&lt;div class="article-layout"&gt;
+  &lt;article&gt;
+    &lt;header&gt;
+      &lt;h1&gt;Breaking: New HTML Standard Released&lt;/h1&gt;
+      &lt;p&gt;&lt;time datetime="2026-03-24T08:00"&gt;8:00 AM, March 24, 2026&lt;/time&gt;&lt;/p&gt;
+    &lt;/header&gt;
+    &lt;p&gt;The HTML Living Standard has been updated with new features...&lt;/p&gt;
+    &lt;section aria-labelledby="reaction-h"&gt;
+      &lt;h2 id="reaction-h"&gt;Industry Reaction&lt;/h2&gt;
+      &lt;p&gt;Developers around the world celebrated...&lt;/p&gt;
+    &lt;/section&gt;
+  &lt;/article&gt;
+  &lt;aside aria-label="More news"&gt;
+    &lt;h2&gt;Related Stories&lt;/h2&gt;
+    &lt;article&gt;&lt;h3&gt;&lt;a href="#"&gt;W3C Announces New Working Group&lt;/a&gt;&lt;/h3&gt;&lt;/article&gt;
+    &lt;article&gt;&lt;h3&gt;&lt;a href="#"&gt;CSS 2026 Features Preview&lt;/a&gt;&lt;/h3&gt;&lt;/article&gt;
+  &lt;/aside&gt;
+&lt;/div&gt;</pre>
+  <p class="label">News page: main article with sections, sidebar aside with related article previews.</p>
+</div>
+
+<div class="example">
+  <h3>29. Comments section inside article</h3>
+  <pre>&lt;article&gt;
+  &lt;header&gt;&lt;h1&gt;Post Title&lt;/h1&gt;&lt;/header&gt;
+  &lt;p&gt;Post content...&lt;/p&gt;
+
+  &lt;section aria-labelledby="comments-h"&gt;
+    &lt;h2 id="comments-h"&gt;Comments (3)&lt;/h2&gt;
+
+    &lt;article&gt;
+      &lt;header&gt;
+        &lt;strong&gt;Alice&lt;/strong&gt;
+        &lt;time datetime="2026-03-24T12:00"&gt;12:00 PM&lt;/time&gt;
+      &lt;/header&gt;
+      &lt;p&gt;Excellent article! Very informative.&lt;/p&gt;
+    &lt;/article&gt;
+
+    &lt;article&gt;
+      &lt;header&gt;&lt;strong&gt;Bob&lt;/strong&gt;...&lt;/header&gt;
+      &lt;p&gt;Thanks for sharing this.&lt;/p&gt;
+    &lt;/article&gt;
+
+    &lt;form aria-label="Leave a comment"&gt;
+      &lt;label for="comment"&gt;Your comment&lt;/label&gt;
+      &lt;textarea id="comment" name="comment"&gt;&lt;/textarea&gt;
+      &lt;button type="submit"&gt;Post Comment&lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/section&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Post article contains comments section which contains individual comment articles and a new comment form.</p>
+</div>
+
+<div class="example">
+  <h3>30. Recipe article structure</h3>
+  <pre>&lt;article itemscope itemtype="https://schema.org/Recipe"&gt;
+  &lt;header&gt;
+    &lt;h1 itemprop="name"&gt;Classic Chocolate Chip Cookies&lt;/h1&gt;
+    &lt;p&gt;⭐⭐⭐⭐⭐ · Prep: 15 min · Cook: 12 min · Serves: 48&lt;/p&gt;
+  &lt;/header&gt;
+
+  &lt;section aria-labelledby="ingredients-h"&gt;
+    &lt;h2 id="ingredients-h"&gt;Ingredients&lt;/h2&gt;
+    &lt;ul&gt;...&lt;/ul&gt;
+  &lt;/section&gt;
+
+  &lt;section aria-labelledby="instructions-h"&gt;
+    &lt;h2 id="instructions-h"&gt;Instructions&lt;/h2&gt;
+    &lt;ol&gt;...&lt;/ol&gt;
+  &lt;/section&gt;
+
+  &lt;section aria-labelledby="notes-h"&gt;
+    &lt;h2 id="notes-h"&gt;Chef's Notes&lt;/h2&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Recipes are perfect articles: self-contained with distinct ingredient, instruction, and notes sections.</p>
+</div>
+
+<div class="example">
+  <h3>31. Forum thread structure</h3>
+  <pre>&lt;main&gt;
+  &lt;article aria-label="Original post"&gt;
+    &lt;header&gt;&lt;h1&gt;How do I center a div?&lt;/h1&gt;&lt;/header&gt;
+    &lt;p&gt;I've been trying for hours...&lt;/p&gt;
+  &lt;/article&gt;
+
+  &lt;section aria-labelledby="replies-h"&gt;
+    &lt;h2 id="replies-h"&gt;12 Replies&lt;/h2&gt;
+    &lt;article&gt;
+      &lt;p&gt;Use flexbox: display: flex; justify-content: center; align-items: center;&lt;/p&gt;
+    &lt;/article&gt;
+    &lt;article&gt;
+      &lt;p&gt;Or CSS Grid: display: grid; place-items: center;&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</pre>
+  <p class="label">Forum threads: original post is an article, replies section contains individual reply articles.</p>
+</div>
+
+<div class="example">
+  <h3>32. Portfolio project article</h3>
+  <pre>&lt;article&gt;
+  &lt;header&gt;
+    &lt;h2&gt;E-commerce Platform Redesign&lt;/h2&gt;
+    &lt;p&gt;&lt;small&gt;Role: Lead Front-End Developer · 2025–2026&lt;/small&gt;&lt;/p&gt;
+  &lt;/header&gt;
+  &lt;figure&gt;
+    &lt;img src="project-screenshot.jpg" alt="Dashboard showing sales analytics"&gt;
+    &lt;figcaption&gt;The redesigned analytics dashboard.&lt;/figcaption&gt;
+  &lt;/figure&gt;
+  &lt;section aria-labelledby="challenge-h"&gt;
+    &lt;h3 id="challenge-h"&gt;The Challenge&lt;/h3&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/section&gt;
+  &lt;section aria-labelledby="solution-h"&gt;
+    &lt;h3 id="solution-h"&gt;The Solution&lt;/h3&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/section&gt;
+  &lt;footer&gt;
+    &lt;p&gt;Technologies: React, TypeScript, CSS Grid&lt;/p&gt;
+    &lt;a href="https://github.com/..." target="_blank" rel="noopener"&gt;View on GitHub&lt;/a&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Portfolio case studies are articles with challenge/solution sections and a footer listing technologies used.</p>
+</div>
+
+<div class="example">
+  <h3>33. Section for an accordion FAQ</h3>
+  <div class="output" style="font-size:13px">
+    <section aria-labelledby="faq-h">
+      <h2 id="faq-h" style="margin:0 0 8px">Frequently Asked Questions</h2>
+      <details>
+        <summary>What is semantic HTML?</summary>
+        <p>Semantic HTML uses elements that convey meaning about the content they contain.</p>
+      </details>
+      <details>
+        <summary>Why does it matter?</summary>
+        <p>It improves accessibility, SEO, and code readability.</p>
+      </details>
+    </section>
+  </div>
+  <p class="label">FAQ sections use details/summary for accordion behavior. The section groups all Q&A under a heading.</p>
+</div>
+
+<div class="example">
+  <h3>34. Article card grid in a section</h3>
+  <pre>&lt;section aria-labelledby="projects-h"&gt;
+  &lt;h2 id="projects-h"&gt;Recent Projects&lt;/h2&gt;
+  &lt;div class="card-grid"&gt;
+    &lt;article class="card"&gt;
+      &lt;img src="p1.jpg" alt="Project A thumbnail"&gt;
+      &lt;h3&gt;&lt;a href="/projects/a"&gt;Project A&lt;/a&gt;&lt;/h3&gt;
+    &lt;/article&gt;
+    &lt;article class="card"&gt;
+      &lt;img src="p2.jpg" alt="Project B thumbnail"&gt;
+      &lt;h3&gt;&lt;a href="/projects/b"&gt;Project B&lt;/a&gt;&lt;/h3&gt;
+    &lt;/article&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre>
+  <p class="label">Card grids: section wraps the grid, each card is an article. The heading h2 names the section; h3 names each article.</p>
+</div>
+
+<div class="example">
+  <h3>35. Changelog section with articles</h3>
+  <pre>&lt;section aria-labelledby="changelog-h"&gt;
+  &lt;h2 id="changelog-h"&gt;Changelog&lt;/h2&gt;
+
+  &lt;article&gt;
+    &lt;header&gt;
+      &lt;h3&gt;v2.5.0&lt;/h3&gt;
+      &lt;time datetime="2026-03-01"&gt;March 1, 2026&lt;/time&gt;
+    &lt;/header&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Added dark mode support&lt;/li&gt;
+      &lt;li&gt;Fixed mobile navigation bug&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/article&gt;
+
+  &lt;article&gt;
+    &lt;header&gt;
+      &lt;h3&gt;v2.4.0&lt;/h3&gt;
+      &lt;time datetime="2026-01-15"&gt;January 15, 2026&lt;/time&gt;
+    &lt;/header&gt;
+    &lt;ul&gt;...&lt;/ul&gt;
+  &lt;/article&gt;
+&lt;/section&gt;</pre>
+  <p class="label">Changelog: section groups version entries; each version is an article with a header showing version number and date.</p>
+</div>
+
+<div class="example">
+  <h3>36. Landing page with alternating sections</h3>
+  <pre>&lt;main&gt;
+  &lt;section class="hero" aria-labelledby="hero-h"&gt;
+    &lt;h2 id="hero-h"&gt;Build Faster Websites&lt;/h2&gt;
+    &lt;p&gt;Our platform helps you ship 10x faster.&lt;/p&gt;
+    &lt;a href="/signup" class="cta"&gt;Get Started Free&lt;/a&gt;
+  &lt;/section&gt;
+
+  &lt;section class="social-proof" aria-labelledby="social-h"&gt;
+    &lt;h2 id="social-h"&gt;Trusted by 10,000+ Teams&lt;/h2&gt;
+    &lt;div class="logo-grid"&gt;...&lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section class="features" aria-labelledby="features-h"&gt;
+    &lt;h2 id="features-h"&gt;Everything You Need&lt;/h2&gt;
+    &lt;div class="feature-grid"&gt;
+      &lt;article&gt;&lt;h3&gt;Feature A&lt;/h3&gt;&lt;p&gt;...&lt;/p&gt;&lt;/article&gt;
+      &lt;article&gt;&lt;h3&gt;Feature B&lt;/h3&gt;&lt;p&gt;...&lt;/p&gt;&lt;/article&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</pre>
+  <p class="label">Landing pages: multiple sections in main, each with a heading. Feature grid contains individual feature articles.</p>
+</div>
+
+<div class="example">
+  <h3>37. Search results as articles</h3>
+  <pre>&lt;section aria-live="polite" aria-label="Search results"&gt;
+  &lt;h2&gt;Results for "semantic HTML" (42 found)&lt;/h2&gt;
+
+  &lt;article&gt;
+    &lt;h3&gt;&lt;a href="/post/1"&gt;The Power of Semantic HTML&lt;/a&gt;&lt;/h3&gt;
+    &lt;p&gt;
+      &lt;cite&gt;example.com/post/1&lt;/cite&gt; ·
+      &lt;time datetime="2026-03-24"&gt;March 24, 2026&lt;/time&gt;
+    &lt;/p&gt;
+    &lt;p&gt;... &lt;mark&gt;Semantic HTML&lt;/mark&gt; is the foundation of accessible web...&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/section&gt;</pre>
+  <p class="label">Search results: section with aria-live for dynamic updates, each result as an article with title link, URL, date, and highlighted excerpt.</p>
+</div>
+
+<div class="example">
+  <h3>38. Podcast episode list</h3>
+  <pre>&lt;main&gt;
+  &lt;h1&gt;Web Dev Podcast&lt;/h1&gt;
+  &lt;section aria-labelledby="episodes-h"&gt;
+    &lt;h2 id="episodes-h"&gt;All Episodes&lt;/h2&gt;
+
+    &lt;article&gt;
+      &lt;header&gt;
+        &lt;h3&gt;Ep. 42: Semantic HTML Deep Dive&lt;/h3&gt;
+        &lt;p&gt;
+          &lt;time datetime="PT45M"&gt;45 minutes&lt;/time&gt; ·
+          &lt;time datetime="2026-03-24"&gt;March 24, 2026&lt;/time&gt;
+        &lt;/p&gt;
+      &lt;/header&gt;
+      &lt;p&gt;We explore the full power of HTML semantics...&lt;/p&gt;
+      &lt;audio controls src="ep42.mp3"&gt;&lt;/audio&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</pre>
+  <p class="label">Podcast episodes are perfect articles: self-contained with header metadata, description, and audio player.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Detecting articles programmatically</h3>
+  <pre>&lt;script&gt;
+  const articles = document.querySelectorAll("article");
+  console.log("Articles found:", articles.length);
+
+  articles.forEach((article, i) =&gt; {
+    const heading = article.querySelector("h1, h2, h3, h4, h5, h6");
+    console.log(`Article ${i + 1}:`, heading?.textContent || "(no heading)");
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Programmatic article detection is useful for generating tables of contents, reading time calculations, or analytics.</p>
+</div>
+
+<div class="example">
+  <h3>40. Intersection Observer for article view tracking</h3>
+  <pre>&lt;script&gt;
+  const observer = new IntersectionObserver((entries) =&gt; {
+    entries.forEach(entry =&gt; {
+      if (entry.isIntersecting) {
+        const title = entry.target.querySelector("h2, h3")?.textContent;
+        analytics.track("article_viewed", { title });
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll("article").forEach(a =&gt; observer.observe(a));
+&lt;/script&gt;</pre>
+  <p class="label">IntersectionObserver on articles enables accurate content view tracking — fires when 50% of the article is visible.</p>
+</div>
+
+<div class="example">
+  <h3>41. Article with microformats2</h3>
+  <pre>&lt;article class="h-entry"&gt;
+  &lt;h2 class="p-name"&gt;Article Title&lt;/h2&gt;
+  &lt;p class="p-author h-card"&gt;
+    &lt;a class="u-url p-name" href="/author"&gt;Jane Doe&lt;/a&gt;
+  &lt;/p&gt;
+  &lt;time class="dt-published" datetime="2026-03-24"&gt;March 24, 2026&lt;/time&gt;
+  &lt;div class="e-content"&gt;
+    &lt;p&gt;Article body...&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Microformats2 adds semantic classes (h-entry, p-name, dt-published, e-content) for IndieWeb syndication and parsing.</p>
+</div>
+
+<div class="example">
+  <h3>42. Article reading progress indicator</h3>
+  <pre>&lt;article id="main-article"&gt;
+  ...long content...
+&lt;/article&gt;
+
+&lt;div id="reading-progress" role="progressbar" aria-valuenow="0"
+     aria-valuemin="0" aria-valuemax="100" aria-label="Reading progress"
+     style="position:fixed;top:0;left:0;height:3px;background:#0066cc;width:0"&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const article = document.getElementById("main-article");
+  const bar = document.getElementById("reading-progress");
+  window.addEventListener("scroll", () =&gt; {
+    const rect = article.getBoundingClientRect();
+    const progress = Math.min(100, Math.max(0,
+      ((window.scrollY - article.offsetTop) / (article.offsetHeight - window.innerHeight)) * 100
+    ));
+    bar.style.width = progress + "%";
+    bar.setAttribute("aria-valuenow", Math.round(progress));
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Reading progress bar tied to the article element. Uses role="progressbar" with aria-valuenow for accessibility.</p>
+</div>
+
+<div class="example">
+  <h3>43. Article with estimated reading time</h3>
+  <pre>&lt;article id="timed-article"&gt;
+  &lt;header&gt;
+    &lt;h1&gt;Article Title&lt;/h1&gt;
+    &lt;p&gt;
+      &lt;time datetime="2026-03-24"&gt;March 24, 2026&lt;/time&gt; ·
+      &lt;span id="reading-time"&gt;&lt;/span&gt;
+    &lt;/p&gt;
+  &lt;/header&gt;
+  &lt;div id="article-body"&gt;...content...&lt;/div&gt;
+&lt;/article&gt;
+
+&lt;script&gt;
+  const words = document.getElementById("article-body").textContent
+    .trim().split(/\s+/).length;
+  const minutes = Math.ceil(words / 200);
+  document.getElementById("reading-time").textContent = `${minutes} min read`;
+&lt;/script&gt;</pre>
+  <p class="label">Calculated reading time shown in the article header. Average reading speed is ~200 words/minute.</p>
+</div>
+
+<div class="example">
+  <h3>44. Infinite scroll pattern with articles</h3>
+  <pre>&lt;section aria-label="Article feed" id="feed"&gt;
+  &lt;article&gt;...first article...&lt;/article&gt;
+  &lt;article&gt;...second article...&lt;/article&gt;
+&lt;/section&gt;
+&lt;div aria-live="polite" aria-label="Loading status" id="load-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  const observer = new IntersectionObserver(async ([entry]) =&gt; {
+    if (!entry.isIntersecting) return;
+    document.getElementById("load-status").textContent = "Loading more articles...";
+    const newArticles = await fetchMoreArticles();
+    document.getElementById("feed").append(...newArticles);
+    document.getElementById("load-status").textContent = "";
+  });
+  observer.observe(document.querySelector("#feed article:last-child"));
+&lt;/script&gt;</pre>
+  <p class="label">Infinite scroll: observe the last article; when visible, fetch more. aria-live region announces loading state to AT.</p>
+</div>
+
+<div class="example">
+  <h3>45. Section with CSS scroll snap</h3>
+  <pre>&lt;main style="height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory;"&gt;
+  &lt;section style="height: 100vh; scroll-snap-align: start;" aria-labelledby="s1-h"&gt;
+    &lt;h2 id="s1-h"&gt;Section One&lt;/h2&gt;
+  &lt;/section&gt;
+  &lt;section style="height: 100vh; scroll-snap-align: start;" aria-labelledby="s2-h"&gt;
+    &lt;h2 id="s2-h"&gt;Section Two&lt;/h2&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</pre>
+  <p class="label">Full-page scroll snap with sections: each section snaps into view. scroll-snap-type and scroll-snap-align are the CSS properties.</p>
+</div>
+
+<div class="example">
+  <h3>46. Article with accessibility annotations</h3>
+  <pre>&lt;article
+  role="article"           &lt;!-- Explicit role (redundant but clear) --&gt;
+  aria-labelledby="art-h"  &lt;!-- Names the article for AT --&gt;
+  aria-describedby="art-meta" &lt;!-- Extra context --&gt;
+&gt;
+  &lt;h2 id="art-h"&gt;Article Title&lt;/h2&gt;
+  &lt;p id="art-meta"&gt;
+    By Jane Doe · 5 min read · March 24, 2026
+  &lt;/p&gt;
+  &lt;p&gt;Content...&lt;/p&gt;
+&lt;/article&gt;</pre>
+  <p class="label">For important articles, aria-labelledby and aria-describedby provide richer context in the landmark list.</p>
+</div>
+
+<div class="example">
+  <h3>47. Section visibility toggle with aria-expanded</h3>
+  <pre>&lt;button type="button" aria-expanded="true" aria-controls="advanced-section"&gt;
+  Advanced Options
+&lt;/button&gt;
+&lt;section id="advanced-section" aria-labelledby="adv-h"&gt;
+  &lt;h2 id="adv-h" class="sr-only"&gt;Advanced Options&lt;/h2&gt;
+  ...options...
+&lt;/section&gt;
+
+&lt;script&gt;
+  const btn = document.querySelector("[aria-controls='advanced-section']");
+  btn.addEventListener("click", () =&gt; {
+    const expanded = btn.getAttribute("aria-expanded") === "true";
+    btn.setAttribute("aria-expanded", String(!expanded));
+    document.getElementById("advanced-section").hidden = expanded;
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Collapsible sections: aria-expanded on button, aria-controls linking to section id. Toggle hidden attribute on the section.</p>
+</div>
+
+<div class="example">
+  <h3>48. Data-article attribute for JS targeting</h3>
+  <pre>&lt;article data-post-id="42" data-category="html" data-reading-time="5"&gt;
+  &lt;h2&gt;Article Title&lt;/h2&gt;
+  ...
+&lt;/article&gt;
+
+&lt;script&gt;
+  document.querySelectorAll("article[data-category='html']").forEach(article =&gt; {
+    article.classList.add("highlighted");
+    console.log("Post ID:", article.dataset.postId);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">data-* attributes on articles enable category filtering, JS hooks, and analytics tracking without polluting the DOM.</p>
+</div>
+
+<div class="example">
+  <h3>49. Section with role="feed"</h3>
+  <pre>&lt;section role="feed" aria-busy="false" aria-label="News articles"&gt;
+  &lt;article aria-posinset="1" aria-setsize="42"&gt;
+    &lt;h3&gt;Article One&lt;/h3&gt;...
+  &lt;/article&gt;
+  &lt;article aria-posinset="2" aria-setsize="42"&gt;
+    &lt;h3&gt;Article Two&lt;/h3&gt;...
+  &lt;/article&gt;
+&lt;/section&gt;</pre>
+  <p class="label">role="feed" is for infinite-scroll article streams. aria-posinset/aria-setsize tell AT the position within the total. aria-busy="true" during loading.</p>
+</div>
+
+<div class="example">
+  <h3>50. Complete article + section content model</h3>
+  <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;body&gt;
+  &lt;main&gt;
+    &lt;article&gt;
+      &lt;header&gt;
+        &lt;hgroup&gt;
+          &lt;h1&gt;Complete Guide to HTML Semantics&lt;/h1&gt;
+          &lt;p&gt;Everything you need to know&lt;/p&gt;
+        &lt;/hgroup&gt;
+        &lt;p&gt;By &lt;address&gt;&lt;a href="/about"&gt;Jane Doe&lt;/a&gt;&lt;/address&gt;&lt;/p&gt;
+        &lt;time datetime="2026-03-24"&gt;March 24, 2026&lt;/time&gt;
+      &lt;/header&gt;
+
+      &lt;section aria-labelledby="s-why"&gt;
+        &lt;h2 id="s-why"&gt;Why Semantics Matter&lt;/h2&gt;
+        &lt;p&gt;...&lt;/p&gt;
+      &lt;/section&gt;
+
+      &lt;section aria-labelledby="s-elements"&gt;
+        &lt;h2 id="s-elements"&gt;Key Elements&lt;/h2&gt;
+        &lt;section aria-labelledby="s-article"&gt;
+          &lt;h3 id="s-article"&gt;article&lt;/h3&gt;&lt;p&gt;...&lt;/p&gt;
+        &lt;/section&gt;
+        &lt;section aria-labelledby="s-section"&gt;
+          &lt;h3 id="s-section"&gt;section&lt;/h3&gt;&lt;p&gt;...&lt;/p&gt;
+        &lt;/section&gt;
+      &lt;/section&gt;
+
+      &lt;section aria-labelledby="s-comments"&gt;
+        &lt;h2 id="s-comments"&gt;Comments&lt;/h2&gt;
+        &lt;article&gt;&lt;h3&gt;Alice says:&lt;/h3&gt;&lt;p&gt;Great post!&lt;/p&gt;&lt;/article&gt;
+      &lt;/section&gt;
+
+      &lt;footer&gt;
+        &lt;p&gt;Tags: &lt;a href="#"&gt;HTML&lt;/a&gt;, &lt;a href="#"&gt;Semantics&lt;/a&gt;&lt;/p&gt;
+        &lt;nav aria-label="Article navigation"&gt;
+          &lt;a rel="prev" href="#"&gt;← Previous&lt;/a&gt;
+          &lt;a rel="next" href="#"&gt;Next →&lt;/a&gt;
+        &lt;/nav&gt;
+      &lt;/footer&gt;
+    &lt;/article&gt;
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  <p class="label">Gold-standard article: hgroup, address, time, named sections, nested article (comment), article footer with tags and navigation.</p>
+</div>
+
+</body>
+</html>

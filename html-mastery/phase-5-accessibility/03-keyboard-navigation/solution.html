@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 5.3 — Keyboard Navigation
+  ============================================================================
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 5.3 — Keyboard Navigation</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    .skip-link {
+      position: absolute; top: -40px; left: 0;
+      background: #000; color: #fff; padding: 8px 16px;
+      z-index: 100; text-decoration: none; border-radius: 0 0 4px 0;
+    }
+    .skip-link:focus { top: 0; }
+    nav ul { list-style: none; padding: 0; display: flex; gap: 16px; }
+    #custom-widget { border: 2px solid #ccc; border-radius: 4px; padding: 12px; cursor: pointer; display: inline-block; }
+    #custom-widget:focus { outline: 2px solid steelblue; outline-offset: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- Section 1: Skip navigation link (must be first) -->
+<a id="skip-link" href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Section 2: Site header with navigation -->
+<header id="site-header">
+  <nav>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Section 3: Main content area -->
+<main id="main-content" tabindex="-1">
+  <h1>Main Content</h1>
+  <p>This is the main content area.</p>
+</main>
+
+<!-- Section 4: Custom interactive element -->
+<div id="custom-widget" role="button" tabindex="0" aria-label="Custom interactive widget">Activate me</div>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 5.3 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const skipLink = document.getElementById("skip-link");
+  assert(skipLink !== null, '#skip-link exists');
+  assert(skipLink && skipLink.tagName.toLowerCase() === "a", '#skip-link is an <a> element');
+  assert(skipLink && skipLink.getAttribute("href") === "#main-content", '#skip-link href="#main-content"');
+  assert(skipLink && skipLink.classList.contains("skip-link"), '#skip-link has class "skip-link"');
+
+  const siteHeader = document.getElementById("site-header");
+  assert(siteHeader !== null, '#site-header exists');
+  const navLinks = siteHeader && siteHeader.querySelectorAll("a");
+  assert(navLinks && navLinks.length >= 3, 'Navigation contains at least 3 <a> links');
+
+  const mainContent = document.getElementById("main-content");
+  assert(mainContent !== null, '#main-content exists');
+  assert(mainContent && mainContent.getAttribute("tabindex") === "-1", '#main-content has tabindex="-1"');
+  assert(mainContent && mainContent.querySelector("h1") !== null, '#main-content contains an <h1>');
+
+  const widget = document.getElementById("custom-widget");
+  assert(widget !== null, '#custom-widget exists');
+  assert(widget && widget.getAttribute("role") === "button", '#custom-widget has role="button"');
+  assert(widget && widget.getAttribute("tabindex") === "0", '#custom-widget has tabindex="0"');
+  assert(widget && (widget.getAttribute("aria-label") || "").trim() !== "", '#custom-widget has a non-empty aria-label');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 5.3 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

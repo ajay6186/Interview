@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 2.3 — Navigation
+  ============================================================================
+  Complete solution with all TODOs filled in correctly.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 2.3 — Navigation</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; }
+    nav ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 16px; }
+    .site-header { background: #2c3e50; color: white; padding: 12px 16px; }
+    .site-header a { color: white; text-decoration: none; }
+    .breadcrumb { background: #f5f5f5; padding: 8px 16px; font-size: 14px; }
+    .breadcrumb ol { display: flex; gap: 4px; list-style: none; padding: 0; margin: 0; }
+    .breadcrumb li + li::before { content: '/ '; color: #999; }
+    .pagination { padding: 16px; }
+    .pagination a, .pagination span { padding: 6px 10px; border: 1px solid #ddd; margin: 0 2px; text-decoration: none; }
+    [aria-current="page"] { font-weight: bold; color: #0066cc; }
+  </style>
+</head>
+<body>
+
+<!-- Section 1: Main Navigation -->
+<header class="site-header">
+  <nav aria-label="Main navigation">
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Products</a></li>
+      <li><a href="#">Blog</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Section 2: Breadcrumb Navigation -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Products</a></li>
+    <li><a href="#" aria-current="page">Widget Pro</a></li>
+  </ol>
+</nav>
+
+<!-- Section 3: Page Content -->
+<main id="main-content">
+  <h1>Widget Pro</h1>
+  <p>This is the product detail page for Widget Pro.</p>
+</main>
+
+<!-- Section 4: Pagination Navigation -->
+<nav aria-label="Pagination">
+  <a href="?page=1" aria-current="page">1</a>
+  <a href="?page=2">2</a>
+  <a href="?page=3">3</a>
+  <a href="?page=2" rel="next">Next →</a>
+</nav>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 2.3 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  assert(document.querySelectorAll("nav").length >= 2, "At least 2 <nav> elements exist on the page");
+  const mainNav = document.querySelector('nav[aria-label="Main navigation"]');
+  assert(mainNav !== null, '<nav aria-label="Main navigation"> exists');
+  assert(mainNav !== null && mainNav.querySelectorAll("a").length >= 3, "Main nav contains at least 3 links");
+  const breadcrumb = document.querySelector('nav[aria-label="Breadcrumb"]');
+  assert(breadcrumb !== null, '<nav aria-label="Breadcrumb"> exists');
+  assert(breadcrumb !== null && breadcrumb.querySelector("ol") !== null, "Breadcrumb nav uses an <ol>");
+  const currentItem = document.querySelector('nav[aria-label="Breadcrumb"] [aria-current="page"]');
+  assert(currentItem !== null, 'aria-current="page" exists in the breadcrumb nav');
+  const paginationNav = document.querySelector('nav[aria-label="Pagination"]');
+  assert(paginationNav !== null, '<nav aria-label="Pagination"> exists');
+  const currentPage = paginationNav ? paginationNav.querySelector('[aria-current="page"]') : null;
+  assert(currentPage !== null, 'aria-current="page" exists in the pagination nav');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 2.3 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

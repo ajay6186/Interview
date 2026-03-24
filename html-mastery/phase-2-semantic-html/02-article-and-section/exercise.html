@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 2.2 — Article & Section
+  ============================================================================
+  Build a blog listing page using <article> for self-contained posts and
+  <section> for thematic groupings. Understand when to use each and how to
+  maintain a correct heading hierarchy.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 2.2 — Article &amp; Section</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 16px; }
+    article { border: 1px solid #ddd; padding: 16px; margin: 12px 0; border-radius: 4px; }
+    section { margin: 24px 0; }
+  </style>
+</head>
+<body>
+
+<h1>Web Dev Weekly</h1>
+
+<!-- =========================================================
+     Section 1: Featured Section with Articles
+     ========================================================= -->
+
+<!-- TODO: Add a <section> element with id="featured" and aria-labelledby="featured-heading".
+     Inside it:
+     - Add an <h2 id="featured-heading"> with text "Featured Posts"
+     - Add at least one <article> containing:
+         * An <h3> with any post title
+         * A <p> with any post excerpt
+         * A <footer> containing a <time datetime="2026-03-24"> showing the date
+-->
+
+<!-- =========================================================
+     Section 2: Recent Posts Section
+     ========================================================= -->
+
+<!-- TODO: Add a second <section> element with id="recent" and aria-labelledby="recent-heading".
+     Inside it:
+     - Add an <h2 id="recent-heading"> with text "Recent Posts"
+     - Add at least 2 <article> elements, each with an <h3> heading and a <p> of content
+-->
+
+<!-- =========================================================
+     Section 3: Single Full Article
+     ========================================================= -->
+
+<!-- TODO: Add a standalone <article> (not inside a section) with:
+     - A <header> containing an <h2> with a post title
+     - A <p> with the post body text
+     - A <footer> containing an <address> with the author's name
+-->
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 2.2 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // 1. section exists
+  assert(document.querySelector("section") !== null, "<section> element exists");
+
+  // 2. section with aria-labelledby exists
+  assert(document.querySelector("section[aria-labelledby]") !== null,
+    '<section aria-labelledby="..."> exists');
+
+  // 3. at least 3 articles exist
+  assert(document.querySelectorAll("article").length >= 3,
+    "At least 3 <article> elements exist on the page");
+
+  // 4. articles have headings
+  const articles = document.querySelectorAll("article");
+  let articlesHaveHeadings = Array.from(articles).every(a =>
+    a.querySelector("h1, h2, h3, h4, h5, h6") !== null
+  );
+  assert(articlesHaveHeadings, "Every <article> contains a heading element");
+
+  // 5. time with datetime exists inside an article
+  assert(document.querySelector("article time[datetime]") !== null,
+    "<time datetime> exists inside an <article>");
+
+  // 6. article header exists
+  assert(document.querySelector("article header") !== null,
+    "<header> exists inside an <article>");
+
+  // 7. article footer exists
+  assert(document.querySelector("article footer") !== null,
+    "<footer> exists inside an <article>");
+
+  // 8. address element exists
+  assert(document.querySelector("address") !== null, "<address> element exists");
+
+  // Summary
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 2.2 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

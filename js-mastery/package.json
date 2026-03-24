@@ -1,0 +1,17 @@
+{
+  "name": "js-mastery",
+  "version": "1.0.0",
+  "description": "JavaScript Mastery — 6-Phase Exercise Project (Beginner to Expert)",
+  "main": "index.js",
+  "scripts": {
+    "run": "node",
+    "exercise": "node",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

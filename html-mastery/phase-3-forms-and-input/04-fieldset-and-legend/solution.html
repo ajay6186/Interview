@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 3.4 — Fieldset and Legend
+  ============================================================================
+  Complete solution with all TODOs filled in correctly.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 3.4 — Fieldset and Legend</title>
+  <style>
+    body { font-family: sans-serif; max-width: 640px; margin: 0 auto; padding: 16px; }
+    fieldset { border: 1px solid #ccc; border-radius: 4px; padding: 12px 16px; margin-bottom: 16px; }
+    legend { font-weight: bold; padding: 0 8px; }
+    label { display: block; margin: 6px 0; font-size: 14px; }
+    input[type="text"], input[type="email"], input[type="tel"] {
+      display: block; width: 100%; box-sizing: border-box;
+      padding: 6px 8px; margin-top: 2px; border: 1px solid #ccc; border-radius: 3px;
+    }
+    button { padding: 8px 20px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<h1>Fieldset and Legend Exercise</h1>
+
+<form id="fieldset-form" action="#" method="post">
+
+  <fieldset>
+    <legend>Personal Information</legend>
+    <label for="first-name">First Name
+      <input type="text" id="first-name" name="first-name" required>
+    </label>
+    <label for="last-name">Last Name
+      <input type="text" id="last-name" name="last-name" required>
+    </label>
+    <label for="contact-email">Email
+      <input type="email" id="contact-email" name="email">
+    </label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Preferred Contact Method</legend>
+    <label><input type="radio" name="contact" value="email"> Email</label>
+    <label><input type="radio" name="contact" value="phone"> Phone</label>
+    <label><input type="radio" name="contact" value="mail"> Mail</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Areas of Interest</legend>
+    <label><input type="checkbox" name="interests" value="technology"> Technology</label>
+    <label><input type="checkbox" name="interests" value="design"> Design</label>
+    <label><input type="checkbox" name="interests" value="business"> Business</label>
+    <label><input type="checkbox" name="interests" value="science"> Science</label>
+  </fieldset>
+
+  <fieldset disabled>
+    <legend>Billing Address (not applicable)</legend>
+    <label for="billing-street">Street
+      <input type="text" id="billing-street" name="billing-street" placeholder="Disabled">
+    </label>
+  </fieldset>
+
+  <button type="submit">Submit</button>
+</form>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 3.4 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const fieldsets = document.querySelectorAll("fieldset");
+  assert(fieldsets.length >= 3, 'At least 3 <fieldset> elements exist');
+
+  const legends = document.querySelectorAll("fieldset legend");
+  assert(legends.length >= 3, 'At least 3 <legend> elements inside fieldsets');
+
+  const firstName = document.getElementById("first-name");
+  assert(firstName !== null, '#first-name input exists');
+  const lastName = document.getElementById("last-name");
+  assert(lastName !== null, '#last-name input exists');
+
+  const radios = document.querySelectorAll('input[type="radio"][name="contact"]');
+  assert(radios.length >= 3, 'At least 3 radio inputs with name="contact"');
+
+  const checks = document.querySelectorAll('input[type="checkbox"][name="interests"]');
+  assert(checks.length >= 3, 'At least 3 checkbox inputs with name="interests"');
+
+  const disabledFieldset = document.querySelector("fieldset[disabled]");
+  assert(disabledFieldset !== null, 'A <fieldset disabled> element exists');
+  const disabledInput = disabledFieldset ? disabledFieldset.querySelector("input") : null;
+  assert(disabledInput !== null, 'Disabled fieldset contains an input');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 3.4 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

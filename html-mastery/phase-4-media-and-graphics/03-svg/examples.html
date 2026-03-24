@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 4.3 — Inline SVG  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 4.3 — Inline SVG</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 4.3 — Inline SVG</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Minimal SVG</h3>
+  <pre>&lt;svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"&gt;
+  &lt;rect width="100" height="100" fill="steelblue"&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">Minimum inline SVG: xmlns, width, height, and a shape.</p>
+</div>
+
+<div class="example">
+  <h3>2. viewBox attribute</h3>
+  <pre>&lt;svg viewBox="0 0 100 100" width="200" height="200"&gt;
+  &lt;circle cx="50" cy="50" r="50" fill="coral"&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">viewBox="minX minY width height" defines the coordinate system. width/height are CSS display size.</p>
+</div>
+
+<div class="example">
+  <h3>3. rect element</h3>
+  <pre>&lt;rect x="10" y="10" width="80" height="60"
+      fill="steelblue" stroke="navy" stroke-width="2" rx="8"&gt;</pre>
+  <p class="label">rx/ry add rounded corners. fill and stroke set color; stroke-width sets border thickness.</p>
+</div>
+
+<div class="example">
+  <h3>4. circle element</h3>
+  <pre>&lt;circle cx="50" cy="50" r="40" fill="coral" stroke="red" stroke-width="2"&gt;</pre>
+  <p class="label">cx/cy = center, r = radius. Same fill/stroke attributes as rect.</p>
+</div>
+
+<div class="example">
+  <h3>5. ellipse element</h3>
+  <pre>&lt;ellipse cx="100" cy="50" rx="90" ry="40" fill="gold"&gt;</pre>
+  <p class="label">Like circle but with separate x-radius (rx) and y-radius (ry).</p>
+</div>
+
+<div class="example">
+  <h3>6. line element</h3>
+  <pre>&lt;line x1="0" y1="0" x2="200" y2="100" stroke="black" stroke-width="3"&gt;</pre>
+  <p class="label">Draws a straight line from (x1,y1) to (x2,y2). stroke is required — fill does nothing for lines.</p>
+</div>
+
+<div class="example">
+  <h3>7. polyline element</h3>
+  <pre>&lt;polyline points="10,80 50,20 90,60 130,10 170,70"
+          fill="none" stroke="steelblue" stroke-width="3"&gt;</pre>
+  <p class="label">A series of connected line segments. fill="none" is common for charts.</p>
+</div>
+
+<div class="example">
+  <h3>8. polygon element</h3>
+  <pre>&lt;polygon points="100,10 190,90 10,90"
+         fill="gold" stroke="orange" stroke-width="2"&gt;</pre>
+  <p class="label">Like polyline but the last point connects back to the first, forming a closed shape.</p>
+</div>
+
+<div class="example">
+  <h3>9. path element — basics</h3>
+  <pre>&lt;path d="M 10 10 L 90 10 L 90 90 L 10 90 Z" fill="none" stroke="blue"&gt;</pre>
+  <p class="label">M=moveto, L=lineto, Z=closepath. Path is the most powerful SVG element.</p>
+</div>
+
+<div class="example">
+  <h3>10. path curves — Q and C</h3>
+  <pre>&lt;path d="M 10 80 Q 100 10 190 80" fill="none" stroke="purple" stroke-width="3"&gt;
+&lt;path d="M 10 80 C 40 10 160 10 190 80" fill="none" stroke="red" stroke-width="3"&gt;</pre>
+  <p class="label">Q = quadratic Bezier (1 control point). C = cubic Bezier (2 control points).</p>
+</div>
+
+<div class="example">
+  <h3>11. text element</h3>
+  <pre>&lt;text x="10" y="40" font-size="24" fill="navy" font-family="sans-serif"&gt;Hello SVG&lt;/text&gt;</pre>
+  <p class="label">x/y position the baseline. Text in SVG is accessible — screen readers can read it.</p>
+</div>
+
+<div class="example">
+  <h3>12. fill and stroke colors</h3>
+  <pre>&lt;rect fill="steelblue" stroke="navy" stroke-width="4"&gt;
+&lt;rect fill="#FF6B6B" stroke="rgba(0,0,0,0.3)" stroke-width="2"&gt;
+&lt;circle fill="transparent" stroke="currentColor" stroke-width="2"&gt;</pre>
+  <p class="label">Accepts any CSS color value. currentColor inherits from CSS color property.</p>
+</div>
+
+<div class="example">
+  <h3>13. SVG as external file</h3>
+  <pre>&lt;img src="icon.svg" alt="Settings icon" width="24" height="24"&gt;
+&lt;!-- vs inline for styling: --&gt;
+&lt;svg&gt;...shapes...&lt;/svg&gt;</pre>
+  <p class="label">External SVG: simpler HTML, cached, can't be styled with CSS. Inline: fully styleable, no extra request.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. SVG groups with transform</h3>
+  <pre>&lt;g transform="translate(50, 50)"&gt;
+  &lt;circle cx="0" cy="0" r="30" fill="coral"&gt;
+  &lt;text x="0" y="5" text-anchor="middle" fill="white"&gt;Hi&lt;/text&gt;
+&lt;/g&gt;</pre>
+  <p class="label">g groups elements and applies shared transforms/styles. translate(x,y) moves the origin.</p>
+</div>
+
+<div class="example">
+  <h3>15. rotate and scale transforms</h3>
+  <pre>&lt;rect transform="rotate(45 50 50)" x="30" y="30" width="40" height="40" fill="gold"&gt;
+&lt;rect transform="scale(1.5)" x="10" y="10" width="40" height="40" fill="coral"&gt;</pre>
+  <p class="label">rotate(degrees cx cy) rotates around a center point. scale(factor) scales from origin.</p>
+</div>
+
+<div class="example">
+  <h3>16. defs and use</h3>
+  <pre>&lt;defs&gt;
+  &lt;circle id="dot" r="5" fill="steelblue"&gt;
+&lt;/defs&gt;
+&lt;use href="#dot" x="20" y="20"&gt;
+&lt;use href="#dot" x="50" y="50"&gt;
+&lt;use href="#dot" x="80" y="20"&gt;</pre>
+  <p class="label">defs stores reusable shapes; use instantiates them. Efficient for repeated elements.</p>
+</div>
+
+<div class="example">
+  <h3>17. linearGradient</h3>
+  <pre>&lt;defs&gt;
+  &lt;linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%"&gt;
+    &lt;stop offset="0%" stop-color="steelblue"&gt;
+    &lt;stop offset="100%" stop-color="coral"&gt;
+  &lt;/linearGradient&gt;
+&lt;/defs&gt;
+&lt;rect width="200" height="100" fill="url(#grad)"&gt;</pre>
+  <p class="label">linearGradient with stop elements. Reference with fill="url(#id)".</p>
+</div>
+
+<div class="example">
+  <h3>18. radialGradient</h3>
+  <pre>&lt;defs&gt;
+  &lt;radialGradient id="rgrad" cx="50%" cy="50%" r="50%"&gt;
+    &lt;stop offset="0%" stop-color="white"&gt;
+    &lt;stop offset="100%" stop-color="steelblue"&gt;
+  &lt;/radialGradient&gt;
+&lt;/defs&gt;
+&lt;circle cx="100" cy="100" r="100" fill="url(#rgrad)"&gt;</pre>
+  <p class="label">Radial gradient emanating from center. Creates sphere-like effects.</p>
+</div>
+
+<div class="example">
+  <h3>19. clipPath</h3>
+  <pre>&lt;defs&gt;
+  &lt;clipPath id="circle-clip"&gt;
+    &lt;circle cx="50" cy="50" r="50"&gt;
+  &lt;/clipPath&gt;
+&lt;/defs&gt;
+&lt;image href="photo.jpg" width="100" height="100" clip-path="url(#circle-clip)"&gt;</pre>
+  <p class="label">clipPath masks an element to a shape — circular avatar, for example.</p>
+</div>
+
+<div class="example">
+  <h3>20. filter — blur</h3>
+  <pre>&lt;defs&gt;
+  &lt;filter id="blur"&gt;
+    &lt;feGaussianBlur in="SourceGraphic" stdDeviation="5"&gt;
+  &lt;/filter&gt;
+&lt;/defs&gt;
+&lt;rect width="100" height="100" fill="steelblue" filter="url(#blur)"&gt;</pre>
+  <p class="label">SVG filters apply effects: blur, drop-shadow, color matrix, displacement, etc.</p>
+</div>
+
+<div class="example">
+  <h3>21. filter — drop shadow</h3>
+  <pre>&lt;defs&gt;
+  &lt;filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"&gt;
+    &lt;feDropShadow dx="4" dy="4" stdDeviation="3" flood-color="rgba(0,0,0,0.4)"&gt;
+  &lt;/filter&gt;
+&lt;/defs&gt;
+&lt;rect width="80" height="60" fill="white" filter="url(#shadow)"&gt;</pre>
+  <p class="label">feDropShadow creates a realistic drop shadow effect on any SVG element.</p>
+</div>
+
+<div class="example">
+  <h3>22. SVG CSS styling</h3>
+  <pre>&lt;style&gt;
+.icon { fill: currentColor; transition: fill 0.2s; }
+.icon:hover { fill: coral; }
+&lt;/style&gt;
+&lt;svg class="icon" viewBox="0 0 24 24" width="24" height="24"&gt;
+  &lt;path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">Inline SVG can be styled with CSS. currentColor inherits the parent element's color.</p>
+</div>
+
+<div class="example">
+  <h3>23. SVG CSS animations</h3>
+  <pre>&lt;style&gt;
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { transform-origin: 50% 50%; animation: spin 1s linear infinite; }
+&lt;/style&gt;
+&lt;circle class="spinner" cx="50" cy="50" r="40" fill="none"
+        stroke="steelblue" stroke-width="4" stroke-dasharray="60 40"&gt;</pre>
+  <p class="label">CSS animations work on SVG elements. stroke-dasharray creates a partial arc for spinners.</p>
+</div>
+
+<div class="example">
+  <h3>24. stroke-dasharray and stroke-dashoffset</h3>
+  <pre>&lt;circle cx="60" cy="60" r="50"
+        fill="none" stroke="steelblue" stroke-width="8"
+        stroke-dasharray="314"
+        stroke-dashoffset="78"&gt;</pre>
+  <p class="label">dasharray sets dash pattern; dashoffset shifts it. Circumference = 2πr ≈ 314 for r=50. Used for progress rings.</p>
+</div>
+
+<div class="example">
+  <h3>25. textPath — text on a curve</h3>
+  <pre>&lt;defs&gt;
+  &lt;path id="curve" d="M 10,80 Q 100,10 190,80"&gt;
+&lt;/defs&gt;
+&lt;text font-size="16" fill="navy"&gt;
+  &lt;textPath href="#curve"&gt;Text flowing on a curved path&lt;/textPath&gt;
+&lt;/text&gt;</pre>
+  <p class="label">textPath renders text along any SVG path. Useful for arc labels in charts.</p>
+</div>
+
+<div class="example">
+  <h3>26. SVG accessibility with title and desc</h3>
+  <pre>&lt;svg role="img" aria-labelledby="svg-title svg-desc" viewBox="0 0 100 100"&gt;
+  &lt;title id="svg-title"&gt;Revenue chart&lt;/title&gt;
+  &lt;desc id="svg-desc"&gt;Bar chart showing $1.2M revenue in Q4 2025&lt;/desc&gt;
+  &lt;!-- shapes --&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">title and desc make SVG accessible. aria-labelledby references them for screen readers.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Bar chart</h3>
+  <pre>&lt;svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;!-- Bars --&gt;
+  &lt;rect x="20" y="80" width="40" height="100" fill="steelblue"&gt;
+  &lt;rect x="80" y="40" width="40" height="140" fill="steelblue"&gt;
+  &lt;rect x="140" y="60" width="40" height="120" fill="steelblue"&gt;
+  &lt;rect x="200" y="20" width="40" height="160" fill="coral"&gt;
+  &lt;!-- Labels --&gt;
+  &lt;text x="40" y="195" text-anchor="middle" font-size="12"&gt;Q1&lt;/text&gt;
+  &lt;text x="100" y="195" text-anchor="middle" font-size="12"&gt;Q2&lt;/text&gt;
+  &lt;text x="160" y="195" text-anchor="middle" font-size="12"&gt;Q3&lt;/text&gt;
+  &lt;text x="220" y="195" text-anchor="middle" font-size="12"&gt;Q4&lt;/text&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">Simple inline bar chart. SVG is ideal for data visualization — scales to any resolution.</p>
+</div>
+
+<div class="example">
+  <h3>28. Donut chart</h3>
+  <pre>&lt;svg viewBox="0 0 100 100"&gt;
+  &lt;circle cx="50" cy="50" r="40" fill="none"
+    stroke="#eee" stroke-width="20"&gt;
+  &lt;circle cx="50" cy="50" r="40" fill="none"
+    stroke="steelblue" stroke-width="20"
+    stroke-dasharray="75 125"
+    transform="rotate(-90 50 50)"&gt;
+  &lt;text x="50" y="55" text-anchor="middle" font-size="18" fill="navy"&gt;75%&lt;/text&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">Donut chart using stroke-dasharray on a circle. stroke-dasharray="percent total-minus-percent".</p>
+</div>
+
+<div class="example">
+  <h3>29. Icon sprite</h3>
+  <pre>&lt;!-- In body, hidden --&gt;
+&lt;svg style="display:none"&gt;
+  &lt;symbol id="icon-home" viewBox="0 0 24 24"&gt;
+    &lt;path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"&gt;
+  &lt;/symbol&gt;
+  &lt;symbol id="icon-user" viewBox="0 0 24 24"&gt;
+    &lt;path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12z"&gt;
+  &lt;/symbol&gt;
+&lt;/svg&gt;
+&lt;!-- Usage anywhere --&gt;
+&lt;svg width="24" height="24"&gt;&lt;use href="#icon-home"&gt;&lt;/svg&gt;</pre>
+  <p class="label">SVG sprite: define symbols once, reference with &lt;use&gt;. Reduces HTTP requests.</p>
+</div>
+
+<div class="example">
+  <h3>30. Animated progress ring</h3>
+  <pre>&lt;svg viewBox="0 0 100 100" width="100" height="100"&gt;
+  &lt;circle cx="50" cy="50" r="45" fill="none" stroke="#eee" stroke-width="8"&gt;
+  &lt;circle id="ring" cx="50" cy="50" r="45" fill="none"
+    stroke="steelblue" stroke-width="8"
+    stroke-dasharray="282" stroke-dashoffset="282"
+    stroke-linecap="round"
+    transform="rotate(-90 50 50)"&gt;
+&lt;/svg&gt;
+&lt;script&gt;
+// Animate to 70%: offset = 282 - (282 * 0.7) = 84.6
+document.getElementById('ring').style.strokeDashoffset = 84.6;
+&lt;/script&gt;</pre>
+  <p class="label">Animated progress ring: 2πr = 283. Offset of 0 = full ring; offset = circumference = empty.</p>
+</div>
+
+<div class="example">
+  <h3>31. Morphing path with CSS animation</h3>
+  <pre>&lt;style&gt;
+@keyframes morph {
+  0%   { d: path("M10,50 Q50,10 90,50 Q50,90 10,50"); }
+  50%  { d: path("M10,50 Q50,30 90,50 Q50,70 10,50"); }
+  100% { d: path("M10,50 Q50,10 90,50 Q50,90 10,50"); }
+}
+.blob { animation: morph 3s ease-in-out infinite; }
+&lt;/style&gt;
+&lt;path class="blob" fill="coral"&gt;</pre>
+  <p class="label">CSS d property animation for morphing SVG paths (Chrome/Edge). Paths must have same number of commands.</p>
+</div>
+
+<div class="example">
+  <h3>32. SVG pattern fill</h3>
+  <pre>&lt;defs&gt;
+  &lt;pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"&gt;
+    &lt;circle cx="5" cy="5" r="2" fill="steelblue"&gt;
+  &lt;/pattern&gt;
+&lt;/defs&gt;
+&lt;rect width="200" height="100" fill="url(#dots)"&gt;</pre>
+  <p class="label">pattern tiles a shape across an area. patternUnits controls the coordinate system.</p>
+</div>
+
+<div class="example">
+  <h3>33. foreignObject for HTML inside SVG</h3>
+  <pre>&lt;svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;rect width="300" height="100" fill="#f0f0f0" rx="8"&gt;
+  &lt;foreignObject x="10" y="10" width="280" height="80"&gt;
+    &lt;div xmlns="http://www.w3.org/1999/xhtml"&gt;
+      &lt;p&gt;This is &lt;strong&gt;HTML&lt;/strong&gt; inside SVG!&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/foreignObject&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">foreignObject embeds arbitrary HTML (xHTML) inside SVG. Useful for wrapping text.</p>
+</div>
+
+<div class="example">
+  <h3>34. Line chart</h3>
+  <pre>&lt;svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;polyline
+    points="0,180 60,120 120,140 180,60 240,80 300,20"
+    fill="none" stroke="steelblue" stroke-width="2"&gt;
+  &lt;polyline
+    points="0,180 60,120 120,140 180,60 240,80 300,20"
+    fill="rgba(70,130,180,0.1)" stroke="none"&gt;
+  &lt;!-- close path for fill --&gt;
+  &lt;polygon
+    points="0,180 60,120 120,140 180,60 240,80 300,20 300,200 0,200"
+    fill="rgba(70,130,180,0.1)"&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">Area chart: polyline for the line, polygon for the filled area underneath.</p>
+</div>
+
+<div class="example">
+  <h3>35. SVG with SMIL animation (deprecated but works)</h3>
+  <pre>&lt;circle cx="50" cy="50" r="40" fill="coral"&gt;
+  &lt;animate attributeName="r" from="40" to="10" dur="1s"
+           begin="click" fill="freeze"&gt;
+  &lt;animate attributeName="fill" from="coral" to="steelblue" dur="1s"
+           begin="click" fill="freeze"&gt;
+&lt;/circle&gt;</pre>
+  <p class="label">SMIL animate elements trigger on events. fill="freeze" holds the end state. Prefer CSS/JS animations.</p>
+</div>
+
+<div class="example">
+  <h3>36. Marker arrows on paths</h3>
+  <pre>&lt;defs&gt;
+  &lt;marker id="arrow" markerWidth="10" markerHeight="7"
+    refX="9" refY="3.5" orient="auto"&gt;
+    &lt;polygon points="0 0, 10 3.5, 0 7" fill="black"&gt;
+  &lt;/marker&gt;
+&lt;/defs&gt;
+&lt;line x1="10" y1="50" x2="180" y2="50"
+      stroke="black" stroke-width="2"
+      marker-end="url(#arrow)"&gt;</pre>
+  <p class="label">markers attach shapes to path endpoints. orient="auto" rotates the marker to match path direction.</p>
+</div>
+
+<div class="example">
+  <h3>37. Clipping to a custom shape</h3>
+  <pre>&lt;defs&gt;
+  &lt;clipPath id="star-clip"&gt;
+    &lt;polygon points="100,10 40,198 190,78 10,78 160,198"&gt;
+  &lt;/clipPath&gt;
+&lt;/defs&gt;
+&lt;image href="photo.jpg" width="200" height="200" clip-path="url(#star-clip)"&gt;</pre>
+  <p class="label">Clip an image to a star shape using clipPath with any SVG shape inside.</p>
+</div>
+
+<div class="example">
+  <h3>38. Nested SVG for composition</h3>
+  <pre>&lt;svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;rect width="400" height="300" fill="#f8f8f8"&gt;
+  &lt;svg x="20" y="20" width="160" height="120" viewBox="0 0 100 100"&gt;
+    &lt;circle cx="50" cy="50" r="50" fill="coral"&gt;
+  &lt;/svg&gt;
+  &lt;svg x="200" y="20" width="160" height="120" viewBox="0 0 100 100"&gt;
+    &lt;rect width="100" height="100" fill="steelblue" rx="10"&gt;
+  &lt;/svg&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">Nested SVG elements have their own viewBox and coordinate system — useful for layout.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Programmatic SVG creation</h3>
+  <pre>const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+svg.setAttribute('viewBox', '0 0 100 100');
+const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+circle.setAttribute('cx', '50');
+circle.setAttribute('cy', '50');
+circle.setAttribute('r', '40');
+circle.setAttribute('fill', 'coral');
+svg.appendChild(circle);
+document.body.appendChild(svg);</pre>
+  <p class="label">SVG elements must be created with createElementNS using the SVG namespace URI.</p>
+</div>
+
+<div class="example">
+  <h3>40. getBBox for element bounds</h3>
+  <pre>const text = document.querySelector('text');
+const box = text.getBBox();
+// box: { x, y, width, height }
+// Draw a bounding rectangle around it:
+const rect = document.createElementNS(svgNS, 'rect');
+rect.setAttribute('x', box.x - 4);
+rect.setAttribute('y', box.y - 4);
+rect.setAttribute('width', box.width + 8);
+rect.setAttribute('height', box.height + 8);</pre>
+  <p class="label">getBBox() returns the bounding box of any SVG element in the SVG coordinate system.</p>
+</div>
+
+<div class="example">
+  <h3>41. getPointAtLength for path animation</h3>
+  <pre>const path = document.querySelector('path');
+const length = path.getTotalLength();
+let t = 0;
+function animate() {
+  const pt = path.getPointAtLength(t % length);
+  dot.setAttribute('cx', pt.x);
+  dot.setAttribute('cy', pt.y);
+  t += 2;
+  requestAnimationFrame(animate);
+}
+animate();</pre>
+  <p class="label">Animate an element along an arbitrary SVG path using getPointAtLength.</p>
+</div>
+
+<div class="example">
+  <h3>42. SVG to PNG with canvas</h3>
+  <pre>const svg = document.querySelector('svg');
+const xml = new XMLSerializer().serializeToString(svg);
+const img = new Image();
+img.onload = () =&gt; {
+  canvas.getContext('2d').drawImage(img, 0, 0);
+  link.href = canvas.toDataURL('image/png');
+};
+img.src = 'data:image/svg+xml;base64,' + btoa(xml);</pre>
+  <p class="label">Convert inline SVG to PNG by serializing to XML, drawing on canvas, then exporting.</p>
+</div>
+
+<div class="example">
+  <h3>43. feColorMatrix filter</h3>
+  <pre>&lt;defs&gt;
+  &lt;filter id="grayscale"&gt;
+    &lt;feColorMatrix type="saturate" values="0"&gt;
+  &lt;/filter&gt;
+  &lt;filter id="sepia"&gt;
+    &lt;feColorMatrix type="matrix"
+      values="0.393 0.769 0.189 0 0
+              0.349 0.686 0.168 0 0
+              0.272 0.534 0.131 0 0
+              0 0 0 1 0"&gt;
+  &lt;/filter&gt;
+&lt;/defs&gt;</pre>
+  <p class="label">feColorMatrix applies grayscale, sepia, and custom color transformations.</p>
+</div>
+
+<div class="example">
+  <h3>44. feTurbulence for texture</h3>
+  <pre>&lt;defs&gt;
+  &lt;filter id="noise"&gt;
+    &lt;feTurbulence type="fractalNoise" baseFrequency="0.9"
+                  numOctaves="4" result="noise"&gt;
+    &lt;feColorMatrix type="saturate" values="0"&gt;
+  &lt;/filter&gt;
+&lt;/defs&gt;
+&lt;rect width="200" height="200" filter="url(#noise)"&gt;</pre>
+  <p class="label">feTurbulence generates procedural noise textures — useful for paper, cloud, or marble effects.</p>
+</div>
+
+<div class="example">
+  <h3>45. feDisplacementMap warping</h3>
+  <pre>&lt;defs&gt;
+  &lt;filter id="wave"&gt;
+    &lt;feTurbulence type="turbulence" baseFrequency="0.05" result="noise"&gt;
+    &lt;feDisplacementMap in="SourceGraphic" in2="noise" scale="30"
+                       xChannelSelector="R" yChannelSelector="G"&gt;
+  &lt;/filter&gt;
+&lt;/defs&gt;
+&lt;text filter="url(#wave)" font-size="40"&gt;Wavy Text&lt;/text&gt;</pre>
+  <p class="label">feDisplacementMap uses a noise map to warp pixels — creates wave, ripple, and heat-haze effects.</p>
+</div>
+
+<div class="example">
+  <h3>46. CSS variable theming of SVG</h3>
+  <pre>&lt;style&gt;
+:root { --brand: steelblue; }
+.icon { fill: var(--brand); }
+&lt;/style&gt;
+&lt;svg class="icon" viewBox="0 0 24 24"&gt;
+  &lt;path d="M12 2L2 7l10 5 10-5-10-5z"&gt;
+&lt;/svg&gt;
+&lt;script&gt;
+document.documentElement.style.setProperty('--brand', 'coral');
+&lt;/script&gt;</pre>
+  <p class="label">CSS custom properties work inside inline SVG — change themes with one variable.</p>
+</div>
+
+<div class="example">
+  <h3>47. SVG with ARIA roles for charts</h3>
+  <pre>&lt;svg role="img" aria-label="Monthly sales chart"
+     viewBox="0 0 400 300"&gt;
+  &lt;title&gt;Monthly Sales 2025&lt;/title&gt;
+  &lt;desc&gt;Bar chart showing sales from Jan to Dec 2025&lt;/desc&gt;
+  &lt;g role="list" aria-label="Monthly bars"&gt;
+    &lt;rect role="listitem" aria-label="January: $12,000"
+          x="10" y="100" width="20" height="100"&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">Complex charts need full ARIA markup for screen readers. Consider a table as an alternative.</p>
+</div>
+
+<div class="example">
+  <h3>48. Viewbox pan and zoom with JS</h3>
+  <pre>let viewBox = { x:0, y:0, w:500, h:500 };
+svg.addEventListener('wheel', e =&gt; {
+  const scale = e.deltaY &gt; 0 ? 1.1 : 0.9;
+  viewBox.w *= scale;
+  viewBox.h *= scale;
+  svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`);
+  e.preventDefault();
+});</pre>
+  <p class="label">Implement zoom by scaling the viewBox dimensions; pan by translating viewBox x/y.</p>
+</div>
+
+<div class="example">
+  <h3>49. CSS counter-based SVG text</h3>
+  <pre>&lt;style&gt;
+.bar::before { content: counter(pct) "%"; counter-increment: pct; }
+&lt;/style&gt;
+&lt;!-- Better: use D3.js or manual text positioning for dynamic charts --&gt;
+&lt;svg viewBox="0 0 300 200"&gt;
+  &lt;text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
+        font-size="48" fill="steelblue"&gt;42%&lt;/text&gt;
+&lt;/svg&gt;</pre>
+  <p class="label">dominant-baseline="middle" vertically centers text. text-anchor="middle" centers horizontally.</p>
+</div>
+
+<div class="example">
+  <h3>50. Full icon system with symbol and use</h3>
+  <pre>&lt;!-- Sprite (hidden) --&gt;
+&lt;svg aria-hidden="true" style="display:none"&gt;
+  &lt;symbol id="i-check" viewBox="0 0 24 24"&gt;&lt;path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"&gt;&lt;/symbol&gt;
+  &lt;symbol id="i-x" viewBox="0 0 24 24"&gt;&lt;path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"&gt;&lt;/symbol&gt;
+&lt;/svg&gt;
+
+&lt;!-- Usage --&gt;
+&lt;button&gt;
+  &lt;svg width="16" height="16" aria-hidden="true"&gt;&lt;use href="#i-check"&gt;&lt;/svg&gt;
+  &lt;span&gt;Confirm&lt;/span&gt;
+&lt;/button&gt;
+&lt;button&gt;
+  &lt;svg width="16" height="16" aria-hidden="true"&gt;&lt;use href="#i-x"&gt;&lt;/svg&gt;
+  &lt;span&gt;Cancel&lt;/span&gt;
+&lt;/button&gt;</pre>
+  <p class="label">Production icon system: sprite hidden with aria-hidden, icons aria-hidden inside buttons with visible text labels.</p>
+</div>
+
+</body>
+</html>

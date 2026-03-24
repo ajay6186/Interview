@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 3.3 — Select and Datalist
+  ============================================================================
+  50 runnable examples covering select, option, optgroup, multiple select,
+  datalist, and dynamic select patterns.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 3.3 — Select and Datalist</title>
+  <style>
+    body { font-family: sans-serif; max-width: 860px; margin: 0 auto; padding: 16px; }
+    h2 { margin-top: 32px; border-bottom: 2px solid #333; padding-bottom: 4px; }
+    .example { background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; padding: 12px 16px; margin: 10px 0; }
+    .example h3 { margin: 0 0 8px; font-size: 14px; color: #555; }
+    label { display: inline-block; min-width: 180px; font-size: 14px; }
+    select, input { padding: 5px 8px; border: 1px solid #ccc; border-radius: 3px; }
+    code { background: #eee; padding: 1px 4px; border-radius: 3px; font-size: 13px; }
+    button { padding: 5px 12px; margin-left: 8px; }
+  </style>
+</head>
+<body>
+
+<h1>Examples 3.3 — Select and Datalist</h1>
+
+<!-- ============================================================ -->
+<h2>BASIC (Examples 1–13)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>1. Basic select dropdown</h3>
+  <label for="s1">Country:</label>
+  <select id="s1" name="country">
+    <option value="us">United States</option>
+    <option value="uk">United Kingdom</option>
+    <option value="ca">Canada</option>
+  </select>
+</div>
+
+<div class="example">
+  <h3>2. Select with placeholder option</h3>
+  <label for="s2">Size:</label>
+  <select id="s2" name="size">
+    <option value="">-- Choose a size --</option>
+    <option value="xs">XS</option>
+    <option value="s">S</option>
+    <option value="m">M</option>
+    <option value="l">L</option>
+    <option value="xl">XL</option>
+  </select>
+</div>
+
+<div class="example">
+  <h3>3. Select with a pre-selected option (selected attribute)</h3>
+  <label for="s3">Language:</label>
+  <select id="s3" name="lang">
+    <option value="en">English</option>
+    <option value="fr">French</option>
+    <option value="es" selected>Spanish</option>
+    <option value="de">German</option>
+  </select>
+</div>
+
+<div class="example">
+  <h3>4. Select with disabled options</h3>
+  <label for="s4">Plan:</label>
+  <select id="s4" name="plan">
+    <option value="free">Free</option>
+    <option value="pro">Pro</option>
+    <option value="enterprise" disabled>Enterprise (contact sales)</option>
+  </select>
+</div>
+
+<div class="example">
+  <h3>5. Select with optgroup</h3>
+  <label for="s5">Vehicle:</label>
+  <select id="s5" name="vehicle">
+    <optgroup label="Cars">
+      <option value="sedan">Sedan</option>
+      <option value="suv">SUV</option>
+    </optgroup>
+    <optgroup label="Motorcycles">
+      <option value="sport">Sport</option>
+      <option value="cruiser">Cruiser</option>
+    </optgroup>
+  </select>
+</div>
+
+<div class="example">
+  <h3>6. Multiple select</h3>
+  <label for="s6">Hobbies (Ctrl+click):</label><br>
+  <select id="s6" name="hobbies" multiple size="4">
+    <option value="reading">Reading</option>
+    <option value="gaming">Gaming</option>
+    <option value="cooking">Cooking</option>
+    <option value="hiking">Hiking</option>
+    <option value="painting">Painting</option>
+  </select>
+</div>
+
+<div class="example">
+  <h3>7. Select required</h3>
+  <form>
+    <label for="s7">Role *</label>
+    <select id="s7" name="role" required>
+      <option value="">-- Select role --</option>
+      <option value="admin">Admin</option>
+      <option value="user">User</option>
+      <option value="guest">Guest</option>
+    </select>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div class="example">
+  <h3>8. Select disabled (whole element)</h3>
+  <label for="s8">Region (locked):</label>
+  <select id="s8" name="region" disabled>
+    <option value="na">North America</option>
+    <option value="eu">Europe</option>
+  </select>
+</div>
+
+<div class="example">
+  <h3>9. Basic datalist</h3>
+  <label for="s9">Browser:</label>
+  <input type="text" id="s9" name="browser" list="browsers-list">
+  <datalist id="browsers-list">
+    <option value="Chrome">
+    <option value="Firefox">
+    <option value="Safari">
+    <option value="Edge">
+    <option value="Opera">
+  </datalist>
+</div>
+
+<div class="example">
+  <h3>10. Datalist with value and label</h3>
+  <label for="s10">City:</label>
+  <input type="text" id="s10" name="city" list="cities-list">
+  <datalist id="cities-list">
+    <option value="NYC" label="New York City">
+    <option value="LAX" label="Los Angeles">
+    <option value="CHI" label="Chicago">
+    <option value="HOU" label="Houston">
+  </datalist>
+</div>
+
+<div class="example">
+  <h3>11. Datalist for number suggestions</h3>
+  <label for="s11">Font size:</label>
+  <input type="number" id="s11" name="fontsize" list="fontsizes" min="8" max="72">
+  <datalist id="fontsizes">
+    <option value="12">
+    <option value="14">
+    <option value="16">
+    <option value="18">
+    <option value="24">
+    <option value="36">
+  </datalist>
+</div>
+
+<div class="example">
+  <h3>12. Datalist for color suggestions</h3>
+  <label for="s12">Brand color:</label>
+  <input type="color" id="s12" name="color" list="brand-colors">
+  <datalist id="brand-colors">
+    <option value="#e74c3c">
+    <option value="#3498db">
+    <option value="#2ecc71">
+    <option value="#f39c12">
+  </datalist>
+</div>
+
+<div class="example">
+  <h3>13. Datalist for range suggestions</h3>
+  <label for="s13">Priority:</label>
+  <input type="range" id="s13" min="1" max="5" list="priority-ticks">
+  <datalist id="priority-ticks">
+    <option value="1" label="Low">
+    <option value="3" label="Medium">
+    <option value="5" label="High">
+  </datalist>
+</div>
+
+<!-- ============================================================ -->
+<h2>INTERMEDIATE (Examples 14–26)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>14. Reading selected value with JS</h3>
+  <label for="s14">Color:</label>
+  <select id="s14" name="color" onchange="document.getElementById('s14-out').textContent = this.value">
+    <option value="red">Red</option>
+    <option value="green">Green</option>
+    <option value="blue">Blue</option>
+  </select>
+  Selected: <span id="s14-out">red</span>
+</div>
+
+<div class="example">
+  <h3>15. Getting all selected values from multiple select</h3>
+  <label for="s15">Languages:</label><br>
+  <select id="s15" multiple size="4" onchange="
+    const vals = Array.from(this.selectedOptions).map(o => o.value);
+    document.getElementById('s15-out').textContent = vals.join(', ');
+  ">
+    <option value="js">JavaScript</option>
+    <option value="py">Python</option>
+    <option value="rb">Ruby</option>
+    <option value="go">Go</option>
+  </select>
+  <p>Selected: <span id="s15-out"></span></p>
+</div>
+
+<div class="example">
+  <h3>16. Dynamic options added with JS</h3>
+  <label for="s16">Fruits:</label>
+  <select id="s16" name="fruit"></select>
+  <script>
+    ['Apple','Banana','Cherry','Mango','Strawberry'].forEach(function(fruit) {
+      const opt = document.createElement('option');
+      opt.value = fruit.toLowerCase();
+      opt.textContent = fruit;
+      document.getElementById('s16').appendChild(opt);
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>17. Clearing and repopulating a select</h3>
+  <label for="s17">Options:</label>
+  <select id="s17"></select>
+  <button onclick="
+    const sel = document.getElementById('s17');
+    sel.innerHTML = '';
+    ['X','Y','Z'].forEach(function(v) {
+      sel.add(new Option(v, v.toLowerCase()));
+    });
+  ">Reset options</button>
+</div>
+
+<div class="example">
+  <h3>18. Disabling a specific optgroup</h3>
+  <label for="s18">Food:</label>
+  <select id="s18">
+    <optgroup label="Available">
+      <option value="pizza">Pizza</option>
+      <option value="pasta">Pasta</option>
+    </optgroup>
+    <optgroup label="Out of stock" disabled>
+      <option value="sushi">Sushi</option>
+      <option value="tacos">Tacos</option>
+    </optgroup>
+  </select>
+</div>
+
+<div class="example">
+  <h3>19. Select with size attribute (visible rows)</h3>
+  <label for="s19">Choose timezone:</label>
+  <select id="s19" size="4" name="tz">
+    <option value="utc">UTC</option>
+    <option value="est">EST (UTC-5)</option>
+    <option value="pst">PST (UTC-8)</option>
+    <option value="cet">CET (UTC+1)</option>
+    <option value="jst">JST (UTC+9)</option>
+  </select>
+</div>
+
+<div class="example">
+  <h3>20. Datalist with email suggestions</h3>
+  <label for="s20">Email domain:</label>
+  <input type="email" id="s20" name="email" list="email-domains">
+  <datalist id="email-domains">
+    <option value="user@gmail.com">
+    <option value="user@yahoo.com">
+    <option value="user@outlook.com">
+    <option value="user@example.com">
+  </datalist>
+</div>
+
+<div class="example">
+  <h3>21. Datalist for URL suggestions</h3>
+  <label for="s21">Endpoint:</label>
+  <input type="url" id="s21" name="endpoint" list="endpoints">
+  <datalist id="endpoints">
+    <option value="https://api.example.com/v1">
+    <option value="https://api.example.com/v2">
+    <option value="https://staging.example.com/api">
+  </datalist>
+</div>
+
+<div class="example">
+  <h3>22. Cascading selects (country → city)</h3>
+  <label for="s22-c">Country:</label>
+  <select id="s22-c" onchange="
+    const cities = {us:['New York','Los Angeles','Chicago'], uk:['London','Manchester','Birmingham']};
+    const cityEl = document.getElementById('s22-city');
+    cityEl.innerHTML = '<option value=\\'\\'>--</option>';
+    (cities[this.value] || []).forEach(function(c) {
+      cityEl.add(new Option(c, c.toLowerCase().replace(' ','-')));
+    });
+  ">
+    <option value="">-- Country --</option>
+    <option value="us">USA</option>
+    <option value="uk">UK</option>
+  </select>
+  <label for="s22-city">City:</label>
+  <select id="s22-city"><option value="">--</option></select>
+</div>
+
+<div class="example">
+  <h3>23. Select reflecting current page/section</h3>
+  <label for="s23">Jump to section:</label>
+  <select id="s23" onchange="location.hash = this.value">
+    <option value="#results">Results</option>
+    <option value="#top">Top</option>
+  </select>
+</div>
+
+<div class="example">
+  <h3>24. Option with data attributes</h3>
+  <label for="s24">Employee:</label>
+  <select id="s24" onchange="
+    const opt = this.options[this.selectedIndex];
+    document.getElementById('s24-info').textContent =
+      'Dept: ' + opt.dataset.dept + ', Level: ' + opt.dataset.level;
+  ">
+    <option value="1" data-dept="Eng" data-level="Senior">Alice</option>
+    <option value="2" data-dept="Design" data-level="Mid">Bob</option>
+    <option value="3" data-dept="PM" data-level="Lead">Carol</option>
+  </select>
+  <p id="s24-info" style="font-size:13px"></p>
+</div>
+
+<div class="example">
+  <h3>25. Custom styled select wrapper</h3>
+  <div style="position:relative;display:inline-block;width:200px">
+    <select id="s25" style="appearance:none;-webkit-appearance:none;width:100%;padding:8px 32px 8px 12px;border:1px solid #0066cc;border-radius:20px;background:white">
+      <option>Option A</option>
+      <option>Option B</option>
+      <option>Option C</option>
+    </select>
+    <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none">▼</span>
+  </div>
+</div>
+
+<div class="example">
+  <h3>26. Select with form attribute (outside its form)</h3>
+  <form id="s26-form" action="#" method="post">
+    <button type="submit">Submit</button>
+  </form>
+  <label for="s26-sel">Category (outside form element):</label>
+  <select id="s26-sel" name="category" form="s26-form">
+    <option value="a">Category A</option>
+    <option value="b">Category B</option>
+  </select>
+</div>
+
+<!-- ============================================================ -->
+<h2>NESTED (Examples 27–38)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>27. Multi-level optgroup</h3>
+  <label for="s27">Location:</label>
+  <select id="s27">
+    <optgroup label="North America">
+      <option value="us-ny">USA — New York</option>
+      <option value="us-ca">USA — California</option>
+      <option value="ca-on">Canada — Ontario</option>
+    </optgroup>
+    <optgroup label="Europe">
+      <option value="uk-lon">UK — London</option>
+      <option value="de-ber">Germany — Berlin</option>
+      <option value="fr-par">France — Paris</option>
+    </optgroup>
+  </select>
+</div>
+
+<div class="example">
+  <h3>28. Select all / deselect all for multi-select</h3>
+  <select id="s28" multiple size="4">
+    <option value="a">Alpha</option>
+    <option value="b">Beta</option>
+    <option value="c">Gamma</option>
+    <option value="d">Delta</option>
+  </select><br>
+  <button onclick="
+    const sel = document.getElementById('s28');
+    for(let o of sel.options) o.selected = true;
+  ">Select All</button>
+  <button onclick="
+    const sel = document.getElementById('s28');
+    for(let o of sel.options) o.selected = false;
+  ">Deselect All</button>
+</div>
+
+<div class="example">
+  <h3>29. Move items between two lists</h3>
+  <div style="display:flex;gap:8px;align-items:center">
+    <select id="s29-avail" multiple size="4" style="width:120px">
+      <option value="html">HTML</option>
+      <option value="css">CSS</option>
+      <option value="js">JavaScript</option>
+      <option value="ts">TypeScript</option>
+    </select>
+    <div>
+      <button onclick="
+        const a=document.getElementById('s29-avail'),s=document.getElementById('s29-sel');
+        Array.from(a.selectedOptions).forEach(o=>s.appendChild(o));
+      ">&rarr;</button><br>
+      <button onclick="
+        const a=document.getElementById('s29-avail'),s=document.getElementById('s29-sel');
+        Array.from(s.selectedOptions).forEach(o=>a.appendChild(o));
+      ">&larr;</button>
+    </div>
+    <select id="s29-sel" multiple size="4" style="width:120px"></select>
+  </div>
+</div>
+
+<div class="example">
+  <h3>30. Filter datalist options with JS</h3>
+  <label for="s30">Search country:</label>
+  <input type="text" id="s30" placeholder="Type to filter...">
+  <datalist id="s30-dl">
+    <option value="Afghanistan">
+    <option value="Albania">
+    <option value="Algeria">
+    <option value="Brazil">
+    <option value="Canada">
+    <option value="China">
+    <option value="Denmark">
+    <option value="Egypt">
+    <option value="France">
+    <option value="Germany">
+  </datalist>
+  <script>
+    document.getElementById('s30').setAttribute('list', 's30-dl');
+  </script>
+</div>
+
+<div class="example">
+  <h3>31. Datalist for autocomplete tags input</h3>
+  <label for="s31">Add tag:</label>
+  <input type="text" id="s31" list="s31-tags" placeholder="Choose or type a tag">
+  <datalist id="s31-tags">
+    <option value="javascript">
+    <option value="python">
+    <option value="rust">
+    <option value="golang">
+    <option value="typescript">
+  </datalist>
+  <button onclick="
+    const input = document.getElementById('s31');
+    if (input.value) {
+      const tag = document.createElement('span');
+      tag.style.cssText='background:#e0e0e0;padding:2px 8px;border-radius:12px;margin:2px;font-size:13px';
+      tag.textContent = input.value;
+      document.getElementById('s31-tags-list').appendChild(tag);
+      input.value = '';
+    }
+  ">Add</button>
+  <div id="s31-tags-list" style="margin-top:8px"></div>
+</div>
+
+<div class="example">
+  <h3>32. Select with aria-label</h3>
+  <select aria-label="Sort order" name="sort">
+    <option value="asc">Ascending</option>
+    <option value="desc">Descending</option>
+    <option value="rel">Relevance</option>
+  </select>
+</div>
+
+<div class="example">
+  <h3>33. Select inside fieldset</h3>
+  <fieldset>
+    <legend>Shipping options</legend>
+    <label for="s33-method">Method:</label>
+    <select id="s33-method" name="method">
+      <option value="standard">Standard (5–7 days)</option>
+      <option value="express">Express (2–3 days)</option>
+      <option value="overnight">Overnight (1 day)</option>
+    </select>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>34. Dependent cascading selects — 3 levels</h3>
+  <select id="s34-region" onchange="
+    const sub={na:['USA','Canada','Mexico'],eu:['UK','France','Germany']};
+    const s=document.getElementById('s34-sub');
+    s.innerHTML='<option>--</option>';
+    (sub[this.value]||[]).forEach(c=>s.add(new Option(c,c)));
+  ">
+    <option value="">-- Region --</option>
+    <option value="na">North America</option>
+    <option value="eu">Europe</option>
+  </select>
+  <select id="s34-sub">
+    <option>--</option>
+  </select>
+</div>
+
+<div class="example">
+  <h3>35. Persist select value with localStorage</h3>
+  <label for="s35">Theme:</label>
+  <select id="s35" onchange="localStorage.setItem('ex35-theme',this.value)">
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+    <option value="system">System</option>
+  </select>
+  <script>
+    const saved = localStorage.getItem('ex35-theme');
+    if (saved) document.getElementById('s35').value = saved;
+  </script>
+</div>
+
+<div class="example">
+  <h3>36. Select value summary display</h3>
+  <label for="s36">Rating:</label>
+  <select id="s36" onchange="
+    const stars = {1:'★☆☆☆☆',2:'★★☆☆☆',3:'★★★☆☆',4:'★★★★☆',5:'★★★★★'};
+    document.getElementById('s36-stars').textContent = stars[this.value] || '';
+  ">
+    <option value="">-- Rate --</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select>
+  <span id="s36-stars" style="margin-left:8px;color:#f39c12;font-size:1.2em"></span>
+</div>
+
+<div class="example">
+  <h3>37. Sortable select options</h3>
+  <select id="s37" size="5" style="width:150px">
+    <option>Banana</option>
+    <option>Apple</option>
+    <option>Cherry</option>
+    <option>Mango</option>
+  </select>
+  <button onclick="
+    const sel = document.getElementById('s37');
+    const opts = Array.from(sel.options).sort((a,b) => a.text.localeCompare(b.text));
+    sel.innerHTML = '';
+    opts.forEach(o => sel.add(o));
+  ">Sort A–Z</button>
+</div>
+
+<div class="example">
+  <h3>38. Datalist that updates based on another input</h3>
+  <label for="s38-cat">Category:</label>
+  <select id="s38-cat" onchange="
+    const opts = {fruit:['Apple','Banana','Mango'],veg:['Carrot','Broccoli','Spinach']};
+    const dl = document.getElementById('s38-items');
+    dl.innerHTML = '';
+    (opts[this.value]||[]).forEach(function(item) {
+      const o = document.createElement('option'); o.value = item; dl.appendChild(o);
+    });
+  ">
+    <option value="">-- Category --</option>
+    <option value="fruit">Fruit</option>
+    <option value="veg">Vegetable</option>
+  </select>
+  <label for="s38-item">Item:</label>
+  <input type="text" id="s38-item" list="s38-items">
+  <datalist id="s38-items"></datalist>
+</div>
+
+<!-- ============================================================ -->
+<h2>ADVANCED (Examples 39–50)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>39. Searchable select using datalist + hidden select</h3>
+  <label for="s39-input">Country (searchable):</label>
+  <input type="text" id="s39-input" list="s39-dl" placeholder="Start typing...">
+  <datalist id="s39-dl">
+    <option value="Australia">
+    <option value="Austria">
+    <option value="Belgium">
+    <option value="Brazil">
+    <option value="Canada">
+    <option value="Chile">
+    <option value="Denmark">
+    <option value="Finland">
+    <option value="France">
+    <option value="Germany">
+  </datalist>
+</div>
+
+<div class="example">
+  <h3>40. Multi-select with visual checkboxes (custom UI over select)</h3>
+  <div id="s40-checks" style="border:1px solid #ccc;padding:8px;max-height:120px;overflow:auto"></div>
+  <select id="s40-hidden" multiple name="colors" style="display:none">
+    <option value="red">Red</option>
+    <option value="green">Green</option>
+    <option value="blue">Blue</option>
+    <option value="yellow">Yellow</option>
+  </select>
+  <script>
+    const sel40 = document.getElementById('s40-hidden');
+    const div40 = document.getElementById('s40-checks');
+    Array.from(sel40.options).forEach(function(opt) {
+      const lbl = document.createElement('label');
+      lbl.style.display = 'block';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox'; cb.value = opt.value;
+      cb.addEventListener('change', function() { opt.selected = this.checked; });
+      lbl.appendChild(cb);
+      lbl.appendChild(document.createTextNode(' ' + opt.text));
+      div40.appendChild(lbl);
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>41. Select with async option loading</h3>
+  <label for="s41">Load options:</label>
+  <select id="s41"><option>-- Loading... --</option></select>
+  <button onclick="
+    const sel = document.getElementById('s41');
+    sel.innerHTML = '';
+    // Simulate async load
+    setTimeout(function() {
+      ['Option A','Option B','Option C'].forEach(function(v) {
+        sel.add(new Option(v, v.toLowerCase().replace(' ','-')));
+      });
+    }, 500);
+  ">Load</button>
+</div>
+
+<div class="example">
+  <h3>42. Tag picker using datalist + pill display</h3>
+  <input type="text" id="s42-in" list="s42-dl" placeholder="Add skill">
+  <datalist id="s42-dl">
+    <option value="React">
+    <option value="Vue">
+    <option value="Angular">
+    <option value="Svelte">
+    <option value="Next.js">
+  </datalist>
+  <div id="s42-pills" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+  <script>
+    document.getElementById('s42-in').addEventListener('change', function() {
+      const val = this.value.trim();
+      if (!val) return;
+      const pill = document.createElement('span');
+      pill.textContent = val + ' ×';
+      pill.style.cssText = 'background:#0066cc;color:white;padding:2px 10px;border-radius:12px;font-size:13px;cursor:pointer';
+      pill.onclick = function() { this.remove(); };
+      document.getElementById('s42-pills').appendChild(pill);
+      this.value = '';
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>43. Select with keyboard navigation highlight</h3>
+  <label for="s43">Navigate with arrow keys:</label>
+  <select id="s43" size="5" onchange="document.getElementById('s43-sel').textContent = this.value">
+    <option value="html">HTML</option>
+    <option value="css">CSS</option>
+    <option value="js">JavaScript</option>
+    <option value="ts">TypeScript</option>
+    <option value="go">Go</option>
+  </select>
+  <p>Selected: <strong id="s43-sel"></strong></p>
+</div>
+
+<div class="example">
+  <h3>44. Datalist with fuzzy search via JS</h3>
+  <label for="s44">Search languages:</label>
+  <input type="text" id="s44" placeholder="Type to search" oninput="
+    const all=['JavaScript','Python','Ruby','Rust','Go','Java','Swift','Kotlin','TypeScript','Dart'];
+    const query = this.value.toLowerCase();
+    const dl = document.getElementById('s44-dl');
+    dl.innerHTML = '';
+    all.filter(l => l.toLowerCase().includes(query)).forEach(function(l) {
+      const o = document.createElement('option'); o.value = l; dl.appendChild(o);
+    });
+  ">
+  <datalist id="s44-dl"></datalist>
+</div>
+
+<div class="example">
+  <h3>45. Form with select + validation</h3>
+  <form id="s45-form" novalidate>
+    <label for="s45-role">Role *</label>
+    <select id="s45-role" required>
+      <option value="">-- Select --</option>
+      <option value="dev">Developer</option>
+      <option value="design">Designer</option>
+      <option value="pm">Product Manager</option>
+    </select>
+    <p id="s45-err" style="color:red;font-size:13px"></p>
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('s45-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const sel = document.getElementById('s45-role');
+      document.getElementById('s45-err').textContent = sel.value ? '' : 'Please select a role.';
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>46. Select with price calculation</h3>
+  <label for="s46">Plan:</label>
+  <select id="s46" onchange="
+    const prices = {free:'$0/mo',pro:'$9/mo',team:'$29/mo',enterprise:'Contact us'};
+    document.getElementById('s46-price').textContent = prices[this.value] || '';
+  ">
+    <option value="">-- Choose plan --</option>
+    <option value="free">Free</option>
+    <option value="pro">Pro</option>
+    <option value="team">Team</option>
+    <option value="enterprise">Enterprise</option>
+  </select>
+  <strong id="s46-price" style="margin-left:12px;color:#0066cc"></strong>
+</div>
+
+<div class="example">
+  <h3>47. Accessible select with aria-live description</h3>
+  <label for="s47">Status filter:</label>
+  <select id="s47" aria-describedby="s47-desc" onchange="
+    document.getElementById('s47-desc').textContent = 'Showing ' + this.options[this.selectedIndex].text + ' items';
+  ">
+    <option value="all">All</option>
+    <option value="active">Active</option>
+    <option value="archived">Archived</option>
+  </select>
+  <p id="s47-desc" aria-live="polite" style="font-size:13px;color:#555">Showing All items</p>
+</div>
+
+<div class="example">
+  <h3>48. Readonly-like select (prevent change)</h3>
+  <label for="s48">Account type (locked):</label>
+  <select id="s48" aria-readonly="true" onchange="this.value = this.defaultValue">
+    <option value="premium" selected>Premium</option>
+    <option value="basic">Basic</option>
+  </select>
+  <p style="font-size:12px;color:#666">Value cannot be changed (reverts on change).</p>
+</div>
+
+<div class="example">
+  <h3>49. Select driving URL navigation</h3>
+  <label for="s49">Go to page:</label>
+  <select id="s49" onchange="
+    if (this.value) document.getElementById('s49-dest').textContent = 'Would navigate to: ' + this.value;
+  ">
+    <option value="">-- Navigate to --</option>
+    <option value="/about">About</option>
+    <option value="/docs">Documentation</option>
+    <option value="/pricing">Pricing</option>
+    <option value="/contact">Contact</option>
+  </select>
+  <p id="s49-dest" style="font-size:13px;color:#0066cc"></p>
+</div>
+
+<div class="example">
+  <h3>50. Full location selector — Country → State → City</h3>
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:250px">
+    <select id="s50-country" onchange="
+      const states={us:['California','Texas','New York'],uk:['England','Scotland','Wales'],ca:['Ontario','Quebec','BC']};
+      const st=document.getElementById('s50-state');
+      st.innerHTML='<option value=\\'\\'>-- State/Province --</option>';
+      document.getElementById('s50-city').innerHTML='<option value=\\'\\'>-- City --</option>';
+      (states[this.value]||[]).forEach(s=>st.add(new Option(s,s.toLowerCase().replace(/ /g,'-'))));
+    ">
+      <option value="">-- Country --</option>
+      <option value="us">USA</option>
+      <option value="uk">UK</option>
+      <option value="ca">Canada</option>
+    </select>
+    <select id="s50-state" onchange="
+      const cities={california:['Los Angeles','San Francisco','San Diego'],texas:['Houston','Dallas','Austin'],england:['London','Manchester','Birmingham']};
+      const ct=document.getElementById('s50-city');
+      ct.innerHTML='<option value=\\'\\'>-- City --</option>';
+      (cities[this.value]||[]).forEach(c=>ct.add(new Option(c,c.toLowerCase().replace(/ /g,'-'))));
+    ">
+      <option value="">-- State/Province --</option>
+    </select>
+    <select id="s50-city">
+      <option value="">-- City --</option>
+    </select>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 2.1 — Semantic Layout
+  ============================================================================
+  Structure a page using the correct HTML5 sectioning elements: header, nav,
+  main, footer, and aside. Understand their implicit ARIA roles and correct
+  nesting rules.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 2.1 — Semantic Layout</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; }
+    header, nav, main, aside, footer { padding: 12px 16px; }
+    header { background: #2c3e50; color: white; }
+    nav { background: #34495e; color: white; }
+    nav a { color: white; margin-right: 12px; }
+    .page-body { display: flex; gap: 16px; padding: 16px; }
+    main { flex: 1; border: 1px solid #ddd; }
+    aside { width: 220px; border: 1px solid #ddd; }
+    footer { background: #2c3e50; color: white; }
+  </style>
+</head>
+<body>
+
+<!-- =========================================================
+     Section 1: Page Header
+     ========================================================= -->
+
+<!-- TODO: Add a <header> element containing:
+     - An <h1> with the site name "Tech Blog"
+     - A <p> with a tagline "The latest in web development"
+-->
+
+<!-- =========================================================
+     Section 2: Navigation
+     ========================================================= -->
+
+<!-- TODO: Add a <nav> element with an aria-label="Main navigation" containing a <ul>
+     with 4 <li><a href="#"> links: "Home", "Articles", "About", "Contact"
+-->
+
+<!-- =========================================================
+     Section 3: Main Content and Aside
+     ========================================================= -->
+
+<div class="page-body">
+
+  <!-- TODO: Add a <main> element containing:
+       - An <h2> with text "Featured Articles"
+       - A <p> with some placeholder text
+  -->
+
+  <!-- TODO: Add an <aside> element with aria-label="Sidebar" containing:
+       - An <h2> with text "Categories"
+       - A <ul> with at least 2 <li> items
+  -->
+
+</div>
+
+<!-- =========================================================
+     Section 4: Page Footer
+     ========================================================= -->
+
+<!-- TODO: Add a <footer> element containing a <p> with copyright text,
+     e.g. "<small>&copy; 2026 Tech Blog. All rights reserved.</small>"
+-->
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 2.1 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // 1. header exists
+  assert(document.querySelector("header") !== null, "<header> element exists");
+
+  // 2. header contains h1
+  assert(document.querySelector("header h1") !== null, "<h1> exists inside <header>");
+
+  // 3. nav exists
+  assert(document.querySelector("nav") !== null, "<nav> element exists");
+
+  // 4. nav has aria-label
+  const navEl = document.querySelector("nav[aria-label]");
+  assert(navEl !== null, '<nav aria-label="..."> has an aria-label attribute');
+
+  // 5. nav contains links
+  assert(document.querySelectorAll("nav a").length >= 2, "<nav> contains at least 2 links");
+
+  // 6. main exists
+  assert(document.querySelector("main") !== null, "<main> element exists");
+
+  // 7. only one main on the page
+  assert(document.querySelectorAll("main").length === 1, "Only one <main> element on the page");
+
+  // 8. aside exists
+  assert(document.querySelector("aside") !== null, "<aside> element exists");
+
+  // 9. footer exists
+  assert(document.querySelector("footer") !== null, "<footer> element exists");
+
+  // 10. main contains an h2
+  assert(document.querySelector("main h2") !== null, "<h2> exists inside <main>");
+
+  // Summary
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 2.1 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

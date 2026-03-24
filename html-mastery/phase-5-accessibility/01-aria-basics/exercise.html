@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 5.1 — ARIA Basics
+  ============================================================================
+  Use ARIA attributes (aria-label, aria-describedby, aria-hidden,
+  aria-expanded, role) to make HTML elements accessible to assistive
+  technologies when native semantics are insufficient.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 5.1 — ARIA Basics</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    section { margin-bottom: 24px; padding: 16px; background: #f9f9f9; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<h1>ARIA Basics Exercise</h1>
+
+<!-- =========================================================
+     Section 1: Toggle button with aria-expanded
+     ========================================================= -->
+
+<!-- TODO: Add a <button> with:
+     - id="menu-btn"
+     - aria-expanded="false"
+     - aria-controls="nav-menu"
+     Text content: "Toggle Menu"
+     Then add a <nav> with:
+     - id="nav-menu"
+     - aria-hidden="true"
+     Containing a <ul> with two <li><a href="#">...</a></li> items
+-->
+
+
+<!-- =========================================================
+     Section 2: Input with aria-label and aria-describedby
+     ========================================================= -->
+
+<!-- TODO: Add an <input> with:
+     - id="search-input"
+     - type="search"
+     - aria-label="Search the site"
+     - aria-describedby="search-hint"
+     Then add a <p> with:
+     - id="search-hint"
+     Text: "Enter keywords to search."
+-->
+
+
+<!-- =========================================================
+     Section 3: Status region with role and aria-live
+     ========================================================= -->
+
+<!-- TODO: Add a <div> with:
+     - id="loading-spinner"
+     - role="status"
+     - aria-label="Loading content"
+     - aria-live="polite"
+-->
+
+
+<!-- =========================================================
+     Section 4: Icon button with aria-label
+     ========================================================= -->
+
+<!-- TODO: Add a <button> with:
+     - id="close-btn"
+     - aria-label="Close dialog"
+     Text content: ✕
+-->
+
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 5.1 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // Section 1: toggle button
+  const menuBtn = document.getElementById("menu-btn");
+  assert(menuBtn !== null, '#menu-btn exists');
+  assert(menuBtn && menuBtn.tagName.toLowerCase() === "button", '#menu-btn is a <button>');
+  assert(menuBtn && menuBtn.hasAttribute("aria-expanded"), '#menu-btn has aria-expanded attribute');
+  assert(menuBtn && menuBtn.getAttribute("aria-controls") === "nav-menu", '#menu-btn has aria-controls="nav-menu"');
+  const navMenu = document.getElementById("nav-menu");
+  assert(navMenu !== null, '#nav-menu exists');
+  assert(navMenu && navMenu.hasAttribute("aria-hidden"), '#nav-menu has aria-hidden attribute');
+
+  // Section 2: input with aria
+  const searchInput = document.getElementById("search-input");
+  assert(searchInput !== null, '#search-input exists');
+  assert(searchInput && (searchInput.getAttribute("aria-label") || "").trim() !== "", '#search-input has a non-empty aria-label');
+  assert(searchInput && searchInput.getAttribute("aria-describedby") === "search-hint", '#search-input has aria-describedby="search-hint"');
+  const searchHint = document.getElementById("search-hint");
+  assert(searchHint !== null, '#search-hint element exists');
+
+  // Section 3: status region
+  const spinner = document.getElementById("loading-spinner");
+  assert(spinner !== null, '#loading-spinner exists');
+  assert(spinner && spinner.getAttribute("role") === "status", '#loading-spinner has role="status"');
+  assert(spinner && (spinner.getAttribute("aria-label") || "").trim() !== "", '#loading-spinner has a non-empty aria-label');
+  assert(spinner && spinner.hasAttribute("aria-live"), '#loading-spinner has aria-live attribute');
+
+  // Section 4: icon button
+  const closeBtn = document.getElementById("close-btn");
+  assert(closeBtn !== null, '#close-btn exists');
+  assert(closeBtn && closeBtn.tagName.toLowerCase() === "button", '#close-btn is a <button>');
+  assert(closeBtn && (closeBtn.getAttribute("aria-label") || "").trim() !== "", '#close-btn has a non-empty aria-label');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 5.1 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

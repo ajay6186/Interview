@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 3.5 — Advanced Forms
+  ============================================================================
+  Use advanced form features: output element, progress/meter, datalist for
+  autocomplete, form attribute to associate controls outside the form,
+  and constraint validation API.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 3.5 — Advanced Forms</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    label { display: block; margin: 8px 0 2px; font-weight: bold; }
+    input, select { display: block; margin-bottom: 8px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 3px; }
+    input[type="range"] { width: 200px; }
+    meter, progress { display: block; width: 200px; margin: 4px 0; }
+    button { padding: 8px 20px; margin: 4px; }
+    output { font-weight: bold; font-size: 1.2em; }
+  </style>
+</head>
+<body>
+
+<h1>Advanced Forms Exercise</h1>
+
+<!-- =========================================================
+     Section 1: Range input with output element
+     ========================================================= -->
+
+<!-- TODO: Add a <label for="volume-slider">Volume</label>
+     Then add an <input> with:
+     - id="volume-slider"
+     - type="range"
+     - min="0"
+     - max="100"
+     - value="50"
+     - oninput="document.getElementById('volume-output').value = this.value"
+     Then add an <output> with:
+     - id="volume-output"
+     - for="volume-slider"
+     Text content: "50"
+-->
+
+
+<!-- =========================================================
+     Section 2: Progress and meter elements
+     ========================================================= -->
+
+<!-- TODO: Add a <label>Upload progress:</label>
+     Then add a <progress> with:
+     - id="upload-progress"
+     - value="65"
+     - max="100"
+
+     Then add a <label>Disk usage:</label>
+     Then add a <meter> with:
+     - id="disk-meter"
+     - value="0.7"
+     - min="0"
+     - max="1"
+     - low="0.5"
+     - high="0.8"
+     - optimum="0.2"
+-->
+
+
+<!-- =========================================================
+     Section 3: External form control (form attribute)
+     ========================================================= -->
+
+<form id="external-form" action="#" method="post">
+  <label for="username">Username</label>
+  <input id="username" type="text" name="username" required>
+</form>
+
+<!-- TODO: Add an <input> with:
+     - id="external-email"
+     - type="email"
+     - name="email"
+     - form="external-form"     (associates this field with the form above)
+     - placeholder="email@example.com"
+
+     And add a <button> with:
+     - id="external-submit"
+     - type="submit"
+     - form="external-form"
+     Text: "Submit"
+     (This button is outside the form but submits it via form attribute)
+-->
+
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 3.5 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // Section 1: range + output
+  const slider = document.getElementById("volume-slider");
+  assert(slider !== null, '#volume-slider exists');
+  assert(slider && slider.getAttribute("type") === "range", '#volume-slider is type="range"');
+  assert(slider && slider.getAttribute("min") === "0", '#volume-slider has min="0"');
+  assert(slider && slider.getAttribute("max") === "100", '#volume-slider has max="100"');
+  assert(slider && slider.getAttribute("value") === "50", '#volume-slider has value="50"');
+  const output = document.getElementById("volume-output");
+  assert(output !== null, '#volume-output exists');
+  assert(output && output.tagName.toLowerCase() === "output", '#volume-output is an <output> element');
+  assert(output && output.getAttribute("for") === "volume-slider", '#volume-output has for="volume-slider"');
+  // Test oninput: change slider value and check output updates
+  if (slider) { slider.value = 75; slider.dispatchEvent(new Event('input')); }
+  assert(output && output.value === "75", '#volume-output updates when slider changes (value becomes "75")');
+
+  // Section 2: progress and meter
+  const progress = document.getElementById("upload-progress");
+  assert(progress !== null, '#upload-progress exists');
+  assert(progress && progress.tagName.toLowerCase() === "progress", '#upload-progress is a <progress> element');
+  assert(progress && progress.getAttribute("value") === "65", '#upload-progress has value="65"');
+  assert(progress && progress.getAttribute("max") === "100", '#upload-progress has max="100"');
+
+  const meter = document.getElementById("disk-meter");
+  assert(meter !== null, '#disk-meter exists');
+  assert(meter && meter.tagName.toLowerCase() === "meter", '#disk-meter is a <meter> element');
+  assert(meter && meter.getAttribute("value") === "0.7", '#disk-meter has value="0.7"');
+  assert(meter && meter.hasAttribute("low"), '#disk-meter has a low attribute');
+  assert(meter && meter.hasAttribute("high"), '#disk-meter has a high attribute');
+  assert(meter && meter.hasAttribute("optimum"), '#disk-meter has an optimum attribute');
+
+  // Section 3: external form controls
+  const extEmail = document.getElementById("external-email");
+  assert(extEmail !== null, '#external-email exists');
+  assert(extEmail && extEmail.getAttribute("type") === "email", '#external-email has type="email"');
+  assert(extEmail && extEmail.getAttribute("form") === "external-form", '#external-email has form="external-form"');
+  const extSubmit = document.getElementById("external-submit");
+  assert(extSubmit !== null, '#external-submit exists');
+  assert(extSubmit && extSubmit.getAttribute("type") === "submit", '#external-submit has type="submit"');
+  assert(extSubmit && extSubmit.getAttribute("form") === "external-form", '#external-submit has form="external-form"');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 3.5 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

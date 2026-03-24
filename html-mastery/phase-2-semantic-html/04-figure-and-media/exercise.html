@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 2.4 — Figure & Media
+  ============================================================================
+  Add figures with captions, video with controls/poster/track, and audio
+  with controls to this page. Understand when to use figure/figcaption and
+  how to provide accessible media with fallback text.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 2.4 — Figure &amp; Media</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 16px; }
+    figure { border: 1px solid #ddd; padding: 8px; margin: 16px 0; display: inline-block; }
+    figcaption { font-size: 13px; color: #666; margin-top: 4px; }
+    video, audio { display: block; margin: 8px 0; }
+  </style>
+</head>
+<body>
+
+<h1>Figure &amp; Media Exercise</h1>
+
+<!-- =========================================================
+     Section 1: Figure with Figcaption
+     ========================================================= -->
+
+<!-- TODO: Add a <figure> element containing:
+     - An <img src="https://via.placeholder.com/400x250" alt="A placeholder chart image" width="400" height="250">
+     - A <figcaption> with text "Figure 1: Monthly website traffic growth"
+-->
+
+<!-- =========================================================
+     Section 2: Video Element
+     ========================================================= -->
+
+<!-- TODO: Add a <video> element with:
+     - controls attribute (shows play/pause/volume controls)
+     - poster="https://via.placeholder.com/640x360?text=Video+Thumbnail"
+     - width="640" and height="360"
+     - A <source> element inside with src="sample.mp4" and type="video/mp4"
+     - A fallback paragraph with text "Your browser does not support video."
+-->
+
+<!-- =========================================================
+     Section 3: Audio Element
+     ========================================================= -->
+
+<!-- TODO: Add an <audio> element with:
+     - controls attribute
+     - A <source> element inside with src="audio-sample.mp3" and type="audio/mpeg"
+     - A fallback paragraph with text "Your browser does not support audio."
+-->
+
+<!-- =========================================================
+     Section 4: Figure wrapping a Code Block
+     ========================================================= -->
+
+<!-- TODO: Add a <figure> wrapping a <pre><code> block showing any 2-line code snippet,
+     with a <figcaption> that says "Listing 1: Example code"
+-->
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 2.4 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // 1. figure element exists
+  assert(document.querySelector("figure") !== null, "<figure> element exists");
+
+  // 2. figcaption exists inside figure
+  assert(document.querySelector("figure figcaption") !== null,
+    "<figcaption> exists inside a <figure>");
+
+  // 3. figcaption is a direct child of figure
+  const fig = document.querySelector("figure");
+  const cap = fig ? fig.querySelector(":scope > figcaption") : null;
+  assert(cap !== null, "<figcaption> is a direct child of <figure>");
+
+  // 4. video element with controls exists
+  const videoEl = document.querySelector("video[controls]");
+  assert(videoEl !== null, "<video controls> element exists");
+
+  // 5. video has poster attribute
+  assert(videoEl !== null && videoEl.hasAttribute("poster"),
+    "<video> has a poster attribute");
+
+  // 6. audio element with controls exists
+  const audioEl = document.querySelector("audio[controls]");
+  assert(audioEl !== null, "<audio controls> element exists");
+
+  // 7. source elements exist inside media elements
+  const sources = document.querySelectorAll("video source, audio source");
+  assert(sources.length >= 2, "At least 2 <source> elements exist inside video and audio");
+
+  // 8. at least 2 figure elements exist
+  assert(document.querySelectorAll("figure").length >= 2, "At least 2 <figure> elements on the page");
+
+  // Summary
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 2.4 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 6.2 — Template and Slot  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 6.2 — Template and Slot</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 6.2 — Template and Slot</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. template element basics</h3>
+  <pre>
+&lt;!-- The &lt;template&gt; element holds inert HTML that is never rendered. --&gt;
+&lt;template id="my-tpl"&gt;
+  &lt;div class="card"&gt;
+    &lt;h2 class="title"&gt;&lt;/h2&gt;
+    &lt;p  class="body"&gt;&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  const tpl   = document.getElementById('my-tpl');
+  const clone = tpl.content.cloneNode(true);
+
+  clone.querySelector('.title').textContent = 'Hello';
+  clone.querySelector('.body').textContent  = 'World';
+
+  document.body.appendChild(clone);
+&lt;/script&gt;</pre>
+  <p class="label">The &lt;template&gt; element defines reusable inert markup. Its content is a DocumentFragment that can be cloned and inserted as many times as needed.</p>
+</div>
+
+<div class="example">
+  <h3>2. Template is inert HTML — scripts and images do not fire</h3>
+  <pre>
+&lt;template id="lazy-tpl"&gt;
+  &lt;!-- ✅ Image src is NOT fetched while inside the template --&gt;
+  &lt;img src="https://example.com/large-photo.jpg" alt="photo"&gt;
+
+  &lt;!-- ✅ Script is NOT executed while inside the template --&gt;
+  &lt;script&gt;console.log('This never runs while inert');&lt;/script&gt;
+
+  &lt;!-- ✅ CSS :checked / :hover do not apply to template content --&gt;
+  &lt;input type="checkbox" checked&gt;
+&lt;/template&gt;
+
+&lt;!-- Only when cloneNode(true) result is inserted into the live DOM
+     do images load, scripts execute, and styles apply. --&gt;</pre>
+  <p class="label">Template content is completely inert: network requests are not made, scripts are not parsed, and CSS rules do not apply until the clone is inserted into the document.</p>
+</div>
+
+<div class="example">
+  <h3>3. template.content — accessing the DocumentFragment</h3>
+  <pre>
+&lt;template id="row-tpl"&gt;
+  &lt;tr&gt;
+    &lt;td class="name"&gt;&lt;/td&gt;
+    &lt;td class="score"&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  const tpl = document.getElementById('row-tpl');
+
+  // tpl.content is a DocumentFragment — a lightweight container node
+  console.log(tpl.content.nodeType);     // 11 (DOCUMENT_FRAGMENT_NODE)
+  console.log(tpl.content.childNodes);   // NodeList [tr]
+
+  // querySelector works on the fragment:
+  const td = tpl.content.querySelector('.name');
+  console.log(td.tagName); // TD
+
+  // The original template remains unchanged after querying
+&lt;/script&gt;</pre>
+  <p class="label">template.content returns the DocumentFragment containing the template's children. You can query it, clone it, and import it like any other DOM node.</p>
+</div>
+
+<div class="example">
+  <h3>4. cloneNode(true) — deep-cloning the template content</h3>
+  <pre>
+const tpl   = document.querySelector('#item-tpl');
+
+// cloneNode(true) = deep clone — copies the entire subtree
+const clone = tpl.content.cloneNode(true);
+// clone is a DocumentFragment with all descendant elements copied
+
+// Populate the clone before insertion (efficient — one reflow)
+clone.querySelector('.label').textContent = 'Item A';
+clone.querySelector('.value').textContent = '42';
+
+document.querySelector('#list').appendChild(clone);
+
+// ⚠️ After appendChild the clone's children are moved into the DOM.
+// The clone DocumentFragment itself becomes empty.
+// Always call cloneNode again for each additional copy.</pre>
+  <p class="label">cloneNode(true) performs a deep copy of the template's fragment. After append, the fragment is drained — clone again for each new instance.</p>
+</div>
+
+<div class="example">
+  <h3>5. appendChild clone — inserting template instances into the DOM</h3>
+  <pre>
+const tpl  = document.querySelector('#card-tpl');
+const list = document.querySelector('#card-list');
+
+const data = [
+  { title: 'Alpha', desc: 'First item'  },
+  { title: 'Beta',  desc: 'Second item' },
+  { title: 'Gamma', desc: 'Third item'  },
+];
+
+data.forEach(item =&gt; {
+  const clone = tpl.content.cloneNode(true);
+  clone.querySelector('.title').textContent = item.title;
+  clone.querySelector('.desc').textContent  = item.desc;
+  list.appendChild(clone);  // Each clone inserts independently
+});
+
+// Result: three cards rendered from one template definition</pre>
+  <p class="label">Appending individual clones in a forEach loop is the standard pattern for rendering collections from a template — each clone is independent in the DOM.</p>
+</div>
+
+<div class="example">
+  <h3>6. querySelectorAll in template content</h3>
+  <pre>
+&lt;template id="form-tpl"&gt;
+  &lt;label&gt;Name: &lt;input class="field" name="name"&gt;&lt;/label&gt;
+  &lt;label&gt;Age:  &lt;input class="field" name="age" type="number"&gt;&lt;/label&gt;
+  &lt;label&gt;Email:&lt;input class="field" name="email" type="email"&gt;&lt;/label&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  const tpl    = document.querySelector('#form-tpl');
+  const fields = tpl.content.querySelectorAll('.field');
+  // NodeList(3) [input, input, input]
+
+  // Useful for introspecting a template before cloning,
+  // e.g., to validate it has required slots:
+  if (!fields.length) throw new Error('Template missing .field inputs');
+
+  const clone = tpl.content.cloneNode(true);
+  document.querySelector('form').appendChild(clone);
+&lt;/script&gt;</pre>
+  <p class="label">querySelectorAll on template.content lets you inspect, validate, or modify the template structure before cloning — the original remains unaffected.</p>
+</div>
+
+<div class="example">
+  <h3>7. Template not rendered until cloned — verify with the DOM</h3>
+  <pre>
+&lt;template id="hidden-tpl"&gt;
+  &lt;p id="secret"&gt;Secret content&lt;/p&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  // The p#secret is NOT in the live document tree:
+  console.log(document.getElementById('secret')); // null ← not there!
+
+  // It lives only inside the template's content fragment:
+  const tpl = document.getElementById('hidden-tpl');
+  console.log(tpl.content.getElementById('secret')); // &lt;p&gt;
+
+  // After insertion it becomes findable:
+  document.body.appendChild(tpl.content.cloneNode(true));
+  console.log(document.getElementById('secret')); // &lt;p id="secret"&gt;
+&lt;/script&gt;</pre>
+  <p class="label">Template content is not part of the live DOM, so getElementById and querySelectorAll on document won't find it until a clone is inserted.</p>
+</div>
+
+<div class="example">
+  <h3>8. Multiple clones from one template</h3>
+  <pre>
+const tpl     = document.querySelector('#chip-tpl');
+const wrapper = document.querySelector('.chips');
+const tags    = ['HTML', 'CSS', 'JavaScript', 'WebComponents'];
+
+// Each call to cloneNode produces an independent fragment
+tags.forEach(tag =&gt; {
+  const clone = tpl.content.cloneNode(true);
+  clone.querySelector('.chip-label').textContent = tag;
+  wrapper.appendChild(clone);
+});
+
+// All four chips are independent in the DOM.
+// Changing one does not affect the others or the template.</pre>
+  <p class="label">A single template can be cloned unlimited times. The source template.content is never mutated — only the clones change when you populate them.</p>
+</div>
+
+<div class="example">
+  <h3>9. Template in head vs body — both work</h3>
+  <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;!-- ✅ Template in &lt;head&gt; is valid and works correctly --&gt;
+  &lt;template id="head-tpl"&gt;
+    &lt;p&gt;Defined in head&lt;/p&gt;
+  &lt;/template&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- ✅ Template in &lt;body&gt; is the most common placement --&gt;
+  &lt;template id="body-tpl"&gt;
+    &lt;p&gt;Defined in body&lt;/p&gt;
+  &lt;/template&gt;
+
+  &lt;script&gt;
+    // Both are equally accessible:
+    document.querySelector('#head-tpl').content.cloneNode(true);
+    document.querySelector('#body-tpl').content.cloneNode(true);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  <p class="label">Templates can be placed in &lt;head&gt; or &lt;body&gt; — both are equally valid. Convention places them near the code that uses them, often at the bottom of body.</p>
+</div>
+
+<div class="example">
+  <h3>10. document.importNode — alternative to cloneNode</h3>
+  <pre>
+// document.importNode(node, deep) imports a node from another document
+// or from a template content fragment.
+
+const tpl   = document.querySelector('#row-tpl');
+const clone = document.importNode(tpl.content, true);
+// Equivalent to: tpl.content.cloneNode(true)
+// But importNode is required when importing from a DIFFERENT document:
+
+const iframe = document.querySelector('iframe');
+const extTpl = iframe.contentDocument.querySelector('#ext-tpl');
+// Must use importNode here — cloneNode would leave the node "owned"
+// by the iframe document.
+const imported = document.importNode(extTpl.content, true);
+document.body.appendChild(imported);</pre>
+  <p class="label">document.importNode(template.content, true) is semantically equivalent to cloneNode(true) within the same document, but required when crossing document boundaries (e.g. iframes).</p>
+</div>
+
+<div class="example">
+  <h3>11. Template with &lt;style&gt;</h3>
+  <pre>
+&lt;template id="styled-tpl"&gt;
+  &lt;style&gt;
+    /* These styles apply globally once the template is inserted! */
+    /* This is a drawback — use shadow DOM to scope them. */
+    .badge { display:inline-block; background:#6366f1; color:#fff;
+             padding:2px 8px; border-radius:999px; font-size:12px; }
+  &lt;/style&gt;
+  &lt;span class="badge"&gt;&lt;/span&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  const clone = document.querySelector('#styled-tpl').content.cloneNode(true);
+  clone.querySelector('.badge').textContent = 'New';
+  document.body.appendChild(clone);
+  // ⚠️ .badge styles are now GLOBAL — repeated clones add duplicate &lt;style&gt;.
+  // Prefer shadow DOM + template combination to scope styles.
+&lt;/script&gt;</pre>
+  <p class="label">Styles in a non-shadow template become global when the clone is inserted. For scoped styles, combine the template with a shadow root via attachShadow().</p>
+</div>
+
+<div class="example">
+  <h3>12. Template with script — deferred execution</h3>
+  <pre>
+&lt;template id="script-tpl"&gt;
+  &lt;div id="scripted-box"&gt;&lt;/div&gt;
+  &lt;script&gt;
+    // This runs once, only when the clone is inserted into the document.
+    document.getElementById('scripted-box').textContent = 'Script ran!';
+  &lt;/script&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  // Script inside template does NOT run here:
+  console.log(document.getElementById('scripted-box')); // null
+
+  // Insert the clone — now the inner script executes:
+  document.body.appendChild(
+    document.querySelector('#script-tpl').content.cloneNode(true)
+  );
+  // Script ran, element is now in DOM.
+  console.log(document.getElementById('scripted-box').textContent); // 'Script ran!'
+&lt;/script&gt;</pre>
+  <p class="label">Scripts inside templates execute when the clone enters the live DOM. Cloning the same template multiple times runs the script each time — be cautious of duplicates.</p>
+</div>
+
+<div class="example">
+  <h3>13. Template for table rows — clean separation of structure</h3>
+  <pre>
+&lt;table id="scores-table"&gt;
+  &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Player&lt;/th&gt;&lt;th&gt;Score&lt;/th&gt;&lt;th&gt;Level&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+  &lt;tbody&gt;&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;template id="row-tpl"&gt;
+  &lt;tr&gt;
+    &lt;td class="player"&gt;&lt;/td&gt;
+    &lt;td class="score"&gt;&lt;/td&gt;
+    &lt;td class="level"&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  const tbody = document.querySelector('#scores-table tbody');
+  const tpl   = document.querySelector('#row-tpl');
+  const rows  = [
+    { player:'Alice', score:9800, level:5 },
+    { player:'Bob',   score:7200, level:4 },
+  ];
+  rows.forEach(r =&gt; {
+    const c = tpl.content.cloneNode(true);
+    c.querySelector('.player').textContent = r.player;
+    c.querySelector('.score').textContent  = r.score.toLocaleString();
+    c.querySelector('.level').textContent  = r.level;
+    tbody.appendChild(c);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Using a template for table rows keeps HTML structure out of JavaScript strings, making the row markup inspectable in DevTools and searchable in source code.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Named slots in Shadow DOM</h3>
+  <pre>
+class ProfileCard extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host   { display:flex; gap:12px; align-items:center; padding:12px;
+                  border:1px solid #e5e7eb; border-radius:8px; }
+        .info   { display:flex; flex-direction:column; gap:4px; }
+        .name   { font-weight:600; }
+        .detail { font-size:13px; color:#6b7280; }
+      &lt;/style&gt;
+      &lt;!-- Named slot for avatar --&gt;
+      &lt;slot name="avatar"&gt;&lt;/slot&gt;
+      &lt;div class="info"&gt;
+        &lt;span class="name"&gt;&lt;slot name="name"&gt;Unknown&lt;/slot&gt;&lt;/span&gt;
+        &lt;span class="detail"&gt;&lt;slot name="role"&gt;&lt;/slot&gt;&lt;/span&gt;
+      &lt;/div&gt;
+    `;
+  }
+}
+customElements.define('profile-card', ProfileCard);
+
+// &lt;profile-card&gt;
+//   &lt;img slot="avatar" src="alice.jpg" width="48" height="48"
+//        style="border-radius:50%"&gt;
+//   &lt;span slot="name"&gt;Alice Chen&lt;/span&gt;
+//   &lt;span slot="role"&gt;Frontend Engineer&lt;/span&gt;
+// &lt;/profile-card&gt;</pre>
+  <p class="label">Named slots route specific light DOM children to defined positions in the shadow DOM layout, letting consumers control content without touching the component's internal structure.</p>
+</div>
+
+<div class="example">
+  <h3>15. Default (unnamed) slot — catching all remaining children</h3>
+  <pre>
+class PaperBox extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host { display:block; border:1px solid #e5e7eb; border-radius:8px;
+                padding:16px; }
+        header { font-weight:700; border-bottom:1px solid #e5e7eb; margin-bottom:12px; }
+      &lt;/style&gt;
+      &lt;header&gt;&lt;slot name="header"&gt;Default Header&lt;/slot&gt;&lt;/header&gt;
+      &lt;!-- Default slot catches ALL children without a slot= attribute --&gt;
+      &lt;slot&gt;&lt;/slot&gt;
+    `;
+  }
+}
+customElements.define('paper-box', PaperBox);
+
+// &lt;paper-box&gt;
+//   &lt;span slot="header"&gt;My Box&lt;/span&gt;
+//   &lt;p&gt;Goes to default slot.&lt;/p&gt;
+//   &lt;p&gt;Also goes to default slot.&lt;/p&gt;
+// &lt;/paper-box&gt;</pre>
+  <p class="label">The unnamed &lt;slot&gt; is the catch-all: any light DOM children that don't have a slot= attribute, or whose slot= name doesn't match, are projected here.</p>
+</div>
+
+<div class="example">
+  <h3>16. Slot fallback content</h3>
+  <pre>
+class NavItem extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host { display:flex; align-items:center; gap:8px; padding:8px 12px;
+                border-radius:6px; cursor:pointer; }
+        :host(:hover) { background:#f3f4f6; }
+      &lt;/style&gt;
+      &lt;!-- Fallback shown when no icon is slotted --&gt;
+      &lt;slot name="icon"&gt;
+        &lt;svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2"&gt;
+          &lt;circle cx="12" cy="12" r="10"/&gt;
+        &lt;/svg&gt;
+      &lt;/slot&gt;
+      &lt;!-- Fallback label --&gt;
+      &lt;slot&gt;Menu Item&lt;/slot&gt;
+    `;
+  }
+}
+customElements.define('nav-item', NavItem);
+
+// &lt;nav-item&gt;Dashboard&lt;/nav-item&gt;           ← uses fallback icon + custom label
+// &lt;nav-item&gt;&lt;/nav-item&gt;                     ← uses both fallbacks
+// &lt;nav-item&gt;&lt;span slot="icon"&gt;🏠&lt;/span&gt;Dashboard&lt;/nav-item&gt; ← custom icon</pre>
+  <p class="label">Fallback content between &lt;slot&gt; tags renders only when no matching light DOM nodes are assigned to that slot — a convenient default state.</p>
+</div>
+
+<div class="example">
+  <h3>17. slotchange event — detecting slot content updates</h3>
+  <pre>
+class LiveList extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: 'open' });
+    shadow.innerHTML = `
+      &lt;p id="count"&gt;&lt;/p&gt;
+      &lt;slot&gt;&lt;/slot&gt;
+    `;
+
+    // slotchange fires when nodes are added or removed from the slot
+    shadow.querySelector('slot').addEventListener('slotchange', (e) =&gt; {
+      const assigned = e.target.assignedElements();
+      shadow.querySelector('#count').textContent =
+        `${assigned.length} item(s) slotted`;
+      console.log('Slotted elements:', assigned);
+    });
+  }
+}
+customElements.define('live-list', LiveList);
+
+// Adding or removing children of &lt;live-list&gt; fires slotchange.</pre>
+  <p class="label">The slotchange event fires on the &lt;slot&gt; element whenever its assigned nodes change — useful for components that need to react to dynamic content injection.</p>
+</div>
+
+<div class="example">
+  <h3>18. assignedNodes() — reading all assigned nodes</h3>
+  <pre>
+class InspectSlot extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: 'open' });
+    shadow.innerHTML = `&lt;slot&gt;&lt;/slot&gt;`;
+
+    shadow.querySelector('slot').addEventListener('slotchange', (e) =&gt; {
+      const slot = e.target;
+
+      // assignedNodes() — returns Text nodes AND elements
+      const all = slot.assignedNodes();
+      console.log('All nodes (incl. text):', all);
+
+      // assignedNodes({ flatten: true }) — resolves nested slots
+      const flat = slot.assignedNodes({ flatten: true });
+      console.log('Flattened:', flat);
+
+      // assignedElements() — elements only (no text nodes)
+      const els = slot.assignedElements();
+      console.log('Elements only:', els);
+    });
+  }
+}
+customElements.define('inspect-slot', InspectSlot);</pre>
+  <p class="label">assignedNodes() returns all nodes (including text) distributed into a slot. assignedElements() filters to only element nodes. { flatten: true } resolves chained slots.</p>
+</div>
+
+<div class="example">
+  <h3>19. CSS ::slotted() — styling projected light DOM elements</h3>
+  <pre>
+class TagList extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host { display:flex; flex-wrap:wrap; gap:6px; }
+
+        /* Styles ALL slotted elements */
+        ::slotted(*) {
+          display:inline-block;
+          padding:2px 10px;
+          border-radius:999px;
+          font-size:13px;
+        }
+
+        /* Target only slotted &lt;span&gt; elements */
+        ::slotted(span) {
+          background:#e0e7ff;
+          color:#3730a3;
+        }
+
+        /* ⚠️ ::slotted only matches direct slotted children,
+           NOT their descendants */
+        ::slotted(span strong) { /* this does NOT work */ }
+      &lt;/style&gt;
+      &lt;slot&gt;&lt;/slot&gt;
+    `;
+  }
+}
+customElements.define('tag-list', TagList);</pre>
+  <p class="label">::slotted(selector) styles elements from the light DOM that are projected into the shadow slot. It only matches direct children — not deeper descendants of slotted elements.</p>
+</div>
+
+<div class="example">
+  <h3>20. Projecting multiple elements into one slot</h3>
+  <pre>
+class ActionBar extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host { display:flex; align-items:center; justify-content:space-between;
+                padding:8px 16px; background:#f9fafb; border-radius:6px; }
+        .left  { display:flex; gap:8px; }
+        .right { display:flex; gap:8px; }
+      &lt;/style&gt;
+      &lt;div class="left"&gt;&lt;slot name="start"&gt;&lt;/slot&gt;&lt;/div&gt;
+      &lt;div class="right"&gt;&lt;slot name="end"&gt;&lt;/slot&gt;&lt;/div&gt;
+    `;
+  }
+}
+customElements.define('action-bar', ActionBar);
+
+// Multiple elements with the same slot name all go to that slot:
+// &lt;action-bar&gt;
+//   &lt;button slot="start"&gt;New&lt;/button&gt;
+//   &lt;button slot="start"&gt;Import&lt;/button&gt;
+//   &lt;button slot="end"&gt;Export&lt;/button&gt;
+//   &lt;button slot="end"&gt;Settings&lt;/button&gt;
+// &lt;/action-bar&gt;</pre>
+  <p class="label">Multiple light DOM elements with the same slot= value are all projected into the same slot and rendered in DOM order — slots are not limited to one element.</p>
+</div>
+
+<div class="example">
+  <h3>21. Template composition patterns — combining templates</h3>
+  <pre>
+// Define small focused templates, compose them into larger structures.
+
+&lt;template id="icon-tpl"&gt;
+  &lt;svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2"&gt;
+    &lt;path class="icon-path"&gt;&lt;/path&gt;
+  &lt;/svg&gt;
+&lt;/template&gt;
+
+&lt;template id="btn-tpl"&gt;
+  &lt;button class="icon-btn"&gt;
+    &lt;!-- Placeholder for composed icon --&gt;
+    &lt;span class="icon-slot"&gt;&lt;/span&gt;
+    &lt;span class="btn-label"&gt;&lt;/span&gt;
+  &lt;/button&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  function makeIconButton(iconPath, label) {
+    const icon = document.querySelector('#icon-tpl').content.cloneNode(true);
+    icon.querySelector('.icon-path').setAttribute('d', iconPath);
+
+    const btn = document.querySelector('#btn-tpl').content.cloneNode(true);
+    btn.querySelector('.icon-slot').appendChild(icon);
+    btn.querySelector('.btn-label').textContent = label;
+    return btn;
+  }
+  document.body.appendChild(makeIconButton('M12 4v16M4 12h16', 'Add'));
+&lt;/script&gt;</pre>
+  <p class="label">Template composition builds complex UI by cloning smaller templates and appending them into designated slots within a parent template — all without frameworks.</p>
+</div>
+
+<div class="example">
+  <h3>22. Template for modal dialog</h3>
+  <pre>
+&lt;template id="modal-tpl"&gt;
+  &lt;div class="modal-backdrop"&gt;
+    &lt;div class="modal" role="dialog" aria-modal="true"&gt;
+      &lt;header class="modal-header"&gt;
+        &lt;h2 class="modal-title"&gt;&lt;/h2&gt;
+        &lt;button class="modal-close" aria-label="Close"&gt;✕&lt;/button&gt;
+      &lt;/header&gt;
+      &lt;div class="modal-body"&gt;&lt;/div&gt;
+      &lt;footer class="modal-footer"&gt;&lt;/footer&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  function openModal({ title, body, footer }) {
+    const clone = document.querySelector('#modal-tpl').content.cloneNode(true);
+    clone.querySelector('.modal-title').textContent = title;
+    clone.querySelector('.modal-body').innerHTML    = body;
+    clone.querySelector('.modal-footer').innerHTML  = footer;
+    clone.querySelector('.modal-close').addEventListener('click', () =&gt;
+      document.querySelector('.modal-backdrop').remove());
+    document.body.appendChild(clone);
+  }
+  openModal({ title:'Confirm', body:'&lt;p&gt;Are you sure?&lt;/p&gt;',
+    footer:'&lt;button&gt;Yes&lt;/button&gt; &lt;button&gt;No&lt;/button&gt;' });
+&lt;/script&gt;</pre>
+  <p class="label">A modal template separates the dialog structure from its content. The factory function populates title, body, and footer from parameters before inserting.</p>
+</div>
+
+<div class="example">
+  <h3>23. Template for card component</h3>
+  <pre>
+&lt;template id="card-tpl"&gt;
+  &lt;article class="card"&gt;
+    &lt;div  class="card-image"&gt;&lt;/div&gt;
+    &lt;div  class="card-body"&gt;
+      &lt;h3  class="card-title"&gt;&lt;/h3&gt;
+      &lt;p   class="card-excerpt"&gt;&lt;/p&gt;
+      &lt;div class="card-meta"&gt;
+        &lt;time class="card-date"&gt;&lt;/time&gt;
+        &lt;a   class="card-link"  href="#"&gt;Read more →&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  function renderCard({ title, excerpt, date, url, image }) {
+    const c = document.querySelector('#card-tpl').content.cloneNode(true);
+    c.querySelector('.card-image').style.backgroundImage  = `url(${image})`;
+    c.querySelector('.card-title').textContent   = title;
+    c.querySelector('.card-excerpt').textContent = excerpt;
+    c.querySelector('.card-date').textContent    = date;
+    c.querySelector('.card-date').setAttribute('datetime', date);
+    c.querySelector('.card-link').href           = url;
+    return c;
+  }
+&lt;/script&gt;</pre>
+  <p class="label">A card template encodes the full card structure — image, body, meta — while the factory function binds data to specific classes before insertion.</p>
+</div>
+
+<div class="example">
+  <h3>24. Template for list item — efficient batch rendering</h3>
+  <pre>
+&lt;template id="li-tpl"&gt;
+  &lt;li class="todo-item"&gt;
+    &lt;input type="checkbox" class="todo-check"&gt;
+    &lt;label class="todo-label"&gt;&lt;/label&gt;
+    &lt;button class="todo-del" aria-label="Delete"&gt;✕&lt;/button&gt;
+  &lt;/li&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  // Use DocumentFragment to batch-insert all items in one reflow
+  const tpl  = document.querySelector('#li-tpl');
+  const frag = document.createDocumentFragment();
+  const todos = ['Buy milk', 'Write tests', 'Deploy app'];
+
+  todos.forEach((text, i) =&gt; {
+    const c = tpl.content.cloneNode(true);
+    const id = `todo-${i}`;
+    c.querySelector('.todo-check').id  = id;
+    c.querySelector('.todo-label').htmlFor     = id;
+    c.querySelector('.todo-label').textContent = text;
+    frag.appendChild(c);
+  });
+
+  document.querySelector('#todo-list').appendChild(frag);
+  // Single DOM mutation for all items
+&lt;/script&gt;</pre>
+  <p class="label">Accumulating clones into a DocumentFragment before a single appendChild batches DOM mutations into one reflow — a significant performance win for long lists.</p>
+</div>
+
+<div class="example">
+  <h3>25. Template for notification toast</h3>
+  <pre>
+&lt;template id="toast-tpl"&gt;
+  &lt;div class="toast" role="status" aria-live="polite"&gt;
+    &lt;span class="toast-icon"&gt;&lt;/span&gt;
+    &lt;span class="toast-msg"&gt;&lt;/span&gt;
+    &lt;button class="toast-close" aria-label="Dismiss"&gt;✕&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  const ICONS = { success:'✅', error:'❌', warning:'⚠️', info:'ℹ️' };
+
+  function showToast(msg, type = 'info', duration = 4000) {
+    const c = document.querySelector('#toast-tpl').content.cloneNode(true);
+    const el = c.querySelector('.toast');
+    el.classList.add(`toast--${type}`);
+    c.querySelector('.toast-icon').textContent = ICONS[type];
+    c.querySelector('.toast-msg').textContent  = msg;
+    c.querySelector('.toast-close').addEventListener('click', () =&gt; el.remove());
+    document.querySelector('#toast-container').appendChild(c);
+    setTimeout(() =&gt; el.remove(), duration);
+  }
+
+  showToast('File saved successfully', 'success');
+&lt;/script&gt;</pre>
+  <p class="label">A toast template produces accessible live-region notifications. The factory sets icon, message, and type modifier class, then auto-removes after the duration elapses.</p>
+</div>
+
+<div class="example">
+  <h3>26. Template for form section — repeatable fieldsets</h3>
+  <pre>
+&lt;template id="address-tpl"&gt;
+  &lt;fieldset class="address-section"&gt;
+    &lt;legend class="address-legend"&gt;Address&lt;/legend&gt;
+    &lt;label&gt;Street:
+      &lt;input class="street" type="text" autocomplete="street-address"&gt;
+    &lt;/label&gt;
+    &lt;label&gt;City:
+      &lt;input class="city" type="text" autocomplete="address-level2"&gt;
+    &lt;/label&gt;
+    &lt;label&gt;Postcode:
+      &lt;input class="zip" type="text" autocomplete="postal-code"&gt;
+    &lt;/label&gt;
+  &lt;/fieldset&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  // Create billing and shipping sections from one template
+  ['Billing', 'Shipping'].forEach(type =&gt; {
+    const c = document.querySelector('#address-tpl').content.cloneNode(true);
+    c.querySelector('.address-legend').textContent = `${type} Address`;
+    // Namespace input names so the form can submit both
+    c.querySelectorAll('input').forEach(inp =&gt; {
+      inp.name = `${type.toLowerCase()}_${inp.className}`;
+    });
+    document.querySelector('#checkout-form').appendChild(c);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Repeatable form sections (billing/shipping) from a single template are namespace-disambiguated by prefixing input name attributes — no duplication in HTML source.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Full shadow component using template + slots</h3>
+  <pre>
+&lt;template id="page-card-tpl"&gt;
+  &lt;style&gt;
+    :host   { display:block; border-radius:12px; overflow:hidden;
+              box-shadow:0 4px 16px #0002; font-family:sans-serif; }
+    .cover  { height:180px; background:var(--cover,#6366f1); display:flex;
+              align-items:flex-end; padding:16px; }
+    .body   { padding:20px; }
+    .footer { background:#f9fafb; padding:12px 20px; display:flex;
+              justify-content:flex-end; gap:8px; }
+  &lt;/style&gt;
+  &lt;div class="cover"&gt;&lt;slot name="eyebrow"&gt;&lt;/slot&gt;&lt;/div&gt;
+  &lt;div class="body"&gt;
+    &lt;slot name="title"&gt;&lt;/slot&gt;
+    &lt;slot&gt;&lt;/slot&gt;
+  &lt;/div&gt;
+  &lt;div class="footer"&gt;&lt;slot name="actions"&gt;&lt;/slot&gt;&lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+class PageCard extends HTMLElement {
+  constructor() {
+    super();
+    const tpl    = document.querySelector('#page-card-tpl');
+    const shadow = this.attachShadow({ mode: 'open' });
+    shadow.appendChild(tpl.content.cloneNode(true));
+  }
+}
+customElements.define('page-card', PageCard);
+&lt;/script&gt;
+
+&lt;!-- Usage:
+&lt;page-card style="--cover:#0ea5e9"&gt;
+  &lt;span slot="eyebrow" style="color:#fff;font-size:12px"&gt;FEATURED&lt;/span&gt;
+  &lt;h2 slot="title"&gt;Ocean Depths&lt;/h2&gt;
+  &lt;p&gt;Discover the mysteries below.&lt;/p&gt;
+  &lt;button slot="actions"&gt;Read More&lt;/button&gt;
+&lt;/page-card&gt; --&gt;</pre>
+  <p class="label">Combining a &lt;template&gt; element with attachShadow separates component markup from JS logic — the template lives in HTML, the custom element class just clones it into its shadow root.</p>
+</div>
+
+<div class="example">
+  <h3>28. Accordion using template</h3>
+  <pre>
+&lt;template id="acc-item-tpl"&gt;
+  &lt;div class="acc-item"&gt;
+    &lt;button class="acc-trigger" aria-expanded="false"&gt;
+      &lt;span class="acc-title"&gt;&lt;/span&gt;
+      &lt;span class="acc-arrow"&gt;▼&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;div class="acc-panel" hidden&gt;
+      &lt;div class="acc-content"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+const tpl   = document.querySelector('#acc-item-tpl');
+const items = [
+  { title: 'What is HTML?',      body: 'HyperText Markup Language...' },
+  { title: 'What is the DOM?',   body: 'Document Object Model...'    },
+  { title: 'What are templates?',body: 'Inert reusable markup...'    },
+];
+
+const container = document.querySelector('#accordion');
+items.forEach(({ title, body }) =&gt; {
+  const c = tpl.content.cloneNode(true);
+  c.querySelector('.acc-title').textContent   = title;
+  c.querySelector('.acc-content').textContent = body;
+  c.querySelector('.acc-trigger').addEventListener('click', function() {
+    const panel    = this.nextElementSibling;
+    const expanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', String(!expanded));
+    panel.hidden = expanded;
+  });
+  container.appendChild(c);
+});
+&lt;/script&gt;</pre>
+  <p class="label">An accordion built from a template keeps the item structure (trigger + panel + arrow) in HTML, while JavaScript only handles click events and ARIA state toggling.</p>
+</div>
+
+<div class="example">
+  <h3>29. Tab panel using template</h3>
+  <pre>
+&lt;template id="tab-tpl"&gt;
+  &lt;div class="tab-container"&gt;
+    &lt;div class="tab-list" role="tablist"&gt;&lt;/div&gt;
+    &lt;div class="tab-panels"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+function buildTabs(containerId, tabs) {
+  const c    = document.querySelector('#tab-tpl').content.cloneNode(true);
+  const list = c.querySelector('.tab-list');
+  const panels = c.querySelector('.tab-panels');
+
+  tabs.forEach(({ label, content }, i) =&gt; {
+    const id   = `tab-${containerId}-${i}`;
+    const btn  = document.createElement('button');
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(i === 0));
+    btn.setAttribute('aria-controls', `panel-${id}`);
+    btn.textContent = label;
+    list.appendChild(btn);
+
+    const panel = document.createElement('div');
+    panel.setAttribute('role', 'tabpanel');
+    panel.id      = `panel-${id}`;
+    panel.hidden  = i !== 0;
+    panel.innerHTML = content;
+    panels.appendChild(panel);
+  });
+
+  list.addEventListener('click', e =&gt; {
+    if (e.target.role !== 'tab') return;
+    list.querySelectorAll('[role=tab]').forEach(t =&gt;
+      t.setAttribute('aria-selected', String(t === e.target)));
+    const panelId = e.target.getAttribute('aria-controls');
+    panels.querySelectorAll('[role=tabpanel]').forEach(p =&gt;
+      { p.hidden = p.id !== panelId; });
+  });
+
+  document.querySelector(`#${containerId}`).appendChild(c);
+}
+&lt;/script&gt;</pre>
+  <p class="label">A programmatic tab builder uses a template for the outer container and creates tab buttons and panels dynamically, wiring ARIA attributes and click handlers in one pass.</p>
+</div>
+
+<div class="example">
+  <h3>30. Table component using template</h3>
+  <pre>
+&lt;template id="tbl-head-tpl"&gt;
+  &lt;thead&gt;&lt;tr class="hrow"&gt;&lt;/tr&gt;&lt;/thead&gt;
+&lt;/template&gt;
+
+&lt;template id="tbl-row-tpl"&gt;
+  &lt;tr class="drow"&gt;&lt;/tr&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+function buildTable(container, { columns, rows }) {
+  const table = document.createElement('table');
+
+  // Build header from template
+  const hc = document.querySelector('#tbl-head-tpl').content.cloneNode(true);
+  columns.forEach(col =&gt; {
+    const th = document.createElement('th');
+    th.textContent = col.label;
+    th.dataset.key = col.key;
+    if (col.sortable) th.style.cursor = 'pointer';
+    hc.querySelector('.hrow').appendChild(th);
+  });
+  table.appendChild(hc);
+
+  // Build body rows from template
+  const tbody = document.createElement('tbody');
+  rows.forEach(row =&gt; {
+    const rc = document.querySelector('#tbl-row-tpl').content.cloneNode(true);
+    columns.forEach(col =&gt; {
+      const td = document.createElement('td');
+      td.textContent = row[col.key] ?? '—';
+      rc.querySelector('.drow').appendChild(td);
+    });
+    tbody.appendChild(rc);
+  });
+  table.appendChild(tbody);
+  container.appendChild(table);
+}
+&lt;/script&gt;</pre>
+  <p class="label">Separate header and row templates are composed in the buildTable factory — columns drive both template instantiations, ensuring header and data cell counts always match.</p>
+</div>
+
+<div class="example">
+  <h3>31. Dynamic list with template — adding and removing items</h3>
+  <pre>
+&lt;template id="entry-tpl"&gt;
+  &lt;li class="entry" data-id=""&gt;
+    &lt;span class="entry-text"&gt;&lt;/span&gt;
+    &lt;time class="entry-time"&gt;&lt;/time&gt;
+    &lt;button class="entry-del"&gt;Remove&lt;/button&gt;
+  &lt;/li&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+let nextId = 1;
+const tpl  = document.querySelector('#entry-tpl');
+const list = document.querySelector('#entry-list');
+
+function addEntry(text) {
+  const id    = nextId++;
+  const clone = tpl.content.cloneNode(true);
+  const li    = clone.querySelector('.entry');
+  li.dataset.id = id;
+  clone.querySelector('.entry-text').textContent = text;
+  clone.querySelector('.entry-time').textContent =
+    new Date().toLocaleTimeString();
+  clone.querySelector('.entry-del').addEventListener('click', () =&gt;
+    list.querySelector(`[data-id="${id}"]`).remove());
+  list.appendChild(clone);
+}
+
+function clearAll() { list.innerHTML = ''; }
+&lt;/script&gt;</pre>
+  <p class="label">A template-based dynamic list adds items with unique IDs and wires remove buttons in the clone before insertion, avoiding re-querying the DOM after append.</p>
+</div>
+
+<div class="example">
+  <h3>32. Photo gallery using template</h3>
+  <pre>
+&lt;template id="photo-tpl"&gt;
+  &lt;figure class="photo"&gt;
+    &lt;img class="photo-img" loading="lazy" alt=""&gt;
+    &lt;figcaption class="photo-cap"&gt;&lt;/figcaption&gt;
+  &lt;/figure&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+const photos = [
+  { src:'cat.jpg',   alt:'A tabby cat',     caption:'Whiskers' },
+  { src:'dog.jpg',   alt:'A golden dog',     caption:'Buddy'   },
+  { src:'bird.jpg',  alt:'A blue parakeet',  caption:'Tweet'   },
+];
+
+const tpl     = document.querySelector('#photo-tpl');
+const gallery = document.querySelector('#gallery');
+const frag    = document.createDocumentFragment();
+
+photos.forEach(({ src, alt, caption }) =&gt; {
+  const c = tpl.content.cloneNode(true);
+  const img = c.querySelector('.photo-img');
+  img.src = src;
+  img.alt = alt;
+  c.querySelector('.photo-cap').textContent = caption;
+  c.querySelector('.photo').addEventListener('click', () =&gt;
+    openLightbox(src, alt));
+  frag.appendChild(c);
+});
+
+gallery.appendChild(frag);
+&lt;/script&gt;</pre>
+  <p class="label">A photo gallery uses a template and DocumentFragment for batch insertion. Each figure is populated and given a click handler in a single pass before the one DOM update.</p>
+</div>
+
+<div class="example">
+  <h3>33. Notification component with shadow DOM + template</h3>
+  <pre>
+&lt;template id="notif-shadow-tpl"&gt;
+  &lt;style&gt;
+    :host     { display:block; padding:12px 16px; border-radius:8px;
+                font-family:sans-serif; font-size:14px; line-height:1.4;
+                background:var(--notif-bg,#eff6ff); color:var(--notif-color,#1d4ed8);
+                border-left:4px solid var(--notif-border,#3b82f6); }
+    .row      { display:flex; align-items:flex-start; gap:10px; }
+    .icon     { font-size:18px; line-height:1; }
+    button    { margin-left:auto; background:none; border:none; cursor:pointer;
+                font-size:16px; color:inherit; opacity:.6; }
+    button:hover { opacity:1; }
+  &lt;/style&gt;
+  &lt;div class="row"&gt;
+    &lt;span class="icon"&gt;&lt;/span&gt;
+    &lt;span class="body"&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/span&gt;
+    &lt;button class="dismiss" aria-label="Dismiss"&gt;✕&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+class NotifEl extends HTMLElement {
+  constructor() {
+    super();
+    const tpl = document.querySelector('#notif-shadow-tpl');
+    this.attachShadow({ mode:'open' }).appendChild(tpl.content.cloneNode(true));
+    this.shadowRoot.querySelector('.dismiss').onclick = () =&gt; this.remove();
+  }
+  static observedAttributes = ['type'];
+  attributeChangedCallback(_, __, val) {
+    const icons = { info:'ℹ️', success:'✅', warning:'⚠️', error:'❌' };
+    const el = this.shadowRoot?.querySelector('.icon');
+    if (el) el.textContent = icons[val] ?? '';
+  }
+  connectedCallback() { this.attributeChangedCallback('type',null,this.getAttribute('type')); }
+}
+customElements.define('notif-el', NotifEl);
+&lt;/script&gt;</pre>
+  <p class="label">A notification custom element clones a shadow-DOM template at construction time and reacts to type attribute changes to swap the icon — combining template and custom elements cleanly.</p>
+</div>
+
+<div class="example">
+  <h3>34. Skeleton loader using template</h3>
+  <pre>
+&lt;template id="skeleton-card-tpl"&gt;
+  &lt;div class="skeleton-card"&gt;
+    &lt;div class="skel skel-image"&gt;&lt;/div&gt;
+    &lt;div class="skel-body"&gt;
+      &lt;div class="skel skel-title"&gt;&lt;/div&gt;
+      &lt;div class="skel skel-line"&gt;&lt;/div&gt;
+      &lt;div class="skel skel-line skel-line--short"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;style&gt;
+  @keyframes shimmer { to { background-position: -200% center; } }
+  .skel {
+    border-radius:4px;
+    background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+    background-size:200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  .skel-image   { height:140px; margin-bottom:12px; }
+  .skel-title   { height:20px; width:70%; margin-bottom:8px; }
+  .skel-line    { height:14px; margin-bottom:6px; }
+  .skel-line--short { width:50%; }
+&lt;/style&gt;
+
+&lt;script&gt;
+  const container = document.querySelector('#cards');
+  const tpl = document.querySelector('#skeleton-card-tpl');
+
+  // Show 3 skeleton placeholders while data loads
+  for (let i = 0; i &lt; 3; i++) container.appendChild(tpl.content.cloneNode(true));
+
+  // Replace with real content once data arrives
+  fetch('/api/cards').then(r =&gt; r.json()).then(data =&gt; {
+    container.innerHTML = '';
+    data.forEach(card =&gt; renderRealCard(container, card));
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Skeleton loaders from a template provide instant perceived performance — placeholder shimmer cards appear immediately, then are replaced by real content after the fetch resolves.</p>
+</div>
+
+<div class="example">
+  <h3>35. Context menu using template</h3>
+  <pre>
+&lt;template id="ctx-menu-tpl"&gt;
+  &lt;menu class="ctx-menu" role="menu"&gt;
+    &lt;!-- menu items injected dynamically --&gt;
+  &lt;/menu&gt;
+&lt;/template&gt;
+
+&lt;template id="ctx-item-tpl"&gt;
+  &lt;li class="ctx-item" role="menuitem"&gt;
+    &lt;span class="ctx-icon"&gt;&lt;/span&gt;
+    &lt;span class="ctx-label"&gt;&lt;/span&gt;
+  &lt;/li&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+let currentMenu = null;
+
+function openContextMenu(x, y, items) {
+  currentMenu?.remove();
+  const menuClone = document.querySelector('#ctx-menu-tpl').content.cloneNode(true);
+  const menu = menuClone.querySelector('.ctx-menu');
+  menu.style.cssText = `position:fixed;left:${x}px;top:${y}px;z-index:9999`;
+
+  items.forEach(({ icon, label, action }) =&gt; {
+    const c = document.querySelector('#ctx-item-tpl').content.cloneNode(true);
+    c.querySelector('.ctx-icon').textContent  = icon;
+    c.querySelector('.ctx-label').textContent = label;
+    c.querySelector('.ctx-item').addEventListener('click', () =&gt; { action(); menu.remove(); });
+    menu.appendChild(c);
+  });
+
+  document.body.appendChild(menuClone);
+  currentMenu = document.querySelector('.ctx-menu');
+}
+
+document.addEventListener('contextmenu', e =&gt; {
+  e.preventDefault();
+  openContextMenu(e.clientX, e.clientY, [
+    { icon:'📋', label:'Copy',  action:() =&gt; document.execCommand('copy') },
+    { icon:'📌', label:'Pin',   action:() =&gt; console.log('Pinned') },
+    { icon:'🗑', label:'Delete',action:() =&gt; console.log('Deleted') },
+  ]);
+});
+document.addEventListener('click', () =&gt; currentMenu?.remove());
+&lt;/script&gt;</pre>
+  <p class="label">Two templates — one for the menu container, one for each menu item — are composed at runtime. The item template avoids string concatenation for dynamic menu generation.</p>
+</div>
+
+<div class="example">
+  <h3>36. Infinite scroll list with template</h3>
+  <pre>
+&lt;template id="feed-item-tpl"&gt;
+  &lt;article class="feed-item"&gt;
+    &lt;img  class="feed-avatar" width="40" height="40" alt=""&gt;
+    &lt;div  class="feed-body"&gt;
+      &lt;strong class="feed-author"&gt;&lt;/strong&gt;
+      &lt;p     class="feed-text"&gt;&lt;/p&gt;
+      &lt;time  class="feed-time"&gt;&lt;/time&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+let page = 1;
+const tpl  = document.querySelector('#feed-item-tpl');
+const feed = document.querySelector('#feed');
+
+async function loadPage() {
+  const items = await fetch(`/api/feed?page=${page}`).then(r =&gt; r.json());
+  const frag  = document.createDocumentFragment();
+  items.forEach(({ author, text, time, avatar }) =&gt; {
+    const c = tpl.content.cloneNode(true);
+    c.querySelector('.feed-avatar').src         = avatar;
+    c.querySelector('.feed-avatar').alt         = author;
+    c.querySelector('.feed-author').textContent = author;
+    c.querySelector('.feed-text').textContent   = text;
+    c.querySelector('.feed-time').textContent   = new Date(time).toRelativeString?.() ?? time;
+    frag.appendChild(c);
+  });
+  feed.appendChild(frag);
+  page++;
+}
+
+const sentinel = document.querySelector('#scroll-sentinel');
+new IntersectionObserver(([e]) =&gt; { if (e.isIntersecting) loadPage(); }).observe(sentinel);
+loadPage();
+&lt;/script&gt;</pre>
+  <p class="label">An infinite-scroll feed fetches each page and batch-inserts items via a DocumentFragment and template clone. An IntersectionObserver on a sentinel element triggers each load.</p>
+</div>
+
+<div class="example">
+  <h3>37. Multi-step wizard using template</h3>
+  <pre>
+&lt;template id="step-tpl"&gt;
+  &lt;section class="step" hidden&gt;
+    &lt;h2 class="step-title"&gt;&lt;/h2&gt;
+    &lt;div class="step-content"&gt;&lt;/div&gt;
+    &lt;div class="step-nav"&gt;
+      &lt;button class="btn-back"&gt;← Back&lt;/button&gt;
+      &lt;button class="btn-next"&gt;Next →&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+const steps = [
+  { title:'Personal Info', html:'&lt;label&gt;Name: &lt;input&gt;&lt;/label&gt;' },
+  { title:'Contact',       html:'&lt;label&gt;Email: &lt;input type="email"&gt;&lt;/label&gt;' },
+  { title:'Confirm',       html:'&lt;p&gt;Review and submit.&lt;/p&gt;' },
+];
+let current = 0;
+const tpl  = document.querySelector('#step-tpl');
+const form = document.querySelector('#wizard');
+
+steps.forEach(({ title, html }, i) =&gt; {
+  const c = tpl.content.cloneNode(true);
+  const s = c.querySelector('.step');
+  c.querySelector('.step-title').textContent = title;
+  c.querySelector('.step-content').innerHTML = html;
+  if (i === 0) s.hidden = false;
+
+  c.querySelector('.btn-back').addEventListener('click', () =&gt; goTo(i - 1));
+  c.querySelector('.btn-next').addEventListener('click', () =&gt; goTo(i + 1));
+  if (i === 0) c.querySelector('.btn-back').hidden = true;
+  if (i === steps.length - 1) c.querySelector('.btn-next').textContent = 'Submit';
+  form.appendChild(c);
+});
+
+function goTo(idx) {
+  if (idx &lt; 0 || idx &gt;= steps.length) return;
+  form.querySelectorAll('.step')[current].hidden = true;
+  form.querySelectorAll('.step')[idx].hidden     = false;
+  current = idx;
+}
+&lt;/script&gt;</pre>
+  <p class="label">A wizard builds each step from the same template, injects step-specific content, then hides/shows sections on navigation — all structural markup coming from one template definition.</p>
+</div>
+
+<div class="example">
+  <h3>38. Drag-and-drop kanban board using template</h3>
+  <pre>
+&lt;template id="column-tpl"&gt;
+  &lt;div class="kb-col" data-status=""&gt;
+    &lt;h3 class="kb-col-title"&gt;&lt;/h3&gt;
+    &lt;ul class="kb-list"&gt;&lt;/ul&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;template id="card-tpl"&gt;
+  &lt;li class="kb-card" draggable="true" data-id=""&gt;
+    &lt;p class="kb-card-title"&gt;&lt;/p&gt;
+    &lt;span class="kb-card-tag"&gt;&lt;/span&gt;
+  &lt;/li&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+const board = document.querySelector('#kanban');
+const colTpl  = document.querySelector('#column-tpl');
+const cardTpl = document.querySelector('#card-tpl');
+
+[{status:'todo',label:'To Do'},{status:'doing',label:'In Progress'},
+ {status:'done',label:'Done'}].forEach(({ status, label }) =&gt; {
+  const c = colTpl.content.cloneNode(true);
+  c.querySelector('.kb-col').dataset.status = status;
+  c.querySelector('.kb-col-title').textContent = label;
+  const list = c.querySelector('.kb-list');
+  list.addEventListener('dragover', e =&gt; e.preventDefault());
+  list.addEventListener('drop', e =&gt; {
+    const id = e.dataTransfer.getData('card-id');
+    list.appendChild(document.querySelector(`[data-id="${id}"]`));
+  });
+  board.appendChild(c);
+});
+
+function addCard(status, { id, title, tag }) {
+  const c = cardTpl.content.cloneNode(true);
+  const li = c.querySelector('.kb-card');
+  li.dataset.id = id;
+  c.querySelector('.kb-card-title').textContent = title;
+  c.querySelector('.kb-card-tag').textContent   = tag;
+  li.addEventListener('dragstart', e =&gt; e.dataTransfer.setData('card-id', id));
+  board.querySelector(`[data-status="${status}"] .kb-list`).appendChild(c);
+}
+&lt;/script&gt;</pre>
+  <p class="label">A kanban board creates columns and cards from separate templates, wiring drag-and-drop via HTML5 draggable API. Cards move by re-appending DOM nodes, not by re-rendering.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Template performance vs innerHTML — when to use which</h3>
+  <pre>
+// ── innerHTML approach ────────────────────────────────────────────
+// Simple, synchronous, but re-parses the HTML string on every call.
+function renderViaInnerHTML(data) {
+  container.innerHTML = data.map(item =&gt;
+    `&lt;li class="item"&gt;&lt;span&gt;${item.name}&lt;/span&gt;&lt;/li&gt;`
+  ).join('');
+}
+
+// ── template approach ─────────────────────────────────────────────
+// Template is parsed ONCE by the browser at page load.
+// Subsequent clones are a native C++ tree copy — no re-parsing.
+const tpl = document.querySelector('#item-tpl');
+function renderViaTemplate(data) {
+  const frag = document.createDocumentFragment();
+  data.forEach(item =&gt; {
+    const c = tpl.content.cloneNode(true);
+    c.querySelector('span').textContent = item.name; // XSS-safe!
+    frag.appendChild(c);
+  });
+  container.replaceChildren(frag); // single reflow
+}
+
+// Template wins for:
+//  1. Large lists (no repeated HTML parsing)
+//  2. Security (textContent assignment never injects script)
+//  3. Readability (structure in HTML, data in JS)</pre>
+  <p class="label">Templates avoid repeated HTML parsing and enable safe textContent assignment — preventing XSS. For lists of 100+ items the difference in parse overhead becomes measurable.</p>
+</div>
+
+<div class="example">
+  <h3>40. Server-side template vs client template</h3>
+  <pre>
+&lt;!-- ── Server-rendered (Jinja2 / Nunjucks / etc.) ─────────────── --&gt;
+&lt;!-- Rendered at request time; full HTML in the initial response.   --&gt;
+{% for post in posts %}
+&lt;article&gt;
+  &lt;h2&gt;{{ post.title }}&lt;/h2&gt;
+  &lt;p&gt;{{ post.excerpt }}&lt;/p&gt;
+&lt;/article&gt;
+{% endfor %}
+
+&lt;!-- ── Client-side &lt;template&gt; element ─────────────────────────── --&gt;
+&lt;!-- Rendered after JS runs; requires JavaScript to display.       --&gt;
+&lt;template id="post-tpl"&gt;
+  &lt;article&gt;
+    &lt;h2 class="pt"&gt;&lt;/h2&gt;
+    &lt;p  class="pe"&gt;&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+
+&lt;!-- Hybrid: SSR renders initial page; client template handles
+     subsequent additions (e.g., loading more posts via fetch). --&gt;
+
+&lt;!-- Decision guide:
+     - SEO content, first paint    → SSR
+     - Dynamic / user-specific     → client template
+     - Both                        → SSR + client template for updates --&gt;</pre>
+  <p class="label">Server templates and client &lt;template&gt; elements are complementary: SSR provides fast first paint and SEO, while client templates handle dynamic updates without full page reloads.</p>
+</div>
+
+<div class="example">
+  <h3>41. Declarative Shadow DOM — shadow roots in HTML markup</h3>
+  <pre>
+&lt;!-- Declared entirely in HTML — no JavaScript required --&gt;
+&lt;user-card&gt;
+  &lt;template shadowrootmode="open"&gt;
+    &lt;style&gt;
+      :host { display:flex; gap:12px; padding:12px; font-family:sans-serif; }
+      img   { border-radius:50%; }
+      h3    { margin:0; }
+      p     { margin:0; font-size:13px; color:#6b7280; }
+    &lt;/style&gt;
+    &lt;img src="avatar.png" width="48" height="48" alt="User avatar"&gt;
+    &lt;div&gt;
+      &lt;h3&gt;&lt;slot name="name"&gt;Unknown&lt;/slot&gt;&lt;/h3&gt;
+      &lt;p&gt;&lt;slot name="bio"&gt;&lt;/slot&gt;&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/template&gt;
+  &lt;span slot="name"&gt;Alice&lt;/span&gt;
+  &lt;span slot="bio"&gt;Frontend Engineer&lt;/span&gt;
+&lt;/user-card&gt;
+
+&lt;!-- The browser parses shadowrootmode="open" and creates the shadow
+     root before JS loads — ideal for SSR. --&gt;</pre>
+  <p class="label">Declarative Shadow DOM (shadowrootmode attribute) embeds shadow roots in static HTML, enabling SSR without JavaScript while still supporting full hydration later.</p>
+</div>
+
+<div class="example">
+  <h3>42. Template hydration pattern — SSR + client enhancement</h3>
+  <pre>
+&lt;!-- Server renders fully formed HTML for fast first paint --&gt;
+&lt;product-card data-sku="ABC123"&gt;
+  &lt;template shadowrootmode="open"&gt;
+    &lt;style&gt;:host { display:block; }&lt;/style&gt;
+    &lt;img src="product.jpg" alt="Widget"&gt;
+    &lt;h2&gt;Super Widget&lt;/h2&gt;
+    &lt;p id="price"&gt;$29.99&lt;/p&gt;
+    &lt;button part="btn"&gt;Add to cart&lt;/button&gt;
+  &lt;/template&gt;
+&lt;/product-card&gt;
+
+&lt;script type="module"&gt;
+// The custom element class "hydrates" the existing shadow root
+// instead of replacing it, avoiding a flash of re-render.
+class ProductCard extends HTMLElement {
+  connectedCallback() {
+    // shadowRoot already exists from Declarative Shadow DOM
+    const btn = this.shadowRoot.querySelector('[part="btn"]');
+    btn.addEventListener('click', () =&gt; {
+      addToCart(this.dataset.sku);
+      btn.textContent = 'Added ✓';
+    });
+  }
+}
+customElements.define('product-card', ProductCard);
+&lt;/script&gt;</pre>
+  <p class="label">Hydration attaches JS behaviour to an SSR-rendered shadow root without re-rendering — the server provides the initial HTML, and the client only attaches event handlers.</p>
+</div>
+
+<div class="example">
+  <h3>43. Streaming template rendering with ReadableStream</h3>
+  <pre>
+// Stream large lists to avoid blocking the main thread.
+// Uses scheduler.yield() (Chrome 115+) as a cooperative yield point.
+
+const tpl = document.querySelector('#row-tpl');
+
+async function streamRender(items, container) {
+  const frag = document.createDocumentFragment();
+  let batchSize = 50;
+
+  for (let i = 0; i &lt; items.length; i++) {
+    const c = tpl.content.cloneNode(true);
+    c.querySelector('.row-cell').textContent = items[i].name;
+    frag.appendChild(c);
+
+    // Yield to browser every batchSize items to stay responsive
+    if (i % batchSize === batchSize - 1) {
+      container.appendChild(frag);
+      // scheduler.yield() suspends this task and resumes later
+      if ('scheduler' in window) await scheduler.yield();
+    }
+  }
+  container.appendChild(frag); // remainder
+}
+
+streamRender(thousandItems, document.querySelector('#list'));</pre>
+  <p class="label">Yielding between batches of template clones keeps the browser responsive during large-list renders. scheduler.yield() (or setTimeout) cooperatively suspends work between frames.</p>
+</div>
+
+<div class="example">
+  <h3>44. Template parts proposal (future API)</h3>
+  <pre>
+&lt;!-- Template Parts (proposal) enables efficient partial updates
+     without cloning the whole template or using a framework.     --&gt;
+
+&lt;template id="msg-tpl"&gt;
+  &lt;div&gt;
+    &lt;span&gt;{{author}}&lt;/span&gt;: &lt;span&gt;{{text}}&lt;/span&gt;
+    &lt;time&gt;{{time}}&lt;/time&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;!-- The proposed API (not yet in browsers): --&gt;
+&lt;!-- const instance = new TemplateInstance(tpl, { author:'Alice', text:'Hi', time:'now' }); --&gt;
+&lt;!-- document.body.appendChild(instance);   --&gt;
+&lt;!-- Later update without re-cloning:       --&gt;
+&lt;!-- instance.update({ author:'Alice', text:'Updated!', time:'now' }); --&gt;
+
+&lt;!-- Current workaround — use a data-binding library (Lit, FAST, etc.)
+     or manual slot/part updates after cloneNode. --&gt;</pre>
+  <p class="label">The Template Parts proposal would add mustache-style bindings to native templates with incremental updates. Until standardised, frameworks like Lit provide this capability on top of native APIs.</p>
+</div>
+
+<div class="example">
+  <h3>45. Template and virtual DOM comparison</h3>
+  <pre>
+// ── &lt;template&gt; element (native, imperative) ───────────────────────
+// + No library; works everywhere HTML works
+// + Memory-efficient: clone is a C++ operation
+// - No declarative bindings; you set properties manually
+// - No diffing — you replace or update nodes by hand
+
+// ── Virtual DOM (React, Preact, etc.) ─────────────────────────────
+// + Declarative JSX syntax
+// + Automatic diffing — framework updates only changed DOM nodes
+// - Extra JS bundle (~40 KB Preact, ~140 KB React)
+// - Mental model mismatch with browser's real DOM
+
+// ── Lit (thin layer over native web components) ───────────────────
+// + Declarative tagged-template syntax
+// + Efficient part-based updates (no full VDOM diff)
+// + Ships as native custom elements (interoperable)
+// - Still a dependency (~5 KB min+gz)
+
+// Rule of thumb:
+// Static or rarely-updated lists → &lt;template&gt; + cloneNode
+// Highly dynamic, complex state   → framework or Lit
+// Design system components        → custom elements + shadow DOM</pre>
+  <p class="label">The native template element, virtual DOM frameworks, and Lit each make different tradeoffs — native templates excel at zero-dependency simplicity; VDOM frameworks at rich reactive UIs.</p>
+</div>
+
+<div class="example">
+  <h3>46. Combining template with MutationObserver</h3>
+  <pre>
+// Auto-render any &lt;todo-list&gt; elements that appear in the DOM,
+// even if added after page load (e.g., by a CMS or other script).
+
+const tpl = document.querySelector('#todo-item-tpl');
+
+function initTodoList(listEl) {
+  if (listEl.dataset.initialized) return;
+  listEl.dataset.initialized = 'true';
+
+  const items = JSON.parse(listEl.dataset.items ?? '[]');
+  const frag  = document.createDocumentFragment();
+  items.forEach(text =&gt; {
+    const c = tpl.content.cloneNode(true);
+    c.querySelector('.label').textContent = text;
+    frag.appendChild(c);
+  });
+  listEl.appendChild(frag);
+}
+
+// Observe the entire document for new &lt;todo-list&gt; insertions
+new MutationObserver(mutations =&gt; {
+  mutations.flatMap(m =&gt; [...m.addedNodes])
+    .filter(n =&gt; n.nodeType === 1 &amp;&amp; n.matches?.('todo-list'))
+    .forEach(initTodoList);
+}).observe(document.body, { childList: true, subtree: true });
+
+// Also handle elements already in the DOM:
+document.querySelectorAll('todo-list').forEach(initTodoList);</pre>
+  <p class="label">Pairing a MutationObserver with a template enables auto-initialisation of dynamically added elements — useful for CMS environments where the page structure is not fully known at load time.</p>
+</div>
+
+<div class="example">
+  <h3>47. Template caching — reuse across modules</h3>
+  <pre>
+// templates.js — centralised template registry
+const cache = new Map();
+
+export function getTemplate(id) {
+  if (cache.has(id)) return cache.get(id);
+
+  const tpl = document.getElementById(id);
+  if (!tpl) throw new Error(`Template #${id} not found`);
+
+  // Cache the content fragment (not the template element itself)
+  // so we can always call cloneNode on the same reference.
+  cache.set(id, tpl.content);
+  return tpl.content;
+}
+
+export function clone(id) {
+  return getTemplate(id).cloneNode(true);
+}
+
+// Usage in any module:
+// import { clone } from './templates.js';
+// const row = clone('row-tpl');
+// row.querySelector('.cell').textContent = 'Data';
+// tbody.appendChild(row);</pre>
+  <p class="label">A template registry centralises lookup and caches the content reference, preventing repeated getElementById calls across modules while keeping the clone pattern consistent.</p>
+</div>
+
+<div class="example">
+  <h3>48. Accessible focus management after template insertion</h3>
+  <pre>
+&lt;template id="dialog-tpl"&gt;
+  &lt;div class="modal" role="dialog" aria-modal="true"&gt;
+    &lt;button class="modal-close"&gt;Close&lt;/button&gt;
+    &lt;h2 class="modal-title" tabindex="-1"&gt;&lt;/h2&gt;
+    &lt;div class="modal-body"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+let lastFocused;
+
+function openDialog(title, bodyHTML) {
+  lastFocused = document.activeElement; // remember trigger for return focus
+
+  const c = document.querySelector('#dialog-tpl').content.cloneNode(true);
+  c.querySelector('.modal-title').textContent = title;
+  c.querySelector('.modal-body').innerHTML    = bodyHTML;
+  document.body.appendChild(c);
+
+  const modal = document.querySelector('.modal');
+  // Move focus into the dialog immediately for keyboard / SR users
+  modal.querySelector('.modal-title').focus();
+
+  modal.querySelector('.modal-close').addEventListener('click', closeDialog);
+}
+
+function closeDialog() {
+  document.querySelector('.modal')?.remove();
+  lastFocused?.focus(); // return focus to trigger element
+}
+&lt;/script&gt;</pre>
+  <p class="label">After inserting a dialog template, focus must move into the dialog and return to the trigger on close — required by WCAG 2.5.3 and the ARIA dialog pattern for keyboard and screen reader users.</p>
+</div>
+
+<div class="example">
+  <h3>49. Template with CSS custom highlight API</h3>
+  <pre>
+&lt;template id="search-result-tpl"&gt;
+  &lt;li class="result"&gt;
+    &lt;a class="result-link" href=""&gt;
+      &lt;strong class="result-title"&gt;&lt;/strong&gt;
+    &lt;/a&gt;
+    &lt;p class="result-snippet"&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+// CSS Custom Highlight API (Chrome 105+) marks text ranges
+// without wrapping them in spans — ideal for search results.
+function renderResults(results, query) {
+  const tpl  = document.querySelector('#search-result-tpl');
+  const list = document.querySelector('#results');
+  const ranges = [];
+  list.innerHTML = '';
+
+  results.forEach(({ title, url, snippet }) =&gt; {
+    const c = tpl.content.cloneNode(true);
+    c.querySelector('.result-link').href           = url;
+    c.querySelector('.result-title').textContent   = title;
+    c.querySelector('.result-snippet').textContent = snippet;
+    list.appendChild(c);
+  });
+
+  // After insertion, highlight query terms with CSS Highlight API
+  const re = new RegExp(query, 'gi');
+  list.querySelectorAll('.result-snippet').forEach(el =&gt; {
+    const text = el.firstChild;
+    let match;
+    while ((match = re.exec(el.textContent)) !== null) {
+      const range = new Range();
+      range.setStart(text, match.index);
+      range.setEnd(text, match.index + match[0].length);
+      ranges.push(range);
+    }
+  });
+  CSS.highlights?.set('search-hit', new Highlight(...ranges));
+}
+// CSS: ::highlight(search-hit) { background: #fef08a; color: inherit; }
+&lt;/script&gt;</pre>
+  <p class="label">After rendering results from a template, the CSS Custom Highlight API marks search terms using Range objects without modifying the DOM — giving highlighting without extra spans.</p>
+</div>
+
+<div class="example">
+  <h3>50. Template content security — preventing XSS</h3>
+  <pre>
+const tpl = document.querySelector('#post-tpl');
+
+// ✅ Safe: textContent treats string as plain text — no HTML parsed
+function safeRender(post) {
+  const c = tpl.content.cloneNode(true);
+  c.querySelector('.title').textContent   = post.title;   // safe
+  c.querySelector('.author').textContent  = post.author;  // safe
+  c.querySelector('.body').textContent    = post.body;    // safe
+  return c;
+}
+
+// ❌ Dangerous: innerHTML interprets &lt;script&gt; tags in user data
+function unsafeRender(post) {
+  const c = tpl.content.cloneNode(true);
+  c.querySelector('.body').innerHTML = post.body; // ← XSS risk!
+  return c;
+}
+
+// ✅ If you MUST render HTML: use the Sanitizer API (Chrome 105+)
+// const sanitizer = new Sanitizer();
+// el.setHTML(userContent, { sanitizer }); // sanitises before insertion
+
+// ✅ Or use DOMPurify as a polyfill for older browsers:
+// el.innerHTML = DOMPurify.sanitize(userContent);</pre>
+  <p class="label">Template-based rendering is inherently safer than string concatenation because textContent assignment never interprets HTML. When rich HTML is required, use the Sanitizer API or DOMPurify.</p>
+</div>
+
+</body>
+</html>

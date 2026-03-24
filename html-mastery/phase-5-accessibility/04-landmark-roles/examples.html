@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<!--
+  Examples 5.4 — Landmark Roles
+  50 examples covering ARIA landmark roles, native HTML sectioning elements,
+  labels, nested landmarks, and testing strategies.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 5.4 — Landmark Roles</title>
+  <style>
+    body { font-family: sans-serif; max-width: 860px; margin: 0 auto; padding: 16px; }
+    h1 { font-size: 1.5em; }
+    h2 { font-size: 1.1em; margin: 28px 0 4px; color: #333; border-bottom: 1px solid #ddd; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 13px; }
+    .note { background: #fffbea; border-left: 4px solid #f0c040; padding: 8px 12px; margin: 6px 0; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<h1>Landmark Roles — 50 Examples</h1>
+
+<!-- 1 -->
+<h2>1. The 8 ARIA landmark roles</h2>
+<pre><code>banner       — page header (one per page)
+navigation   — set of navigation links
+main         — primary content (one per page)
+complementary— supporting content (aside)
+contentinfo  — page footer (one per page)
+search       — search functionality
+form         — a significant form (needs label)
+region       — named section of a page</code></pre>
+
+<!-- 2 -->
+<h2>2. Native elements with implicit landmark roles</h2>
+<pre><code>&lt;header&gt;  → banner (when top-level, not inside article/section)
+&lt;nav&gt;     → navigation
+&lt;main&gt;    → main
+&lt;aside&gt;   → complementary
+&lt;footer&gt;  → contentinfo (when top-level)
+&lt;form&gt;    → form (when it has an accessible name)</code></pre>
+
+<!-- 3 -->
+<h2>3. banner — page header</h2>
+<pre><code>&lt;header role="banner"&gt;
+  &lt;a href="/"&gt;&lt;img src="logo.svg" alt="Company Logo"&gt;&lt;/a&gt;
+  &lt;nav aria-label="Primary"&gt;...&lt;/nav&gt;
+&lt;/header&gt;</code></pre>
+
+<!-- 4 -->
+<h2>4. navigation — labelled nav</h2>
+<pre><code>&lt;nav role="navigation" aria-label="Main"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+
+<!-- 5 -->
+<h2>5. main — one per page</h2>
+<pre><code>&lt;main id="main-content" role="main"&gt;
+  &lt;h1&gt;Page Heading&lt;/h1&gt;
+  &lt;!-- primary content here --&gt;
+&lt;/main&gt;</code></pre>
+
+<!-- 6 -->
+<h2>6. complementary — sidebar</h2>
+<pre><code>&lt;aside role="complementary" aria-label="Related articles"&gt;
+  &lt;h2&gt;Related Articles&lt;/h2&gt;
+  &lt;ul&gt;...&lt;/ul&gt;
+&lt;/aside&gt;</code></pre>
+
+<!-- 7 -->
+<h2>7. contentinfo — page footer</h2>
+<pre><code>&lt;footer role="contentinfo"&gt;
+  &lt;p&gt;&copy; 2026 Company Inc.&lt;/p&gt;
+  &lt;nav aria-label="Footer"&gt;...&lt;/nav&gt;
+&lt;/footer&gt;</code></pre>
+
+<!-- 8 -->
+<h2>8. search landmark</h2>
+<pre><code>&lt;form role="search" aria-label="Site search"&gt;
+  &lt;input type="search" name="q" aria-label="Search query"&gt;
+  &lt;button type="submit"&gt;Search&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+<!-- 9 -->
+<h2>9. form landmark (requires accessible name)</h2>
+<pre><code>&lt;form role="form" aria-label="Newsletter signup"&gt;
+  &lt;label for="email"&gt;Email&lt;/label&gt;
+  &lt;input id="email" type="email"&gt;
+  &lt;button&gt;Subscribe&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+<!-- 10 -->
+<h2>10. region landmark (requires accessible name)</h2>
+<pre><code>&lt;section role="region" aria-label="Recent activity"&gt;
+  &lt;h2&gt;Recent Activity&lt;/h2&gt;
+  &lt;ul&gt;...&lt;/ul&gt;
+&lt;/section&gt;</code></pre>
+<div class="note">A &lt;section&gt; only becomes a landmark when it has an accessible name via aria-label or aria-labelledby.</div>
+
+<!-- 11 -->
+<h2>11. Labelling landmarks with aria-labelledby</h2>
+<pre><code>&lt;nav aria-labelledby="nav-heading"&gt;
+  &lt;h2 id="nav-heading"&gt;Categories&lt;/h2&gt;
+  &lt;ul&gt;...&lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+
+<!-- 12 -->
+<h2>12. Multiple nav elements — must be distinguished</h2>
+<pre><code>&lt;nav aria-label="Primary navigation"&gt;...&lt;/nav&gt;
+&lt;nav aria-label="Breadcrumb"&gt;...&lt;/nav&gt;
+&lt;nav aria-label="Footer navigation"&gt;...&lt;/nav&gt;</code></pre>
+
+<!-- 13 -->
+<h2>13. Multiple aside elements</h2>
+<pre><code>&lt;aside aria-label="Author bio"&gt;...&lt;/aside&gt;
+&lt;aside aria-label="Advertisement"&gt;...&lt;/aside&gt;</code></pre>
+
+<!-- 14 -->
+<h2>14. header inside article — not a banner</h2>
+<pre><code>&lt;article&gt;
+  &lt;header&gt; &lt;!-- NOT a banner landmark --&gt;
+    &lt;h2&gt;Article Title&lt;/h2&gt;
+    &lt;p&gt;By Author&lt;/p&gt;
+  &lt;/header&gt;
+  &lt;p&gt;Content...&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+
+<!-- 15 -->
+<h2>15. footer inside article — not contentinfo</h2>
+<pre><code>&lt;article&gt;
+  &lt;p&gt;Content...&lt;/p&gt;
+  &lt;footer&gt; &lt;!-- NOT a contentinfo landmark --&gt;
+    &lt;p&gt;Published: 2026-01-01&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</code></pre>
+
+<!-- 16 -->
+<h2>16. Full page landmark structure</h2>
+<pre><code>&lt;body&gt;
+  &lt;header role="banner"&gt;...&lt;/header&gt;
+  &lt;nav role="navigation" aria-label="Main"&gt;...&lt;/nav&gt;
+  &lt;main role="main"&gt;
+    &lt;h1&gt;...&lt;/h1&gt;
+    ...
+  &lt;/main&gt;
+  &lt;aside role="complementary"&gt;...&lt;/aside&gt;
+  &lt;footer role="contentinfo"&gt;...&lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+
+<!-- 17 -->
+<h2>17. Nested navigation inside main</h2>
+<pre><code>&lt;main&gt;
+  &lt;nav aria-label="Table of contents"&gt;
+    &lt;a href="#section1"&gt;Section 1&lt;/a&gt;
+    &lt;a href="#section2"&gt;Section 2&lt;/a&gt;
+  &lt;/nav&gt;
+  &lt;article&gt;...&lt;/article&gt;
+&lt;/main&gt;</code></pre>
+
+<!-- 18 -->
+<h2>18. Breadcrumb navigation</h2>
+<pre><code>&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li aria-current="page"&gt;Widget&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;</code></pre>
+
+<!-- 19 -->
+<h2>19. Pagination navigation</h2>
+<pre><code>&lt;nav aria-label="Pagination"&gt;
+  &lt;a href="?page=1" aria-label="Previous page"&gt;←&lt;/a&gt;
+  &lt;a href="?page=2" aria-current="page"&gt;2&lt;/a&gt;
+  &lt;a href="?page=3" aria-label="Next page"&gt;→&lt;/a&gt;
+&lt;/nav&gt;</code></pre>
+
+<!-- 20 -->
+<h2>20. Skip link targets landmarks</h2>
+<pre><code>&lt;a href="#main-content"&gt;Skip to main content&lt;/a&gt;
+&lt;main id="main-content" tabindex="-1"&gt;...&lt;/main&gt;</code></pre>
+
+<!-- 21 -->
+<h2>21. aria-current for current page in nav</h2>
+<pre><code>&lt;nav aria-label="Main"&gt;
+  &lt;a href="/" aria-current="page"&gt;Home&lt;/a&gt;
+  &lt;a href="/about"&gt;About&lt;/a&gt;
+&lt;/nav&gt;</code></pre>
+
+<!-- 22 -->
+<h2>22. Site map landmark structure (two-column layout)</h2>
+<pre><code>&lt;header&gt;...logo, primary nav...&lt;/header&gt;
+&lt;div class="layout"&gt;
+  &lt;main&gt;...primary content...&lt;/main&gt;
+  &lt;aside&gt;...secondary sidebar...&lt;/aside&gt;
+&lt;/div&gt;
+&lt;footer&gt;...copyright, secondary nav...&lt;/footer&gt;</code></pre>
+
+<!-- 23 -->
+<h2>23. Don't use role="main" twice</h2>
+<pre><code>&lt;!-- WRONG --&gt;
+&lt;main&gt;...&lt;/main&gt;
+&lt;div role="main"&gt;...&lt;/div&gt; &lt;!-- two main landmarks confuse users --&gt;
+
+&lt;!-- RIGHT — only one main per page --&gt;
+&lt;main&gt;...&lt;/main&gt;</code></pre>
+
+<!-- 24 -->
+<h2>24. Document has all required landmarks</h2>
+<pre><code>// Minimum recommended set:
+// ✓ banner (header)
+// ✓ main
+// ✓ contentinfo (footer)
+// Optional but useful:
+// - navigation
+// - search (if site has search)</code></pre>
+
+<!-- 25 -->
+<h2>25. All content inside a landmark</h2>
+<pre><code>&lt;!-- All visible content should be inside some landmark --&gt;
+&lt;body&gt;
+  &lt;!-- no orphaned text here --&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  &lt;main&gt;...all content inside...&lt;/main&gt;
+  &lt;footer&gt;...&lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+
+<!-- 26 -->
+<h2>26. SPA — update landmarks on route change</h2>
+<pre><code>// After navigation, main content updates
+// Screen readers can re-read from main landmark
+router.on('navigate', () => {
+  document.getElementById('main-content').focus();
+});</code></pre>
+
+<!-- 27 -->
+<h2>27. Landmark roles in SVG context</h2>
+<pre><code>&lt;svg role="img" aria-label="Sales chart for Q1 2026"&gt;
+  &lt;title&gt;Sales chart for Q1 2026&lt;/title&gt;
+  ...
+&lt;/svg&gt;</code></pre>
+
+<!-- 28 -->
+<h2>28. Don't add redundant role to native element</h2>
+<pre><code>&lt;!-- Redundant — nav already has navigation role --&gt;
+&lt;nav role="navigation"&gt;...&lt;/nav&gt;
+
+&lt;!-- But it doesn't hurt anything and aids cross-browser compat --&gt;</code></pre>
+
+<!-- 29 -->
+<h2>29. header/footer in sectioning elements lose landmark role</h2>
+<pre><code>&lt;section&gt;
+  &lt;header&gt; &lt;!-- generic, no landmark role --&gt;
+    &lt;h2&gt;Section heading&lt;/h2&gt;
+  &lt;/header&gt;
+&lt;/section&gt;</code></pre>
+
+<!-- 30 -->
+<h2>30. article — not a landmark, but semantically useful</h2>
+<pre><code>&lt;article&gt;
+  &lt;h2&gt;Blog Post Title&lt;/h2&gt;
+  &lt;p&gt;Self-contained content...&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+<div class="note">article is not an ARIA landmark, but it is announced by screen readers as a region.</div>
+
+<!-- 31 -->
+<h2>31. Visible heading links landmarks to page structure</h2>
+<pre><code>&lt;main&gt;
+  &lt;h1&gt;Page Title&lt;/h1&gt; &lt;!-- heading connects to main landmark --&gt;
+  ...
+&lt;/main&gt;</code></pre>
+
+<!-- 32 -->
+<h2>32. Aside — advertising disclaimer</h2>
+<pre><code>&lt;aside aria-label="Sponsored content"&gt;
+  &lt;p&gt;Advertisement&lt;/p&gt;
+  &lt;!-- ad content --&gt;
+&lt;/aside&gt;</code></pre>
+
+<!-- 33 -->
+<h2>33. Complex app — multiple main-like regions</h2>
+<pre><code>&lt;!-- Use role="region" with labels instead of multiple mains --&gt;
+&lt;main&gt;
+  &lt;section aria-label="Inbox"&gt;...&lt;/section&gt;
+  &lt;section aria-label="Message detail"&gt;...&lt;/section&gt;
+&lt;/main&gt;</code></pre>
+
+<!-- 34 -->
+<h2>34. Toolbar — not a landmark but a composite widget</h2>
+<pre><code>&lt;div role="toolbar" aria-label="Text formatting"&gt;
+  &lt;button&gt;Bold&lt;/button&gt;
+  &lt;button&gt;Italic&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+
+<!-- 35 -->
+<h2>35. Application role — only for complex widget areas</h2>
+<pre><code>&lt;!-- Rarely needed; disables most screen reader shortcuts --&gt;
+&lt;div role="application" aria-label="Spreadsheet editor"&gt;
+  ...
+&lt;/div&gt;</code></pre>
+<div class="note">Only use role="application" when you fully implement all keyboard interaction yourself.</div>
+
+<!-- 36 -->
+<h2>36. Screen reader landmark shortcut keys</h2>
+<pre><code>// NVDA/JAWS shortcuts:
+// D — jump to next landmark
+// R — jump to next region
+// B — jump to banner
+// M — jump to main
+// N — jump to navigation
+// 1-6 — jump to heading level 1-6</code></pre>
+
+<!-- 37 -->
+<h2>37. Testing with accessibility tree</h2>
+<pre><code>// Chrome DevTools → Accessibility tab
+// Shows computed role, name, and properties of each element
+// Check that landmarks appear with correct roles and names</code></pre>
+
+<!-- 38 -->
+<h2>38. axe-core landmark rules</h2>
+<pre><code>// axe checks:
+// - landmark-one-main: page has exactly one main landmark
+// - region: all content in a landmark
+// - bypass: skip link or landmark exists
+// Run: axe.run(document, callback)</code></pre>
+
+<!-- 39 -->
+<h2>39. Headings within landmarks</h2>
+<pre><code>&lt;!-- Each major landmark should have a heading --&gt;
+&lt;nav aria-label="Products"&gt;
+  &lt;h2&gt;Products&lt;/h2&gt; &lt;!-- or use aria-labelledby --&gt;
+  ...
+&lt;/nav&gt;</code></pre>
+
+<!-- 40 -->
+<h2>40. Landmark order matters</h2>
+<pre><code>&lt;!-- Logical reading order --&gt;
+&lt;header&gt;...&lt;/header&gt;
+&lt;nav&gt;...&lt;/nav&gt;     &lt;!-- before main, so it appears in landmark list first --&gt;
+&lt;main&gt;...&lt;/main&gt;
+&lt;footer&gt;...&lt;/footer&gt;</code></pre>
+
+<!-- 41 -->
+<h2>41. Sticky navigation — keep it accessible</h2>
+<pre><code>&lt;nav id="sticky-nav" aria-label="Main" style="position:sticky;top:0"&gt;
+  ...
+&lt;/nav&gt;
+&lt;!-- Sticky nav shouldn't cover focused elements; use scroll-padding-top --&gt;</code></pre>
+
+<!-- 42 -->
+<h2>42. scroll-padding-top for sticky nav</h2>
+<pre><code>html {
+  scroll-padding-top: 60px; /* height of sticky nav */
+}</code></pre>
+
+<!-- 43 -->
+<h2>43. Mobile navigation — aria-expanded pattern</h2>
+<pre><code>&lt;button aria-expanded="false" aria-controls="mobile-nav"&gt;Menu&lt;/button&gt;
+&lt;nav id="mobile-nav" aria-label="Main" hidden&gt;
+  ...
+&lt;/nav&gt;</code></pre>
+
+<!-- 44 -->
+<h2>44. Side navigation drawer</h2>
+<pre><code>&lt;nav aria-label="Side navigation"
+     aria-hidden="false"
+     id="sidenav"&gt;
+  ...
+&lt;/nav&gt;
+
+&lt;!-- When closed: aria-hidden="true" and move focus back to toggle --&gt;</code></pre>
+
+<!-- 45 -->
+<h2>45. Don't landmark every div</h2>
+<pre><code>&lt;!-- TOO MANY LANDMARKS — overwhelming for screen reader users --&gt;
+&lt;section aria-label="Intro paragraph"&gt;&lt;p&gt;...&lt;/p&gt;&lt;/section&gt;
+&lt;section aria-label="Second paragraph"&gt;&lt;p&gt;...&lt;/p&gt;&lt;/section&gt;
+
+&lt;!-- Better: one meaningful section --&gt;
+&lt;section aria-label="Introduction"&gt;
+  &lt;p&gt;...&lt;/p&gt;
+  &lt;p&gt;...&lt;/p&gt;
+&lt;/section&gt;</code></pre>
+
+<!-- 46 -->
+<h2>46. Hidden landmark when sidebar is closed</h2>
+<pre><code>// When sidebar is hidden, remove it from landmark list
+sidebar.setAttribute('aria-hidden', 'true');
+// When sidebar opens
+sidebar.removeAttribute('aria-hidden');</code></pre>
+
+<!-- 47 -->
+<h2>47. Map of ARIA roles to HTML elements</h2>
+<pre><code>banner        → &lt;header&gt; (top-level)
+navigation    → &lt;nav&gt;
+main          → &lt;main&gt;
+complementary → &lt;aside&gt;
+contentinfo   → &lt;footer&gt; (top-level)
+search        → no native element
+form          → &lt;form&gt; (if named)
+region        → &lt;section&gt; (if named)</code></pre>
+
+<!-- 48 -->
+<h2>48. W3C landmark authoring practices</h2>
+<pre><code>// From ARIA APG:
+// 1. Use landmark roles to identify regions of a page
+// 2. Label multiple landmarks of the same type
+// 3. Ensure all content is contained within a landmark
+// 4. Use the minimum number of landmarks needed</code></pre>
+
+<!-- 49 -->
+<h2>49. Automated landmark test with axe</h2>
+<pre><code>import { axe } from 'jest-axe';
+
+it('has proper landmark structure', async () => {
+  const results = await axe(document.body);
+  expect(results).toHaveNoViolations();
+});</code></pre>
+
+<!-- 50 -->
+<h2>50. VoiceOver landmark navigation</h2>
+<pre><code>// macOS VoiceOver:
+// VO + U — open rotor
+// Select "Landmarks" in rotor
+// Arrow keys to navigate between landmarks
+// Enter to move focus into landmark</code></pre>
+
+</body>
+</html>

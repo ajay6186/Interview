@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 3.4 — Fieldset and Legend
+  ============================================================================
+  50 runnable examples covering fieldset, legend, radio groups,
+  checkbox groups, disabled fieldsets, and complex grouping patterns.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 3.4 — Fieldset and Legend</title>
+  <style>
+    body { font-family: sans-serif; max-width: 860px; margin: 0 auto; padding: 16px; }
+    h2 { margin-top: 32px; border-bottom: 2px solid #333; padding-bottom: 4px; }
+    .example { background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; padding: 12px 16px; margin: 10px 0; }
+    .example h3 { margin: 0 0 8px; font-size: 14px; color: #555; }
+    fieldset { border: 1px solid #aaa; border-radius: 4px; padding: 8px 12px; margin: 4px 0; }
+    legend { font-weight: bold; font-size: 14px; padding: 0 6px; }
+    label { display: block; font-size: 14px; margin: 3px 0; }
+    input[type="text"], input[type="email"], input[type="tel"] {
+      padding: 4px 8px; border: 1px solid #ccc; border-radius: 3px; width: 200px;
+    }
+    code { background: #eee; padding: 1px 4px; border-radius: 3px; font-size: 13px; }
+    button { padding: 5px 12px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+<h1>Examples 3.4 — Fieldset and Legend</h1>
+
+<!-- ============================================================ -->
+<h2>BASIC (Examples 1–13)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>1. Basic fieldset with legend</h3>
+  <fieldset>
+    <legend>User Information</legend>
+    <label for="f1-name">Name: <input type="text" id="f1-name" name="name"></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>2. Radio group in fieldset</h3>
+  <fieldset>
+    <legend>Gender</legend>
+    <label><input type="radio" name="f2-gender" value="m"> Male</label>
+    <label><input type="radio" name="f2-gender" value="f"> Female</label>
+    <label><input type="radio" name="f2-gender" value="nb"> Non-binary</label>
+    <label><input type="radio" name="f2-gender" value="prefer-not"> Prefer not to say</label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>3. Checkbox group in fieldset</h3>
+  <fieldset>
+    <legend>Notifications</legend>
+    <label><input type="checkbox" name="f3-notif" value="email"> Email</label>
+    <label><input type="checkbox" name="f3-notif" value="sms"> SMS</label>
+    <label><input type="checkbox" name="f3-notif" value="push"> Push notifications</label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>4. Disabled fieldset</h3>
+  <fieldset disabled>
+    <legend>Payment Details (add a card first)</legend>
+    <label>Card number: <input type="text" placeholder="Disabled"></label>
+    <label>CVV: <input type="text" maxlength="4" placeholder="Disabled"></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>5. Fieldset without border (styled)</h3>
+  <fieldset style="border:none;padding:0;margin:0">
+    <legend style="font-size:16px;color:#0066cc">Shipping Address</legend>
+    <label for="f5-street">Street: <input type="text" id="f5-street"></label>
+    <label for="f5-city">City: <input type="text" id="f5-city"></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>6. Multiple fieldsets in a form</h3>
+  <form>
+    <fieldset>
+      <legend>Account</legend>
+      <label for="f6-un">Username: <input type="text" id="f6-un"></label>
+    </fieldset>
+    <fieldset>
+      <legend>Profile</legend>
+      <label for="f6-bio">Bio: <input type="text" id="f6-bio"></label>
+    </fieldset>
+  </form>
+</div>
+
+<div class="example">
+  <h3>7. Legend with inline HTML</h3>
+  <fieldset>
+    <legend><span style="color:#e74c3c">*</span> Required Fields</legend>
+    <label for="f7-req">Required: <input type="text" id="f7-req" required></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>8. Fieldset for address group</h3>
+  <fieldset>
+    <legend>Billing Address</legend>
+    <label for="f8-l1">Line 1: <input type="text" id="f8-l1" autocomplete="address-line1"></label>
+    <label for="f8-l2">Line 2: <input type="text" id="f8-l2" autocomplete="address-line2"></label>
+    <label for="f8-city">City: <input type="text" id="f8-city" autocomplete="address-level2"></label>
+    <label for="f8-zip">ZIP: <input type="text" id="f8-zip" autocomplete="postal-code"></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>9. Yes/No radio group</h3>
+  <fieldset>
+    <legend>Do you have a referral code?</legend>
+    <label><input type="radio" name="f9-ref" value="yes"> Yes</label>
+    <label><input type="radio" name="f9-ref" value="no" checked> No</label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>10. Checkbox group — select all that apply</h3>
+  <fieldset>
+    <legend>Which devices do you use? (select all that apply)</legend>
+    <label><input type="checkbox" name="f10-dev" value="desktop"> Desktop</label>
+    <label><input type="checkbox" name="f10-dev" value="laptop"> Laptop</label>
+    <label><input type="checkbox" name="f10-dev" value="tablet"> Tablet</label>
+    <label><input type="checkbox" name="f10-dev" value="mobile"> Mobile</label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>11. Fieldset with form attribute</h3>
+  <form id="f11-form">
+    <button type="submit">Submit</button>
+  </form>
+  <fieldset form="f11-form">
+    <legend>Outside form, linked via form attribute</legend>
+    <label><input type="text" name="f11-val" form="f11-form" placeholder="Linked to form above"></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>12. Legend with icon/emoji</h3>
+  <fieldset>
+    <legend>📬 Contact Preferences</legend>
+    <label><input type="checkbox" name="f12-contact" value="email"> Email updates</label>
+    <label><input type="checkbox" name="f12-contact" value="sms"> SMS alerts</label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>13. Fieldset with aria-describedby</h3>
+  <fieldset aria-describedby="f13-hint">
+    <legend>Security Questions</legend>
+    <label for="f13-q1">Question 1: <input type="text" id="f13-q1"></label>
+    <label for="f13-q2">Question 2: <input type="text" id="f13-q2"></label>
+    <p id="f13-hint" style="font-size:12px;color:#666;margin:4px 0">
+      Answers are case-insensitive.
+    </p>
+  </fieldset>
+</div>
+
+<!-- ============================================================ -->
+<h2>INTERMEDIATE (Examples 14–26)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>14. Fieldset toggle (enable/disable with checkbox)</h3>
+  <label>
+    <input type="checkbox" id="f14-toggle" onchange="document.getElementById('f14-fs').disabled = !this.checked">
+    Enable billing
+  </label>
+  <fieldset id="f14-fs" disabled>
+    <legend>Billing Details</legend>
+    <label>Card: <input type="text" placeholder="Card number"></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>15. Multi-step form — fieldset per step</h3>
+  <div id="f15-steps">
+    <fieldset id="f15-step1">
+      <legend>Step 1: Account</legend>
+      <label>Email: <input type="email"></label>
+      <button type="button" onclick="document.getElementById('f15-step1').style.display='none';document.getElementById('f15-step2').style.display='block'">Next</button>
+    </fieldset>
+    <fieldset id="f15-step2" style="display:none">
+      <legend>Step 2: Profile</legend>
+      <label>Name: <input type="text"></label>
+      <button type="button">Submit</button>
+    </fieldset>
+  </div>
+</div>
+
+<div class="example">
+  <h3>16. Rating radio group (star metaphor)</h3>
+  <fieldset>
+    <legend>Rate your experience</legend>
+    <label><input type="radio" name="f16-rating" value="1"> 1 — Very Poor</label>
+    <label><input type="radio" name="f16-rating" value="2"> 2 — Poor</label>
+    <label><input type="radio" name="f16-rating" value="3"> 3 — Average</label>
+    <label><input type="radio" name="f16-rating" value="4"> 4 — Good</label>
+    <label><input type="radio" name="f16-rating" value="5"> 5 — Excellent</label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>17. Fieldset with conditional radio reveal</h3>
+  <fieldset>
+    <legend>Employment status</legend>
+    <label><input type="radio" name="f17-emp" value="employed" onchange="document.getElementById('f17-emp-details').style.display='block'"> Employed</label>
+    <label><input type="radio" name="f17-emp" value="self" onchange="document.getElementById('f17-emp-details').style.display='block'"> Self-employed</label>
+    <label><input type="radio" name="f17-emp" value="unemployed" onchange="document.getElementById('f17-emp-details').style.display='none'"> Unemployed</label>
+    <div id="f17-emp-details" style="display:none;margin-top:8px">
+      <label>Employer: <input type="text"></label>
+    </div>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>18. Card selection as radio group</h3>
+  <fieldset style="border:none">
+    <legend>Choose a plan</legend>
+    <div style="display:flex;gap:8px">
+      <label style="border:2px solid #ccc;border-radius:8px;padding:12px;cursor:pointer;flex:1">
+        <input type="radio" name="f18-plan" value="free" style="display:none">
+        <strong>Free</strong><br><span style="font-size:12px">$0/mo</span>
+      </label>
+      <label style="border:2px solid #ccc;border-radius:8px;padding:12px;cursor:pointer;flex:1">
+        <input type="radio" name="f18-plan" value="pro" style="display:none">
+        <strong>Pro</strong><br><span style="font-size:12px">$9/mo</span>
+      </label>
+    </div>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>19. Nested fieldsets (address inside contact)</h3>
+  <fieldset>
+    <legend>Contact Details</legend>
+    <label>Phone: <input type="tel"></label>
+    <fieldset>
+      <legend>Address</legend>
+      <label>Street: <input type="text"></label>
+      <label>City: <input type="text"></label>
+    </fieldset>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>20. Fieldset with role="group" fallback note</h3>
+  <fieldset>
+    <legend>Access Level</legend>
+    <label><input type="radio" name="f20-access" value="read"> Read only</label>
+    <label><input type="radio" name="f20-access" value="write"> Read/Write</label>
+    <label><input type="radio" name="f20-access" value="admin"> Admin</label>
+  </fieldset>
+  <p style="font-size:12px;color:#666">
+    <code>&lt;fieldset&gt;</code> provides implicit <code>role="group"</code> + accessible name from <code>&lt;legend&gt;</code>.
+  </p>
+</div>
+
+<div class="example">
+  <h3>21. Survey fieldset — agree/disagree scale</h3>
+  <fieldset>
+    <legend>"The product was easy to use"</legend>
+    <label><input type="radio" name="f21-q1" value="1"> Strongly Disagree</label>
+    <label><input type="radio" name="f21-q1" value="2"> Disagree</label>
+    <label><input type="radio" name="f21-q1" value="3"> Neutral</label>
+    <label><input type="radio" name="f21-q1" value="4"> Agree</label>
+    <label><input type="radio" name="f21-q1" value="5"> Strongly Agree</label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>22. Fieldset border styled as card</h3>
+  <fieldset style="border:none;box-shadow:0 2px 8px rgba(0,0,0,0.12);border-radius:8px;padding:16px">
+    <legend style="font-size:16px;font-weight:bold;color:#333">Profile Settings</legend>
+    <label for="f22-dn">Display name: <input type="text" id="f22-dn"></label>
+    <label for="f22-av">Avatar URL: <input type="text" id="f22-av"></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>23. Fieldset with visible legend used as section heading</h3>
+  <form>
+    <fieldset>
+      <legend style="font-size:18px;font-weight:bold;color:#0066cc">Section A: Demographics</legend>
+      <label for="f23-age">Age: <input type="number" id="f23-age" min="0" max="120" style="width:80px"></label>
+      <label for="f23-country">Country: <input type="text" id="f23-country"></label>
+    </fieldset>
+    <fieldset>
+      <legend style="font-size:18px;font-weight:bold;color:#0066cc">Section B: Preferences</legend>
+      <label><input type="checkbox" name="f23-pref" value="dark"> Dark mode</label>
+      <label><input type="checkbox" name="f23-pref" value="emails"> Receive emails</label>
+    </fieldset>
+  </form>
+</div>
+
+<div class="example">
+  <h3>24. Horizontal inline radio group</h3>
+  <fieldset style="border:none">
+    <legend>Size</legend>
+    <div style="display:flex;gap:12px">
+      <label><input type="radio" name="f24-size" value="s"> S</label>
+      <label><input type="radio" name="f24-size" value="m"> M</label>
+      <label><input type="radio" name="f24-size" value="l"> L</label>
+      <label><input type="radio" name="f24-size" value="xl"> XL</label>
+    </div>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>25. Checkbox "select all" inside fieldset</h3>
+  <fieldset>
+    <legend>
+      <label>
+        <input type="checkbox" id="f25-all" onchange="
+          document.querySelectorAll('#f25-items input').forEach(cb => cb.checked = this.checked)
+        ">
+        Select all permissions
+      </label>
+    </legend>
+    <div id="f25-items">
+      <label><input type="checkbox" name="f25-perm" value="read"> Read</label>
+      <label><input type="checkbox" name="f25-perm" value="write"> Write</label>
+      <label><input type="checkbox" name="f25-perm" value="delete"> Delete</label>
+    </div>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>26. Payment method selector with fieldset</h3>
+  <fieldset>
+    <legend>Payment Method</legend>
+    <label><input type="radio" name="f26-pay" value="card" onchange="document.getElementById('f26-card').style.display='block';document.getElementById('f26-paypal').style.display='none'"> Credit Card</label>
+    <label><input type="radio" name="f26-pay" value="paypal" onchange="document.getElementById('f26-paypal').style.display='block';document.getElementById('f26-card').style.display='none'"> PayPal</label>
+    <div id="f26-card" style="display:none;margin-top:6px">
+      <label>Card number: <input type="text" inputmode="numeric"></label>
+    </div>
+    <div id="f26-paypal" style="display:none;margin-top:6px">
+      <label>PayPal email: <input type="email"></label>
+    </div>
+  </fieldset>
+</div>
+
+<!-- ============================================================ -->
+<h2>NESTED (Examples 27–38)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>27. Multi-section form with multiple fieldsets</h3>
+  <form>
+    <fieldset>
+      <legend>Personal</legend>
+      <label for="f27-fn">First: <input type="text" id="f27-fn"></label>
+      <label for="f27-ln">Last: <input type="text" id="f27-ln"></label>
+    </fieldset>
+    <fieldset>
+      <legend>Contact</legend>
+      <label for="f27-em">Email: <input type="email" id="f27-em"></label>
+      <label for="f27-ph">Phone: <input type="tel" id="f27-ph"></label>
+    </fieldset>
+    <fieldset>
+      <legend>Preferences</legend>
+      <label><input type="checkbox" name="f27-nl" value="1"> Newsletter</label>
+      <label><input type="checkbox" name="f27-promo" value="1"> Promotions</label>
+    </fieldset>
+    <button type="submit">Save</button>
+  </form>
+</div>
+
+<div class="example">
+  <h3>28. Fieldset inside a details/summary (collapsible group)</h3>
+  <details>
+    <summary>Advanced Settings</summary>
+    <fieldset>
+      <legend>Developer Options</legend>
+      <label><input type="checkbox" name="f28-debug"> Enable debug mode</label>
+      <label><input type="checkbox" name="f28-log"> Verbose logging</label>
+    </fieldset>
+  </details>
+</div>
+
+<div class="example">
+  <h3>29. Legend as accessible label for radio group (WCAG)</h3>
+  <fieldset>
+    <legend id="f29-legend">Subscription Frequency</legend>
+    <label><input type="radio" name="f29-freq" value="daily"> Daily</label>
+    <label><input type="radio" name="f29-freq" value="weekly"> Weekly</label>
+    <label><input type="radio" name="f29-freq" value="monthly"> Monthly</label>
+  </fieldset>
+  <p style="font-size:12px;color:#666">Screen readers announce the legend text before each radio option.</p>
+</div>
+
+<div class="example">
+  <h3>30. Fieldset for time range selection</h3>
+  <fieldset>
+    <legend>Available Hours</legend>
+    <label for="f30-from">From: <input type="time" id="f30-from" name="from"></label>
+    <label for="f30-to">To: <input type="time" id="f30-to" name="to"></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>31. Grouped checkboxes — days of week</h3>
+  <fieldset>
+    <legend>Available days</legend>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <label><input type="checkbox" name="f31-day" value="mon"> Mon</label>
+      <label><input type="checkbox" name="f31-day" value="tue"> Tue</label>
+      <label><input type="checkbox" name="f31-day" value="wed"> Wed</label>
+      <label><input type="checkbox" name="f31-day" value="thu"> Thu</label>
+      <label><input type="checkbox" name="f31-day" value="fri"> Fri</label>
+      <label><input type="checkbox" name="f31-day" value="sat"> Sat</label>
+      <label><input type="checkbox" name="f31-day" value="sun"> Sun</label>
+    </div>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>32. Fieldset with progress indicator</h3>
+  <p style="font-size:13px">Step 2 of 3</p>
+  <progress value="66" max="100" style="width:100%"></progress>
+  <fieldset>
+    <legend>Step 2: Address</legend>
+    <label>Street: <input type="text"></label>
+    <label>City: <input type="text"></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>33. Read-only data in fieldset (display mode)</h3>
+  <fieldset>
+    <legend>Account Summary (read only)</legend>
+    <p><strong>Name:</strong> Jane Doe</p>
+    <p><strong>Email:</strong> jane@example.com</p>
+    <p><strong>Plan:</strong> Pro</p>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>34. Fieldset with required and error state</h3>
+  <form id="f34-form" novalidate>
+    <fieldset>
+      <legend>Contact *</legend>
+      <label><input type="radio" name="f34-pref" value="email" required> Email</label>
+      <label><input type="radio" name="f34-pref" value="phone"> Phone</label>
+    </fieldset>
+    <p id="f34-err" style="color:red;font-size:13px"></p>
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('f34-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const checked = document.querySelector('input[name="f34-pref"]:checked');
+      document.getElementById('f34-err').textContent = checked ? '' : 'Please select a contact preference.';
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>35. Color theme selection with radio group</h3>
+  <fieldset>
+    <legend>Color Theme</legend>
+    <label style="display:inline-flex;align-items:center;gap:6px;margin-right:12px">
+      <input type="radio" name="f35-theme" value="light">
+      <span style="display:inline-block;width:20px;height:20px;background:#fff;border:1px solid #ccc;border-radius:50%"></span> Light
+    </label>
+    <label style="display:inline-flex;align-items:center;gap:6px;margin-right:12px">
+      <input type="radio" name="f35-theme" value="dark">
+      <span style="display:inline-block;width:20px;height:20px;background:#333;border-radius:50%"></span> Dark
+    </label>
+    <label style="display:inline-flex;align-items:center;gap:6px">
+      <input type="radio" name="f35-theme" value="blue">
+      <span style="display:inline-block;width:20px;height:20px;background:#3498db;border-radius:50%"></span> Blue
+    </label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>36. Fieldset dynamic disable based on select</h3>
+  <select id="f36-type" onchange="document.getElementById('f36-business').disabled = this.value !== 'business'">
+    <option value="personal">Personal</option>
+    <option value="business">Business</option>
+  </select>
+  <fieldset id="f36-business" disabled>
+    <legend>Business Details</legend>
+    <label>Company: <input type="text"></label>
+    <label>Tax ID: <input type="text"></label>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>37. Visually hidden legend (accessible but invisible)</h3>
+  <fieldset>
+    <legend style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">
+      Social media links
+    </legend>
+    <label for="f37-tw">Twitter: <input type="url" id="f37-tw" placeholder="https://twitter.com/..."></label>
+    <label for="f37-li">LinkedIn: <input type="url" id="f37-li" placeholder="https://linkedin.com/..."></label>
+  </fieldset>
+  <p style="font-size:12px;color:#666">Legend is visually hidden but read by screen readers.</p>
+</div>
+
+<div class="example">
+  <h3>38. Fieldset as card grid for options</h3>
+  <fieldset style="border:none">
+    <legend style="font-size:15px;font-weight:bold">Choose your tier</legend>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      <label style="border:2px solid #ddd;border-radius:6px;padding:10px;cursor:pointer;text-align:center">
+        <input type="radio" name="f38-tier" value="starter" style="margin-bottom:6px"><br>
+        <strong>Starter</strong><br><span style="font-size:12px">Free</span>
+      </label>
+      <label style="border:2px solid #ddd;border-radius:6px;padding:10px;cursor:pointer;text-align:center">
+        <input type="radio" name="f38-tier" value="growth" style="margin-bottom:6px"><br>
+        <strong>Growth</strong><br><span style="font-size:12px">$29/mo</span>
+      </label>
+      <label style="border:2px solid #ddd;border-radius:6px;padding:10px;cursor:pointer;text-align:center">
+        <input type="radio" name="f38-tier" value="scale" style="margin-bottom:6px"><br>
+        <strong>Scale</strong><br><span style="font-size:12px">$99/mo</span>
+      </label>
+    </div>
+  </fieldset>
+</div>
+
+<!-- ============================================================ -->
+<h2>ADVANCED (Examples 39–50)</h2>
+<!-- ============================================================ -->
+
+<div class="example">
+  <h3>39. Full registration form with multiple fieldsets</h3>
+  <form id="f39-form" novalidate>
+    <fieldset>
+      <legend>Account</legend>
+      <label for="f39-em">Email *<input type="email" id="f39-em" required></label>
+      <label for="f39-pw">Password *<input type="password" id="f39-pw" required minlength="8"></label>
+    </fieldset>
+    <fieldset>
+      <legend>Personal</legend>
+      <label for="f39-fn">First name<input type="text" id="f39-fn"></label>
+      <label for="f39-ln">Last name<input type="text" id="f39-ln"></label>
+    </fieldset>
+    <fieldset>
+      <legend>Communication</legend>
+      <label><input type="radio" name="f39-pref" value="email"> Email</label>
+      <label><input type="radio" name="f39-pref" value="sms"> SMS</label>
+      <label><input type="checkbox" name="f39-nl"> Subscribe to newsletter</label>
+    </fieldset>
+    <button type="submit">Register</button>
+  </form>
+</div>
+
+<div class="example">
+  <h3>40. Wizard form with fieldset show/hide</h3>
+  <form id="f40-wizard">
+    <fieldset id="f40-s1">
+      <legend>1. Your Role</legend>
+      <label><input type="radio" name="f40-role" value="dev"> Developer</label>
+      <label><input type="radio" name="f40-role" value="design"> Designer</label>
+      <button type="button" onclick="document.getElementById('f40-s1').style.display='none';document.getElementById('f40-s2').style.display='block'">Next →</button>
+    </fieldset>
+    <fieldset id="f40-s2" style="display:none">
+      <legend>2. Experience Level</legend>
+      <label><input type="radio" name="f40-exp" value="jr"> Junior</label>
+      <label><input type="radio" name="f40-exp" value="mid"> Mid</label>
+      <label><input type="radio" name="f40-exp" value="sr"> Senior</label>
+      <button type="button" onclick="document.getElementById('f40-s2').style.display='none';document.getElementById('f40-s3').style.display='block'">Next →</button>
+    </fieldset>
+    <fieldset id="f40-s3" style="display:none">
+      <legend>3. Confirm</legend>
+      <p style="font-size:13px">All set! Review and submit.</p>
+      <button type="submit">Submit</button>
+    </fieldset>
+  </form>
+</div>
+
+<div class="example">
+  <h3>41. Permission matrix using fieldsets per resource</h3>
+  <form>
+    <fieldset>
+      <legend>Posts</legend>
+      <label><input type="checkbox" name="posts" value="read"> Read</label>
+      <label><input type="checkbox" name="posts" value="write"> Write</label>
+      <label><input type="checkbox" name="posts" value="delete"> Delete</label>
+    </fieldset>
+    <fieldset>
+      <legend>Users</legend>
+      <label><input type="checkbox" name="users" value="read"> Read</label>
+      <label><input type="checkbox" name="users" value="write"> Write</label>
+      <label><input type="checkbox" name="users" value="delete"> Delete</label>
+    </fieldset>
+  </form>
+</div>
+
+<div class="example">
+  <h3>42. Fieldset with summary of selections</h3>
+  <fieldset>
+    <legend>Toppings</legend>
+    <label><input type="checkbox" name="f42-top" value="cheese" onchange="f42Update()"> Cheese</label>
+    <label><input type="checkbox" name="f42-top" value="olives" onchange="f42Update()"> Olives</label>
+    <label><input type="checkbox" name="f42-top" value="peppers" onchange="f42Update()"> Peppers</label>
+  </fieldset>
+  <p>Selected: <span id="f42-out">none</span></p>
+  <script>
+    function f42Update() {
+      const vals = Array.from(document.querySelectorAll('input[name="f42-top"]:checked')).map(cb => cb.value);
+      document.getElementById('f42-out').textContent = vals.length ? vals.join(', ') : 'none';
+    }
+  </script>
+</div>
+
+<div class="example">
+  <h3>43. Fieldset for time availability (grid of checkboxes)</h3>
+  <fieldset>
+    <legend>Available timeslots</legend>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px">
+      <label><input type="checkbox" name="f43-slot" value="9am"> 9 AM</label>
+      <label><input type="checkbox" name="f43-slot" value="10am"> 10 AM</label>
+      <label><input type="checkbox" name="f43-slot" value="11am"> 11 AM</label>
+      <label><input type="checkbox" name="f43-slot" value="12pm"> 12 PM</label>
+      <label><input type="checkbox" name="f43-slot" value="1pm"> 1 PM</label>
+      <label><input type="checkbox" name="f43-slot" value="2pm"> 2 PM</label>
+      <label><input type="checkbox" name="f43-slot" value="3pm"> 3 PM</label>
+      <label><input type="checkbox" name="f43-slot" value="4pm"> 4 PM</label>
+    </div>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>44. Fieldset accordion (click legend to expand)</h3>
+  <style>
+    .f44-fs { border:1px solid #ccc; border-radius:4px; padding:0; margin:4px 0; }
+    .f44-fs legend { cursor:pointer; padding:8px 12px; background:#f0f0f0; width:100%; border-radius:4px; }
+    .f44-content { padding:8px 12px; display:none; }
+  </style>
+  <fieldset class="f44-fs">
+    <legend onclick="const c=this.nextElementSibling;c.style.display=c.style.display==='block'?'none':'block'">
+      ▶ Personal Info
+    </legend>
+    <div class="f44-content">
+      <label>Name: <input type="text"></label>
+    </div>
+  </fieldset>
+  <fieldset class="f44-fs">
+    <legend onclick="const c=this.nextElementSibling;c.style.display=c.style.display==='block'?'none':'block'">
+      ▶ Contact Info
+    </legend>
+    <div class="f44-content">
+      <label>Email: <input type="email"></label>
+    </div>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>45. Survey with multiple radio groups</h3>
+  <form>
+    <fieldset>
+      <legend>"The interface was intuitive"</legend>
+      <label><input type="radio" name="f45-q1" value="1"> Strongly Disagree</label>
+      <label><input type="radio" name="f45-q1" value="5"> Strongly Agree</label>
+    </fieldset>
+    <fieldset>
+      <legend>"I would recommend this product"</legend>
+      <label><input type="radio" name="f45-q2" value="1"> Strongly Disagree</label>
+      <label><input type="radio" name="f45-q2" value="5"> Strongly Agree</label>
+    </fieldset>
+    <button type="submit">Submit Survey</button>
+  </form>
+</div>
+
+<div class="example">
+  <h3>46. Fieldset with required radio (accessible error)</h3>
+  <form id="f46-form" novalidate>
+    <fieldset>
+      <legend>Terms *</legend>
+      <label>
+        <input type="radio" name="f46-terms" value="yes" required aria-describedby="f46-err">
+        I agree
+      </label>
+      <label>
+        <input type="radio" name="f46-terms" value="no">
+        I do not agree
+      </label>
+    </fieldset>
+    <p id="f46-err" role="alert" style="color:red;font-size:13px"></p>
+    <button type="submit">Continue</button>
+  </form>
+  <script>
+    document.getElementById('f46-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const sel = document.querySelector('input[name="f46-terms"]:checked');
+      document.getElementById('f46-err').textContent = sel ? '' : 'You must select an option.';
+    });
+  </script>
+</div>
+
+<div class="example">
+  <h3>47. Nested fieldsets for category and subcategory</h3>
+  <fieldset>
+    <legend>Category</legend>
+    <fieldset>
+      <legend>Electronics</legend>
+      <label><input type="radio" name="f47-cat" value="phone"> Phones</label>
+      <label><input type="radio" name="f47-cat" value="laptop"> Laptops</label>
+    </fieldset>
+    <fieldset>
+      <legend>Clothing</legend>
+      <label><input type="radio" name="f47-cat" value="shirt"> Shirts</label>
+      <label><input type="radio" name="f47-cat" value="pants"> Pants</label>
+    </fieldset>
+  </fieldset>
+</div>
+
+<div class="example">
+  <h3>48. Fieldset with tabindex for keyboard focus management</h3>
+  <fieldset tabindex="-1" id="f48-fs">
+    <legend>Critical Settings</legend>
+    <label><input type="checkbox" name="f48-del"> Enable deletion</label>
+    <label><input type="checkbox" name="f48-pub"> Make public</label>
+  </fieldset>
+  <button onclick="document.getElementById('f48-fs').focus()">Focus fieldset</button>
+</div>
+
+<div class="example">
+  <h3>49. Conditional fieldsets — show relevant section</h3>
+  <form>
+    <label>Account type:</label>
+    <select onchange="
+      document.getElementById('f49-personal').style.display = this.value==='personal'?'block':'none';
+      document.getElementById('f49-business').style.display = this.value==='business'?'block':'none';
+    ">
+      <option value="">-- Select --</option>
+      <option value="personal">Personal</option>
+      <option value="business">Business</option>
+    </select>
+    <fieldset id="f49-personal" style="display:none">
+      <legend>Personal Details</legend>
+      <label>Date of birth: <input type="date"></label>
+    </fieldset>
+    <fieldset id="f49-business" style="display:none">
+      <legend>Business Details</legend>
+      <label>Company name: <input type="text"></label>
+      <label>Tax ID: <input type="text"></label>
+    </fieldset>
+  </form>
+</div>
+
+<div class="example">
+  <h3>50. Full accessible multi-section form</h3>
+  <form id="f50-form" novalidate>
+    <fieldset>
+      <legend>Personal Information</legend>
+      <label for="f50-fn">First Name *<input type="text" id="f50-fn" required></label>
+      <label for="f50-ln">Last Name *<input type="text" id="f50-ln" required></label>
+      <label for="f50-dob">Date of Birth<input type="date" id="f50-dob"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Contact</legend>
+      <label for="f50-em">Email *<input type="email" id="f50-em" required></label>
+      <label for="f50-ph">Phone<input type="tel" id="f50-ph"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Communication Preferences</legend>
+      <label><input type="checkbox" name="f50-notif" value="email"> Email updates</label>
+      <label><input type="checkbox" name="f50-notif" value="sms"> SMS alerts</label>
+      <label><input type="checkbox" name="f50-notif" value="push"> Push notifications</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Preferred Contact Time</legend>
+      <label><input type="radio" name="f50-time" value="morning"> Morning (8–12)</label>
+      <label><input type="radio" name="f50-time" value="afternoon"> Afternoon (12–5)</label>
+      <label><input type="radio" name="f50-time" value="evening"> Evening (5–9)</label>
+    </fieldset>
+
+    <fieldset disabled id="f50-billing">
+      <legend>Billing (upgrade to Pro to edit)</legend>
+      <label>Card number: <input type="text" placeholder="Locked"></label>
+    </fieldset>
+
+    <div id="f50-errors" role="alert" style="color:red;font-size:13px;margin-top:8px"></div>
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    document.getElementById('f50-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const errs = [];
+      this.querySelectorAll('[required]').forEach(function(inp) {
+        if (!inp.checkValidity()) errs.push(inp.closest('label')?.textContent.trim().split('\n')[0] || inp.name);
+      });
+      document.getElementById('f50-errors').textContent = errs.length
+        ? 'Required: ' + errs.join(', ')
+        : '';
+      if (!errs.length) alert('Form submitted!');
+    });
+  </script>
+</div>
+
+</body>
+</html>

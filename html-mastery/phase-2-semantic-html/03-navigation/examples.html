@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 2.3 — Navigation  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 2.3 — Navigation</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; margin-top: 6px; }
+    .output { background: #fafafa; border: 1px solid #eee; padding: 8px; border-radius: 3px; margin-top: 6px; font-size: 13px; }
+    pre { background: #f5f5f5; padding: 8px; border-radius: 3px; overflow-x: auto; font-size: 12px; margin: 4px 0; }
+    [aria-current="page"] { font-weight: bold; color: #0066cc; }
+  </style>
+</head>
+<body>
+<h1>Examples 2.3 — Navigation</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Basic nav with ul/li/a</h3>
+  <div class="output">
+    <nav aria-label="Main">
+      <ul style="list-style:none;padding:0;margin:0;display:flex;gap:12px">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+  <p class="label">Nav + ul/li/a is the correct semantic structure. Screen readers announce it as a navigation landmark with a list.</p>
+</div>
+
+<div class="example">
+  <h3>2. Simple breadcrumb</h3>
+  <div class="output">
+    <nav aria-label="Breadcrumb">
+      <ol style="list-style:none;padding:0;margin:0;display:flex;gap:4px">
+        <li><a href="#">Home</a></li>
+        <li aria-hidden="true">/</li>
+        <li><a href="#">Products</a></li>
+        <li aria-hidden="true">/</li>
+        <li><span aria-current="page">Widget Pro</span></li>
+      </ol>
+    </nav>
+  </div>
+  <p class="label">Breadcrumb uses ol (ordered), aria-label="Breadcrumb", and aria-current="page" on the last item.</p>
+</div>
+
+<div class="example">
+  <h3>3. Pagination navigation</h3>
+  <div class="output">
+    <nav aria-label="Pagination">
+      <a href="?page=1" aria-label="Previous page">Prev</a>
+      <a href="?page=1" aria-current="page">1</a>
+      <a href="?page=2">2</a>
+      <a href="?page=3">3</a>
+      <a href="?page=2" aria-label="Next page">Next</a>
+    </nav>
+  </div>
+  <p class="label">Pagination nav: aria-label="Pagination", aria-current="page" on current page, rel="next"/"prev" on first/last links.</p>
+</div>
+
+<div class="example">
+  <h3>4. Active link with aria-current</h3>
+  <div class="output">
+    <nav aria-label="Site">
+      <ul style="list-style:none;padding:0;margin:0;display:flex;gap:12px">
+        <li><a href="#" aria-current="page">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Blog</a></li>
+      </ul>
+    </nav>
+  </div>
+  <p class="label">aria-current="page" announces "current" to screen readers and provides a CSS hook for styling the active link.</p>
+</div>
+
+<div class="example">
+  <h3>5. Footer navigation</h3>
+  <div class="output">
+    <footer style="background:#2c3e50;color:white;padding:12px">
+      <nav aria-label="Footer links">
+        <ul style="list-style:none;padding:0;margin:0;display:flex;gap:12px;flex-wrap:wrap">
+          <li><a href="#" style="color:#aef">Privacy Policy</a></li>
+          <li><a href="#" style="color:#aef">Terms of Service</a></li>
+          <li><a href="#" style="color:#aef">Sitemap</a></li>
+        </ul>
+      </nav>
+    </footer>
+  </div>
+  <p class="label">Footer nav needs its own aria-label to distinguish it from main nav in the landmarks list.</p>
+</div>
+
+<div class="example">
+  <h3>6. Skip navigation link</h3>
+  <pre>&lt;style&gt;
+  .skip-link { position: absolute; top: -40px; left: 0; padding: 8px; background: #000; color: #fff; }
+  .skip-link:focus { top: 0; }
+&lt;/style&gt;
+&lt;a href="#main" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+&lt;nav&gt;...&lt;/nav&gt;
+&lt;main id="main"&gt;...&lt;/main&gt;</pre>
+  <p class="label">Skip links jump over repeated navigation for keyboard users. Must be the first focusable element. Required by WCAG 2.4.1.</p>
+</div>
+
+<div class="example">
+  <h3>7. Table of contents nav</h3>
+  <div class="output" style="font-size:13px">
+    <nav aria-label="Table of contents">
+      <ol style="padding-left:16px;margin:0">
+        <li><a href="#">Introduction</a></li>
+        <li><a href="#">Getting Started</a>
+          <ol style="padding-left:12px">
+            <li><a href="#">Installation</a></li>
+            <li><a href="#">Configuration</a></li>
+          </ol>
+        </li>
+        <li><a href="#">API Reference</a></li>
+      </ol>
+    </nav>
+  </div>
+  <p class="label">Table of contents uses nested ol inside nav. Hierarchy mirrors the document heading structure.</p>
+</div>
+
+<div class="example">
+  <h3>8. Language switcher nav</h3>
+  <pre>&lt;nav aria-label="Language selection"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/en/" hreflang="en" aria-current="page" lang="en"&gt;English&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/fr/" hreflang="fr" lang="fr"&gt;Français&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/de/" hreflang="de" lang="de"&gt;Deutsch&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Language switchers: hreflang for SEO, lang attribute on the link text so screen readers use correct pronunciation.</p>
+</div>
+
+<div class="example">
+  <h3>9. rel="prev" and rel="next" on pagination</h3>
+  <pre>&lt;nav aria-label="Article navigation"&gt;
+  &lt;a href="/articles/previous" rel="prev"&gt;← Previous Article&lt;/a&gt;
+  &lt;a href="/articles/next" rel="next"&gt;Next Article →&lt;/a&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">rel="prev" and rel="next" inform search engines about the relationship between pages in a series.</p>
+</div>
+
+<div class="example">
+  <h3>10. aria-current values beyond "page"</h3>
+  <pre>&lt;!-- Current page in site nav --&gt;
+&lt;a aria-current="page"&gt;Dashboard&lt;/a&gt;
+
+&lt;!-- Current step in a wizard --&gt;
+&lt;a aria-current="step"&gt;Step 2: Payment&lt;/a&gt;
+
+&lt;!-- Currently selected item (non-page) --&gt;
+&lt;a aria-current="true"&gt;Alice Johnson&lt;/a&gt;
+
+&lt;!-- Current date in calendar --&gt;
+&lt;td aria-current="date"&gt;24&lt;/td&gt;</pre>
+  <p class="label">aria-current accepts: page, step, location, date, time, or true/false. Choose the most specific value.</p>
+</div>
+
+<div class="example">
+  <h3>11. Mobile hamburger nav pattern</h3>
+  <pre>&lt;button type="button"
+        aria-expanded="false"
+        aria-controls="main-nav"
+        aria-label="Open navigation menu"&gt;☰&lt;/button&gt;
+
+&lt;nav id="main-nav" aria-label="Main" hidden&gt;
+  &lt;ul&gt;...&lt;/ul&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Hamburger button: aria-controls links to nav id, aria-expanded reflects open/closed state. Nav starts hidden.</p>
+</div>
+
+<div class="example">
+  <h3>12. Side navigation with active section</h3>
+  <pre>&lt;nav aria-label="Documentation sections"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/docs/install"&gt;Installation&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/docs/config" aria-current="page"&gt;Configuration&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/docs/api"&gt;API Reference&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Sidebar navigation marks the current page with aria-current="page" for both semantic and visual active state indication.</p>
+</div>
+
+<div class="example">
+  <h3>13. Step wizard navigation</h3>
+  <div class="output" style="font-size:13px">
+    <nav aria-label="Checkout steps">
+      <ol style="list-style:none;padding:0;margin:0;display:flex;gap:8px">
+        <li><span style="color:#28a745">✓ Cart</span></li>
+        <li aria-current="step" style="font-weight:bold;color:#0066cc">→ Shipping</li>
+        <li style="color:#999">Payment</li>
+        <li style="color:#999">Confirm</li>
+      </ol>
+    </nav>
+  </div>
+  <p class="label">Wizard step indicators: aria-current="step" on the active step, completed steps can be links, future steps are non-interactive.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Breadcrumb with schema microdata</h3>
+  <pre>&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol itemscope itemtype="https://schema.org/BreadcrumbList"&gt;
+    &lt;li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"&gt;
+      &lt;a href="/" itemprop="item"&gt;&lt;span itemprop="name"&gt;Home&lt;/span&gt;&lt;/a&gt;
+      &lt;meta itemprop="position" content="1"&gt;
+    &lt;/li&gt;
+    &lt;li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"&gt;
+      &lt;span itemprop="name" aria-current="page"&gt;Products&lt;/span&gt;
+      &lt;meta itemprop="position" content="2"&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Schema.org BreadcrumbList microdata enables rich breadcrumb snippets in Google Search results.</p>
+</div>
+
+<div class="example">
+  <h3>15. Disclosure pattern for dropdown nav</h3>
+  <pre>&lt;nav aria-label="Main"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;button type="button" aria-expanded="false" aria-controls="products-menu"&gt;
+        Products ▾
+      &lt;/button&gt;
+      &lt;ul id="products-menu" hidden&gt;
+        &lt;li&gt;&lt;a href="/widgets"&gt;Widgets&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/gadgets"&gt;Gadgets&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Disclosure pattern: button (not link) toggles sub-navigation. Simpler and equally accessible as ARIA menu widget.</p>
+</div>
+
+<div class="example">
+  <h3>16. CSS-only dropdown with :focus-within</h3>
+  <pre>&lt;nav aria-label="Main"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;a href="/products"&gt;Products&lt;/a&gt;
+      &lt;ul class="dropdown"&gt;
+        &lt;li&gt;&lt;a href="/products/widgets"&gt;Widgets&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/products/gadgets"&gt;Gadgets&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+&lt;style&gt;
+  .dropdown { display: none; }
+  li:hover .dropdown,
+  li:focus-within .dropdown { display: block; }
+&lt;/style&gt;</pre>
+  <p class="label">:focus-within makes CSS-only dropdowns keyboard accessible — the dropdown stays visible when a child receives focus.</p>
+</div>
+
+<div class="example">
+  <h3>17. Pagination with ellipsis</h3>
+  <pre>&lt;nav aria-label="Pagination"&gt;
+  &lt;a href="?page=4" rel="prev"&gt;← Prev&lt;/a&gt;
+  &lt;a href="?page=1"&gt;1&lt;/a&gt;
+  &lt;span aria-hidden="true"&gt;...&lt;/span&gt;
+  &lt;a href="?page=5" aria-current="page" aria-label="Page 5, current"&gt;5&lt;/a&gt;
+  &lt;span aria-hidden="true"&gt;...&lt;/span&gt;
+  &lt;a href="?page=10"&gt;10&lt;/a&gt;
+  &lt;a href="?page=6" rel="next"&gt;Next →&lt;/a&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Ellipsis spans are aria-hidden (decorative). Page numbers have descriptive aria-labels. rel="prev"/"next" aids SEO.</p>
+</div>
+
+<div class="example">
+  <h3>18. Keyboard-managed tab navigation</h3>
+  <pre>&lt;div role="tablist" aria-label="Product tabs"&gt;
+  &lt;button role="tab" id="t1" aria-selected="true"
+          aria-controls="p1" tabindex="0"&gt;Overview&lt;/button&gt;
+  &lt;button role="tab" id="t2" aria-selected="false"
+          aria-controls="p2" tabindex="-1"&gt;Specs&lt;/button&gt;
+  &lt;button role="tab" id="t3" aria-selected="false"
+          aria-controls="p3" tabindex="-1"&gt;Reviews&lt;/button&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Tab widget: roving tabindex pattern — only selected tab is in tab sequence (tabindex=0), others use tabindex=-1. Arrow keys navigate between tabs.</p>
+</div>
+
+<div class="example">
+  <h3>19. Navigation with notification badge</h3>
+  <pre>&lt;nav aria-label="Main"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;a href="/inbox" aria-label="Inbox (5 unread messages)"&gt;
+        Inbox
+        &lt;span aria-hidden="true"
+              style="background:red;color:white;border-radius:10px;padding:1px 6px;font-size:11px"&gt;5&lt;/span&gt;
+      &lt;/a&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Badge count included in aria-label; visual badge is aria-hidden to avoid double-announcement of the number.</p>
+</div>
+
+<div class="example">
+  <h3>20. In-page anchor navigation</h3>
+  <pre>&lt;nav aria-label="On this page"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="#intro"&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#examples"&gt;Examples&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#api"&gt;API Reference&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;!-- Sections need scroll-margin-top if header is sticky --&gt;
+&lt;section id="intro" style="scroll-margin-top: 80px"&gt;...&lt;/section&gt;</pre>
+  <p class="label">In-page nav with anchor links. scroll-margin-top offsets scrolling to account for sticky headers.</p>
+</div>
+
+<div class="example">
+  <h3>21. Multiple skip links</h3>
+  <pre>&lt;nav aria-label="Skip links" class="skip-links"&gt;
+  &lt;a href="#main-content"&gt;Skip to main content&lt;/a&gt;
+  &lt;a href="#main-nav"&gt;Skip to navigation&lt;/a&gt;
+  &lt;a href="#search"&gt;Skip to search&lt;/a&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Multiple skip links serve complex pages. They remain visually hidden until focused, then animate into view.</p>
+</div>
+
+<div class="example">
+  <h3>22. Documentation sidebar nav with group headings</h3>
+  <pre>&lt;nav aria-label="Documentation"&gt;
+  &lt;section aria-labelledby="nav-gs"&gt;
+    &lt;h3 id="nav-gs"&gt;Getting Started&lt;/h3&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="#" aria-current="page"&gt;Installation&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#"&gt;Configuration&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
+  &lt;section aria-labelledby="nav-api"&gt;
+    &lt;h3 id="nav-api"&gt;API Reference&lt;/h3&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="#"&gt;Components&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Large docs navs use sections with headings inside the nav element for structured group labels.</p>
+</div>
+
+<div class="example">
+  <h3>23. Off-canvas drawer navigation</h3>
+  <pre>&lt;nav id="drawer-nav" aria-label="Site navigation"
+     role="dialog" aria-modal="true"
+     style="position:fixed;left:-300px;width:300px;top:0;height:100%"&gt;
+  &lt;button type="button" aria-label="Close navigation"&gt;✕&lt;/button&gt;
+  &lt;ul&gt;...&lt;/ul&gt;
+&lt;/nav&gt;
+&lt;div class="backdrop" aria-hidden="true"&gt;&lt;/div&gt;</pre>
+  <p class="label">Off-canvas nav uses role="dialog" + aria-modal="true" to trap focus. Backdrop is aria-hidden. Close on Escape key.</p>
+</div>
+
+<div class="example">
+  <h3>24. Horizontal nav that wraps on mobile</h3>
+  <pre>&lt;nav aria-label="Main"&gt;
+  &lt;ul style="
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-wrap: wrap; gap: 8px;
+  "&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">flex-wrap allows nav links to wrap to the next line on narrow screens without JavaScript.</p>
+</div>
+
+<div class="example">
+  <h3>25. Auto-detect active nav link from URL</h3>
+  <pre>&lt;nav aria-label="Main" id="auto-nav"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+&lt;script&gt;
+  const path = window.location.pathname;
+  document.querySelectorAll("#auto-nav a").forEach(link =&gt; {
+    if (link.pathname === path) link.setAttribute("aria-current", "page");
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Auto-detect active state by comparing link pathname to current URL, then set aria-current="page".</p>
+</div>
+
+<div class="example">
+  <h3>26. Accessible icon-only nav links</h3>
+  <pre>&lt;nav aria-label="Social media"&gt;
+  &lt;ul style="list-style:none;padding:0;margin:0;display:flex;gap:8px"&gt;
+    &lt;li&gt;
+      &lt;a href="https://twitter.com/example" aria-label="Follow us on Twitter"
+         target="_blank" rel="noopener"&gt;
+        &lt;svg aria-hidden="true" width="24" height="24"&gt;...&lt;/svg&gt;
+      &lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+      &lt;a href="https://github.com/example" aria-label="View our GitHub"
+         target="_blank" rel="noopener"&gt;
+        &lt;svg aria-hidden="true" width="24" height="24"&gt;...&lt;/svg&gt;
+      &lt;/a&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Icon-only links: aria-label on the anchor describes destination; SVG icon has aria-hidden="true" to avoid duplicate announcement.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Full breadcrumb with separators</h3>
+  <div class="output" style="font-size:13px">
+    <nav aria-label="Breadcrumb" style="background:#f5f5f5;padding:8px;border-radius:4px">
+      <ol style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+        <li><a href="#" aria-label="Home">🏠 Home</a></li>
+        <li aria-hidden="true" style="color:#999">›</li>
+        <li><a href="#" style="color:#0066cc">Electronics</a></li>
+        <li aria-hidden="true" style="color:#999">›</li>
+        <li><a href="#" style="color:#0066cc">Computers</a></li>
+        <li aria-hidden="true" style="color:#999">›</li>
+        <li><span aria-current="page" style="font-weight:bold">MacBook Pro 16"</span></li>
+      </ol>
+    </nav>
+  </div>
+  <p class="label">Visual separators (›) are aria-hidden="true". Last item is a span (not a link) with aria-current="page".</p>
+</div>
+
+<div class="example">
+  <h3>28. Header with logo, nav, search, user menu</h3>
+  <div class="output">
+    <header style="background:#1a1a2e;color:white;padding:10px;display:flex;align-items:center;gap:12px;font-size:13px">
+      <a href="#" style="color:white;font-weight:bold;text-decoration:none">⚡ App</a>
+      <nav aria-label="Main" style="flex:1">
+        <ul style="list-style:none;padding:0;margin:0;display:flex;gap:10px">
+          <li><a href="#" style="color:#aaa" aria-current="page">Dashboard</a></li>
+          <li><a href="#" style="color:#aaa">Projects</a></li>
+          <li><a href="#" style="color:#aaa">Team</a></li>
+        </ul>
+      </nav>
+      <form role="search">
+        <input type="search" aria-label="Search" placeholder="Search..." style="padding:3px;font-size:12px">
+      </form>
+      <nav aria-label="User account">
+        <a href="#" style="color:#aaa">👤 Jane</a>
+      </nav>
+    </header>
+  </div>
+  <p class="label">Header with 3 nav landmarks: main nav, search (role="search"), user account nav — all with unique aria-labels.</p>
+</div>
+
+<div class="example">
+  <h3>29. Complex pagination with page info</h3>
+  <pre>&lt;nav aria-label="Pagination"&gt;
+  &lt;p id="page-info"&gt;Showing 1–20 of 156 results&lt;/p&gt;
+  &lt;ol aria-describedby="page-info" style="list-style:none;padding:0;display:flex;gap:4px"&gt;
+    &lt;li&gt;&lt;a href="?page=1" aria-current="page" aria-label="Page 1, current"&gt;1&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=2" aria-label="Page 2"&gt;2&lt;/a&gt;&lt;/li&gt;
+    &lt;li aria-hidden="true"&gt;&lt;span&gt;...&lt;/span&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=8" aria-label="Page 8, last"&gt;8&lt;/a&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+  &lt;a href="?page=2" rel="next"&gt;Next →&lt;/a&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Complete accessible pagination: count info, descriptive aria-labels, aria-current, ellipsis aria-hidden, rel="next".</p>
+</div>
+
+<div class="example">
+  <h3>30. Full page with all navigation landmarks</h3>
+  <pre>&lt;body&gt;
+  &lt;nav aria-label="Skip links"&gt;
+    &lt;a href="#main"&gt;Skip to main&lt;/a&gt;
+  &lt;/nav&gt;
+  &lt;header&gt;
+    &lt;nav aria-label="Main navigation"&gt;...&lt;/nav&gt;
+    &lt;form role="search"&gt;...&lt;/form&gt;
+    &lt;nav aria-label="User account"&gt;...&lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;nav aria-label="Breadcrumb"&gt;...&lt;/nav&gt;
+  &lt;main id="main"&gt;
+    &lt;nav aria-label="Table of contents"&gt;...&lt;/nav&gt;
+    ...content...
+  &lt;/main&gt;
+  &lt;nav aria-label="Pagination"&gt;...&lt;/nav&gt;
+  &lt;footer&gt;
+    &lt;nav aria-label="Footer links"&gt;...&lt;/nav&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;</pre>
+  <p class="label">A complex page may have many navs. Each needs a unique aria-label so AT users can distinguish them in the landmarks list.</p>
+</div>
+
+<div class="example">
+  <h3>31. Active section tracking with IntersectionObserver</h3>
+  <pre>&lt;nav aria-label="On this page" id="toc-nav"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="#intro" id="nav-link-intro"&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#usage" id="nav-link-usage"&gt;Usage&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+&lt;script&gt;
+  const observer = new IntersectionObserver(entries =&gt; {
+    entries.forEach(e =&gt; {
+      const link = document.getElementById("nav-link-" + e.target.id);
+      if (link) link.setAttribute("aria-current", e.isIntersecting ? "true" : "false");
+      if (!e.isIntersecting) link?.removeAttribute("aria-current");
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll("section[id]").forEach(s =&gt; observer.observe(s));
+&lt;/script&gt;</pre>
+  <p class="label">Active section detection via IntersectionObserver. Sets aria-current="true" on the nav link when its section is 50% visible.</p>
+</div>
+
+<div class="example">
+  <h3>32. Contextual nav inside article</h3>
+  <pre>&lt;article&gt;
+  &lt;header&gt;&lt;h1&gt;Long Tutorial&lt;/h1&gt;&lt;/header&gt;
+  &lt;nav aria-label="Article sections"&gt;
+    &lt;ol&gt;
+      &lt;li&gt;&lt;a href="#part-1"&gt;Part 1: Setup&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#part-2"&gt;Part 2: Development&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#part-3"&gt;Part 3: Deployment&lt;/a&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/nav&gt;
+  &lt;section id="part-1"&gt;...&lt;/section&gt;
+&lt;/article&gt;</pre>
+  <p class="label">A nav element can live inside an article to provide a table of contents for the article's own sections.</p>
+</div>
+
+<div class="example">
+  <h3>33. Breadcrumb truncation on mobile</h3>
+  <pre>&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol&gt;
+    &lt;li class="breadcrumb-hide-mobile"&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li class="breadcrumb-hide-mobile"&gt;&lt;a href="/store"&gt;Store&lt;/a&gt;&lt;/li&gt;
+    &lt;li class="breadcrumb-show-mobile"&gt;
+      &lt;a href="/store" aria-label="Back to Store"&gt;…&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li class="breadcrumb-hide-mobile"&gt;&lt;a href="/store/electronics"&gt;Electronics&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;span aria-current="page"&gt;MacBook Pro&lt;/span&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;
+&lt;style&gt;
+  @media (max-width: 600px) {
+    .breadcrumb-hide-mobile { display: none; }
+  }
+  @media (min-width: 601px) {
+    .breadcrumb-show-mobile { display: none; }
+  }
+&lt;/style&gt;</pre>
+  <p class="label">Mobile breadcrumb collapses middle items to an ellipsis with aria-label explaining it links back to the parent.</p>
+</div>
+
+<div class="example">
+  <h3>34. Focus trap for mobile nav overlay</h3>
+  <pre>&lt;script&gt;
+  function trapFocus(element) {
+    const focusable = element.querySelectorAll(
+      'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    element.addEventListener("keydown", e =&gt; {
+      if (e.key === "Escape") closeNav();
+      if (e.key !== "Tab") return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    });
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Focus traps prevent keyboard users from leaving an open overlay nav. Escape closes; Tab cycles only within the nav.</p>
+</div>
+
+<div class="example">
+  <h3>35. Navigation with prefetch on hover</h3>
+  <pre>&lt;nav aria-label="Main"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/analytics"&gt;Analytics&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+&lt;script&gt;
+  document.querySelectorAll("nav a[href]").forEach(link =&gt; {
+    link.addEventListener("mouseenter", () =&gt; {
+      if (document.querySelector(`link[href="${link.href}"]`)) return;
+      const prefetch = document.createElement("link");
+      prefetch.rel = "prefetch";
+      prefetch.href = link.href;
+      document.head.appendChild(prefetch);
+    }, { once: true });
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Hover-prefetch pre-loads nav destinations during user intent, making navigation feel instant. Fires once per link.</p>
+</div>
+
+<div class="example">
+  <h3>36. SPA navigation with focus management</h3>
+  <pre>&lt;nav aria-label="App navigation"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/dashboard" data-route&gt;Dashboard&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/settings" data-route&gt;Settings&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+&lt;div role="status" aria-live="polite" id="nav-announce"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  document.querySelectorAll("[data-route]").forEach(link =&gt; {
+    link.addEventListener("click", e =&gt; {
+      e.preventDefault();
+      navigateTo(link.href);
+      // After render:
+      document.getElementById("nav-announce").textContent =
+        `Navigated to ${link.textContent}`;
+      document.querySelector("main h1")?.focus();
+    });
+  });
+&lt;/script&gt;</pre>
+  <p class="label">SPA navigation: announce page change via aria-live region, move focus to h1 of new page. Browsers don't do this automatically for JS navigation.</p>
+</div>
+
+<div class="example">
+  <h3>37. Navigation audit script</h3>
+  <pre>&lt;script&gt;
+  // Audit all navigation landmarks
+  const navs = document.querySelectorAll("nav, [role='navigation']");
+  console.log(`Found ${navs.length} navigation landmark(s):`);
+  navs.forEach((nav, i) =&gt; {
+    const label = nav.getAttribute("aria-label") ||
+      document.getElementById(nav.getAttribute("aria-labelledby"))?.textContent ||
+      "(NO LABEL - accessibility issue!)";
+    const links = nav.querySelectorAll("a").length;
+    const hasCurrent = !!nav.querySelector("[aria-current]");
+    console.log(`${i+1}. "${label}" — ${links} links, current: ${hasCurrent}`);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Programmatic nav audit: checks for missing labels, counts links, verifies aria-current presence.</p>
+</div>
+
+<div class="example">
+  <h3>38. Progressive navigation disclosure</h3>
+  <pre>&lt;nav aria-label="Products"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;a href="/products"&gt;All Products&lt;/a&gt;
+      &lt;button type="button"
+              aria-expanded="false"
+              aria-label="Show product subcategories"
+              onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') !== 'true'); this.nextElementSibling.hidden = !this.nextElementSibling.hidden"&gt;
+        +
+      &lt;/button&gt;
+      &lt;ul hidden&gt;
+        &lt;li&gt;&lt;a href="/products/widgets"&gt;Widgets&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/products/gadgets"&gt;Gadgets&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Progressive disclosure: the category link goes directly, while a separate + button toggles the subcategory list — two distinct actions.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Navigation in web component</h3>
+  <pre>&lt;site-navigation current-page="/dashboard"&gt;&lt;/site-navigation&gt;
+
+&lt;script&gt;
+  class SiteNavigation extends HTMLElement {
+    static observedAttributes = ["current-page"];
+    connectedCallback() {
+      this.attachShadow({ mode: "open" });
+      this.render();
+    }
+    attributeChangedCallback() { this.render(); }
+    render() {
+      const current = this.getAttribute("current-page") || "/";
+      this.shadowRoot.innerHTML = `
+        &lt;nav aria-label="Main navigation"&gt;
+          &lt;ul&gt;
+            ${["/dashboard", "/settings", "/help"].map(path =&gt; `
+              &lt;li&gt;&lt;a href="${path}" ${path === current ? 'aria-current="page"' : ''}&gt;
+                ${path.slice(1)}
+              &lt;/a&gt;&lt;/li&gt;
+            `).join("")}
+          &lt;/ul&gt;
+        &lt;/nav&gt;
+      `;
+    }
+  }
+  customElements.define("site-navigation", SiteNavigation);
+&lt;/script&gt;</pre>
+  <p class="label">Web component navigation with aria-current set from an attribute. Shadow DOM nav is still traversable by AT.</p>
+</div>
+
+<div class="example">
+  <h3>40. Accessible megamenu</h3>
+  <pre>&lt;nav aria-label="Main"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;button aria-expanded="false" aria-controls="mega-products"
+              aria-haspopup="true"&gt;Products&lt;/button&gt;
+      &lt;div id="mega-products" role="region"
+           aria-label="Products submenu" hidden&gt;
+        &lt;div class="mega-column"&gt;
+          &lt;h3&gt;Hardware&lt;/h3&gt;
+          &lt;ul&gt;
+            &lt;li&gt;&lt;a href="/laptops"&gt;Laptops&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="/desktops"&gt;Desktops&lt;/a&gt;&lt;/li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+        &lt;div class="mega-column"&gt;
+          &lt;h3&gt;Software&lt;/h3&gt;
+          &lt;ul&gt;
+            &lt;li&gt;&lt;a href="/apps"&gt;Apps&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="/services"&gt;Services&lt;/a&gt;&lt;/li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Accessible megamenu: button with aria-haspopup/aria-expanded, panel as region with aria-label, grouped by category headings.</p>
+</div>
+
+<div class="example">
+  <h3>41. Navigation testing with axe-core</h3>
+  <pre>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.7.0/axe.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  // Test only navigation accessibility
+  axe.run({
+    include: ["nav"],
+    rules: {
+      region: { enabled: true },
+      "landmark-unique": { enabled: true },
+      "landmark-no-duplicate-main": { enabled: true }
+    }
+  }).then(results =&gt; {
+    console.log("Navigation violations:", results.violations);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">axe-core can programmatically test navigation accessibility. Run this in CI/CD to catch regressions automatically.</p>
+</div>
+
+<div class="example">
+  <h3>42. Navigation role="menubar" (desktop app pattern)</h3>
+  <pre>&lt;nav aria-label="File menu" role="menubar"&gt;
+  &lt;button role="menuitem" aria-haspopup="menu"
+          aria-expanded="false"&gt;File&lt;/button&gt;
+  &lt;button role="menuitem" aria-haspopup="menu"
+          aria-expanded="false"&gt;Edit&lt;/button&gt;
+  &lt;button role="menuitem" aria-haspopup="menu"
+          aria-expanded="false"&gt;View&lt;/button&gt;
+&lt;/nav&gt;
+&lt;!-- Note: menubar pattern requires comprehensive keyboard handling --&gt;</pre>
+  <p class="label">role="menubar" is for desktop-application-style menus, not standard website navigation. Requires complex keyboard management per ARIA spec.</p>
+</div>
+
+<div class="example">
+  <h3>43. Visible focus styles for nav links</h3>
+  <pre>&lt;style&gt;
+  nav a { color: inherit; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  /* Use :focus-visible for keyboard focus only */
+  nav a:focus-visible {
+    outline: 3px solid #0066cc;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  /* Remove outline on mouse click */
+  nav a:focus:not(:focus-visible) {
+    outline: none;
+  }
+&lt;/style&gt;</pre>
+  <p class="label">:focus-visible shows focus ring only for keyboard navigation, not mouse clicks. The outline must be visible against all background colors (WCAG 2.4.7).</p>
+</div>
+
+<div class="example">
+  <h3>44. Persistent active state with localStorage</h3>
+  <pre>&lt;nav aria-label="Main" id="persist-nav"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/analytics"&gt;Analytics&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+&lt;script&gt;
+  const nav = document.getElementById("persist-nav");
+  nav.addEventListener("click", e =&gt; {
+    if (e.target.tagName === "A") {
+      localStorage.setItem("lastNav", e.target.href);
+    }
+  });
+  const last = localStorage.getItem("lastNav");
+  if (last) {
+    const link = nav.querySelector(`a[href="${last}"]`);
+    link?.setAttribute("aria-current", "page");
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Persist the last visited nav section across page loads. Useful for tabbed applications where the active section is remembered.</p>
+</div>
+
+<div class="example">
+  <h3>45. Breadcrumb JSON-LD structured data</h3>
+  <pre>&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;span aria-current="page"&gt;Widget Pro&lt;/span&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;
+
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://example.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Products", "item": "https://example.com/products/"},
+    {"@type": "ListItem", "position": 3, "name": "Widget Pro"}
+  ]
+}
+&lt;/script&gt;</pre>
+  <p class="label">Separate HTML nav (for users) and JSON-LD (for search engines). Google prefers JSON-LD for structured data.</p>
+</div>
+
+<div class="example">
+  <h3>46. Keyboard shortcut for navigation</h3>
+  <pre>&lt;nav aria-label="Main"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/dashboard" accesskey="d"&gt;Dashboard&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/inbox" accesskey="i"&gt;Inbox&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/settings" accesskey="s"&gt;Settings&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+&lt;!-- accesskey triggers: Alt+key (Windows/Linux), Ctrl+Alt+key (Mac) --&gt;</pre>
+  <p class="label">accesskey provides keyboard shortcuts for nav links. Use with caution — they may conflict with AT and browser shortcuts.</p>
+</div>
+
+<div class="example">
+  <h3>47. Navigation with smooth scroll and offset</h3>
+  <pre>&lt;style&gt;
+  html { scroll-behavior: smooth; }
+  /* Offset for sticky header */
+  :target { scroll-margin-top: 80px; }
+&lt;/style&gt;
+
+&lt;nav aria-label="Page contents" style="position:sticky;top:0"&gt;
+  &lt;a href="#intro"&gt;Intro&lt;/a&gt;
+  &lt;a href="#features"&gt;Features&lt;/a&gt;
+  &lt;a href="#pricing"&gt;Pricing&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;section id="intro"&gt;...&lt;/section&gt;
+&lt;section id="features"&gt;...&lt;/section&gt;
+&lt;section id="pricing"&gt;...&lt;/section&gt;</pre>
+  <p class="label">CSS smooth scroll + scroll-margin-top on :target sections ensures correct scroll offset for sticky headers.</p>
+</div>
+
+<div class="example">
+  <h3>48. Responsive navigation pattern decision tree</h3>
+  <pre>&lt;!--
+  Navigation pattern selection:
+
+  Desktop (wide) → Horizontal nav bar with dropdown
+  Tablet (medium) → Horizontal with collapsed dropdowns
+  Mobile (narrow) → Hamburger → Slide-in drawer
+
+  Accessibility requirements for each:
+  ✓ Hamburger: aria-expanded + aria-controls + aria-label
+  ✓ Drawer: role="dialog" + aria-modal + focus trap + Escape to close
+  ✓ Dropdown: aria-expanded + aria-controls on trigger button
+  ✓ All: visible focus styles, aria-current="page" on active link
+--&gt;</pre>
+  <p class="label">Responsive nav decision tree with the accessibility requirements for each breakpoint pattern.</p>
+</div>
+
+<div class="example">
+  <h3>49. Navigation with roles audit</h3>
+  <pre>&lt;script&gt;
+  // Full navigation accessibility audit
+  const issues = [];
+  document.querySelectorAll("nav").forEach(nav =&gt; {
+    if (!nav.getAttribute("aria-label") && !nav.getAttribute("aria-labelledby")) {
+      issues.push(`Nav without label: ${nav.outerHTML.slice(0, 50)}...`);
+    }
+  });
+  const navs = document.querySelectorAll("nav");
+  const labels = new Set([...navs].map(n =&gt; n.getAttribute("aria-label")));
+  if (labels.size !== navs.length) {
+    issues.push("Duplicate aria-label values on nav elements");
+  }
+  if (issues.length) {
+    console.warn("Navigation issues:", issues);
+  } else {
+    console.log("All navigation landmarks are correctly labeled.");
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Automated nav audit: checks for missing labels and duplicate label values across all nav elements.</p>
+</div>
+
+<div class="example">
+  <h3>50. Complete gold-standard navigation system</h3>
+  <pre>&lt;!-- 1. Skip links (first focusable elements) --&gt;
+&lt;nav aria-label="Skip links" class="skip-nav"&gt;
+  &lt;a href="#main"&gt;Skip to main content&lt;/a&gt;
+  &lt;a href="#main-nav"&gt;Skip to navigation&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;!-- 2. Site header with main nav --&gt;
+&lt;header&gt;
+  &lt;a href="/"&gt;&lt;img src="logo.svg" alt="Acme — home"&gt;&lt;/a&gt;
+  &lt;nav id="main-nav" aria-label="Main navigation"&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/" aria-current="page"&gt;Home&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;
+        &lt;button aria-expanded="false" aria-controls="products-sub"&gt;Products ▾&lt;/button&gt;
+        &lt;ul id="products-sub" hidden&gt;
+          &lt;li&gt;&lt;a href="/widgets"&gt;Widgets&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href="/gadgets"&gt;Gadgets&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;a href="/blog"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+  &lt;button aria-controls="main-nav" aria-expanded="false" aria-label="Open menu"
+          class="hamburger"&gt;☰&lt;/button&gt;
+&lt;/header&gt;
+
+&lt;!-- 3. Breadcrumb --&gt;
+&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li aria-hidden="true"&gt;/&lt;/li&gt;
+    &lt;li&gt;&lt;span aria-current="page"&gt;Widget Pro&lt;/span&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;
+
+&lt;!-- 4. Main content --&gt;
+&lt;main id="main" tabindex="-1"&gt;...&lt;/main&gt;
+
+&lt;!-- 5. Pagination --&gt;
+&lt;nav aria-label="Pagination"&gt;
+  &lt;a href="?page=1" aria-current="page" rel="prev"&gt;1&lt;/a&gt;
+  &lt;a href="?page=2"&gt;2&lt;/a&gt;
+  &lt;a href="?page=2" rel="next"&gt;Next →&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;!-- 6. Footer --&gt;
+&lt;footer&gt;
+  &lt;nav aria-label="Footer navigation"&gt;
+    &lt;a href="/privacy"&gt;Privacy&lt;/a&gt;
+    &lt;a href="/terms"&gt;Terms&lt;/a&gt;
+  &lt;/nav&gt;
+&lt;/footer&gt;</pre>
+  <p class="label">Gold-standard navigation: skip links, hamburger toggle, disclosure dropdown, breadcrumb, main skip target, pagination, footer nav — all accessible.</p>
+</div>
+
+</body>
+</html>

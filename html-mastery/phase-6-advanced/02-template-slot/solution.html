@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 6.2 — Template and Slot
+  ============================================================================
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 6.2 — Template and Slot</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    .card { border: 1px solid #ccc; padding: 12px; border-radius: 4px; margin: 8px 0; }
+    .card-title { margin: 0 0 4px; }
+    .card-body { margin: 0; color: #555; }
+  </style>
+</head>
+<body>
+
+<h1>Template and Slot — Solution</h1>
+
+<!-- Section 1: Card template -->
+<template id="card-template">
+  <div class="card">
+    <h3 class="card-title"></h3>
+    <p class="card-body"></p>
+  </div>
+</template>
+
+<!-- Section 2: Cards container and cloning script -->
+<div id="cards-container"></div>
+<script>
+  const template = document.getElementById('card-template');
+  const container = document.getElementById('cards-container');
+  const data = [
+    { title: 'Card One', body: 'First card description.' },
+    { title: 'Card Two', body: 'Second card description.' },
+    { title: 'Card Three', body: 'Third card description.' }
+  ];
+  data.forEach(item => {
+    const clone = template.content.cloneNode(true);
+    clone.querySelector('.card-title').textContent = item.title;
+    clone.querySelector('.card-body').textContent = item.body;
+    container.appendChild(clone);
+  });
+  container.dataset.populated = 'true';
+</script>
+
+<!-- Section 3: List template and container -->
+<template id="list-template">
+  <li class="list-item"></li>
+</template>
+<ul id="list-container"></ul>
+<script>
+  const listTemplate = document.getElementById('list-template');
+  const listContainer = document.getElementById('list-container');
+  ['Item 1', 'Item 2', 'Item 3'].forEach(text => {
+    const clone = listTemplate.content.cloneNode(true);
+    clone.querySelector('.list-item').textContent = text;
+    listContainer.appendChild(clone);
+  });
+  listContainer.dataset.populated = 'true';
+</script>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 6.2 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const tmpl = document.getElementById("card-template");
+  assert(tmpl !== null, '#card-template element exists');
+  assert(tmpl && tmpl.tagName.toLowerCase() === "template", '#card-template is a <template> element');
+  assert(tmpl && tmpl.content instanceof DocumentFragment, 'template.content is a DocumentFragment');
+  assert(tmpl && tmpl.content.querySelector(".card-title") !== null, 'template content contains .card-title');
+  assert(tmpl && tmpl.content.querySelector(".card-body") !== null, 'template content contains .card-body');
+
+  const container = document.getElementById("cards-container");
+  assert(container !== null, '#cards-container exists');
+  assert(container && container.dataset.populated === "true", '#cards-container dataset.populated === "true"');
+  const cards = container && container.querySelectorAll(".card");
+  assert(cards && cards.length === 3, '#cards-container contains exactly 3 .card elements');
+  assert(cards && cards[0] && cards[0].querySelector(".card-title") && cards[0].querySelector(".card-title").textContent.includes("Card One"),
+    'First card title includes "Card One"');
+
+  const listTmpl = document.getElementById("list-template");
+  assert(listTmpl !== null, '#list-template element exists');
+  assert(listTmpl && listTmpl.tagName.toLowerCase() === "template", '#list-template is a <template> element');
+  const listContainer = document.getElementById("list-container");
+  assert(listContainer !== null, '#list-container exists');
+  assert(listContainer && listContainer.dataset.populated === "true", '#list-container dataset.populated === "true"');
+  const listItems = listContainer && listContainer.querySelectorAll("li");
+  assert(listItems && listItems.length === 3, '#list-container contains 3 <li> elements');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 6.2 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

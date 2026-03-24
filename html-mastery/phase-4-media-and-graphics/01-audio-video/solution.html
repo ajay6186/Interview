@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 4.1 — Audio and Video
+  ============================================================================
+  Use <audio> and <video> elements with source elements, track elements,
+  and media attributes (controls, preload, loop, muted, poster).
+
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 4.1 — Audio and Video</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    audio, video { display: block; margin: 8px 0; max-width: 100%; }
+    section { margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+<h1>Audio and Video — Solution</h1>
+
+<!-- Section 1: Basic audio element -->
+<audio id="main-audio" controls>
+  <source src="audio/podcast.mp3" type="audio/mpeg">
+  Your browser does not support audio.
+</audio>
+
+<!-- Section 2: Video element with source and track -->
+<video id="main-video" controls width="640" poster="images/poster.jpg">
+  <source src="video/demo.mp4" type="video/mp4">
+  <track kind="subtitles" srclang="en" label="English" src="subtitles/en.vtt">
+</video>
+
+<!-- Section 3: Audio with playback control attributes -->
+<audio id="bg-audio" preload="none" loop muted>
+  <source src="audio/background.mp3" type="audio/mpeg">
+</audio>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 4.1 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const audio1 = document.getElementById("main-audio");
+  assert(audio1 !== null, '#main-audio element exists');
+  assert(audio1 && audio1.tagName.toLowerCase() === "audio", '#main-audio is an <audio> element');
+  assert(audio1 && audio1.hasAttribute("controls"), '#main-audio has controls attribute');
+  const audioSource = audio1 && audio1.querySelector("source");
+  assert(audioSource !== null, '<audio#main-audio> contains a <source> child');
+  assert(audioSource && audioSource.getAttribute("type") === "audio/mpeg", '<source> has type="audio/mpeg"');
+
+  const video1 = document.getElementById("main-video");
+  assert(video1 !== null, '#main-video element exists');
+  assert(video1 && video1.tagName.toLowerCase() === "video", '#main-video is a <video> element');
+  assert(video1 && video1.hasAttribute("controls"), '#main-video has controls attribute');
+  assert(video1 && video1.getAttribute("width") === "640", '#main-video has width="640"');
+  assert(video1 && (video1.getAttribute("poster") || "").trim() !== "", '#main-video has a non-empty poster attribute');
+  const videoSource = video1 && video1.querySelector("source");
+  assert(videoSource !== null, '<video#main-video> contains a <source> child');
+  const track = video1 && video1.querySelector("track");
+  assert(track !== null, '<video#main-video> contains a <track> child');
+  assert(track && track.getAttribute("kind") === "subtitles", '<track> has kind="subtitles"');
+  assert(track && track.getAttribute("srclang") === "en", '<track> has srclang="en"');
+
+  const bgAudio = document.getElementById("bg-audio");
+  assert(bgAudio !== null, '#bg-audio element exists');
+  assert(bgAudio && bgAudio.getAttribute("preload") === "none", '#bg-audio has preload="none"');
+  assert(bgAudio && bgAudio.hasAttribute("loop"), '#bg-audio has loop attribute');
+  assert(bgAudio && bgAudio.hasAttribute("muted"), '#bg-audio has muted attribute');
+  const bgSource = bgAudio && bgAudio.querySelector("source");
+  assert(bgSource !== null, '#bg-audio contains a <source> child');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 4.1 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

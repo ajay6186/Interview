@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<!--
+  Examples 6.4 — Data Attributes
+  50 examples covering data-* attributes, dataset API, CSS selectors,
+  JavaScript interaction, and patterns.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 6.4 — Data Attributes</title>
+  <style>
+    body { font-family: sans-serif; max-width: 860px; margin: 0 auto; padding: 16px; }
+    h1 { font-size: 1.5em; }
+    h2 { font-size: 1.1em; margin: 28px 0 4px; color: #333; border-bottom: 1px solid #ddd; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 13px; }
+    .note { background: #fffbea; border-left: 4px solid #f0c040; padding: 8px 12px; margin: 6px 0; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<h1>Data Attributes — 50 Examples</h1>
+
+<!-- 1 -->
+<h2>1. Basic data attribute</h2>
+<pre><code>&lt;div data-user-id="42"&gt;John Doe&lt;/div&gt;</code></pre>
+
+<!-- 2 -->
+<h2>2. Reading data attribute with getAttribute</h2>
+<pre><code>const el = document.querySelector('[data-user-id]');
+const id = el.getAttribute('data-user-id'); // "42"</code></pre>
+
+<!-- 3 -->
+<h2>3. Reading via dataset API</h2>
+<pre><code>const el = document.querySelector('[data-user-id]');
+const id = el.dataset.userId; // "42" — note camelCase conversion</code></pre>
+
+<!-- 4 -->
+<h2>4. HTML to dataset camelCase conversion</h2>
+<pre><code>data-user-id        → dataset.userId
+data-first-name     → dataset.firstName
+data-max-value      → dataset.maxValue
+data-my-long-attr   → dataset.myLongAttr</code></pre>
+
+<!-- 5 -->
+<h2>5. Setting data attribute via dataset</h2>
+<pre><code>el.dataset.status = 'active'; // sets data-status="active"
+el.dataset.userId = 99;       // sets data-user-id="99" (converts to string)</code></pre>
+
+<!-- 6 -->
+<h2>6. Setting data attribute via setAttribute</h2>
+<pre><code>el.setAttribute('data-theme', 'dark');
+// Equivalent to el.dataset.theme = 'dark';</code></pre>
+
+<!-- 7 -->
+<h2>7. Removing a data attribute</h2>
+<pre><code>delete el.dataset.status;          // removes data-status
+el.removeAttribute('data-status'); // equivalent</code></pre>
+
+<!-- 8 -->
+<h2>8. Checking for a data attribute</h2>
+<pre><code>if ('userId' in el.dataset) {
+  console.log('data-user-id exists');
+}
+// or
+if (el.hasAttribute('data-user-id')) { ... }</code></pre>
+
+<!-- 9 -->
+<h2>9. Iterating all data attributes</h2>
+<pre><code>Object.entries(el.dataset).forEach(([key, value]) => {
+  console.log(key, value); // camelCase keys
+});</code></pre>
+
+<!-- 10 -->
+<h2>10. CSS attribute selector with data attribute</h2>
+<pre><code>[data-theme="dark"] {
+  background: #1a1a1a;
+  color: #eee;
+}
+[data-status="active"] {
+  border-left: 4px solid green;
+}</code></pre>
+
+<!-- 11 -->
+<h2>11. CSS presence selector (attribute exists)</h2>
+<pre><code>[data-tooltip] {
+  cursor: help;
+  border-bottom: 1px dotted #666;
+}</code></pre>
+
+<!-- 12 -->
+<h2>12. CSS content from data attribute</h2>
+<pre><code>[data-badge]::after {
+  content: attr(data-badge);
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.75em;
+  margin-left: 4px;
+}</code></pre>
+<pre><code>&lt;button data-badge="3"&gt;Notifications&lt;/button&gt;</code></pre>
+
+<!-- 13 -->
+<h2>13. CSS substring selector with data attribute</h2>
+<pre><code>[data-category*="sport"] { border-color: green; }
+[data-category^="news"]  { border-color: blue; }
+[data-category$="live"]  { border-color: red; }</code></pre>
+
+<!-- 14 -->
+<h2>14. Storing configuration on a widget root</h2>
+<pre><code>&lt;div id="chart"
+     data-type="bar"
+     data-width="600"
+     data-animate="true"&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const chart = document.getElementById('chart');
+  initChart({
+    type:    chart.dataset.type,
+    width:   Number(chart.dataset.width),
+    animate: chart.dataset.animate === 'true',
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 15 -->
+<h2>15. Data attributes for filtering (CSS + JS)</h2>
+<pre><code>&lt;ul&gt;
+  &lt;li data-category="fruit"&gt;Apple&lt;/li&gt;
+  &lt;li data-category="veggie"&gt;Broccoli&lt;/li&gt;
+  &lt;li data-category="fruit"&gt;Banana&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script&gt;
+  function filter(cat) {
+    document.querySelectorAll('li').forEach(li => {
+      li.style.display = li.dataset.category === cat ? '' : 'none';
+    });
+  }
+&lt;/script&gt;</code></pre>
+
+<!-- 16 -->
+<h2>16. Data attribute for sort order</h2>
+<pre><code>&lt;tr data-sort-key="2026-01-15"&gt;...&lt;/tr&gt;
+
+&lt;script&gt;
+  const rows = [...tbody.querySelectorAll('tr')];
+  rows.sort((a, b) => a.dataset.sortKey.localeCompare(b.dataset.sortKey));
+  rows.forEach(row => tbody.appendChild(row));
+&lt;/script&gt;</code></pre>
+
+<!-- 17 -->
+<h2>17. Data attribute for tooltip content</h2>
+<pre><code>&lt;span data-tooltip="This is a tooltip"&gt;Hover me&lt;/span&gt;
+
+&lt;script&gt;
+  document.querySelectorAll('[data-tooltip]').forEach(el => {
+    el.addEventListener('mouseenter', () => showTooltip(el.dataset.tooltip));
+    el.addEventListener('mouseleave', hideTooltip);
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 18 -->
+<h2>18. Data attributes vs hidden input for form data</h2>
+<pre><code>&lt;!-- data attribute (not submitted with form) --&gt;
+&lt;div data-user-id="42"&gt;...&lt;/div&gt;
+
+&lt;!-- hidden input (submitted with form) --&gt;
+&lt;input type="hidden" name="userId" value="42"&gt;</code></pre>
+
+<!-- 19 -->
+<h2>19. Delegated event handling via data attributes</h2>
+<pre><code>&lt;div id="actions"&gt;
+  &lt;button data-action="save"&gt;Save&lt;/button&gt;
+  &lt;button data-action="delete"&gt;Delete&lt;/button&gt;
+  &lt;button data-action="print"&gt;Print&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  document.getElementById('actions').addEventListener('click', e => {
+    const action = e.target.closest('[data-action]')?.dataset.action;
+    if (action) handlers[action]?.();
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 20 -->
+<h2>20. Storing JSON in a data attribute</h2>
+<pre><code>&lt;div data-config='{"color":"blue","size":12}'&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  const config = JSON.parse(el.dataset.config);
+  console.log(config.color); // "blue"
+&lt;/script&gt;</code></pre>
+<div class="note">Use single quotes for the attribute and double quotes inside JSON.</div>
+
+<!-- 21 -->
+<h2>21. dataset values are always strings</h2>
+<pre><code>&lt;div data-count="5" data-active="true"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  typeof el.dataset.count  // "string" — NOT number
+  typeof el.dataset.active // "string" — NOT boolean
+
+  // Convert explicitly:
+  const count  = Number(el.dataset.count);   // 5
+  const active = el.dataset.active === 'true'; // true
+&lt;/script&gt;</code></pre>
+
+<!-- 22 -->
+<h2>22. Namespacing data attributes</h2>
+<pre><code>&lt;div data-chart-type="bar"
+     data-chart-color="steelblue"
+     data-chart-animated="true"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  // dataset.chartType, dataset.chartColor, dataset.chartAnimated
+&lt;/script&gt;</code></pre>
+
+<!-- 23 -->
+<h2>23. Data attribute as state machine</h2>
+<pre><code>&lt;button data-state="idle"&gt;Submit&lt;/button&gt;
+
+&lt;script&gt;
+  const states = { idle: 'Submit', loading: 'Saving...', success: 'Saved!' };
+  function setState(btn, state) {
+    btn.dataset.state = state;
+    btn.textContent = states[state];
+  }
+  submitBtn.addEventListener('click', async () => {
+    setState(submitBtn, 'loading');
+    await save();
+    setState(submitBtn, 'success');
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 24 -->
+<h2>24. CSS based on state attribute</h2>
+<pre><code>[data-state="loading"] { opacity: 0.6; pointer-events: none; }
+[data-state="success"] { color: green; }
+[data-state="error"]   { color: red; }</code></pre>
+
+<!-- 25 -->
+<h2>25. Data attribute for analytics tracking</h2>
+<pre><code>&lt;button data-track="cta-signup" data-track-section="hero"&gt;
+  Sign up free
+&lt;/button&gt;
+
+&lt;script&gt;
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-track]');
+    if (el) analytics.track(el.dataset.track, { section: el.dataset.trackSection });
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 26 -->
+<h2>26. Dataset DOMStringMap interface</h2>
+<pre><code>// dataset is a DOMStringMap (not a plain object)
+const ds = el.dataset;
+console.log(ds instanceof DOMStringMap); // true
+// Keys are the camelCase attribute names without 'data-'</code></pre>
+
+<!-- 27 -->
+<h2>27. Data attribute for lazy loading trigger</h2>
+<pre><code>&lt;img data-src="real-image.jpg" src="placeholder.svg" alt="Product"&gt;
+
+&lt;script&gt;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.src = e.target.dataset.src;
+        observer.unobserve(e.target);
+      }
+    });
+  });
+  document.querySelectorAll('[data-src]').forEach(img => observer.observe(img));
+&lt;/script&gt;</code></pre>
+
+<!-- 28 -->
+<h2>28. Data attribute for drag-and-drop</h2>
+<pre><code>&lt;div draggable="true" data-item-id="101" data-item-type="card"&gt;...&lt;/div&gt;
+
+&lt;script&gt;
+  el.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('text/plain', el.dataset.itemId);
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 29 -->
+<h2>29. Data attribute for step wizard</h2>
+<pre><code>&lt;div data-step="1" data-total-steps="4"&gt;
+  Step 1 of 4
+&lt;/div&gt;
+
+&lt;script&gt;
+  function nextStep(el) {
+    const current = Number(el.dataset.step);
+    const total   = Number(el.dataset.totalSteps);
+    if (current &lt; total) el.dataset.step = current + 1;
+  }
+&lt;/script&gt;</code></pre>
+
+<!-- 30 -->
+<h2>30. Querying by data attribute value</h2>
+<pre><code>// Find all active items
+const activeItems = document.querySelectorAll('[data-status="active"]');
+
+// Find all items with any status
+const allWithStatus = document.querySelectorAll('[data-status]');
+
+// Find item by id
+const item = document.querySelector('[data-id="42"]');</code></pre>
+
+<!-- 31 -->
+<h2>31. Data attribute for collapsible sections</h2>
+<pre><code>&lt;section data-collapsed="true"&gt;
+  &lt;h2&gt;Section Title&lt;/h2&gt;
+  &lt;div class="section-body"&gt;Content...&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;style&gt;
+  [data-collapsed="true"] .section-body { display: none; }
+&lt;/style&gt;</code></pre>
+
+<!-- 32 -->
+<h2>32. Server-rendered data for JS hydration</h2>
+<pre><code>&lt;!-- Server renders user data into data attributes --&gt;
+&lt;div id="user-widget"
+     data-user-id="42"
+     data-user-name="Alice"
+     data-user-role="admin"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  // JS picks up data without an extra API call
+  const { userId, userName, userRole } =
+    document.getElementById('user-widget').dataset;
+&lt;/script&gt;</code></pre>
+
+<!-- 33 -->
+<h2>33. Data attribute for theme switching</h2>
+<pre><code>&lt;html data-theme="light"&gt;
+
+&lt;style&gt;
+  [data-theme="light"] { --bg: white; --text: black; }
+  [data-theme="dark"]  { --bg: #1a1a1a; --text: #eee; }
+  body { background: var(--bg); color: var(--text); }
+&lt;/style&gt;
+
+&lt;script&gt;
+  toggleBtn.addEventListener('click', () => {
+    const html = document.documentElement;
+    html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 34 -->
+<h2>34. Data attribute for game state</h2>
+<pre><code>&lt;div id="board" data-turn="X" data-moves="0"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  function makeMove(cell) {
+    const board = document.getElementById('board');
+    cell.dataset.mark = board.dataset.turn;
+    board.dataset.turn = board.dataset.turn === 'X' ? 'O' : 'X';
+    board.dataset.moves = Number(board.dataset.moves) + 1;
+  }
+&lt;/script&gt;</code></pre>
+
+<!-- 35 -->
+<h2>35. Data attribute for carousel</h2>
+<pre><code>&lt;div id="carousel" data-current="0" data-total="5"&gt;
+  &lt;div data-slide="0" class="slide"&gt;Slide 1&lt;/div&gt;
+  &lt;div data-slide="1" class="slide"&gt;Slide 2&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+  .slide { display: none; }
+  .slide[data-active="true"] { display: block; }
+&lt;/style&gt;</code></pre>
+
+<!-- 36 -->
+<h2>36. Data attribute naming rules</h2>
+<pre><code>&lt;!-- Valid data attribute names --&gt;
+data-id, data-user-name, data-max-value, data-x
+
+&lt;!-- Invalid — must not contain uppercase in HTML --&gt;
+data-userName &lt;!-- DON'T: uppercase letters not allowed --&gt;
+
+&lt;!-- dataset automatically lowercases and camelCases --&gt;</code></pre>
+
+<!-- 37 -->
+<h2>37. Using data attributes in CSS animations</h2>
+<pre><code>[data-animate="fade-in"] {
+  animation: fadeIn 0.3s ease forwards;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }</code></pre>
+
+<!-- 38 -->
+<h2>38. Data attribute for permission-based UI</h2>
+<pre><code>&lt;div data-role="admin"&gt;
+  &lt;button data-requires="admin"&gt;Delete all&lt;/button&gt;
+  &lt;button data-requires="user"&gt;View&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const currentRole = 'user';
+  document.querySelectorAll('[data-requires]').forEach(el => {
+    el.hidden = el.dataset.requires !== currentRole;
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 39 -->
+<h2>39. Data attribute for print context</h2>
+<pre><code>&lt;section data-print-title="Summary Report"&gt;...&lt;/section&gt;
+
+&lt;script&gt;
+  window.addEventListener('beforeprint', () => {
+    document.querySelectorAll('[data-print-title]').forEach(el => {
+      el.setAttribute('aria-label', el.dataset.printTitle);
+    });
+  });
+&lt;/script&gt;</code></pre>
+
+<!-- 40 -->
+<h2>40. Mutation observer watching data attribute changes</h2>
+<pre><code>const observer = new MutationObserver(mutations => {
+  mutations.forEach(m => {
+    if (m.attributeName === 'data-status') {
+      console.log('Status changed to:', m.target.dataset.status);
+    }
+  });
+});
+observer.observe(el, { attributes: true, attributeFilter: ['data-status'] });</code></pre>
+
+<!-- 41 -->
+<h2>41. Serializing element state to data attributes</h2>
+<pre><code>function saveState(el) {
+  Object.assign(el.dataset, {
+    scrollTop: el.scrollTop,
+    selection: window.getSelection().toString(),
+    timestamp: Date.now(),
+  });
+}</code></pre>
+
+<!-- 42 -->
+<h2>42. Data attribute as hook for testing</h2>
+<pre><code>&lt;button data-testid="submit-btn"&gt;Submit&lt;/button&gt;
+
+&lt;!-- In Playwright/Cypress tests --&gt;
+&lt;!-- page.locator('[data-testid="submit-btn"]') --&gt;
+&lt;!-- cy.get('[data-testid="submit-btn"]') --&gt;</code></pre>
+
+<!-- 43 -->
+<h2>43. data-* vs class for styling concerns</h2>
+<pre><code>&lt;!-- Use class for styling, data-* for semantics/state --&gt;
+&lt;div class="card featured" data-product-id="12" data-in-stock="true"&gt;...&lt;/div&gt;
+
+&lt;!-- CSS targets class, JS reads data-* --&gt;</code></pre>
+
+<!-- 44 -->
+<h2>44. Performance: dataset vs getAttribute</h2>
+<pre><code>// dataset — slightly slower due to DOMStringMap proxy; fine for most use cases
+const val1 = el.dataset.userId;
+
+// getAttribute — slightly faster raw access
+const val2 = el.getAttribute('data-user-id');
+
+// Difference is negligible in practice; use dataset for readability</code></pre>
+
+<!-- 45 -->
+<h2>45. Reading dataset in CSS (attr() function)</h2>
+<pre><code>&lt;div data-label="Progress" data-value="75"&gt;&lt;/div&gt;
+
+&lt;style&gt;
+  [data-label]::before { content: attr(data-label) ': '; font-weight: bold; }
+&lt;/style&gt;</code></pre>
+
+<!-- 46 -->
+<h2>46. Data attribute for internationalization</h2>
+<pre><code>&lt;p data-i18n-key="welcome.message"&gt;Welcome!&lt;/p&gt;
+
+&lt;script&gt;
+  function applyTranslations(lang) {
+    document.querySelectorAll('[data-i18n-key]').forEach(el => {
+      el.textContent = t(lang, el.dataset.i18nKey);
+    });
+  }
+&lt;/script&gt;</code></pre>
+
+<!-- 47 -->
+<h2>47. Data attribute as feature flag</h2>
+<pre><code>&lt;body data-feature-dark-mode="true" data-feature-beta="false"&gt;
+
+&lt;script&gt;
+  const flags = document.body.dataset;
+  if (flags.featureDarkMode === 'true') enableDarkMode();
+  if (flags.featureBeta === 'true') enableBetaFeatures();
+&lt;/script&gt;</code></pre>
+
+<!-- 48 -->
+<h2>48. Cloning elements preserves data attributes</h2>
+<pre><code>const original = document.getElementById('item');
+original.dataset.cloned = 'false';
+
+const clone = original.cloneNode(true);
+clone.dataset.cloned = 'true'; // update on clone only
+
+container.appendChild(clone);
+// original.dataset.cloned is still 'false'</code></pre>
+
+<!-- 49 -->
+<h2>49. data-* in SVG elements</h2>
+<pre><code>&lt;svg&gt;
+  &lt;circle data-id="node-1" data-connected="5"
+          cx="50" cy="50" r="10"&gt;&lt;/circle&gt;
+&lt;/svg&gt;
+
+&lt;script&gt;
+  // dataset works on SVG elements in modern browsers
+  document.querySelector('circle').dataset.id; // "node-1"
+&lt;/script&gt;</code></pre>
+
+<!-- 50 -->
+<h2>50. Security — never trust data attribute values from users</h2>
+<pre><code>&lt;!-- data-* values are user-visible/editable in DevTools --&gt;
+&lt;!-- NEVER use them for auth/access control in the DOM --&gt;
+
+// BAD — client can change data-role in DevTools
+if (el.dataset.role === 'admin') grantAccess(); // don't do this
+
+// GOOD — check role server-side or from a signed token</code></pre>
+
+</body>
+</html>

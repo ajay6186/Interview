@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 2.1 — Semantic Layout  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 2.1 — Semantic Layout</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; margin-top: 6px; }
+    .output { background: #fafafa; border: 1px solid #eee; padding: 8px; border-radius: 3px; margin-top: 6px; font-size: 13px; }
+    .mock-header { background: #2c3e50; color: white; padding: 8px; }
+    .mock-nav { background: #34495e; color: white; padding: 6px 8px; }
+    .mock-nav a { color: #aef; margin-right: 10px; font-size: 12px; }
+    .mock-footer { background: #2c3e50; color: white; padding: 8px; font-size: 12px; }
+    .mock-main { border: 1px solid #90c; padding: 8px; }
+    .mock-aside { border: 1px solid #c90; padding: 8px; }
+    pre { background: #f5f5f5; padding: 8px; border-radius: 3px; overflow-x: auto; font-size: 12px; margin: 4px 0; }
+  </style>
+</head>
+<body>
+<h1>Examples 2.1 — Semantic Layout</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. header element</h3>
+  <div class="output">
+    <header class="mock-header">
+      <h1 style="margin:0;font-size:18px">My Website</h1>
+      <p style="margin:2px 0;font-size:12px">Your tagline here</p>
+    </header>
+  </div>
+  <p class="label">&lt;header&gt; contains introductory content or navigation aids. Implicit ARIA role: banner (when a direct child of body).</p>
+</div>
+
+<div class="example">
+  <h3>2. nav element</h3>
+  <div class="output">
+    <nav class="mock-nav" aria-label="Main">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Blog</a>
+      <a href="#">Contact</a>
+    </nav>
+  </div>
+  <p class="label">&lt;nav&gt; wraps major navigation blocks. Implicit ARIA role: navigation. Add aria-label when multiple navs exist.</p>
+</div>
+
+<div class="example">
+  <h3>3. main element</h3>
+  <pre>&lt;main&gt;
+  &lt;h2&gt;Article Title&lt;/h2&gt;
+  &lt;p&gt;The primary content of the page lives here.&lt;/p&gt;
+&lt;/main&gt;</pre>
+  <p class="label">&lt;main&gt; identifies the dominant content. Only ONE per page. Implicit ARIA role: main. Skip links target this element.</p>
+</div>
+
+<div class="example">
+  <h3>4. footer element</h3>
+  <div class="output">
+    <footer class="mock-footer">
+      <p style="margin:0">&copy; 2026 Company Name. <a href="#" style="color:#aef">Privacy Policy</a> · <a href="#" style="color:#aef">Terms</a></p>
+    </footer>
+  </div>
+  <p class="label">&lt;footer&gt; contains information about its parent section: author, copyright, links. Implicit ARIA role: contentinfo (when direct child of body).</p>
+</div>
+
+<div class="example">
+  <h3>5. aside element</h3>
+  <pre>&lt;aside aria-label="Related links"&gt;
+  &lt;h2&gt;Related Articles&lt;/h2&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Article One&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Article Two&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/aside&gt;</pre>
+  <p class="label">&lt;aside&gt; is tangentially related to main content. Implicit ARIA role: complementary. Use for sidebars, related links, ads.</p>
+</div>
+
+<div class="example">
+  <h3>6. section element</h3>
+  <pre>&lt;section&gt;
+  &lt;h2&gt;Services&lt;/h2&gt;
+  &lt;p&gt;We offer design, development, and consulting.&lt;/p&gt;
+&lt;/section&gt;</pre>
+  <p class="label">&lt;section&gt; is a thematic grouping of content with a heading. Don't use it as a generic container — use &lt;div&gt; for that.</p>
+</div>
+
+<div class="example">
+  <h3>7. article element</h3>
+  <pre>&lt;article&gt;
+  &lt;h2&gt;Post Title&lt;/h2&gt;
+  &lt;p&gt;Published: &lt;time datetime="2026-03-24"&gt;March 24, 2026&lt;/time&gt;&lt;/p&gt;
+  &lt;p&gt;Content of the article...&lt;/p&gt;
+&lt;/article&gt;</pre>
+  <p class="label">&lt;article&gt; is self-contained content that could be syndicated independently (blog posts, news articles, comments, widgets).</p>
+</div>
+
+<div class="example">
+  <h3>8. div vs section vs article</h3>
+  <pre>&lt;div&gt;               &lt;!-- No semantic meaning; use for styling/JS --&gt;
+&lt;section&gt;          &lt;!-- Thematic group; needs a heading --&gt;
+&lt;article&gt;          &lt;!-- Self-contained, syndicate-able content --&gt;</pre>
+  <p class="label">Rule of thumb: Would it make sense in an RSS feed? → article. Does it have a thematic heading? → section. Otherwise → div.</p>
+</div>
+
+<div class="example">
+  <h3>9. The skip navigation link</h3>
+  <pre>&lt;a href="#main-content" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+&lt;header&gt;...&lt;/header&gt;
+&lt;main id="main-content"&gt;...&lt;/main&gt;</pre>
+  <p class="label">Skip links allow keyboard users to bypass navigation. Position absolutely and reveal on :focus. Required for WCAG 2.4.1.</p>
+</div>
+
+<div class="example">
+  <h3>10. header inside article (nested header)</h3>
+  <pre>&lt;article&gt;
+  &lt;header&gt;
+    &lt;h2&gt;Article Title&lt;/h2&gt;
+    &lt;p&gt;By &lt;cite&gt;Author Name&lt;/cite&gt; · &lt;time datetime="2026-01-01"&gt;Jan 1, 2026&lt;/time&gt;&lt;/p&gt;
+  &lt;/header&gt;
+  &lt;p&gt;Article body...&lt;/p&gt;
+  &lt;footer&gt;&lt;p&gt;Tags: HTML, Semantics&lt;/p&gt;&lt;/footer&gt;
+&lt;/article&gt;</pre>
+  <p class="label">&lt;header&gt; and &lt;footer&gt; can appear inside &lt;article&gt; and &lt;section&gt;. They do NOT carry landmark roles in these contexts.</p>
+</div>
+
+<div class="example">
+  <h3>11. Multiple nav elements with labels</h3>
+  <pre>&lt;nav aria-label="Main navigation"&gt;
+  &lt;!-- primary site links --&gt;
+&lt;/nav&gt;
+
+&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;!-- breadcrumb trail --&gt;
+&lt;/nav&gt;
+
+&lt;nav aria-label="Pagination"&gt;
+  &lt;!-- page 1, 2, 3... --&gt;
+&lt;/nav&gt;</pre>
+  <p class="label">Multiple &lt;nav&gt; elements need distinct aria-label values so screen reader users can differentiate them in the landmarks list.</p>
+</div>
+
+<div class="example">
+  <h3>12. Landmark roles implicit in semantic elements</h3>
+  <pre>&lt;header&gt;      → role="banner"       (when direct child of body)
+&lt;nav&gt;         → role="navigation"
+&lt;main&gt;        → role="main"
+&lt;aside&gt;       → role="complementary"
+&lt;footer&gt;      → role="contentinfo"   (when direct child of body)
+&lt;form&gt;        → role="form"          (only if it has an accessible name)
+&lt;section&gt;     → role="region"        (only if it has an accessible name)</pre>
+  <p class="label">Semantic HTML5 elements carry implicit ARIA landmark roles. Explicit role= attributes are redundant but acceptable for older AT.</p>
+</div>
+
+<div class="example">
+  <h3>13. section needs accessible name to become a landmark</h3>
+  <pre>&lt;!-- NOT a landmark (no name) --&gt;
+&lt;section&gt;...&lt;/section&gt;
+
+&lt;!-- IS a landmark (has aria-labelledby) --&gt;
+&lt;section aria-labelledby="services-heading"&gt;
+  &lt;h2 id="services-heading"&gt;Our Services&lt;/h2&gt;
+  ...
+&lt;/section&gt;</pre>
+  <p class="label">A &lt;section&gt; only becomes a region landmark when it has an accessible name via aria-labelledby or aria-label.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Two-column layout (main + aside)</h3>
+  <div class="output">
+    <div style="display:flex;gap:8px">
+      <main class="mock-main" style="flex:1">
+        <h2 style="margin:0 0 4px;font-size:14px">Main Content</h2>
+        <p style="margin:0;font-size:12px">Primary article content goes here.</p>
+      </main>
+      <aside class="mock-aside" style="width:120px">
+        <h2 style="margin:0 0 4px;font-size:13px">Sidebar</h2>
+        <p style="margin:0;font-size:12px">Related links.</p>
+      </aside>
+    </div>
+  </div>
+  <p class="label">Classic two-column layout: flex main + aside. The visual and semantic roles align correctly.</p>
+</div>
+
+<div class="example">
+  <h3>15. Holy grail layout</h3>
+  <pre>&lt;body&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  &lt;nav&gt;...&lt;/nav&gt;
+  &lt;div class="content-area"&gt;
+    &lt;aside class="left-sidebar"&gt;...&lt;/aside&gt;
+    &lt;main&gt;...&lt;/main&gt;
+    &lt;aside class="right-sidebar"&gt;...&lt;/aside&gt;
+  &lt;/div&gt;
+  &lt;footer&gt;...&lt;/footer&gt;
+&lt;/body&gt;</pre>
+  <p class="label">The "holy grail" layout: header, 3-column middle (left sidebar + main + right sidebar), footer. Two asides must have distinct aria-labels.</p>
+</div>
+
+<div class="example">
+  <h3>16. header as article header (not page banner)</h3>
+  <pre>&lt;article&gt;
+  &lt;header&gt;
+    &lt;!-- This header's role is NOT "banner" — it belongs to the article --&gt;
+    &lt;h2&gt;Article Title&lt;/h2&gt;
+    &lt;address&gt;By &lt;a href="/author"&gt;Jane Doe&lt;/a&gt;&lt;/address&gt;
+  &lt;/header&gt;
+  ...
+&lt;/article&gt;</pre>
+  <p class="label">When &lt;header&gt; is inside &lt;article&gt;, &lt;section&gt;, &lt;nav&gt;, or &lt;aside&gt;, it does NOT have the banner role.</p>
+</div>
+
+<div class="example">
+  <h3>17. Sticky header pattern</h3>
+  <pre>&lt;header style="position: sticky; top: 0; z-index: 100; background: white;"&gt;
+  &lt;h1&gt;Site Name&lt;/h1&gt;
+  &lt;nav&gt;...&lt;/nav&gt;
+&lt;/header&gt;</pre>
+  <p class="label">Sticky headers stay visible during scroll. Ensure they don't overlap focused elements — add scroll-margin-top to sections.</p>
+</div>
+
+<div class="example">
+  <h3>18. aria-label on section to create a named region</h3>
+  <pre>&lt;section aria-label="Customer testimonials"&gt;
+  &lt;h2&gt;What Our Customers Say&lt;/h2&gt;
+  ...
+&lt;/section&gt;
+
+&lt;!-- Or with aria-labelledby --&gt;
+&lt;section aria-labelledby="testimonials-h"&gt;
+  &lt;h2 id="testimonials-h"&gt;What Our Customers Say&lt;/h2&gt;
+  ...
+&lt;/section&gt;</pre>
+  <p class="label">aria-labelledby preferred over aria-label when there's a visible heading — it ties the heading text to the landmark name.</p>
+</div>
+
+<div class="example">
+  <h3>19. nav inside header vs standalone</h3>
+  <pre>&lt;!-- Nav inside header (common for site-wide nav) --&gt;
+&lt;header&gt;
+  &lt;h1&gt;Site Name&lt;/h1&gt;
+  &lt;nav aria-label="Main"&gt;...&lt;/nav&gt;
+&lt;/header&gt;
+
+&lt;!-- Nav outside header (valid, standalone navigation) --&gt;
+&lt;nav aria-label="Main"&gt;...&lt;/nav&gt;</pre>
+  <p class="label">Both patterns are valid. Nav inside header is more common; nav outside is correct for dedicated navigation bars.</p>
+</div>
+
+<div class="example">
+  <h3>20. main with id for skip link target</h3>
+  <pre>&lt;a href="#main" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+
+&lt;header&gt;...&lt;/header&gt;
+&lt;nav&gt;...&lt;/nav&gt;
+&lt;main id="main" tabindex="-1"&gt;
+  &lt;!-- tabindex="-1" allows programmatic focus, needed for some screen readers --&gt;
+  ...
+&lt;/main&gt;</pre>
+  <p class="label">tabindex="-1" on &lt;main&gt; allows it to receive focus from the skip link in browsers that don't focus non-focusable elements on hash change.</p>
+</div>
+
+<div class="example">
+  <h3>21. footer in article for metadata</h3>
+  <pre>&lt;article&gt;
+  &lt;h2&gt;Post Title&lt;/h2&gt;
+  &lt;p&gt;Content...&lt;/p&gt;
+  &lt;footer&gt;
+    &lt;p&gt;
+      Published &lt;time datetime="2026-03-24"&gt;March 24, 2026&lt;/time&gt; ·
+      Tags: &lt;a href="#"&gt;HTML&lt;/a&gt;, &lt;a href="#"&gt;Semantics&lt;/a&gt;
+    &lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</pre>
+  <p class="label">&lt;footer&gt; inside &lt;article&gt; contains meta info about the article. It doesn't carry the contentinfo landmark role here.</p>
+</div>
+
+<div class="example">
+  <h3>22. Using address inside footer</h3>
+  <pre>&lt;footer&gt;
+  &lt;address&gt;
+    &lt;a href="mailto:contact@example.com"&gt;contact@example.com&lt;/a&gt;&lt;br&gt;
+    123 Main St, Springfield, IL
+  &lt;/address&gt;
+  &lt;p&gt;&lt;small&gt;&copy; 2026 Company Name&lt;/small&gt;&lt;/p&gt;
+&lt;/footer&gt;</pre>
+  <p class="label">&lt;address&gt; provides contact info for the nearest &lt;article&gt; or &lt;body&gt;. Inside the page footer, it represents site-wide contact info.</p>
+</div>
+
+<div class="example">
+  <h3>23. Aside for pull quotes</h3>
+  <div class="output">
+    <article style="font-size:13px;padding:8px">
+      <p>Performance is a critical aspect of web development. As Paul Lewis noted:</p>
+      <aside style="border-left:4px solid #0066cc;padding:4px 8px;margin:8px 0;color:#0066cc;font-style:italic">
+        <p style="margin:0">"The fastest code is the code that doesn't run."</p>
+      </aside>
+      <p>Every unnecessary script adds to the execution budget.</p>
+    </article>
+  </div>
+  <p class="label">&lt;aside&gt; inside &lt;article&gt; can mark pull quotes or supplementary callouts tangential to the main article flow.</p>
+</div>
+
+<div class="example">
+  <h3>24. Landmark list for screen reader navigation</h3>
+  <pre>&lt;!-- What AT users see in their landmarks menu when page is structured correctly: --&gt;
+&lt;!--
+  banner (header)
+  navigation — Main navigation
+  navigation — Breadcrumb
+  main
+  complementary — Related articles
+  contentinfo (footer)
+--&gt;</pre>
+  <p class="label">Well-structured pages provide meaningful landmarks that AT users can navigate via shortcut keys (F6, or SR-specific commands).</p>
+</div>
+
+<div class="example">
+  <h3>25. Reducing div soup with semantic elements</h3>
+  <pre>&lt;!-- Before: div soup --&gt;
+&lt;div class="header"&gt;
+  &lt;div class="nav"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="main-content"&gt;
+  &lt;div class="sidebar"&gt;...&lt;/div&gt;
+  &lt;div class="content"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="footer"&gt;...&lt;/div&gt;
+
+&lt;!-- After: semantic HTML --&gt;
+&lt;header&gt;
+  &lt;nav&gt;...&lt;/nav&gt;
+&lt;/header&gt;
+&lt;div class="layout"&gt;
+  &lt;aside&gt;...&lt;/aside&gt;
+  &lt;main&gt;...&lt;/main&gt;
+&lt;/div&gt;
+&lt;footer&gt;...&lt;/footer&gt;</pre>
+  <p class="label">Replacing divs with semantic elements provides AT landmarks, improves SEO, and makes code self-documenting.</p>
+</div>
+
+<div class="example">
+  <h3>26. section for landing page segments</h3>
+  <pre>&lt;main&gt;
+  &lt;section aria-labelledby="hero-heading"&gt;
+    &lt;h2 id="hero-heading"&gt;Build Better Websites&lt;/h2&gt;
+    ...
+  &lt;/section&gt;
+  &lt;section aria-labelledby="features-heading"&gt;
+    &lt;h2 id="features-heading"&gt;Features&lt;/h2&gt;
+    ...
+  &lt;/section&gt;
+  &lt;section aria-labelledby="pricing-heading"&gt;
+    &lt;h2 id="pricing-heading"&gt;Pricing&lt;/h2&gt;
+    ...
+  &lt;/section&gt;
+&lt;/main&gt;</pre>
+  <p class="label">Landing pages commonly use multiple named sections inside &lt;main&gt;. Each section is a distinct landmark with its own heading.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Full page semantic skeleton</h3>
+  <pre>&lt;body&gt;
+  &lt;a href="#main" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+
+  &lt;header&gt;
+    &lt;a href="/"&gt;&lt;img src="logo.svg" alt="Acme Co"&gt;&lt;/a&gt;
+    &lt;nav aria-label="Main navigation"&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main id="main" tabindex="-1"&gt;
+    &lt;h1&gt;Page Title&lt;/h1&gt;
+    ...
+  &lt;/main&gt;
+
+  &lt;aside aria-label="Related content"&gt;
+    &lt;h2&gt;Related Articles&lt;/h2&gt;
+    ...
+  &lt;/aside&gt;
+
+  &lt;footer&gt;
+    &lt;nav aria-label="Footer navigation"&gt;...&lt;/nav&gt;
+    &lt;small&gt;&copy; 2026 Acme Co&lt;/small&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;</pre>
+  <p class="label">Complete production-quality page skeleton with skip link, all landmarks, and proper accessible names.</p>
+</div>
+
+<div class="example">
+  <h3>28. Blog listing page structure</h3>
+  <pre>&lt;main&gt;
+  &lt;h1&gt;Blog&lt;/h1&gt;
+  &lt;section aria-labelledby="featured-h"&gt;
+    &lt;h2 id="featured-h"&gt;Featured Post&lt;/h2&gt;
+    &lt;article&gt;...&lt;/article&gt;
+  &lt;/section&gt;
+  &lt;section aria-labelledby="recent-h"&gt;
+    &lt;h2 id="recent-h"&gt;Recent Posts&lt;/h2&gt;
+    &lt;article&gt;...&lt;/article&gt;
+    &lt;article&gt;...&lt;/article&gt;
+    &lt;article&gt;...&lt;/article&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</pre>
+  <p class="label">Blog page: main contains sections (featured, recent), each section contains articles. Clear landmark hierarchy.</p>
+</div>
+
+<div class="example">
+  <h3>29. E-commerce product page structure</h3>
+  <pre>&lt;main&gt;
+  &lt;nav aria-label="Breadcrumb"&gt;...&lt;/nav&gt;
+  &lt;article&gt;  &lt;!-- the product --&gt;
+    &lt;header&gt;
+      &lt;h1&gt;Widget Pro 3000&lt;/h1&gt;
+      &lt;p&gt;SKU: WP-3000&lt;/p&gt;
+    &lt;/header&gt;
+    &lt;section aria-labelledby="desc-h"&gt;
+      &lt;h2 id="desc-h"&gt;Description&lt;/h2&gt;...
+    &lt;/section&gt;
+    &lt;section aria-labelledby="specs-h"&gt;
+      &lt;h2 id="specs-h"&gt;Specifications&lt;/h2&gt;...
+    &lt;/section&gt;
+    &lt;section aria-labelledby="reviews-h"&gt;
+      &lt;h2 id="reviews-h"&gt;Reviews&lt;/h2&gt;
+      &lt;article&gt;...&lt;/article&gt; &lt;!-- individual review --&gt;
+    &lt;/section&gt;
+  &lt;/article&gt;
+&lt;/main&gt;</pre>
+  <p class="label">Product page: outer article = the product. Sections for desc/specs/reviews. Reviews section contains individual review articles.</p>
+</div>
+
+<div class="example">
+  <h3>30. Dashboard layout</h3>
+  <pre>&lt;body&gt;
+  &lt;header&gt;App Header&lt;/header&gt;
+  &lt;div class="app-shell"&gt;
+    &lt;nav aria-label="Sidebar navigation"&gt;
+      &lt;ul&gt;...menu items...&lt;/ul&gt;
+    &lt;/nav&gt;
+    &lt;main&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+      &lt;section aria-labelledby="stats-h"&gt;
+        &lt;h2 id="stats-h"&gt;Key Metrics&lt;/h2&gt;
+        &lt;!-- stat cards --&gt;
+      &lt;/section&gt;
+      &lt;section aria-labelledby="activity-h"&gt;
+        &lt;h2 id="activity-h"&gt;Recent Activity&lt;/h2&gt;
+        &lt;!-- activity list --&gt;
+      &lt;/section&gt;
+    &lt;/main&gt;
+  &lt;/div&gt;
+&lt;/body&gt;</pre>
+  <p class="label">Dashboard: sidebar nav (vertical), main content with named sections for different data panels.</p>
+</div>
+
+<div class="example">
+  <h3>31. Documentation page with multiple sections</h3>
+  <pre>&lt;body&gt;
+  &lt;header&gt;...logo, search...&lt;/header&gt;
+  &lt;div class="docs-layout"&gt;
+    &lt;nav aria-label="Documentation contents"&gt;
+      &lt;!-- table of contents --&gt;
+    &lt;/nav&gt;
+    &lt;main&gt;
+      &lt;article&gt;
+        &lt;h1&gt;Getting Started&lt;/h1&gt;
+        &lt;section aria-labelledby="install-h"&gt;
+          &lt;h2 id="install-h"&gt;Installation&lt;/h2&gt;...
+        &lt;/section&gt;
+        &lt;section aria-labelledby="usage-h"&gt;
+          &lt;h2 id="usage-h"&gt;Basic Usage&lt;/h2&gt;...
+        &lt;/section&gt;
+      &lt;/article&gt;
+    &lt;/main&gt;
+    &lt;aside aria-label="On this page"&gt;
+      &lt;!-- mini table of contents for current page --&gt;
+    &lt;/aside&gt;
+  &lt;/div&gt;
+&lt;/body&gt;</pre>
+  <p class="label">Documentation layout: left nav (TOC), main content (article with sections), right aside (in-page TOC).</p>
+</div>
+
+<div class="example">
+  <h3>32. Nested articles (comments)</h3>
+  <pre>&lt;article&gt;
+  &lt;h2&gt;Post Title&lt;/h2&gt;
+  &lt;p&gt;Post content...&lt;/p&gt;
+  &lt;section aria-labelledby="comments-h"&gt;
+    &lt;h3 id="comments-h"&gt;Comments (3)&lt;/h3&gt;
+    &lt;article&gt;
+      &lt;header&gt;&lt;h4&gt;Alice says:&lt;/h4&gt;&lt;/header&gt;
+      &lt;p&gt;Great post!&lt;/p&gt;
+    &lt;/article&gt;
+    &lt;article&gt;
+      &lt;header&gt;&lt;h4&gt;Bob says:&lt;/h4&gt;&lt;/header&gt;
+      &lt;p&gt;Very informative.&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Comments are articles nested inside the post article's comments section. Heading levels adjust for depth.</p>
+</div>
+
+<div class="example">
+  <h3>33. Print-only footer content</h3>
+  <pre>&lt;footer&gt;
+  &lt;p&gt;&copy; 2026 Company Name&lt;/p&gt;
+  &lt;p class="print-only"&gt;Printed from: https://example.com/page&lt;/p&gt;
+&lt;/footer&gt;
+
+&lt;style&gt;
+  .print-only { display: none; }
+  @media print { .print-only { display: block; } }
+&lt;/style&gt;</pre>
+  <p class="label">Print-only elements in the footer show the source URL when the page is printed — useful for documentation.</p>
+</div>
+
+<div class="example">
+  <h3>34. Mobile-first header with hamburger menu</h3>
+  <pre>&lt;header&gt;
+  &lt;a href="/"&gt;&lt;img src="logo.svg" alt="Home"&gt;&lt;/a&gt;
+
+  &lt;button type="button"
+          aria-expanded="false"
+          aria-controls="main-nav"
+          aria-label="Open menu"&gt;☰&lt;/button&gt;
+
+  &lt;nav id="main-nav" aria-label="Main" hidden&gt;
+    &lt;ul&gt;...&lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;</pre>
+  <p class="label">Mobile hamburger menu: button with aria-expanded, aria-controls pointing to nav id, nav starts hidden and is revealed via JS.</p>
+</div>
+
+<div class="example">
+  <h3>35. Page with multiple footers</h3>
+  <pre>&lt;main&gt;
+  &lt;article&gt;
+    ...
+    &lt;footer&gt;
+      &lt;!-- Article footer: tags, author, date --&gt;
+    &lt;/footer&gt;
+  &lt;/article&gt;
+&lt;/main&gt;
+
+&lt;footer&gt;
+  &lt;!-- Page footer: copyright, legal, contact --&gt;
+&lt;/footer&gt;</pre>
+  <p class="label">Multiple footers are valid: article footers (non-landmark) and the page footer (contentinfo landmark). They don't conflict.</p>
+</div>
+
+<div class="example">
+  <h3>36. Search in header</h3>
+  <pre>&lt;header&gt;
+  &lt;a href="/"&gt;Logo&lt;/a&gt;
+  &lt;nav aria-label="Main"&gt;...&lt;/nav&gt;
+  &lt;form role="search" action="/search" method="get"&gt;
+    &lt;label for="site-search" class="sr-only"&gt;Search&lt;/label&gt;
+    &lt;input type="search" id="site-search" name="q" aria-label="Search this site"&gt;
+    &lt;button type="submit"&gt;Search&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/header&gt;</pre>
+  <p class="label">The search form gets role="search" for the search landmark. It lives naturally inside the header alongside main nav.</p>
+</div>
+
+<div class="example">
+  <h3>37. Aside with widget sections</h3>
+  <pre>&lt;aside aria-label="Sidebar"&gt;
+  &lt;section aria-labelledby="widget-pop-h"&gt;
+    &lt;h2 id="widget-pop-h"&gt;Popular Posts&lt;/h2&gt;
+    &lt;ul&gt;...&lt;/ul&gt;
+  &lt;/section&gt;
+  &lt;section aria-labelledby="widget-tags-h"&gt;
+    &lt;h2 id="widget-tags-h"&gt;Tags&lt;/h2&gt;
+    &lt;ul class="tag-cloud"&gt;...&lt;/ul&gt;
+  &lt;/section&gt;
+  &lt;section aria-labelledby="widget-ad-h"&gt;
+    &lt;h2 id="widget-ad-h"&gt;Sponsored&lt;/h2&gt;
+    &lt;!-- ad content --&gt;
+  &lt;/section&gt;
+&lt;/aside&gt;</pre>
+  <p class="label">Sidebar widgets are sections inside an aside. Each has a heading for structure and accessibility.</p>
+</div>
+
+<div class="example">
+  <h3>38. Full newssite layout</h3>
+  <pre>&lt;body&gt;
+  &lt;header&gt;
+    &lt;h1&gt;The Daily Web&lt;/h1&gt;
+    &lt;nav aria-label="Main"&gt;...categories...&lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;section aria-labelledby="breaking-h"&gt;
+      &lt;h2 id="breaking-h"&gt;Breaking News&lt;/h2&gt;
+      &lt;article&gt;...&lt;/article&gt;
+    &lt;/section&gt;
+    &lt;div class="columns"&gt;
+      &lt;section aria-labelledby="tech-h"&gt;
+        &lt;h2 id="tech-h"&gt;Technology&lt;/h2&gt;
+        &lt;article&gt;...&lt;/article&gt;
+        &lt;article&gt;...&lt;/article&gt;
+      &lt;/section&gt;
+      &lt;aside aria-label="Most popular"&gt;
+        &lt;h2&gt;Most Popular&lt;/h2&gt;
+        &lt;ol&gt;...&lt;/ol&gt;
+      &lt;/aside&gt;
+    &lt;/div&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;...&lt;/footer&gt;
+&lt;/body&gt;</pre>
+  <p class="label">News site structure: header, main with multiple news sections, aside for trending content, footer.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Detecting landmarks with JavaScript</h3>
+  <pre>&lt;script&gt;
+  // Find all landmark elements
+  const landmarks = document.querySelectorAll(
+    "header, nav, main, aside, footer, [role='banner'], [role='navigation'], " +
+    "[role='main'], [role='complementary'], [role='contentinfo'], [role='search']"
+  );
+  console.log("Landmarks found:", landmarks.length);
+  landmarks.forEach(el =&gt; {
+    console.log(el.tagName, el.getAttribute("aria-label") || "(no label)");
+  });
+&lt;/script&gt;</pre>
+  <p class="label">You can programmatically audit landmark structure. Real tools: axe DevTools, Landmark Navigation browser extension.</p>
+</div>
+
+<div class="example">
+  <h3>40. Scroll-to-section with smooth scroll</h3>
+  <pre>&lt;nav aria-label="Page sections"&gt;
+  &lt;a href="#intro"&gt;Introduction&lt;/a&gt;
+  &lt;a href="#features"&gt;Features&lt;/a&gt;
+  &lt;a href="#pricing"&gt;Pricing&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;main&gt;
+  &lt;section id="intro" aria-labelledby="intro-h"&gt;
+    &lt;h2 id="intro-h"&gt;Introduction&lt;/h2&gt;...
+  &lt;/section&gt;
+  &lt;section id="features" aria-labelledby="features-h"
+           style="scroll-margin-top: 80px;"&gt;
+    &lt;h2 id="features-h"&gt;Features&lt;/h2&gt;...
+  &lt;/section&gt;
+&lt;/main&gt;
+
+&lt;style&gt;html { scroll-behavior: smooth; }&lt;/style&gt;</pre>
+  <p class="label">scroll-margin-top offsets anchor scrolling for sticky headers. scroll-behavior: smooth is a CSS property that enables smooth navigation.</p>
+</div>
+
+<div class="example">
+  <h3>41. Inert attribute for background content</h3>
+  <pre>&lt;main inert aria-hidden="true"&gt;
+  &lt;!-- Page content made non-interactive while modal is open --&gt;
+&lt;/main&gt;
+&lt;dialog open&gt;
+  &lt;!-- Modal content --&gt;
+  &lt;button&gt;Close&lt;/button&gt;
+&lt;/dialog&gt;</pre>
+  <p class="label">The inert attribute (HTML spec) removes all interactivity from a subtree: no focus, no clicks, no AT traversal. Ideal for modal dialogs.</p>
+</div>
+
+<div class="example">
+  <h3>42. Document outline algorithm</h3>
+  <pre>&lt;!-- The proposed document outline (not universally implemented by AT):
+  1. Introduction        ← &lt;h1&gt; in body
+  2. Getting Started     ← &lt;h2&gt;
+     2.1 Installation    ← &lt;h3&gt;
+     2.2 Configuration   ← &lt;h3&gt;
+  3. API Reference       ← &lt;h2&gt;
+--&gt;
+&lt;!-- Each &lt;section&gt; was intended to restart the outline, but AT support never arrived. --&gt;
+&lt;!-- SAFE: use sequential h1 h2 h3... regardless of sectioning elements. --&gt;</pre>
+  <p class="label">The HTML5 document outline algorithm (each section restarts with h1) was never implemented by AT. Use sequential heading levels for safety.</p>
+</div>
+
+<div class="example">
+  <h3>43. BEM class naming alongside semantic elements</h3>
+  <pre>&lt;header class="site-header"&gt;
+  &lt;div class="site-header__logo"&gt;...&lt;/div&gt;
+  &lt;nav class="site-header__nav" aria-label="Main"&gt;...&lt;/nav&gt;
+&lt;/header&gt;
+&lt;main class="page-main page-main--wide"&gt;...&lt;/main&gt;
+&lt;aside class="sidebar sidebar--sticky"&gt;...&lt;/aside&gt;</pre>
+  <p class="label">BEM (Block__Element--Modifier) classes work alongside semantic elements — classes are for styling, elements are for semantics.</p>
+</div>
+
+<div class="example">
+  <h3>44. View Transitions API with semantic elements</h3>
+  <pre>&lt;style&gt;
+  main { view-transition-name: main-content; }
+&lt;/style&gt;
+&lt;script&gt;
+  document.addEventListener("click", e =&gt; {
+    const link = e.target.closest("a[href]");
+    if (!link || !document.startViewTransition) return;
+    e.preventDefault();
+    document.startViewTransition(() =&gt; {
+      navigation.navigate(link.href);
+    });
+  });
+&lt;/script&gt;</pre>
+  <p class="label">The View Transitions API animates between page states. Assigning view-transition-name to &lt;main&gt; creates a smooth content transition.</p>
+</div>
+
+<div class="example">
+  <h3>45. Landmark order and visual order alignment</h3>
+  <pre>&lt;!-- CORRECT: DOM order matches visual order --&gt;
+&lt;header&gt;Header&lt;/header&gt;
+&lt;main&gt;Main content&lt;/main&gt;
+&lt;aside&gt;Sidebar&lt;/aside&gt;
+&lt;footer&gt;Footer&lt;/footer&gt;
+
+&lt;!-- CSS places sidebar visually to the left, but DOM order = reading order --&gt;
+&lt;style&gt;
+  body { display: grid; grid-template: "h h" "m s" "f f"; }
+  header { grid-area: h; } main { grid-area: m; }
+  aside { grid-area: s; } footer { grid-area: f; }
+&lt;/style&gt;</pre>
+  <p class="label">Use CSS grid/flex to reorder visually while keeping DOM order logical — assistive technologies and keyboard navigation follow DOM order.</p>
+</div>
+
+<div class="example">
+  <h3>46. Template for generating landmark-rich pages</h3>
+  <pre>&lt;template id="page-template"&gt;
+  &lt;header&gt;
+    &lt;slot name="logo"&gt;&lt;/slot&gt;
+    &lt;nav aria-label="Main"&gt;&lt;slot name="nav"&gt;&lt;/slot&gt;&lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;main&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/main&gt;
+  &lt;footer&gt;&lt;slot name="footer"&gt;&lt;/slot&gt;&lt;/footer&gt;
+&lt;/template&gt;</pre>
+  <p class="label">&lt;template&gt; with slots is the web components pattern for reusable page shells with proper semantic structure.</p>
+</div>
+
+<div class="example">
+  <h3>47. ARIA landmark shortcut key reference</h3>
+  <pre>&lt;!-- Screen reader keyboard shortcuts for landmarks:
+  JAWS:      R / Shift+R  — next/prev region
+  NVDA:      D / Shift+D  — next/prev landmark
+  VoiceOver: VO+U opens rotor, select Landmarks
+  Narrator:  Caps+F5      — landmarks list
+--&gt;
+
+&lt;!-- Users can also use the Landmark Navigation browser extension --&gt;</pre>
+  <p class="label">AT users rely on these shortcuts to quickly scan page structure. Well-named landmarks dramatically improve their experience.</p>
+</div>
+
+<div class="example">
+  <h3>48. hidden vs aria-hidden on layout elements</h3>
+  <pre>&lt;aside hidden&gt;
+  &lt;!-- Completely removed from all users (visual + AT) --&gt;
+&lt;/aside&gt;
+
+&lt;aside aria-hidden="true"&gt;
+  &lt;!-- Visible to sighted users but hidden from AT --&gt;
+  &lt;!-- Use for decorative panels, animated backgrounds --&gt;
+&lt;/aside&gt;
+
+&lt;aside class="visually-hidden"&gt;
+  &lt;!-- Hidden from sighted users but announced by AT --&gt;
+  &lt;!-- Use for supplementary context needed only by AT --&gt;
+&lt;/aside&gt;</pre>
+  <p class="label">Three hiding techniques with different visibility tradeoffs. Choose based on who needs the content.</p>
+</div>
+
+<div class="example">
+  <h3>49. Semantic page regions as CSS custom property targets</h3>
+  <pre>&lt;style&gt;
+  :root {
+    --header-height: 64px;
+    --sidebar-width: 280px;
+  }
+  header {
+    height: var(--header-height);
+    position: sticky; top: 0;
+  }
+  aside {
+    width: var(--sidebar-width);
+  }
+  main {
+    margin-left: var(--sidebar-width);
+    margin-top: var(--header-height);
+  }
+&lt;/style&gt;</pre>
+  <p class="label">Using CSS custom properties for layout dimensions tied to semantic elements makes responsive adjustments consistent and maintainable.</p>
+</div>
+
+<div class="example">
+  <h3>50. Complete, production-ready page shell</h3>
+  <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Page Title — Site Name&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;a href="#main" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+
+  &lt;header&gt;
+    &lt;a href="/"&gt;&lt;img src="logo.svg" alt="Site Name — Home"&gt;&lt;/a&gt;
+    &lt;nav aria-label="Main navigation"&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/blog"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+    &lt;form role="search" action="/search"&gt;
+      &lt;input type="search" name="q" aria-label="Search"&gt;
+      &lt;button&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/header&gt;
+
+  &lt;nav aria-label="Breadcrumb"&gt;
+    &lt;ol&gt;
+      &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;span aria-current="page"&gt;Current Page&lt;/span&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/nav&gt;
+
+  &lt;div class="page-layout"&gt;
+    &lt;main id="main" tabindex="-1"&gt;
+      &lt;h1&gt;Page Title&lt;/h1&gt;
+      &lt;article&gt;...content...&lt;/article&gt;
+    &lt;/main&gt;
+    &lt;aside aria-label="Related content"&gt;
+      &lt;section aria-labelledby="related-h"&gt;
+        &lt;h2 id="related-h"&gt;Related Articles&lt;/h2&gt;
+        ...
+      &lt;/section&gt;
+    &lt;/aside&gt;
+  &lt;/div&gt;
+
+  &lt;footer&gt;
+    &lt;nav aria-label="Footer links"&gt;...&lt;/nav&gt;
+    &lt;address&gt;...&lt;/address&gt;
+    &lt;small&gt;&copy; 2026 Site Name&lt;/small&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  <p class="label">Gold-standard page shell: skip link, named landmarks, breadcrumb, search role, accessible main target, named aside sections, and footer.</p>
+</div>
+
+</body>
+</html>

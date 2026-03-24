@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+  Examples 5.2 — Live Regions  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================ -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 5.2 — Live Regions</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 5.2 — Live Regions</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. aria-live="polite" — the safe default</h3>
+  <pre>&lt;div aria-live="polite" id="notification-area"&gt;
+  &lt;!-- Content inserted here will be announced
+       after the user finishes their current activity --&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function notify(message) {
+    document.getElementById('notification-area').textContent = message;
+  }
+
+  // Called after a successful action:
+  notify('Profile updated successfully.');
+&lt;/script&gt;</pre>
+  <p class="label">aria-live="polite" queues announcements until the user pauses. It is the correct choice for non-urgent updates like save confirmations, filter results, and cart changes. The region must be in the DOM before content is injected.</p>
+</div>
+
+<div class="example">
+  <h3>2. aria-live="assertive" — interrupt immediately</h3>
+  <pre>&lt;div aria-live="assertive" id="error-region"&gt;
+  &lt;!-- Content here interrupts the screen reader
+       immediately, even mid-sentence --&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function announceError(msg) {
+    document.getElementById('error-region').textContent = msg;
+  }
+
+  // Called on critical session timeout:
+  announceError('Session expired. Please log in again.');
+&lt;/script&gt;</pre>
+  <p class="label">aria-live="assertive" interrupts any current AT reading to announce the new content immediately. Use only for critical errors, session timeouts, or situations where delayed announcement causes real harm. Overuse makes the experience extremely jarring.</p>
+</div>
+
+<div class="example">
+  <h3>3. aria-live="off" — suppress announcements</h3>
+  <pre>&lt;!-- The region updates visually but AT ignores the changes --&gt;
+&lt;div
+  aria-live="off"
+  id="visual-ticker"
+  aria-label="Stock prices (audio notifications disabled)"
+&gt;
+  AAPL $192.34 ▲ | GOOG $178.50 ▼ | MSFT $420.10 ▲
+&lt;/div&gt;
+
+&lt;!-- User controls whether to hear these updates: --&gt;
+&lt;button onclick="toggleAudio()"&gt;Enable audio updates&lt;/button&gt;
+
+&lt;script&gt;
+  let audioOn = false;
+  function toggleAudio() {
+    audioOn = !audioOn;
+    const ticker = document.getElementById('visual-ticker');
+    ticker.setAttribute('aria-live', audioOn ? 'polite' : 'off');
+  }
+&lt;/script&gt;</pre>
+  <p class="label">aria-live="off" (the default for most elements) suppresses announcements. Switching the attribute value dynamically lets users opt in to audio updates for high-frequency data feeds without constant interruption.</p>
+</div>
+
+<div class="example">
+  <h3>4. role="status" — polite status messages</h3>
+  <pre>&lt;!-- role="status" implies: aria-live="polite" + aria-atomic="true" --&gt;
+&lt;div role="status" id="form-status"&gt;&lt;/div&gt;
+
+&lt;form&gt;
+  &lt;button type="submit"&gt;Save changes&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  document.querySelector('form').addEventListener('submit', async (e) =&gt; {
+    e.preventDefault();
+    await saveData();
+    document.getElementById('form-status').textContent =
+      'Changes saved successfully at ' + new Date().toLocaleTimeString();
+  });
+&lt;/script&gt;</pre>
+  <p class="label">role="status" carries implicit aria-live="polite" and aria-atomic="true". It is the go-to container for save confirmations, status messages, and non-critical updates. Place it in the DOM on page load — never inject the element itself dynamically.</p>
+</div>
+
+<div class="example">
+  <h3>5. role="alert" — urgent error announcements</h3>
+  <pre>&lt;!-- role="alert" implies: aria-live="assertive" + aria-atomic="true" --&gt;
+&lt;div role="alert" id="form-alert" aria-label="Form error"&gt;
+  &lt;!-- Empty on load; error injected on validation failure --&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function showError(message) {
+    const alert = document.getElementById('form-alert');
+    // Clear first, then set — ensures re-announcement of same message
+    alert.textContent = '';
+    requestAnimationFrame(() =&gt; {
+      alert.textContent = message;
+    });
+  }
+
+  showError('Invalid credit card number. Please check and try again.');
+&lt;/script&gt;</pre>
+  <p class="label">role="alert" forces immediate announcement. The clear-then-set pattern with requestAnimationFrame ensures the screen reader treats it as a new mutation even if the text is the same as before. Use sparingly — only for genuine errors.</p>
+</div>
+
+<div class="example">
+  <h3>6. role="log" — for chat and event streams</h3>
+  <pre>&lt;!-- role="log" implies aria-live="polite" --&gt;
+&lt;!-- New items are announced as they are appended --&gt;
+&lt;div
+  role="log"
+  aria-label="Chat messages"
+  aria-relevant="additions"
+  id="chat-log"
+&gt;
+  &lt;div&gt;&lt;strong&gt;Alice:&lt;/strong&gt; Hello!&lt;/div&gt;
+  &lt;div&gt;&lt;strong&gt;Bob:&lt;/strong&gt; Hi there!&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function addMessage(author, text) {
+    const log = document.getElementById('chat-log');
+    const msg = document.createElement('div');
+    msg.innerHTML = `&lt;strong&gt;${author}:&lt;/strong&gt; ${text}`;
+    log.appendChild(msg); // Appended content is announced
+  }
+&lt;/script&gt;</pre>
+  <p class="label">role="log" is designed for chronological logs where only additions matter. It implies polite live updates. Unlike role="alert", the log accumulates content and AT announces new additions without repeating old messages.</p>
+</div>
+
+<div class="example">
+  <h3>7. Adding content to a live region correctly</h3>
+  <pre>&lt;div role="status" id="status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  // CORRECT: Modify the live region's content after it's in the DOM
+  document.getElementById('status').textContent = 'Item added to cart.';
+
+  // CORRECT: Append a child node
+  const p = document.createElement('p');
+  p.textContent = '3 items in cart.';
+  document.getElementById('status').appendChild(p);
+
+  // WRONG: Inject the live region element itself into the DOM
+  // (AT may miss the mutation when the element appears)
+  const bad = document.createElement('div');
+  bad.setAttribute('role', 'status');
+  bad.textContent = 'Item added to cart.';
+  document.body.appendChild(bad); // &lt;-- AT often ignores this
+&lt;/script&gt;</pre>
+  <p class="label">The live region element must exist in the DOM when the page loads (even if empty). Screen readers register live regions during page parse. Dynamically injecting the live region element itself frequently causes announcements to be silently dropped.</p>
+</div>
+
+<div class="example">
+  <h3>8. Clearing a live region</h3>
+  <pre>&lt;div role="status" id="msg"&gt;&lt;/div&gt;
+&lt;button onclick="clearMsg()"&gt;Dismiss&lt;/button&gt;
+
+&lt;script&gt;
+  function clearMsg() {
+    // Simply empty the live region — no announcement is made for removal
+    document.getElementById('msg').textContent = '';
+    // Alternatively: innerHTML = ''
+  }
+
+  // Pattern: always clear before setting, then set in next frame
+  function announce(text) {
+    const el = document.getElementById('msg');
+    el.textContent = '';
+    requestAnimationFrame(() =&gt; { el.textContent = text; });
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Removing content from a live region does not trigger an announcement (by default; see aria-relevant). Clearing the region silently hides the message. The rAF pattern reliably re-announces the same text by creating two distinct DOM mutations.</p>
+</div>
+
+<div class="example">
+  <h3>9. aria-atomic="true" — announce the whole region</h3>
+  <pre>&lt;!-- With aria-atomic="true", the entire region is announced
+     as one unit when any part changes --&gt;
+&lt;div
+  aria-live="polite"
+  aria-atomic="true"
+  id="clock"
+&gt;
+  &lt;span id="time"&gt;12:00&lt;/span&gt;
+  &lt;span id="ampm"&gt;PM&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  setInterval(() =&gt; {
+    const now = new Date();
+    document.getElementById('time').textContent =
+      now.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' });
+    // Even though only #time changes, AT reads the whole div:
+    // "12:34 PM"
+  }, 60000);
+&lt;/script&gt;</pre>
+  <p class="label">aria-atomic="true" ensures AT reads the entire container when any descendant changes, not just the changed portion. Essential when partial content is meaningless in isolation (e.g., time "12:34" needs the "PM" part to be complete).</p>
+</div>
+
+<div class="example">
+  <h3>10. aria-atomic="false" — announce only the change</h3>
+  <pre>&lt;!-- With aria-atomic="false", only the changed node is announced --&gt;
+&lt;div
+  aria-live="polite"
+  aria-atomic="false"
+  id="score-board"
+&gt;
+  &lt;p&gt;Player: Alice&lt;/p&gt;
+  &lt;p id="score"&gt;Score: 0&lt;/p&gt;
+  &lt;p&gt;Level: 3&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function updateScore(points) {
+    // Only "Score: 150" is announced, not "Player: Alice" or "Level: 3"
+    document.getElementById('score').textContent = 'Score: ' + points;
+  }
+&lt;/script&gt;</pre>
+  <p class="label">aria-atomic="false" (the default for aria-live regions) announces only the mutated node(s). This avoids repeating static surrounding content every time one value changes. Useful when a region contains multiple independently-updating values.</p>
+</div>
+
+<div class="example">
+  <h3>11. aria-relevant — what mutations to announce</h3>
+  <pre>&lt;!-- Default: "additions text" — new nodes + text changes --&gt;
+&lt;div aria-live="polite" aria-relevant="additions text"&gt;...&lt;/div&gt;
+
+&lt;!-- Removals only — e.g., items leaving a queue --&gt;
+&lt;div aria-live="polite" aria-relevant="removals"&gt;...&lt;/div&gt;
+
+&lt;!-- All mutations: additions, removals, and text changes --&gt;
+&lt;div aria-live="polite" aria-relevant="all"&gt;...&lt;/div&gt;
+
+&lt;!-- Additions and removals, but not text changes --&gt;
+&lt;div aria-live="polite" aria-relevant="additions removals"&gt;...&lt;/div&gt;
+
+&lt;!-- Practical example: notification queue --&gt;
+&lt;div
+  role="log"
+  aria-relevant="additions removals"
+  id="notif-queue"
+&gt;&lt;/div&gt;</pre>
+  <p class="label">aria-relevant controls which DOM mutation types trigger announcements: "additions" (new nodes), "removals" (removed nodes), "text" (text content changes), or combinations. The default is "additions text". Support varies — don't rely on "removals" in production.</p>
+</div>
+
+<div class="example">
+  <h3>12. Polite vs assertive — decision guide</h3>
+  <pre>&lt;!-- USE POLITE (role="status" or aria-live="polite") for: --&gt;
+&lt;div role="status"&gt;
+  &lt;!-- Form save confirmation --&gt;
+  &lt;!-- Cart item count update --&gt;
+  &lt;!-- Search results count --&gt;
+  &lt;!-- Progress percentage --&gt;
+  &lt;!-- Non-critical notifications --&gt;
+&lt;/div&gt;
+
+&lt;!-- USE ASSERTIVE (role="alert" or aria-live="assertive") for: --&gt;
+&lt;div role="alert"&gt;
+  &lt;!-- Session about to expire (60 seconds warning) --&gt;
+  &lt;!-- Form submission failed (server error) --&gt;
+  &lt;!-- Network connection lost --&gt;
+  &lt;!-- Security/permission error --&gt;
+&lt;/div&gt;
+
+&lt;!-- NEVER use assertive for: routine updates, optional info,
+     or anything the user wasn't actively waiting for --&gt;</pre>
+  <p class="label">Choosing the wrong politeness level degrades the experience. Assertive interrupts immediately — overusing it makes every action disruptive. When in doubt, choose polite. Reserve assertive for situations where a delayed announcement would cause genuine harm or confusion.</p>
+</div>
+
+<div class="example">
+  <h3>13. setTimeout pattern for deferred screen reader announcements</h3>
+  <pre>&lt;div role="status" id="announce"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  // Problem: setting textContent immediately after a focus change
+  // can race with the screen reader's announcement of the focus event.
+
+  // Solution 1: requestAnimationFrame (one frame delay)
+  function announceRaf(text) {
+    const el = document.getElementById('announce');
+    el.textContent = '';
+    requestAnimationFrame(() =&gt; { el.textContent = text; });
+  }
+
+  // Solution 2: small setTimeout (more reliable across AT)
+  function announceSoon(text) {
+    const el = document.getElementById('announce');
+    el.textContent = '';
+    setTimeout(() =&gt; { el.textContent = text; }, 100);
+  }
+
+  // After route change in SPA:
+  announceSoon('Navigated to About page');
+&lt;/script&gt;</pre>
+  <p class="label">Screen readers can miss live region updates that happen in the same JS microtask as a focus change. A 100ms setTimeout (or rAF) decouples the announcement from the focus event, giving AT time to process the focus before the new text arrives.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Form save notification</h3>
+  <pre>&lt;form id="settings-form"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Email preferences&lt;/legend&gt;
+    &lt;label&gt;
+      &lt;input type="checkbox" name="marketing"&gt;
+      Marketing emails
+    &lt;/label&gt;
+  &lt;/fieldset&gt;
+  &lt;button type="submit"&gt;Save preferences&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;!-- Live region always in DOM --&gt;
+&lt;div role="status" id="save-status" aria-atomic="true"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  document.getElementById('settings-form').addEventListener('submit', async e =&gt; {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    await savePreferences(new FormData(e.target));
+
+    btn.disabled = false;
+    btn.textContent = 'Save preferences';
+    document.getElementById('save-status').textContent =
+      'Preferences saved successfully.';
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Pattern for save confirmations: disable the button while saving to prevent double-submit, restore it on completion, then announce success via role="status". Focus remains on the button, keeping the user oriented.</p>
+</div>
+
+<div class="example">
+  <h3>15. Error announcement on form submission</h3>
+  <pre>&lt;form id="signup-form" novalidate&gt;
+  &lt;label for="email"&gt;Email&lt;/label&gt;
+  &lt;input type="email" id="email" name="email" aria-required="true"&gt;
+
+  &lt;button type="submit"&gt;Sign up&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;div role="alert" id="form-errors" aria-atomic="true"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  document.getElementById('signup-form').addEventListener('submit', e =&gt; {
+    e.preventDefault();
+    const email = document.getElementById('email');
+    const errors = [];
+
+    if (!email.value) errors.push('Email is required.');
+    else if (!email.validity.valid) errors.push('Please enter a valid email.');
+
+    const errRegion = document.getElementById('form-errors');
+    if (errors.length) {
+      errRegion.textContent = errors.join(' ');
+      email.setAttribute('aria-invalid', 'true');
+      email.focus(); // Move focus to first error field
+    } else {
+      errRegion.textContent = '';
+      submitForm();
+    }
+  });
+&lt;/script&gt;</pre>
+  <p class="label">On validation failure, use role="alert" for immediate announcement of the error summary, set aria-invalid on the offending field, then move focus to it. The combination of alert + focus ensures the user hears the error and lands in the right place.</p>
+</div>
+
+<div class="example">
+  <h3>16. Search results count announcement</h3>
+  <pre>&lt;form role="search"&gt;
+  &lt;label for="product-search"&gt;Search products&lt;/label&gt;
+  &lt;input type="search" id="product-search" name="q"&gt;
+  &lt;button type="submit"&gt;Search&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;div role="status" id="results-count" aria-atomic="true"&gt;&lt;/div&gt;
+
+&lt;div id="results-grid"&gt;
+  &lt;!-- Product cards rendered here --&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  async function runSearch(query) {
+    const results = await fetchProducts(query);
+    renderGrid(results);
+
+    const msg = results.length === 0
+      ? `No products found for "${query}".`
+      : `${results.length} product${results.length === 1 ? '' : 's'} found for "${query}".`;
+
+    document.getElementById('results-count').textContent = msg;
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Announcing search result counts via role="status" helps screen reader users understand the outcome of their search without navigating into the results first. Always include the query term for context and handle zero results explicitly.</p>
+</div>
+
+<div class="example">
+  <h3>17. Shopping cart count update</h3>
+  <pre>&lt;header&gt;
+  &lt;a href="/cart" aria-label="Cart" id="cart-link"&gt;
+    &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
+    &lt;span id="cart-count" class="badge"&gt;0&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/header&gt;
+
+&lt;!-- Separate live region — don't use the badge itself --&gt;
+&lt;div role="status" class="sr-only" id="cart-announcement"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  function addToCart(product) {
+    const newCount = cartStore.add(product);
+
+    // Update visual badge (silent)
+    document.getElementById('cart-count').textContent = newCount;
+
+    // Update accessible label on link
+    document.getElementById('cart-link').setAttribute(
+      'aria-label', `Cart, ${newCount} item${newCount === 1 ? '' : 's'}`
+    );
+
+    // Announce the action
+    document.getElementById('cart-announcement').textContent =
+      `${product.name} added to cart. Cart total: ${newCount} items.`;
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Separate the visual badge from the live region announcement. The badge number silently updates; the live region announces the action. Also update the cart link's accessible name so users can verify the count when tabbing to the header.</p>
+</div>
+
+<div class="example">
+  <h3>18. Spinner with accessible status</h3>
+  <pre>&lt;!-- Spinner container --&gt;
+&lt;div id="loading-container" hidden&gt;
+  &lt;svg
+    class="spinner"
+    aria-hidden="true"
+    focusable="false"
+  &gt;...&lt;/svg&gt;
+  &lt;span class="sr-only"&gt;Loading...&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;!-- Separate live region for status updates --&gt;
+&lt;div role="status" id="loading-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  function showLoading(message = 'Loading, please wait.') {
+    document.getElementById('loading-container').hidden = false;
+    document.getElementById('loading-status').textContent = message;
+  }
+
+  function hideLoading(completionMessage = '') {
+    document.getElementById('loading-container').hidden = true;
+    document.getElementById('loading-status').textContent = completionMessage;
+  }
+
+  showLoading('Loading dashboard data.');
+  await fetchData();
+  hideLoading('Dashboard loaded. Showing 24 items.');
+&lt;/script&gt;</pre>
+  <p class="label">The animated spinner is decorative (aria-hidden). A separate static sr-only "Loading..." label is visible to AT from the spinner container. The live region handles state transitions, announcing both the start and completion of loading.</p>
+</div>
+
+<div class="example">
+  <h3>19. Progress bar with live region announcement</h3>
+  <pre>&lt;label for="upload-progress"&gt;
+  File upload progress
+&lt;/label&gt;
+&lt;progress
+  id="upload-progress"
+  value="0"
+  max="100"
+  aria-describedby="progress-status"
+&gt;0%&lt;/progress&gt;
+
+&lt;div role="status" id="progress-status" aria-atomic="true"&gt;
+  Upload not started.
+&lt;/div&gt;
+
+&lt;script&gt;
+  function updateProgress(percent) {
+    const bar = document.getElementById('upload-progress');
+    bar.value = percent;
+
+    // Announce milestones, not every percent tick
+    const status = document.getElementById('progress-status');
+    if (percent === 100) {
+      status.textContent = 'Upload complete!';
+    } else if (percent % 25 === 0) {
+      status.textContent = `Upload ${percent}% complete.`;
+    }
+  }
+&lt;/script&gt;</pre>
+  <p class="label">The native &lt;progress&gt; element has implicit role="progressbar". Pair it with a live region but only announce at meaningful milestones (25%, 50%, 75%, 100%) rather than every percent change, which would flood the screen reader output.</p>
+</div>
+
+<div class="example">
+  <h3>20. Notification toast system</h3>
+  <pre>&lt;!-- Toast container — always in DOM --&gt;
+&lt;div
+  id="toast-region"
+  role="status"
+  aria-live="polite"
+  aria-atomic="false"
+  class="toast-container"
+&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  let toastId = 0;
+
+  function showToast(message, type = 'info', duration = 5000) {
+    const region = document.getElementById('toast-region');
+    const toast = document.createElement('div');
+    toast.className = `toast toast--${type}`;
+    toast.id = `toast-${++toastId}`;
+    toast.textContent = message;
+    toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+
+    region.appendChild(toast); // Announced on append
+
+    // Auto-dismiss
+    setTimeout(() =&gt; {
+      toast.remove(); // Removal not announced (aria-relevant default)
+    }, duration);
+  }
+
+  showToast('File saved.', 'success');
+  showToast('Connection error.', 'error');
+&lt;/script&gt;</pre>
+  <p class="label">Toast notifications use a persistent container with aria-live. Individual toasts are appended (triggering announcement) and removed silently. Error toasts get role="alert" for assertive announcement; others use role="status" for polite delivery.</p>
+</div>
+
+<div class="example">
+  <h3>21. Chat message log with live region</h3>
+  <pre>&lt;div
+  role="log"
+  aria-label="Conversation with Support"
+  aria-live="polite"
+  aria-relevant="additions"
+  id="chat-window"
+&gt;
+  &lt;div class="message message--agent"&gt;
+    &lt;strong&gt;Support agent:&lt;/strong&gt;
+    Hi! How can I help you today?
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;form id="chat-form"&gt;
+  &lt;label for="chat-input" class="sr-only"&gt;Your message&lt;/label&gt;
+  &lt;input type="text" id="chat-input" autocomplete="off"&gt;
+  &lt;button type="submit"&gt;Send&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  function appendMessage(author, text, type) {
+    const msg = document.createElement('div');
+    msg.className = `message message--${type}`;
+    msg.innerHTML = `&lt;strong&gt;${author}:&lt;/strong&gt; ${text}`;
+    document.getElementById('chat-window').appendChild(msg);
+    // Screen reader announces new message without focus change
+  }
+&lt;/script&gt;</pre>
+  <p class="label">role="log" is purpose-built for chat. New messages appended to the log are announced politely. focus stays in the input field so the user can keep typing. aria-relevant="additions" prevents announcement of message deletions or edits.</p>
+</div>
+
+<div class="example">
+  <h3>22. Countdown timer with role="timer"</h3>
+  <pre>&lt;!-- role="timer" implies aria-live="off" by default --&gt;
+&lt;div
+  role="timer"
+  aria-live="off"
+  aria-label="Session timeout countdown"
+  id="session-timer"
+&gt;
+  05:00
+&lt;/div&gt;
+
+&lt;!-- Separate alert for critical threshold --&gt;
+&lt;div role="alert" id="timeout-alert"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  let seconds = 300;
+  const timerEl = document.getElementById('session-timer');
+  const alertEl = document.getElementById('timeout-alert');
+
+  const interval = setInterval(() =&gt; {
+    seconds--;
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    timerEl.textContent = `${m}:${s}`;
+
+    // Announce at 60 seconds remaining
+    if (seconds === 60) {
+      alertEl.textContent = 'Warning: 1 minute until session timeout.';
+    }
+    if (seconds === 0) {
+      clearInterval(interval);
+      alertEl.textContent = 'Session expired. Please log in again.';
+    }
+  }, 1000);
+&lt;/script&gt;</pre>
+  <p class="label">role="timer" is for countdowns and elapsed time. Crucially, it has implicit aria-live="off" — the visual ticker updates without constant AT interruption. Critical thresholds trigger a separate role="alert" announcement at 60 seconds and on expiry.</p>
+</div>
+
+<div class="example">
+  <h3>23. File upload progress with live region</h3>
+  <pre>&lt;input type="file" id="file-input" multiple accept="image/*"&gt;
+&lt;div id="upload-list"&gt;&lt;/div&gt;
+&lt;div role="status" id="upload-summary" aria-atomic="true"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  document.getElementById('file-input').addEventListener('change', async (e) =&gt; {
+    const files = [...e.target.files];
+    const summary = document.getElementById('upload-summary');
+    summary.textContent = `Uploading ${files.length} file${files.length === 1 ? '' : 's'}.`;
+
+    let completed = 0;
+    await Promise.all(files.map(async file =&gt; {
+      await uploadFile(file);
+      completed++;
+      summary.textContent =
+        `${completed} of ${files.length} files uploaded.`;
+    }));
+
+    summary.textContent =
+      `All ${files.length} files uploaded successfully.`;
+  });
+&lt;/script&gt;</pre>
+  <p class="label">For multi-file uploads, update a single role="status" with an aggregate count rather than announcing each file individually. The atomic summary "3 of 5 files uploaded" is more useful than five separate announcements.</p>
+</div>
+
+<div class="example">
+  <h3>24. Server-sent events with live region</h3>
+  <pre>&lt;div
+  role="log"
+  aria-label="Live server events"
+  aria-live="polite"
+  id="event-log"
+&gt;&lt;/div&gt;
+
+&lt;div role="status" id="connection-status"&gt;Connecting...&lt;/div&gt;
+
+&lt;script&gt;
+  const es = new EventSource('/api/events');
+  const log = document.getElementById('event-log');
+  const status = document.getElementById('connection-status');
+
+  es.onopen = () =&gt; {
+    status.textContent = 'Connected to live updates.';
+  };
+
+  es.onmessage = (e) =&gt; {
+    const data = JSON.parse(e.data);
+    const item = document.createElement('p');
+    item.textContent = `[${data.timestamp}] ${data.message}`;
+    log.appendChild(item);
+    // Trim log to last 50 messages
+    while (log.children.length &gt; 50) log.firstChild.remove();
+  };
+
+  es.onerror = () =&gt; {
+    status.textContent = 'Connection lost. Attempting to reconnect.';
+  };
+&lt;/script&gt;</pre>
+  <p class="label">Real-time event streams use role="log" for the feed and role="status" for connection state. Trim old messages to prevent infinite growth. The connection state changes (connected / lost) are announced via the polite status region.</p>
+</div>
+
+<div class="example">
+  <h3>25. SPA page transition announcement</h3>
+  <pre>&lt;!-- Place in root layout; persists across route changes --&gt;
+&lt;div
+  role="status"
+  id="route-announcer"
+  class="sr-only"
+  aria-atomic="true"
+  aria-live="polite"
+&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  // React Router example (apply the same pattern in any SPA framework)
+  function announceRouteChange(location) {
+    // Derive a friendly name from the route or document title
+    const title = document.title || location.pathname;
+    const announcer = document.getElementById('route-announcer');
+
+    // Clear then set to ensure re-announcement
+    announcer.textContent = '';
+    setTimeout(() =&gt; {
+      announcer.textContent = `Navigated to ${title}`;
+    }, 100);
+  }
+
+  // In React Router v6:
+  // useEffect(() =&gt; announceRouteChange(location), [location]);
+&lt;/script&gt;</pre>
+  <p class="label">SPAs change content without full page reloads, so screen readers don't get the native browser page-load announcement. A persistent route announcer div reads the new page title on every navigation, maintaining orientation for AT users.</p>
+</div>
+
+<div class="example">
+  <h3>26. role="marquee" — for non-essential scrolling content</h3>
+  <pre>&lt;!-- role="marquee" implies aria-live="off" --&gt;
+&lt;!-- Use ONLY for advertising / promotional content --&gt;
+&lt;div
+  role="marquee"
+  aria-label="Promotional offers"
+  class="ticker"
+&gt;
+  50% off all electronics this weekend! |
+  Free shipping on orders over $50! |
+  New arrivals: Summer collection now live!
+&lt;/div&gt;
+
+&lt;!-- If content must be read, prefer role="log" or role="status" --&gt;
+&lt;!-- The marquee HTML element is deprecated; use CSS animation instead --&gt;
+&lt;style&gt;
+  .ticker {
+    overflow: hidden;
+    white-space: nowrap;
+    animation: scroll-left 20s linear infinite;
+  }
+  @keyframes scroll-left {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(-100%); }
+  }
+&lt;/style&gt;</pre>
+  <p class="label">role="marquee" has implicit aria-live="off" — its content is not announced as it changes. Use it only for decorative promotional text that users do not need to hear. If the information is important, use a different pattern with polite live updates.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Form validation with live feedback</h3>
+  <pre>&lt;form novalidate&gt;
+  &lt;div class="field"&gt;
+    &lt;label for="username"&gt;Username&lt;/label&gt;
+    &lt;input
+      type="text"
+      id="username"
+      aria-required="true"
+      aria-describedby="username-status"
+      autocomplete="username"
+    &gt;
+    &lt;!-- Live region for this field's status --&gt;
+    &lt;div
+      id="username-status"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    &gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;button type="submit"&gt;Register&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  let checkTimer;
+  document.getElementById('username').addEventListener('input', e =&gt; {
+    clearTimeout(checkTimer);
+    checkTimer = setTimeout(async () =&gt; {
+      const val = e.target.value;
+      const status = document.getElementById('username-status');
+      if (val.length &lt; 3) {
+        status.textContent = 'Username must be at least 3 characters.';
+        e.target.setAttribute('aria-invalid', 'true');
+      } else {
+        const taken = await checkAvailability(val);
+        status.textContent = taken
+          ? `"${val}" is already taken.`
+          : `"${val}" is available.`;
+        e.target.setAttribute('aria-invalid', taken ? 'true' : 'false');
+      }
+    }, 500);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Per-field live regions provide real-time feedback with 500ms debounce to avoid flooding AT while typing. The region is described via aria-describedby so AT reads it on focus. Polite delivery avoids interrupting the typing experience.</p>
+</div>
+
+<div class="example">
+  <h3>28. Loading skeleton to content transition</h3>
+  <pre>&lt;div
+  id="profile-card"
+  aria-busy="true"
+  aria-label="User profile"
+&gt;
+  &lt;!-- Skeleton shown while loading --&gt;
+  &lt;div class="skeleton skeleton--avatar" aria-hidden="true"&gt;&lt;/div&gt;
+  &lt;div class="skeleton skeleton--text"  aria-hidden="true"&gt;&lt;/div&gt;
+  &lt;div class="skeleton skeleton--text"  aria-hidden="true"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div role="status" id="load-msg" class="sr-only"&gt;
+  Loading profile...
+&lt;/div&gt;
+
+&lt;script&gt;
+  async function loadProfile(userId) {
+    const card = document.getElementById('profile-card');
+    const msg  = document.getElementById('load-msg');
+
+    const data = await fetchProfile(userId);
+
+    card.innerHTML = `
+      &lt;img src="${data.avatar}" alt="${data.name}'s avatar"&gt;
+      &lt;h2&gt;${data.name}&lt;/h2&gt;
+      &lt;p&gt;${data.bio}&lt;/p&gt;
+    `;
+    card.removeAttribute('aria-busy');
+    msg.textContent = `Profile loaded: ${data.name}`;
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Skeleton screens are decorative (aria-hidden). The card container uses aria-busy="true" during load. A separate live region announces "Loading..." then "Profile loaded: [name]" on completion. AT users get audio cues equivalent to the visual skeleton transition.</p>
+</div>
+
+<div class="example">
+  <h3>29. Search-as-you-type results with live region</h3>
+  <pre>&lt;label for="live-search"&gt;Search employees&lt;/label&gt;
+&lt;input
+  type="search"
+  id="live-search"
+  role="combobox"
+  aria-autocomplete="list"
+  aria-expanded="false"
+  aria-controls="search-suggestions"
+  autocomplete="off"
+&gt;
+
+&lt;ul role="listbox" id="search-suggestions" aria-label="Suggestions" hidden&gt;
+  &lt;!-- Options injected dynamically --&gt;
+&lt;/ul&gt;
+
+&lt;!-- Separate count announcement --&gt;
+&lt;div role="status" class="sr-only" id="search-count"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  let debounce;
+  document.getElementById('live-search').addEventListener('input', e =&gt; {
+    clearTimeout(debounce);
+    debounce = setTimeout(async () =&gt; {
+      const input = e.target;
+      const results = await searchEmployees(input.value);
+      const list = document.getElementById('search-suggestions');
+
+      list.innerHTML = results
+        .map(r =&gt; `&lt;li role="option" id="opt-${r.id}"&gt;${r.name}&lt;/li&gt;`)
+        .join('');
+
+      const expanded = results.length &gt; 0;
+      input.setAttribute('aria-expanded', String(expanded));
+      list.hidden = !expanded;
+
+      document.getElementById('search-count').textContent =
+        results.length
+          ? `${results.length} suggestion${results.length === 1 ? '' : 's'} available.`
+          : 'No results found.';
+    }, 300);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Combobox search uses the ARIA combobox pattern for keyboard navigation and a separate live region to announce the result count. AT users hear "3 suggestions available" before deciding whether to open the dropdown or refine their search.</p>
+</div>
+
+<div class="example">
+  <h3>30. Wizard step change announcement</h3>
+  <pre>&lt;div id="wizard" aria-label="Account setup"&gt;
+  &lt;!-- Progress indicator --&gt;
+  &lt;ol aria-label="Setup steps"&gt;
+    &lt;li aria-current="step"&gt;Personal info&lt;/li&gt;
+    &lt;li&gt;Address&lt;/li&gt;
+    &lt;li&gt;Payment&lt;/li&gt;
+    &lt;li&gt;Review&lt;/li&gt;
+  &lt;/ol&gt;
+
+  &lt;!-- Step content container --&gt;
+  &lt;div id="step-content"&gt;
+    &lt;!-- Current step form rendered here --&gt;
+  &lt;/div&gt;
+
+  &lt;div role="status" id="step-announce" aria-atomic="true"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function goToStep(stepNumber, stepName) {
+    renderStep(stepNumber);
+    updateProgressIndicator(stepNumber);
+
+    // Announce step change then move focus to heading
+    const announcer = document.getElementById('step-announce');
+    announcer.textContent = `Step ${stepNumber} of 4: ${stepName}`;
+    setTimeout(() =&gt; {
+      document.getElementById('step-content').querySelector('h2').focus();
+    }, 150);
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Multi-step wizards need two accessibility actions on step change: announce the new step via a live region, then move focus to the step heading. The 150ms delay lets the announcement complete before the focus change triggers another screen reader reading.</p>
+</div>
+
+<div class="example">
+  <h3>31. Infinite scroll announcements</h3>
+  <pre>&lt;div id="feed" aria-label="News feed"&gt;
+  &lt;!-- Initial articles --&gt;
+&lt;/div&gt;
+
+&lt;div role="status" id="feed-status" aria-atomic="true"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  let page = 1;
+  const observer = new IntersectionObserver(async ([entry]) =&gt; {
+    if (!entry.isIntersecting) return;
+
+    const status = document.getElementById('feed-status');
+    status.textContent = 'Loading more articles...';
+
+    const articles = await fetchPage(++page);
+
+    if (articles.length === 0) {
+      status.textContent = 'You have reached the end of the feed.';
+      observer.disconnect();
+      return;
+    }
+
+    articles.forEach(a =&gt; {
+      document.getElementById('feed').appendChild(renderArticle(a));
+    });
+
+    status.textContent =
+      `${articles.length} more articles loaded. Continue scrolling for more.`;
+  });
+
+  // Observe a sentinel element at the bottom
+  observer.observe(document.getElementById('feed-sentinel'));
+&lt;/script&gt;</pre>
+  <p class="label">Infinite scroll must be announced to AT users who may be navigating the feed with keyboard or screen reader virtual cursor. Announce loading start, completion count, and end-of-feed. Provide a "Load more" button as a keyboard-accessible alternative.</p>
+</div>
+
+<div class="example">
+  <h3>32. Real-time collaborative editing status</h3>
+  <pre>&lt;div id="doc-editor" contenteditable="true" aria-multiline="true" aria-label="Document content"&gt;
+  &lt;!-- Document content --&gt;
+&lt;/div&gt;
+
+&lt;div role="status" id="collab-status" aria-live="polite" aria-atomic="false"&gt;
+  3 people are editing this document.
+&lt;/div&gt;
+
+&lt;div role="log" id="collab-log" aria-label="Collaborator activity" aria-live="polite"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  websocket.on('user-joined', user =&gt; {
+    const log = document.getElementById('collab-log');
+    const entry = document.createElement('p');
+    entry.textContent = `${user.name} joined the document.`;
+    log.appendChild(entry);
+  });
+
+  websocket.on('user-left', user =&gt; {
+    const log = document.getElementById('collab-log');
+    const entry = document.createElement('p');
+    entry.textContent = `${user.name} left the document.`;
+    log.appendChild(entry);
+  });
+
+  websocket.on('presence-update', count =&gt; {
+    document.getElementById('collab-status').textContent =
+      `${count} people are currently editing.`;
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Real-time collaboration uses two regions: role="status" for aggregate presence count (polite), and role="log" for individual join/leave events (also polite). This prevents overwhelming AT users with constant interruptions during active sessions.</p>
+</div>
+
+<div class="example">
+  <h3>33. Dashboard data updates</h3>
+  <pre>&lt;div class="dashboard"&gt;
+  &lt;section aria-labelledby="kpi-heading"&gt;
+    &lt;h2 id="kpi-heading"&gt;Key metrics&lt;/h2&gt;
+
+    &lt;dl&gt;
+      &lt;dt&gt;Active users&lt;/dt&gt;
+      &lt;dd id="metric-users"&gt;1,247&lt;/dd&gt;
+
+      &lt;dt&gt;Revenue today&lt;/dt&gt;
+      &lt;dd id="metric-revenue"&gt;$18,430&lt;/dd&gt;
+
+      &lt;dt&gt;Open tickets&lt;/dt&gt;
+      &lt;dd id="metric-tickets"&gt;14&lt;/dd&gt;
+    &lt;/dl&gt;
+  &lt;/section&gt;
+&lt;/div&gt;
+
+&lt;!-- Only announce when values actually change significantly --&gt;
+&lt;div role="status" class="sr-only" id="metric-update"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  let prevTickets = 14;
+
+  function updateMetrics(data) {
+    document.getElementById('metric-users').textContent =
+      data.users.toLocaleString();
+    document.getElementById('metric-revenue').textContent =
+      '$' + data.revenue.toLocaleString();
+    document.getElementById('metric-tickets').textContent = data.tickets;
+
+    // Only announce tickets (actionable) when count increases
+    if (data.tickets &gt; prevTickets) {
+      document.getElementById('metric-update').textContent =
+        `Open tickets increased to ${data.tickets}.`;
+      prevTickets = data.tickets;
+    }
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Dashboard metrics update silently in the DOM. Only announce changes that require user attention (ticket count increases) — not passive metrics like revenue. This prevents AT users from being overwhelmed by constantly-changing numbers.</p>
+</div>
+
+<div class="example">
+  <h3>34. Auction countdown with dual announcement</h3>
+  <pre>&lt;div class="auction-item"&gt;
+  &lt;h2&gt;Vintage Watch — Current bid: &lt;span id="current-bid"&gt;$450&lt;/span&gt;&lt;/h2&gt;
+
+  &lt;!-- Timer: visual only (aria-live="off") --&gt;
+  &lt;div role="timer" aria-live="off" aria-label="Time remaining" id="auction-timer"&gt;
+    04:32
+  &lt;/div&gt;
+
+  &lt;!-- Alert for critical moments --&gt;
+  &lt;div role="alert" id="auction-alert"&gt;&lt;/div&gt;
+
+  &lt;!-- Status for bid updates --&gt;
+  &lt;div role="status" id="bid-status"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  socket.on('new-bid', data =&gt; {
+    document.getElementById('current-bid').textContent = data.amount;
+    document.getElementById('bid-status').textContent =
+      `New bid: ${data.amount} by ${data.bidderAlias}.`;
+  });
+
+  socket.on('timer-critical', seconds =&gt; {
+    // Under 30 seconds: use assertive alert
+    document.getElementById('auction-alert').textContent =
+      `Auction ending in ${seconds} seconds!`;
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Auctions combine a silent timer (role="timer" with aria-live="off"), polite bid updates (role="status"), and assertive countdown alerts (role="alert" under 30 seconds). Each channel has the appropriate urgency level for its content type.</p>
+</div>
+
+<div class="example">
+  <h3>35. Multi-region page layout</h3>
+  <pre>&lt;!-- Each region has its own live behavior --&gt;
+
+&lt;!-- Sidebar: stock prices, updates silently --&gt;
+&lt;aside aria-label="Market data"&gt;
+  &lt;div aria-live="off" id="market-ticker"&gt;...&lt;/div&gt;
+&lt;/aside&gt;
+
+&lt;!-- Main: chat messages --&gt;
+&lt;main&gt;
+  &lt;div role="log" aria-label="Team chat" id="main-chat"&gt;...&lt;/div&gt;
+&lt;/main&gt;
+
+&lt;!-- Header: notification badge --&gt;
+&lt;header&gt;
+  &lt;div role="status" class="sr-only" id="notif-status"&gt;&lt;/div&gt;
+&lt;/header&gt;
+
+&lt;!-- Footer: global alert region --&gt;
+&lt;footer&gt;
+  &lt;div role="alert" id="global-alert"&gt;&lt;/div&gt;
+&lt;/footer&gt;
+
+&lt;!-- Rule: one assertive region per page. Multiple assertive regions
+     firing simultaneously creates a cacophony of interruptions. --&gt;</pre>
+  <p class="label">Complex dashboards may need multiple live regions at different politeness levels. The critical rule: use only ONE assertive region per page. Multiple assertive regions firing at the same time will overlap and compete, making AT output incomprehensible.</p>
+</div>
+
+<div class="example">
+  <h3>36. Announcement queue pattern</h3>
+  <pre>&lt;div role="status" id="queue-region" aria-atomic="true"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  const announceQueue = (() =&gt; {
+    const queue = [];
+    let isAnnouncing = false;
+    const region = document.getElementById('queue-region');
+
+    function processNext() {
+      if (!queue.length) { isAnnouncing = false; return; }
+      isAnnouncing = true;
+      const msg = queue.shift();
+
+      region.textContent = '';
+      requestAnimationFrame(() =&gt; {
+        region.textContent = msg;
+        // Wait for AT to read (approximately 1.5s per message)
+        setTimeout(processNext, 1500);
+      });
+    }
+
+    return {
+      add(message) {
+        queue.push(message);
+        if (!isAnnouncing) processNext();
+      }
+    };
+  })();
+
+  // Usage: multiple rapid events won't overlap
+  announceQueue.add('Item A added to cart.');
+  announceQueue.add('Discount applied: 10% off.');
+  announceQueue.add('Free shipping unlocked!');
+&lt;/script&gt;</pre>
+  <p class="label">When multiple events fire rapidly, a queue prevents announcements from overwriting each other. The queue processes one message at a time with 1.5s gaps — enough for a screen reader to finish reading. Clear-then-set with rAF ensures each message triggers a fresh mutation.</p>
+</div>
+
+<div class="example">
+  <h3>37. Debouncing live region announcements</h3>
+  <pre>&lt;div role="status" id="char-count-live"&gt;&lt;/div&gt;
+
+&lt;label for="bio"&gt;Bio&lt;/label&gt;
+&lt;textarea id="bio" maxlength="280" aria-describedby="char-count-live"&gt;&lt;/textarea&gt;
+
+&lt;script&gt;
+  let debounceTimer;
+  const MAX = 280;
+
+  document.getElementById('bio').addEventListener('input', e =&gt; {
+    const remaining = MAX - e.target.value.length;
+
+    // Visual update: immediate
+    document.getElementById('char-count-live').textContent =
+      `${remaining} characters remaining`;
+
+    // AT announcement: debounced to 500ms pauses in typing
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() =&gt; {
+      const el = document.getElementById('char-count-live');
+      // Only announce at thresholds or when debounced
+      if (remaining &lt;= 20 || remaining === MAX) {
+        el.setAttribute('aria-live', 'polite');
+      } else {
+        el.setAttribute('aria-live', 'off');
+      }
+    }, 500);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Character counters update on every keystroke but should not announce on every keystroke. Toggle aria-live between "off" and "polite" based on pauses in typing and critical thresholds (under 20 characters). This gives real-time visual feedback without audio noise.</p>
+</div>
+
+<div class="example">
+  <h3>38. aria-busy with multi-step loading</h3>
+  <pre>&lt;div
+  id="report-section"
+  aria-live="polite"
+  aria-busy="false"
+  aria-label="Monthly report"
+&gt;
+  &lt;!-- Chart, table, summary rendered here --&gt;
+&lt;/div&gt;
+
+&lt;div role="status" id="report-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  async function loadReport(month) {
+    const section = document.getElementById('report-section');
+    const status  = document.getElementById('report-status');
+
+    section.setAttribute('aria-busy', 'true');
+    status.textContent = 'Loading report data...';
+    section.innerHTML = '&lt;p class="loading"&gt;Fetching data...&lt;/p&gt;';
+
+    const [chartData, tableData, summary] = await Promise.all([
+      fetchChartData(month),
+      fetchTableData(month),
+      fetchSummary(month)
+    ]);
+
+    section.innerHTML = `
+      ${renderChart(chartData)}
+      ${renderTable(tableData)}
+      ${renderSummary(summary)}
+    `;
+
+    section.setAttribute('aria-busy', 'false');
+    status.textContent =
+      `Report for ${month} loaded. Showing ${tableData.length} rows.`;
+  }
+&lt;/script&gt;</pre>
+  <p class="label">When multiple async operations populate a region simultaneously, set aria-busy="true" before any of them start and "false" only after all complete. This prevents AT from reading a half-loaded region while data is still arriving.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Politeness escalation pattern</h3>
+  <pre>&lt;div role="status"  id="upload-polite"    aria-atomic="true"&gt;&lt;/div&gt;
+&lt;div role="alert"   id="upload-assertive" aria-atomic="true"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  async function startUpload(file) {
+    const polite     = document.getElementById('upload-polite');
+    const assertive  = document.getElementById('upload-assertive');
+
+    polite.textContent = `Uploading ${file.name}...`;
+
+    try {
+      await upload(file, {
+        onProgress: pct =&gt; {
+          if (pct % 25 === 0) {
+            polite.textContent = `${file.name}: ${pct}% uploaded.`;
+          }
+        }
+      });
+      polite.textContent = `${file.name} uploaded successfully.`;
+    } catch (err) {
+      // Escalate to assertive on failure
+      polite.textContent = '';
+      assertive.textContent =
+        `Upload failed for ${file.name}: ${err.message}. Please try again.`;
+    }
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Start with polite announcements for progress and success; escalate to assertive only on failure. This pattern respects user focus for routine updates while ensuring errors break through immediately. Keep assertive content in a dedicated region.</p>
+</div>
+
+<div class="example">
+  <h3>40. Batching rapid updates before announcing</h3>
+  <pre>&lt;div role="status" id="batch-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  const batchAnnouncer = (() =&gt; {
+    let pendingMessages = [];
+    let batchTimer = null;
+
+    return function announce(message) {
+      pendingMessages.push(message);
+
+      clearTimeout(batchTimer);
+      batchTimer = setTimeout(() =&gt; {
+        const status = document.getElementById('batch-status');
+        const combined = pendingMessages.join(' ');
+        pendingMessages = [];
+
+        status.textContent = '';
+        requestAnimationFrame(() =&gt; {
+          status.textContent = combined;
+        });
+      }, 200); // Collect messages for 200ms before announcing
+    };
+  })();
+
+  // Multiple rapid events: only one announcement after 200ms
+  socket.on('item-update', item =&gt; {
+    batchAnnouncer(`${item.name} updated.`);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Batching collects multiple rapid messages within a time window and announces them as a single combined message. This prevents AT from being overwhelmed when many events fire simultaneously (e.g., bulk item updates, rapid form validation).</p>
+</div>
+
+<div class="example">
+  <h3>41. Testing live regions with screen readers — manual checklist</h3>
+  <pre>&lt;!-- Live region test harness --&gt;
+&lt;div&gt;
+  &lt;button onclick="testPolite()"&gt;Test polite region&lt;/button&gt;
+  &lt;button onclick="testAssertive()"&gt;Test assertive region&lt;/button&gt;
+  &lt;button onclick="testSameText()"&gt;Test same-text re-announce&lt;/button&gt;
+  &lt;button onclick="testEmptyThenFill()"&gt;Test clear-and-fill&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;div role="status"  id="test-polite"&gt;&lt;/div&gt;
+&lt;div role="alert"   id="test-assertive"&gt;&lt;/div&gt;
+
+&lt;!-- Screen reader testing checklist:
+  [ ] NVDA + Chrome: polite region announced after current utterance
+  [ ] NVDA + Chrome: assertive region interrupts immediately
+  [ ] JAWS + Chrome: same behaviours
+  [ ] VoiceOver + Safari (macOS): polite/assertive work as expected
+  [ ] VoiceOver + Safari (iOS): touch navigation does not miss updates
+  [ ] Narrator + Edge: live regions fire correctly
+  [ ] Same text re-announced after clear-then-set
+  [ ] Empty-on-load region correctly registered
+  [ ] Dynamic region injection fails to announce (confirm bug)
+--&gt;</pre>
+  <p class="label">Manual screen reader testing is essential because AT implementations of live regions vary significantly. Test each combination (NVDA/Chrome, JAWS/Chrome, VoiceOver/Safari, Narrator/Edge) and verify the clear-then-set pattern re-announces identical text correctly.</p>
+</div>
+
+<div class="example">
+  <h3>42. ARIA live regions in shadow DOM</h3>
+  <pre>&lt;!-- Custom element hosting a live region --&gt;
+&lt;notification-banner&gt;&lt;/notification-banner&gt;
+
+&lt;script&gt;
+  class NotificationBanner extends HTMLElement {
+    connectedCallback() {
+      const shadow = this.attachShadow({ mode: 'open' });
+      shadow.innerHTML = `
+        &lt;style&gt;:host { display: block; }&lt;/style&gt;
+        &lt;div role="status" id="banner-msg"&gt;&lt;/div&gt;
+      `;
+
+      // Expose a public method for external callers
+      this.notify = (message) =&gt; {
+        const msg = shadow.getElementById('banner-msg');
+        msg.textContent = '';
+        requestAnimationFrame(() =&gt; { msg.textContent = message; });
+      };
+    }
+  }
+  customElements.define('notification-banner', NotificationBanner);
+
+  // External usage:
+  const banner = document.querySelector('notification-banner');
+  banner.notify('Changes saved successfully.');
+&lt;/script&gt;</pre>
+  <p class="label">Live regions inside shadow DOM behave the same as those in the main document in modern browsers. Expose a public notify() method on the custom element to allow external code to trigger announcements without piercing the shadow boundary.</p>
+</div>
+
+<div class="example">
+  <h3>43. Live region for an optimistic UI pattern</h3>
+  <pre>&lt;ul id="todo-list"&gt;
+  &lt;li data-id="1"&gt;Buy groceries &lt;button data-id="1"&gt;Delete&lt;/button&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div role="status" id="todo-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  document.querySelectorAll('[data-id]').forEach(btn =&gt; {
+    btn.addEventListener('click', async e =&gt; {
+      const id   = e.target.dataset.id;
+      const item = document.querySelector(`li[data-id="${id}"]`);
+      const text = item.firstChild.textContent.trim();
+
+      // Optimistic: remove immediately
+      item.remove();
+      document.getElementById('todo-status').textContent =
+        `"${text}" removed.`;
+
+      try {
+        await deleteTask(id);
+      } catch {
+        // Rollback on failure
+        document.getElementById('todo-list').append(item);
+        document.getElementById('todo-status').textContent = '';
+        const alert = document.createElement('div');
+        alert.setAttribute('role', 'alert');
+        alert.textContent = `Failed to delete "${text}". Item restored.`;
+        document.body.appendChild(alert);
+      }
+    });
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Optimistic UI removes items immediately for speed. The live region announces the deletion. On rollback (server failure), a role="alert" announces the failure and restoration. Both the success and failure paths maintain clear AT communication.</p>
+</div>
+
+<div class="example">
+  <h3>44. Accessible loading indicator with ARIA</h3>
+  <pre>&lt;button id="refresh-btn" onclick="refreshData()"&gt;Refresh&lt;/button&gt;
+
+&lt;div
+  id="data-table-wrapper"
+  aria-live="polite"
+  aria-busy="false"
+  aria-label="Sales data"
+&gt;
+  &lt;table id="data-table"&gt;...&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div role="status" class="sr-only" id="refresh-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  async function refreshData() {
+    const btn  = document.getElementById('refresh-btn');
+    const wrap = document.getElementById('data-table-wrapper');
+    const stat = document.getElementById('refresh-status');
+
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    wrap.setAttribute('aria-busy', 'true');
+    stat.textContent = 'Refreshing sales data...';
+
+    const data = await fetchSalesData();
+    document.getElementById('data-table').innerHTML = renderRows(data);
+
+    wrap.setAttribute('aria-busy', 'false');
+    btn.removeAttribute('aria-busy');
+    btn.disabled = false;
+    stat.textContent = `Sales data refreshed. Showing ${data.length} records.`;
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Multiple aria-busy attributes cascade: both the button and the data wrapper are marked busy. The status live region announces start and completion. The button is disabled to prevent duplicate requests. AT users get clear audio feedback of the entire refresh lifecycle.</p>
+</div>
+
+<div class="example">
+  <h3>45. Progressive disclosure with live announcement</h3>
+  <pre>&lt;div id="product-summary"&gt;
+  &lt;p&gt;This product ships in 2-3 business days.&lt;/p&gt;
+  &lt;button
+    aria-expanded="false"
+    aria-controls="shipping-detail"
+    id="shipping-btn"
+  &gt;
+    Show full shipping details
+  &lt;/button&gt;
+&lt;/div&gt;
+
+&lt;div id="shipping-detail" hidden&gt;
+  &lt;h3&gt;Shipping details&lt;/h3&gt;
+  &lt;p&gt;Standard: 2-3 days ($5.99)...&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div role="status" class="sr-only" id="expand-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  document.getElementById('shipping-btn').addEventListener('click', () =&gt; {
+    const btn    = document.getElementById('shipping-btn');
+    const panel  = document.getElementById('shipping-detail');
+    const status = document.getElementById('expand-status');
+    const expand = btn.getAttribute('aria-expanded') === 'false';
+
+    btn.setAttribute('aria-expanded', String(expand));
+    panel.hidden = !expand;
+    btn.textContent = expand ? 'Hide shipping details' : 'Show full shipping details';
+
+    status.textContent = expand
+      ? 'Shipping details expanded.'
+      : 'Shipping details collapsed.';
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Accordion toggles already communicate state via aria-expanded. A supplementary live status region confirms the action in plain language ("expanded" / "collapsed"), which helps users who may not immediately understand the aria-expanded state change from their AT.</p>
+</div>
+
+<div class="example">
+  <h3>46. Screen reader only live region styles</h3>
+  <pre>&lt;!-- The standard visually-hidden / sr-only class --&gt;
+&lt;style&gt;
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Do NOT use: display:none or visibility:hidden — these
+     remove the element from the accessibility tree entirely,
+     breaking live region announcements */
+&lt;/style&gt;
+
+&lt;!-- Invisible to sighted users but announced by screen readers --&gt;
+&lt;div role="status" class="sr-only" id="live-only"&gt;&lt;/div&gt;
+
+&lt;!-- Visible version with same functionality --&gt;
+&lt;div role="status" id="live-visible" style="color: green; font-weight: bold;"&gt;&lt;/div&gt;</pre>
+  <p class="label">Live regions must be in the accessibility tree to function. display:none and visibility:hidden remove elements from the accessibility tree, silencing them. The sr-only clip pattern keeps elements in the tree while making them visually invisible.</p>
+</div>
+
+<div class="example">
+  <h3>47. Network status live region</h3>
+  <pre>&lt;div role="alert" id="network-alert" aria-atomic="true"&gt;&lt;/div&gt;
+&lt;div role="status" id="network-status" aria-atomic="true"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  window.addEventListener('offline', () =&gt; {
+    document.getElementById('network-alert').textContent =
+      'You are offline. Some features may not be available.';
+    document.getElementById('network-status').textContent = '';
+  });
+
+  window.addEventListener('online', () =&gt; {
+    document.getElementById('network-alert').textContent = '';
+    document.getElementById('network-status').textContent =
+      'Back online. Your connection has been restored.';
+  });
+
+  // Also reflect in visible UI
+  function updateNetworkBanner(online) {
+    const banner = document.getElementById('network-banner');
+    banner.textContent = online ? '' : 'No internet connection';
+    banner.hidden = online;
+  }
+
+  window.addEventListener('offline', () =&gt; updateNetworkBanner(false));
+  window.addEventListener('online',  () =&gt; updateNetworkBanner(true));
+&lt;/script&gt;</pre>
+  <p class="label">Network status uses role="alert" (assertive) for going offline — a critical disruption — and role="status" (polite) for coming back online, which is good news that doesn't need to interrupt. Clear the other region when transitioning state.</p>
+</div>
+
+<div class="example">
+  <h3>48. Accessible date range picker with live region</h3>
+  <pre>&lt;div class="date-range-picker"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Select stay dates&lt;/legend&gt;
+    &lt;div&gt;
+      &lt;label for="check-in"&gt;Check-in&lt;/label&gt;
+      &lt;input type="date" id="check-in" aria-describedby="date-range-summary"&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+      &lt;label for="check-out"&gt;Check-out&lt;/label&gt;
+      &lt;input type="date" id="check-out" aria-describedby="date-range-summary"&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+
+  &lt;!-- Live region reflects computed range --&gt;
+  &lt;div
+    id="date-range-summary"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  &gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function updateDateSummary() {
+    const inDate  = new Date(document.getElementById('check-in').value);
+    const outDate = new Date(document.getElementById('check-out').value);
+
+    if (isNaN(inDate) || isNaN(outDate)) return;
+
+    const nights = Math.round((outDate - inDate) / 86400000);
+    const status = document.getElementById('date-range-summary');
+
+    if (nights &lt;= 0) {
+      status.textContent = 'Check-out must be after check-in.';
+    } else {
+      status.textContent = `${nights} night${nights === 1 ? '' : 's'} selected.`;
+    }
+  }
+
+  document.getElementById('check-in').addEventListener('change', updateDateSummary);
+  document.getElementById('check-out').addEventListener('change', updateDateSummary);
+&lt;/script&gt;</pre>
+  <p class="label">A date range picker announces the computed night count in a live region after each date selection. The region is also referenced via aria-describedby so AT reads the current range when the user focuses either input. Error states are announced politely.</p>
+</div>
+
+<div class="example">
+  <h3>49. Accessible inline confirmation pattern</h3>
+  <pre>&lt;div class="action-row"&gt;
+  &lt;span&gt;item-report-2024.csv&lt;/span&gt;
+  &lt;button id="delete-trigger"&gt;Delete&lt;/button&gt;
+
+  &lt;div id="confirm-row" hidden role="group" aria-label="Confirm deletion"&gt;
+    &lt;span&gt;Delete this file?&lt;/span&gt;
+    &lt;button id="confirm-yes"&gt;Yes, delete&lt;/button&gt;
+    &lt;button id="confirm-no"&gt;Cancel&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div role="status" id="delete-status"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  document.getElementById('delete-trigger').addEventListener('click', () =&gt; {
+    document.getElementById('confirm-row').hidden = false;
+    document.getElementById('confirm-yes').focus();
+  });
+
+  document.getElementById('confirm-no').addEventListener('click', () =&gt; {
+    document.getElementById('confirm-row').hidden = true;
+    document.getElementById('delete-trigger').focus();
+  });
+
+  document.getElementById('confirm-yes').addEventListener('click', async () =&gt; {
+    await deleteFile();
+    document.getElementById('delete-status').textContent =
+      'File deleted successfully.';
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Inline confirmation patterns expose a confirmation row on delete click, move focus to the "Yes" button, and return focus to the trigger on cancel. role="group" with aria-label contextualizes the confirmation buttons. Outcome is announced via role="status".</p>
+</div>
+
+<div class="example">
+  <h3>50. Comprehensive live region reference summary</h3>
+  <pre>&lt;!-- ROLE REFERENCE --&gt;
+&lt;!--
+  role="alert"    → assertive + atomic="true"   | Errors, urgent info
+  role="status"   → polite   + atomic="true"   | Confirmations, status
+  role="log"      → polite   + relevant="additions" | Logs, chat
+  role="marquee"  → off                         | Promotional tickers
+  role="timer"    → off                         | Countdowns
+
+  ATTRIBUTES:
+  aria-live       = "off" | "polite" | "assertive"
+  aria-atomic     = "true" | "false"  (default: false)
+  aria-relevant   = "additions" | "removals" | "text" | "all"
+                    (default: "additions text")
+  aria-busy       = "true" | "false"  (suppress while loading)
+
+  GOLDEN RULES:
+  1. Live regions must be in DOM on page load (never inject dynamically)
+  2. Only one assertive region per page
+  3. Use polite by default; assertive only for genuine emergencies
+  4. Clear before set to re-announce identical text
+  5. Never use display:none or visibility:hidden on a live region
+  6. Debounce high-frequency updates
+  7. Announce completion, not just start
+  8. Test with NVDA, JAWS, VoiceOver, and Narrator
+--&gt;</pre>
+  <p class="label">Quick-reference summary of all live region roles, attributes, and golden rules. Print or bookmark this for accessibility reviews. The eight golden rules cover the most common implementation mistakes found in production applications.</p>
+</div>
+
+</body>
+</html>

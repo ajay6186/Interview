@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 4.4 — Canvas
+  ============================================================================
+  Use the <canvas> element and its 2D rendering context to draw shapes,
+  arcs, and text programmatically with JavaScript.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 4.4 — Canvas</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    canvas { display: block; margin: 8px 0; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+
+<h1>Canvas Exercise</h1>
+
+<!-- =========================================================
+     Section 1: Main canvas element
+     ========================================================= -->
+
+<!-- TODO: Add a <canvas> element with:
+     - id="main-canvas"
+     - width="400"
+     - height="300"
+     - Fallback text inside: "Your browser does not support canvas."
+-->
+
+
+<!-- =========================================================
+     Section 2: Drawing script
+     ========================================================= -->
+
+<!-- TODO: Add a <script> that:
+     1. Gets the canvas: const canvas = document.getElementById('main-canvas');
+     2. Gets the 2D context: const ctx = canvas.getContext('2d');
+     3. Draws a filled blue rectangle:
+        ctx.fillStyle = 'steelblue';
+        ctx.fillRect(20, 20, 150, 80);
+     4. Draws a circle:
+        ctx.beginPath();
+        ctx.arc(300, 80, 40, 0, Math.PI * 2);
+        ctx.fillStyle = 'coral';
+        ctx.fill();
+     5. Draws text:
+        ctx.fillStyle = 'navy';
+        ctx.font = '20px sans-serif';
+        ctx.fillText('Canvas!', 20, 200);
+     6. Marks it done: canvas.dataset.drawn = 'true';
+-->
+
+
+<!-- =========================================================
+     Section 3: Small secondary canvas
+     ========================================================= -->
+
+<!-- TODO: Add a second <canvas> element with:
+     - id="small-canvas"
+     - width="100"
+     - height="100"
+-->
+
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 4.4 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // Section 1: canvas element
+  const mainCanvas = document.getElementById("main-canvas");
+  assert(mainCanvas !== null, '#main-canvas exists');
+  assert(mainCanvas && mainCanvas.tagName.toLowerCase() === "canvas", '#main-canvas is a <canvas> element');
+  assert(mainCanvas && mainCanvas.getAttribute("width") === "400", '#main-canvas has width="400"');
+  assert(mainCanvas && mainCanvas.getAttribute("height") === "300", '#main-canvas has height="300"');
+  assert(mainCanvas && mainCanvas.textContent.trim() !== "", '#main-canvas has fallback text content');
+
+  // Section 2: drawing
+  assert(mainCanvas && typeof mainCanvas.getContext === "function", '#main-canvas supports getContext');
+  assert(mainCanvas && mainCanvas.getContext("2d") !== null, 'getContext("2d") returns a 2D context');
+  assert(mainCanvas && mainCanvas.dataset.drawn === "true", 'canvas.dataset.drawn === "true" (drawing script ran)');
+
+  // Section 3: small canvas
+  const smallCanvas = document.getElementById("small-canvas");
+  assert(smallCanvas !== null, '#small-canvas exists');
+  assert(smallCanvas && smallCanvas.getAttribute("width") === "100", '#small-canvas has width="100"');
+  assert(smallCanvas && smallCanvas.getAttribute("height") === "100", '#small-canvas has height="100"');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 4.4 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

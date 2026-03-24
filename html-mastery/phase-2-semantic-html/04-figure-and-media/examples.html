@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 2.4 — Figure & Media  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 2.4 — Figure &amp; Media</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; margin-top: 6px; }
+    .output { background: #fafafa; border: 1px solid #eee; padding: 8px; border-radius: 3px; margin-top: 6px; font-size: 13px; }
+    pre { background: #f5f5f5; padding: 8px; border-radius: 3px; overflow-x: auto; font-size: 12px; margin: 4px 0; }
+    figure { margin: 8px 0; display: inline-block; }
+    figcaption { font-size: 12px; color: #666; margin-top: 4px; }
+  </style>
+</head>
+<body>
+<h1>Examples 2.4 — Figure &amp; Media</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. figure with figcaption</h3>
+  <div class="output">
+    <figure>
+      <img src="https://via.placeholder.com/250x150" alt="Bar chart showing Q1 data" width="250" height="150">
+      <figcaption>Figure 1: Q1 revenue by region (in millions USD).</figcaption>
+    </figure>
+  </div>
+  <p class="label">&lt;figure&gt; wraps self-contained content with an optional &lt;figcaption&gt;. The caption supplements (not duplicates) the alt text.</p>
+</div>
+
+<div class="example">
+  <h3>2. video with controls</h3>
+  <pre>&lt;video controls width="640" height="360"&gt;
+  &lt;source src="intro.mp4" type="video/mp4"&gt;
+  &lt;source src="intro.webm" type="video/webm"&gt;
+  &lt;p&gt;Your browser does not support video. &lt;a href="intro.mp4"&gt;Download it&lt;/a&gt;.&lt;/p&gt;
+&lt;/video&gt;</pre>
+  <p class="label">Multiple &lt;source&gt; elements provide format fallbacks. The paragraph is shown when video is not supported at all.</p>
+</div>
+
+<div class="example">
+  <h3>3. video with poster</h3>
+  <pre>&lt;video controls poster="thumbnail.jpg" width="640" height="360"&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</pre>
+  <p class="label">poster shows an image before the user plays the video. Use a relevant, enticing frame from the video.</p>
+</div>
+
+<div class="example">
+  <h3>4. audio with controls</h3>
+  <pre>&lt;audio controls&gt;
+  &lt;source src="podcast.mp3" type="audio/mpeg"&gt;
+  &lt;source src="podcast.ogg" type="audio/ogg"&gt;
+  &lt;p&gt;Your browser does not support audio.&lt;/p&gt;
+&lt;/audio&gt;</pre>
+  <p class="label">Always provide controls for audio. Never use autoplay without muted — it's disruptive and fails WCAG 1.4.2.</p>
+</div>
+
+<div class="example">
+  <h3>5. figcaption placement (below or above)</h3>
+  <pre>&lt;!-- Caption below (most common) --&gt;
+&lt;figure&gt;
+  &lt;img src="chart.png" alt="Sales chart"&gt;
+  &lt;figcaption&gt;Figure 1: Annual sales data.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;!-- Caption above --&gt;
+&lt;figure&gt;
+  &lt;figcaption&gt;Table 1: Employee data.&lt;/figcaption&gt;
+  &lt;table&gt;...&lt;/table&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">&lt;figcaption&gt; can be first or last child of &lt;figure&gt;. Below is conventional for images; above is common for tables.</p>
+</div>
+
+<div class="example">
+  <h3>6. figure for a quote (non-image)</h3>
+  <div class="output">
+    <figure>
+      <blockquote>
+        <p>"The Web is designed to work for all people, whatever their hardware, software, language, or ability."</p>
+      </blockquote>
+      <figcaption>— <cite>Tim Berners-Lee, W3C</cite></figcaption>
+    </figure>
+  </div>
+  <p class="label">&lt;figure&gt; is not just for images — use it for blockquotes, code listings, diagrams, or any self-contained content with a caption.</p>
+</div>
+
+<div class="example">
+  <h3>7. video with autoplay muted loop (background video)</h3>
+  <pre>&lt;video autoplay muted loop playsinline
+       aria-hidden="true"
+       width="1200" height="675"&gt;
+  &lt;source src="background.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</pre>
+  <p class="label">Background videos must be muted (browser requirement for autoplay), have aria-hidden="true" (decorative), and use playsinline for iOS.</p>
+</div>
+
+<div class="example">
+  <h3>8. video track for captions</h3>
+  <pre>&lt;video controls width="640" height="360"&gt;
+  &lt;source src="lecture.mp4" type="video/mp4"&gt;
+  &lt;track kind="captions" src="captions-en.vtt" srclang="en" label="English" default&gt;
+  &lt;track kind="captions" src="captions-fr.vtt" srclang="fr" label="Français"&gt;
+  &lt;track kind="descriptions" src="descriptions.vtt" srclang="en" label="Audio descriptions"&gt;
+&lt;/video&gt;</pre>
+  <p class="label">&lt;track&gt; provides captions/subtitles/descriptions. kind values: subtitles, captions, descriptions, chapters, metadata. Required for WCAG 1.2.2.</p>
+</div>
+
+<div class="example">
+  <h3>9. figure for a code listing</h3>
+  <div class="output">
+    <figure>
+      <pre><code>const double = x =&gt; x * 2;
+[1, 2, 3].map(double); // [2, 4, 6]</code></pre>
+      <figcaption>Listing 3: Arrow function with Array.map()</figcaption>
+    </figure>
+  </div>
+  <p class="label">Code listings inside &lt;figure&gt; get a &lt;figcaption&gt; for reference (e.g., "Listing 3") that can be cross-referenced in prose.</p>
+</div>
+
+<div class="example">
+  <h3>10. audio with loop and preload</h3>
+  <pre>&lt;audio controls loop preload="metadata"&gt;
+  &lt;source src="background-music.mp3" type="audio/mpeg"&gt;
+&lt;/audio&gt;</pre>
+  <p class="label">preload="metadata" loads only duration/dimensions without full download. preload="none" defers until user interaction.</p>
+</div>
+
+<div class="example">
+  <h3>11. figure without figcaption (self-contained image)</h3>
+  <pre>&lt;figure&gt;
+  &lt;img src="logo.svg" alt="Acme Co logo"&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">&lt;figcaption&gt; is optional. Use &lt;figure&gt; without it when the content is self-contained but the caption would be redundant with the alt text.</p>
+</div>
+
+<div class="example">
+  <h3>12. video without controls (controlled by JS)</h3>
+  <pre>&lt;video id="hero-video" muted playsinline aria-hidden="true"&gt;
+  &lt;source src="hero.mp4" type="video/mp4"&gt;
+&lt;/video&gt;
+&lt;button onclick="document.getElementById('hero-video').play()"&gt;Play&lt;/button&gt;
+&lt;button onclick="document.getElementById('hero-video').pause()"&gt;Pause&lt;/button&gt;</pre>
+  <p class="label">Custom video controls via JavaScript. Must provide accessible buttons — never remove native controls without replacing them.</p>
+</div>
+
+<div class="example">
+  <h3>13. figure with multiple images (gallery)</h3>
+  <div class="output">
+    <figure>
+      <img src="https://via.placeholder.com/100x75?text=1" alt="Product front view" width="100" height="75">
+      <img src="https://via.placeholder.com/100x75?text=2" alt="Product side view" width="100" height="75">
+      <img src="https://via.placeholder.com/100x75?text=3" alt="Product back view" width="100" height="75">
+      <figcaption>Widget Pro — multiple angles.</figcaption>
+    </figure>
+  </div>
+  <p class="label">A &lt;figure&gt; can contain multiple images sharing a single caption. The caption covers the group as a whole.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Responsive video with aspect-ratio</h3>
+  <pre>&lt;figure style="max-width: 800px;"&gt;
+  &lt;video controls style="width: 100%; aspect-ratio: 16/9;"&gt;
+    &lt;source src="video.mp4" type="video/mp4"&gt;
+  &lt;/video&gt;
+  &lt;figcaption&gt;Demo: Building a responsive layout in 10 minutes.&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">aspect-ratio: 16/9 on video ensures correct proportions at any width. Combine with width: 100% for responsive behaviour.</p>
+</div>
+
+<div class="example">
+  <h3>15. Picture element with multiple sources</h3>
+  <div class="output">
+    <figure>
+      <picture>
+        <source media="(min-width: 800px)" srcset="https://via.placeholder.com/800x400?text=Wide" type="image/jpeg">
+        <img src="https://via.placeholder.com/400x250?text=Narrow" alt="Responsive hero image" width="400" height="250" style="max-width:100%">
+      </picture>
+      <figcaption>Hero image — different sizes for different viewports.</figcaption>
+    </figure>
+  </div>
+  <p class="label">&lt;picture&gt; inside &lt;figure&gt; for art direction. The &lt;img&gt; is the fallback and carries the alt text.</p>
+</div>
+
+<div class="example">
+  <h3>16. Video with chapter tracks</h3>
+  <pre>&lt;video controls width="640" height="360"&gt;
+  &lt;source src="tutorial.mp4" type="video/mp4"&gt;
+  &lt;track kind="chapters" src="chapters.vtt" srclang="en" label="Chapters" default&gt;
+  &lt;track kind="captions" src="captions.vtt" srclang="en" label="English CC" default&gt;
+&lt;/video&gt;
+
+&lt;!-- chapters.vtt:
+WEBVTT
+
+00:00:00.000 --> 00:05:30.000
+Introduction
+
+00:05:30.000 --> 00:15:00.000
+Setting Up
+--&gt;</pre>
+  <p class="label">kind="chapters" adds chapter markers to the video timeline for navigation. Requires a WebVTT file.</p>
+</div>
+
+<div class="example">
+  <h3>17. Video with crossorigin for CORS</h3>
+  <pre>&lt;video controls crossorigin="anonymous" width="640" height="360"&gt;
+  &lt;source src="https://cdn.example.com/video.mp4" type="video/mp4"&gt;
+  &lt;track kind="captions" src="https://cdn.example.com/captions.vtt"
+         srclang="en" label="English" default&gt;
+&lt;/video&gt;</pre>
+  <p class="label">crossorigin="anonymous" enables loading VTT files from a different origin. Required when captions are on a CDN with CORS headers.</p>
+</div>
+
+<div class="example">
+  <h3>18. Figure with data chart (SVG inline)</h3>
+  <div class="output">
+    <figure aria-label="Bar chart" role="img">
+      <svg viewBox="0 0 200 100" width="200" height="100" aria-hidden="true">
+        <title>Bar chart</title>
+        <rect x="10" y="60" width="30" height="40" fill="#0066cc"></rect>
+        <rect x="50" y="40" width="30" height="60" fill="#0066cc"></rect>
+        <rect x="90" y="20" width="30" height="80" fill="#0066cc"></rect>
+        <rect x="130" y="50" width="30" height="50" fill="#0066cc"></rect>
+      </svg>
+      <figcaption>Figure 2: Quarterly growth (Q1–Q4). Data table follows below.</figcaption>
+    </figure>
+  </div>
+  <p class="label">SVG charts inside figure: the figure gets role="img" + aria-label for overall description, and figcaption mentions the data table.</p>
+</div>
+
+<div class="example">
+  <h3>19. Audio in an article (podcast episode)</h3>
+  <pre>&lt;article&gt;
+  &lt;header&gt;
+    &lt;h2&gt;Episode 42: HTML Semantics Deep Dive&lt;/h2&gt;
+    &lt;time datetime="PT45M"&gt;45 minutes&lt;/time&gt;
+  &lt;/header&gt;
+  &lt;p&gt;In this episode, we explore the full power of HTML semantics.&lt;/p&gt;
+  &lt;figure&gt;
+    &lt;audio controls preload="none"&gt;
+      &lt;source src="ep42.mp3" type="audio/mpeg"&gt;
+    &lt;/audio&gt;
+    &lt;figcaption&gt;Episode 42 audio player. &lt;a href="ep42.mp3"&gt;Download MP3&lt;/a&gt;.&lt;/figcaption&gt;
+  &lt;/figure&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Wrapping audio in figure allows a figcaption with a download link as fallback context.</p>
+</div>
+
+<div class="example">
+  <h3>20. figure with table (data figure)</h3>
+  <pre>&lt;figure&gt;
+  &lt;figcaption&gt;Table 2: Browser market share, Q1 2026.&lt;/figcaption&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;&lt;th scope="col"&gt;Browser&lt;/th&gt;&lt;th scope="col"&gt;Share&lt;/th&gt;&lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;&lt;td&gt;Chrome&lt;/td&gt;&lt;td&gt;65%&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;Safari&lt;/td&gt;&lt;td&gt;19%&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Tables inside figure get a figcaption for cross-reference. Caption appears above the table by convention.</p>
+</div>
+
+<div class="example">
+  <h3>21. Video poster from a frame</h3>
+  <pre>&lt;!-- Generate a poster from a video frame: --&gt;
+&lt;!-- ffmpeg -i video.mp4 -ss 00:00:05 -frames:v 1 poster.jpg --&gt;
+&lt;video controls
+       poster="poster.jpg"
+       preload="none"
+       width="640" height="360"&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</pre>
+  <p class="label">preload="none" + poster avoids downloading the video until the user explicitly clicks play. Great for performance.</p>
+</div>
+
+<div class="example">
+  <h3>22. Accessible video transcript</h3>
+  <pre>&lt;figure&gt;
+  &lt;video controls width="640" height="360"&gt;
+    &lt;source src="talk.mp4" type="video/mp4"&gt;
+    &lt;track kind="captions" src="captions.vtt" srclang="en" label="English CC" default&gt;
+  &lt;/video&gt;
+  &lt;figcaption&gt;
+    Conference talk: "The Future of HTML".
+    &lt;a href="#transcript"&gt;Read full transcript&lt;/a&gt;.
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;section id="transcript" aria-labelledby="transcript-h"&gt;
+  &lt;h2 id="transcript-h"&gt;Video Transcript&lt;/h2&gt;
+  &lt;p&gt;[Speaker]: Welcome everyone...&lt;/p&gt;
+&lt;/section&gt;</pre>
+  <p class="label">A full text transcript (in addition to captions) provides access for deaf/hard-of-hearing users and search engines.</p>
+</div>
+
+<div class="example">
+  <h3>23. figure with diagram and long description</h3>
+  <pre>&lt;figure&gt;
+  &lt;img src="architecture-diagram.png"
+       alt="Microservices architecture diagram"
+       aria-describedby="arch-desc"
+       width="800" height="600"&gt;
+  &lt;figcaption id="arch-desc"&gt;
+    The system consists of four services: Auth Service (handles login),
+    API Gateway (routes requests), Product Service, and Order Service.
+    All services communicate via an internal message queue.
+  &lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">For complex diagrams, use aria-describedby to link the image to a detailed description in the figcaption.</p>
+</div>
+
+<div class="example">
+  <h3>24. Lazy-loaded figure images</h3>
+  <pre>&lt;figure&gt;
+  &lt;img src="large-photo.jpg"
+       alt="Aerial view of the city at night"
+       loading="lazy"
+       width="1200" height="800"&gt;
+  &lt;figcaption&gt;Photo: City skyline, taken from 500m altitude.&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">loading="lazy" on figure images defers loading until near the viewport. Never use on above-the-fold hero images.</p>
+</div>
+
+<div class="example">
+  <h3>25. Video with MediaSource API placeholder</h3>
+  <pre>&lt;video id="adaptive-video" controls width="640" height="360"&gt;
+  &lt;!-- Src set dynamically via MediaSource Extensions (MSE) --&gt;
+  &lt;p&gt;Your browser doesn't support adaptive streaming.&lt;/p&gt;
+&lt;/video&gt;
+&lt;script&gt;
+  // HLS/DASH players (hls.js, dash.js) use MSE to set src dynamically
+  if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource("stream.m3u8");
+    hls.attachMedia(document.getElementById("adaptive-video"));
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Adaptive bitrate streaming (HLS/DASH) requires JavaScript libraries. The HTML video element is still the host element.</p>
+</div>
+
+<div class="example">
+  <h3>26. Audio visualizer canvas + figure</h3>
+  <pre>&lt;figure&gt;
+  &lt;audio id="audio-player" controls src="track.mp3"&gt;&lt;/audio&gt;
+  &lt;canvas id="visualizer" width="300" height="60" aria-hidden="true"&gt;&lt;/canvas&gt;
+  &lt;figcaption&gt;Track: "Morning Ambient" by Artist Name.&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Combining audio and a canvas visualizer inside figure. The canvas is aria-hidden (decorative animation).</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Complex figure with multiple media types</h3>
+  <pre>&lt;figure&gt;
+  &lt;video controls width="640" height="360" poster="thumb.jpg"&gt;
+    &lt;source src="demo.mp4" type="video/mp4"&gt;
+    &lt;track kind="captions" src="captions.vtt" srclang="en" label="CC" default&gt;
+  &lt;/video&gt;
+  &lt;figcaption&gt;
+    &lt;strong&gt;Demo: CSS Grid layout in 5 minutes.&lt;/strong&gt;
+    Chapters:
+    &lt;a href="#setup"&gt;Setup (0:00)&lt;/a&gt;,
+    &lt;a href="#layout"&gt;Grid Layout (1:30)&lt;/a&gt;.
+    &lt;br&gt;
+    &lt;a href="demo-transcript.html"&gt;Read transcript&lt;/a&gt;
+  &lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Rich figcaption with chapter links, transcript link. Captions track for accessibility compliance.</p>
+</div>
+
+<div class="example">
+  <h3>28. Side-by-side figures</h3>
+  <div class="output">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <figure>
+        <img src="https://via.placeholder.com/150x100?text=Before" alt="Before: cluttered layout" width="150" height="100">
+        <figcaption style="text-align:center">Before</figcaption>
+      </figure>
+      <figure>
+        <img src="https://via.placeholder.com/150x100?text=After" alt="After: clean layout with whitespace" width="150" height="100">
+        <figcaption style="text-align:center">After</figcaption>
+      </figure>
+    </div>
+  </div>
+  <p class="label">Side-by-side before/after figures for design comparisons. Each image has distinct alt text describing the difference.</p>
+</div>
+
+<div class="example">
+  <h3>29. Article with figure and related video</h3>
+  <pre>&lt;article&gt;
+  &lt;h2&gt;How to Use CSS Grid&lt;/h2&gt;
+
+  &lt;figure&gt;
+    &lt;img src="grid-diagram.png" alt="CSS Grid template areas diagram showing header, nav, main, sidebar, footer" width="600" height="300"&gt;
+    &lt;figcaption&gt;Figure 1: CSS Grid template area layout.&lt;/figcaption&gt;
+  &lt;/figure&gt;
+
+  &lt;p&gt;CSS Grid makes complex layouts simple...&lt;/p&gt;
+
+  &lt;figure&gt;
+    &lt;video controls width="600" height="338" poster="grid-thumb.jpg"&gt;
+      &lt;source src="css-grid-tutorial.mp4" type="video/mp4"&gt;
+      &lt;track kind="captions" src="captions.vtt" srclang="en" label="CC" default&gt;
+    &lt;/video&gt;
+    &lt;figcaption&gt;Figure 2: Live coding demo — building the grid layout.&lt;/figcaption&gt;
+  &lt;/figure&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Article with two figures: a diagram and a video tutorial. Both referenced as Figure 1 and Figure 2 in the prose.</p>
+</div>
+
+<div class="example">
+  <h3>30. Figure gallery with masonry-style layout</h3>
+  <pre>&lt;section aria-labelledby="gallery-h"&gt;
+  &lt;h2 id="gallery-h"&gt;Photo Gallery&lt;/h2&gt;
+  &lt;div style="columns: 3; gap: 8px;"&gt;
+    &lt;figure style="break-inside: avoid; margin: 0 0 8px;"&gt;
+      &lt;img src="photo1.jpg" alt="Mountain at sunset" loading="lazy"&gt;
+      &lt;figcaption&gt;Mount Rainier, WA&lt;/figcaption&gt;
+    &lt;/figure&gt;
+    &lt;figure style="break-inside: avoid; margin: 0 0 8px;"&gt;
+      &lt;img src="photo2.jpg" alt="Ocean waves at dawn" loading="lazy"&gt;
+      &lt;figcaption&gt;Pacific Ocean, CA&lt;/figcaption&gt;
+    &lt;/figure&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre>
+  <p class="label">CSS columns masonry layout with figures. break-inside: avoid keeps each figure on one column.</p>
+</div>
+
+<div class="example">
+  <h3>31. Video in a modal dialog</h3>
+  <pre>&lt;button type="button" onclick="document.getElementById('video-modal').showModal()"&gt;
+  Watch Demo
+&lt;/button&gt;
+
+&lt;dialog id="video-modal"&gt;
+  &lt;button type="button" onclick="
+    const v = this.nextElementSibling.querySelector('video');
+    v.pause(); v.currentTime = 0;
+    this.closest('dialog').close();
+  "&gt;✕ Close&lt;/button&gt;
+  &lt;figure&gt;
+    &lt;video controls width="640" height="360" poster="demo-thumb.jpg"&gt;
+      &lt;source src="demo.mp4" type="video/mp4"&gt;
+    &lt;/video&gt;
+    &lt;figcaption&gt;Product demo — 3 minutes&lt;/figcaption&gt;
+  &lt;/figure&gt;
+&lt;/dialog&gt;</pre>
+  <p class="label">Video in dialog: close button pauses video and resets playhead before closing. &lt;dialog&gt; provides native focus trap.</p>
+</div>
+
+<div class="example">
+  <h3>32. figure as a map embed</h3>
+  <pre>&lt;figure&gt;
+  &lt;iframe
+    src="https://www.openstreetmap.org/export/embed.html?bbox=..."
+    title="Map showing Acme Co office location"
+    width="600" height="400"
+    loading="lazy"
+    style="border: 0;"&gt;
+  &lt;/iframe&gt;
+  &lt;figcaption&gt;
+    Acme Co Headquarters, 123 Main Street, Springfield.
+    &lt;a href="https://maps.google.com/..." target="_blank" rel="noopener"&gt;
+      Get directions ↗
+    &lt;/a&gt;
+  &lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Map iframes inside figure: iframe has a descriptive title, figcaption provides the address and a directions link.</p>
+</div>
+
+<div class="example">
+  <h3>33. figure with SVG diagram and fallback</h3>
+  <pre>&lt;figure&gt;
+  &lt;!-- Inline SVG for best accessibility --&gt;
+  &lt;svg viewBox="0 0 400 200" width="400" height="200" role="img"
+       aria-labelledby="flow-title flow-desc"&gt;
+    &lt;title id="flow-title"&gt;Data flow diagram&lt;/title&gt;
+    &lt;desc id="flow-desc"&gt;
+      Data flows from Input through Processing to Output.
+    &lt;/desc&gt;
+    &lt;rect x="10" y="80" width="80" height="40" fill="#e8f4fd" stroke="#0066cc" rx="4"&gt;&lt;/rect&gt;
+    &lt;text x="50" y="105" text-anchor="middle" font-size="12"&gt;Input&lt;/text&gt;
+    &lt;line x1="90" y1="100" x2="160" y2="100" stroke="#0066cc" marker-end="url(#arrow)"&gt;&lt;/line&gt;
+    &lt;rect x="160" y="80" width="80" height="40" fill="#e8f4fd" stroke="#0066cc" rx="4"&gt;&lt;/rect&gt;
+    &lt;text x="200" y="105" text-anchor="middle" font-size="12"&gt;Process&lt;/text&gt;
+    &lt;line x1="240" y1="100" x2="310" y2="100" stroke="#0066cc" marker-end="url(#arrow)"&gt;&lt;/line&gt;
+    &lt;rect x="310" y="80" width="80" height="40" fill="#e8f4fd" stroke="#0066cc" rx="4"&gt;&lt;/rect&gt;
+    &lt;text x="350" y="105" text-anchor="middle" font-size="12"&gt;Output&lt;/text&gt;
+  &lt;/svg&gt;
+  &lt;figcaption&gt;Figure 3: Simplified data flow architecture.&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Inline SVG diagram in figure: role="img" + aria-labelledby referencing both title and desc for complete AT description.</p>
+</div>
+
+<div class="example">
+  <h3>34. Responsive video embed wrapper</h3>
+  <pre>&lt;figure&gt;
+  &lt;div style="position: relative; padding-bottom: 56.25%; /* 16:9 */ height: 0;"&gt;
+    &lt;iframe src="https://www.youtube.com/embed/VIDEO_ID"
+            title="Getting Started with HTML5 — YouTube video"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+            allowfullscreen&gt;
+    &lt;/iframe&gt;
+  &lt;/div&gt;
+  &lt;figcaption&gt;Video: Getting Started with HTML5 (YouTube)&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">The padding-bottom: 56.25% trick creates a 16:9 aspect ratio container for iframe embeds. The aspect-ratio CSS property is a modern alternative.</p>
+</div>
+
+<div class="example">
+  <h3>35. figure for a printed page</h3>
+  <pre>&lt;figure&gt;
+  &lt;img src="chart.png" alt="Line chart: revenue grew from $2M in Q1 to $4.5M in Q4"&gt;
+  &lt;figcaption&gt;Figure 5: Annual revenue growth. Source: Acme Co Financial Report 2026.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;style&gt;
+  @media print {
+    figure { page-break-inside: avoid; }
+    figcaption { font-size: 10pt; font-style: italic; }
+  }
+&lt;/style&gt;</pre>
+  <p class="label">Print styles for figures: page-break-inside: avoid keeps figure and caption together, italic caption at smaller size.</p>
+</div>
+
+<div class="example">
+  <h3>36. Audio with waveform visualization</h3>
+  <pre>&lt;figure&gt;
+  &lt;canvas id="waveform" width="600" height="80" aria-hidden="true"&gt;&lt;/canvas&gt;
+  &lt;audio id="audio-wave" controls preload="metadata" src="track.mp3"&gt;&lt;/audio&gt;
+  &lt;figcaption&gt;
+    "Morning Ambient" by Artist Name — 3:42
+    &lt;a href="track.mp3"&gt;Download MP3&lt;/a&gt;
+  &lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Waveform canvas above audio player. Canvas is aria-hidden (purely decorative visualization). Audio element provides the accessible control.</p>
+</div>
+
+<div class="example">
+  <h3>37. figure inside a table cell</h3>
+  <pre>&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th scope="col"&gt;Product&lt;/th&gt;&lt;th scope="col"&gt;Preview&lt;/th&gt;&lt;th scope="col"&gt;Price&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Widget Pro&lt;/td&gt;
+      &lt;td&gt;
+        &lt;figure style="margin:0"&gt;
+          &lt;img src="widget-thumb.jpg" alt="Widget Pro thumbnail" width="80" height="60"&gt;
+        &lt;/figure&gt;
+      &lt;/td&gt;
+      &lt;td&gt;$49.99&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+  <p class="label">&lt;figure&gt; inside table cells: margin:0 removes default figure margins. No figcaption needed if the table column header serves as context.</p>
+</div>
+
+<div class="example">
+  <h3>38. Interactive figure with details/summary</h3>
+  <div class="output">
+    <figure>
+      <img src="https://via.placeholder.com/300x200" alt="Complex system architecture diagram" width="300" height="200">
+      <details style="margin-top:4px">
+        <summary style="font-size:13px;cursor:pointer">Figure 4: System Architecture — click to expand description</summary>
+        <p style="font-size:12px;margin:4px 0">The diagram shows three main components: the frontend application (React), the backend API (Node.js), and the database layer (PostgreSQL). They communicate over HTTPS.</p>
+      </details>
+    </figure>
+  </div>
+  <p class="label">Using details/summary as a collapsible long description for complex figures. No JavaScript needed for expand/collapse.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. MediaSession API for audio</h3>
+  <pre>&lt;audio id="media-audio" controls src="podcast.mp3"&gt;&lt;/audio&gt;
+&lt;script&gt;
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: 'Episode 42: HTML Semantics',
+      artist: 'Web Dev Podcast',
+      album: 'Season 3',
+      artwork: [{ src: 'cover.jpg', sizes: '512x512', type: 'image/jpeg' }]
+    });
+    navigator.mediaSession.setActionHandler('play', () =&gt; document.getElementById('media-audio').play());
+    navigator.mediaSession.setActionHandler('pause', () =&gt; document.getElementById('media-audio').pause());
+  }
+&lt;/script&gt;</pre>
+  <p class="label">MediaSession API sets metadata for OS-level media controls (lock screen, notifications). Works with both audio and video elements.</p>
+</div>
+
+<div class="example">
+  <h3>40. Video Picture-in-Picture API</h3>
+  <pre>&lt;video id="pip-video" controls src="lecture.mp4" width="640" height="360"&gt;&lt;/video&gt;
+&lt;button id="pip-btn"&gt;Picture-in-Picture&lt;/button&gt;
+
+&lt;script&gt;
+  const video = document.getElementById("pip-video");
+  document.getElementById("pip-btn").addEventListener("click", async () =&gt; {
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else if (document.pictureInPictureEnabled) {
+      await video.requestPictureInPicture();
+    }
+  });
+  video.addEventListener("enterpictureinpicture", () =&gt; {
+    document.getElementById("pip-btn").textContent = "Exit Picture-in-Picture";
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Picture-in-Picture lets users watch video in a floating overlay while browsing other content. Fully accessible via the native window.</p>
+</div>
+
+<div class="example">
+  <h3>41. Video fullscreen API</h3>
+  <pre>&lt;figure&gt;
+  &lt;video id="fs-video" controls width="640" height="360"&gt;
+    &lt;source src="video.mp4" type="video/mp4"&gt;
+  &lt;/video&gt;
+  &lt;div&gt;
+    &lt;button onclick="document.getElementById('fs-video').requestFullscreen()"&gt;
+      Fullscreen
+    &lt;/button&gt;
+  &lt;/div&gt;
+  &lt;figcaption&gt;Conference talk: Web Standards 2026&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">requestFullscreen() on the video element. Also available on the figure element to include the caption in fullscreen.</p>
+</div>
+
+<div class="example">
+  <h3>42. Detecting media element errors</h3>
+  <pre>&lt;video controls id="err-video"&gt;
+  &lt;source src="missing.mp4" type="video/mp4"&gt;
+&lt;/video&gt;
+&lt;div id="video-error" hidden aria-live="polite"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  const video = document.getElementById("err-video");
+  video.addEventListener("error", () =&gt; {
+    const errorEl = document.getElementById("video-error");
+    errorEl.hidden = false;
+    errorEl.textContent = "Video failed to load. Please try again later.";
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Handle video load errors gracefully. An aria-live region announces the error to screen readers without requiring focus.</p>
+</div>
+
+<div class="example">
+  <h3>43. Custom audio player with ARIA</h3>
+  <pre>&lt;figure aria-label="Audio player"&gt;
+  &lt;audio id="custom-audio" preload="metadata" src="track.mp3"&gt;&lt;/audio&gt;
+  &lt;div role="group" aria-label="Audio controls"&gt;
+    &lt;button type="button" id="play-btn" aria-label="Play"&gt;▶&lt;/button&gt;
+    &lt;input type="range" id="progress" aria-label="Playback position"
+           min="0" value="0" step="1"&gt;
+    &lt;input type="range" id="volume" aria-label="Volume"
+           min="0" max="1" step="0.1" value="1"&gt;
+    &lt;output for="progress" id="time-display"&gt;0:00&lt;/output&gt;
+  &lt;/div&gt;
+  &lt;figcaption&gt;"Morning Ambient" — 3:42&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Custom accessible audio player: role="group" for the controls, aria-label on each control, output element for time display.</p>
+</div>
+
+<div class="example">
+  <h3>44. Intersection Observer for lazy video loading</h3>
+  <pre>&lt;video data-src="heavy-video.mp4" controls width="640" height="360" poster="poster.jpg"&gt;
+  &lt;source data-src="heavy-video.mp4" type="video/mp4"&gt;
+&lt;/video&gt;
+
+&lt;script&gt;
+  const observer = new IntersectionObserver((entries) =&gt; {
+    entries.forEach(entry =&gt; {
+      if (!entry.isIntersecting) return;
+      const video = entry.target;
+      video.querySelector("source").src = video.querySelector("source").dataset.src;
+      video.load();
+      observer.unobserve(video);
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll("video[data-src]").forEach(v =&gt; observer.observe(v));
+&lt;/script&gt;</pre>
+  <p class="label">Lazy-load video source via IntersectionObserver. Use data-src to defer setting the src until the element is near the viewport.</p>
+</div>
+
+<div class="example">
+  <h3>45. figure with accessible interactive diagram</h3>
+  <pre>&lt;figure&gt;
+  &lt;div id="interactive-diagram" role="application" aria-label="Interactive system diagram"
+       tabindex="0"&gt;
+    &lt;!-- SVG or canvas with keyboard-navigable elements --&gt;
+    &lt;svg&gt;
+      &lt;g role="button" tabindex="0" aria-label="Database node — click for details"
+         onclick="showDetails('db')" onkeydown="if(event.key==='Enter') showDetails('db')"&gt;
+        &lt;rect x="10" y="10" width="80" height="50" fill="#e8f4fd"&gt;&lt;/rect&gt;
+        &lt;text x="50" y="40" text-anchor="middle"&gt;Database&lt;/text&gt;
+      &lt;/g&gt;
+    &lt;/svg&gt;
+  &lt;/div&gt;
+  &lt;figcaption&gt;Figure 6: Interactive architecture diagram. Tab to navigate nodes.&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Interactive SVG diagrams: role="button" + tabindex + keyboard event handlers on each navigable node. role="application" on the container.</p>
+</div>
+
+<div class="example">
+  <h3>46. Video with automatic quality selection</h3>
+  <pre>&lt;video controls id="quality-video" width="640" height="360"&gt;
+  &lt;source src="video-1080p.mp4" type="video/mp4" media="(min-width: 1200px)"&gt;
+  &lt;source src="video-720p.mp4" type="video/mp4" media="(min-width: 768px)"&gt;
+  &lt;source src="video-480p.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</pre>
+  <p class="label">Multiple sources with media queries provide different quality levels based on viewport width. The browser picks the first matching source.</p>
+</div>
+
+<div class="example">
+  <h3>47. AudioWorklet for real-time processing</h3>
+  <pre>&lt;audio id="processed-audio" controls&gt;&lt;/audio&gt;
+&lt;button id="process-btn"&gt;Apply Effect&lt;/button&gt;
+&lt;script&gt;
+  document.getElementById("process-btn").addEventListener("click", async () =&gt; {
+    const ctx = new AudioContext();
+    await ctx.audioWorklet.addModule("processor.js");
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const source = ctx.createMediaStreamSource(stream);
+    const processor = new AudioWorkletNode(ctx, "my-processor");
+    source.connect(processor).connect(ctx.destination);
+  });
+&lt;/script&gt;</pre>
+  <p class="label">AudioWorklet processes audio on a dedicated thread. Much more powerful than ScriptProcessorNode (deprecated). Advanced API for audio effects.</p>
+</div>
+
+<div class="example">
+  <h3>48. Video analytics with events</h3>
+  <pre>&lt;video id="tracked-video" controls src="product-demo.mp4"&gt;&lt;/video&gt;
+&lt;script&gt;
+  const video = document.getElementById("tracked-video");
+  const events = ["play", "pause", "ended", "seeking", "error"];
+  events.forEach(type =&gt; {
+    video.addEventListener(type, () =&gt; {
+      analytics.track("video_" + type, {
+        src: video.src,
+        currentTime: video.currentTime,
+        duration: video.duration,
+        playbackRate: video.playbackRate,
+        volume: video.volume,
+        muted: video.muted
+      });
+    });
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Track video engagement with native events: play, pause, ended, seeking, error. currentTime gives exact position for drop-off analysis.</p>
+</div>
+
+<div class="example">
+  <h3>49. Automated captions with WebSpeech API</h3>
+  <pre>&lt;video id="live-video" controls width="640" height="360"&gt;&lt;/video&gt;
+&lt;div id="live-captions" role="status" aria-live="assertive" aria-atomic="false"
+     style="min-height:40px;background:#000;color:#fff;padding:8px;font-size:18px"&gt;
+&lt;/div&gt;
+&lt;script&gt;
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onresult = e =&gt; {
+    const transcript = Array.from(e.results).map(r =&gt; r[0].transcript).join(" ");
+    document.getElementById("live-captions").textContent = transcript;
+  };
+  recognition.start();
+&lt;/script&gt;</pre>
+  <p class="label">Live captions via Web Speech API. The aria-live="assertive" region announces new caption text immediately to screen readers.</p>
+</div>
+
+<div class="example">
+  <h3>50. Complete accessible media section</h3>
+  <pre>&lt;section aria-labelledby="media-h"&gt;
+  &lt;h2 id="media-h"&gt;Tutorial Media&lt;/h2&gt;
+
+  &lt;figure&gt;
+    &lt;video controls width="640" height="360"
+           poster="tutorial-thumb.jpg"
+           preload="none"&gt;
+      &lt;source src="tutorial.mp4" type="video/mp4"&gt;
+      &lt;source src="tutorial.webm" type="video/webm"&gt;
+      &lt;track kind="captions" src="tutorial-en.vtt" srclang="en"
+             label="English CC" default&gt;
+      &lt;track kind="descriptions" src="tutorial-desc.vtt" srclang="en"
+             label="Audio Descriptions"&gt;
+      &lt;track kind="chapters" src="tutorial-ch.vtt" srclang="en"
+             label="Chapters"&gt;
+      &lt;p&gt;
+        Video not supported.
+        &lt;a href="tutorial.mp4"&gt;Download MP4&lt;/a&gt;
+      &lt;/p&gt;
+    &lt;/video&gt;
+    &lt;figcaption&gt;
+      &lt;strong&gt;Tutorial: CSS Grid Mastery (45 min)&lt;/strong&gt;&lt;br&gt;
+      &lt;a href="#transcript"&gt;Read full transcript ↓&lt;/a&gt;
+    &lt;/figcaption&gt;
+  &lt;/figure&gt;
+
+  &lt;section id="transcript" aria-labelledby="trans-h"&gt;
+    &lt;h3 id="trans-h"&gt;Video Transcript&lt;/h3&gt;
+    &lt;p&gt;[00:00] Welcome to CSS Grid Mastery...&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/section&gt;</pre>
+  <p class="label">Gold-standard accessible video: multiple formats, captions track, descriptions track, chapters track, download fallback, transcript section, figcaption with transcript link.</p>
+</div>
+
+</body>
+</html>

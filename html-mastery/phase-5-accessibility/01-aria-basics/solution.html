@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 5.1 — ARIA Basics
+  ============================================================================
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 5.1 — ARIA Basics</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    section { margin-bottom: 24px; padding: 16px; background: #f9f9f9; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<h1>ARIA Basics — Solution</h1>
+
+<!-- Section 1: Toggle button with aria-expanded -->
+<button id="menu-btn" aria-expanded="false" aria-controls="nav-menu">Toggle Menu</button>
+<nav id="nav-menu" aria-hidden="true">
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+</nav>
+
+<!-- Section 2: Input with aria-label and aria-describedby -->
+<input id="search-input" type="search" aria-label="Search the site" aria-describedby="search-hint">
+<p id="search-hint">Enter keywords to search.</p>
+
+<!-- Section 3: Status region with role and aria-live -->
+<div id="loading-spinner" role="status" aria-label="Loading content" aria-live="polite"></div>
+
+<!-- Section 4: Icon button with aria-label -->
+<button id="close-btn" aria-label="Close dialog">✕</button>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 5.1 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const menuBtn = document.getElementById("menu-btn");
+  assert(menuBtn !== null, '#menu-btn exists');
+  assert(menuBtn && menuBtn.tagName.toLowerCase() === "button", '#menu-btn is a <button>');
+  assert(menuBtn && menuBtn.hasAttribute("aria-expanded"), '#menu-btn has aria-expanded attribute');
+  assert(menuBtn && menuBtn.getAttribute("aria-controls") === "nav-menu", '#menu-btn has aria-controls="nav-menu"');
+  const navMenu = document.getElementById("nav-menu");
+  assert(navMenu !== null, '#nav-menu exists');
+  assert(navMenu && navMenu.hasAttribute("aria-hidden"), '#nav-menu has aria-hidden attribute');
+
+  const searchInput = document.getElementById("search-input");
+  assert(searchInput !== null, '#search-input exists');
+  assert(searchInput && (searchInput.getAttribute("aria-label") || "").trim() !== "", '#search-input has a non-empty aria-label');
+  assert(searchInput && searchInput.getAttribute("aria-describedby") === "search-hint", '#search-input has aria-describedby="search-hint"');
+  const searchHint = document.getElementById("search-hint");
+  assert(searchHint !== null, '#search-hint element exists');
+
+  const spinner = document.getElementById("loading-spinner");
+  assert(spinner !== null, '#loading-spinner exists');
+  assert(spinner && spinner.getAttribute("role") === "status", '#loading-spinner has role="status"');
+  assert(spinner && (spinner.getAttribute("aria-label") || "").trim() !== "", '#loading-spinner has a non-empty aria-label');
+  assert(spinner && spinner.hasAttribute("aria-live"), '#loading-spinner has aria-live attribute');
+
+  const closeBtn = document.getElementById("close-btn");
+  assert(closeBtn !== null, '#close-btn exists');
+  assert(closeBtn && closeBtn.tagName.toLowerCase() === "button", '#close-btn is a <button>');
+  assert(closeBtn && (closeBtn.getAttribute("aria-label") || "").trim() !== "", '#close-btn has a non-empty aria-label');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 5.1 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 4.2 — Responsive Images
+  ============================================================================
+  Use srcset, sizes, <picture>, and loading attributes to serve the right
+  image to the right device for performance and art direction.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 4.2 — Responsive Images</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    img { max-width: 100%; height: auto; display: block; margin: 8px 0; border: 1px solid #ddd; }
+    picture { display: block; margin: 8px 0; }
+  </style>
+</head>
+<body>
+
+<h1>Responsive Images Exercise</h1>
+
+<!-- =========================================================
+     Section 1: Image with srcset and sizes
+     ========================================================= -->
+
+<!-- TODO: Add an <img> with:
+     - id="hero-img"
+     - src="img/hero-1200.jpg"
+     - alt="Hero image"
+     - width="1200"
+     - height="600"
+     - srcset="img/hero-400.jpg 400w, img/hero-800.jpg 800w, img/hero-1200.jpg 1200w"
+     - sizes="(max-width: 600px) 400px, (max-width: 900px) 800px, 1200px"
+-->
+
+
+<!-- =========================================================
+     Section 2: Art direction with <picture>
+     ========================================================= -->
+
+<!-- TODO: Add a <picture id="art-directed"> element containing:
+     - A <source media="(max-width: 600px)" srcset="img/small.jpg">
+     - A <source media="(min-width: 601px)" srcset="img/large.jpg">
+     - An <img src="img/large.jpg" alt="Art directed image"> fallback
+-->
+
+
+<!-- =========================================================
+     Section 3: Lazy loading image
+     ========================================================= -->
+
+<!-- TODO: Add an <img> with:
+     - id="lazy-img"
+     - src="img/lazy.jpg"
+     - alt="Lazy loaded image"
+     - loading="lazy"
+     - decoding="async"
+-->
+
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 4.2 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // Section 1: srcset and sizes
+  const heroImg = document.getElementById("hero-img");
+  assert(heroImg !== null, '#hero-img exists');
+  assert(heroImg && heroImg.tagName.toLowerCase() === "img", '#hero-img is an <img> element');
+  assert(heroImg && (heroImg.getAttribute("srcset") || "").trim() !== "", '#hero-img has a non-empty srcset attribute');
+  assert(heroImg && (heroImg.getAttribute("srcset") || "").includes("400w"), 'srcset includes a 400w descriptor');
+  assert(heroImg && (heroImg.getAttribute("sizes") || "").trim() !== "", '#hero-img has a sizes attribute');
+  assert(heroImg && (heroImg.getAttribute("alt") || "").trim() !== "", '#hero-img has non-empty alt text');
+  assert(heroImg && heroImg.getAttribute("width") === "1200", '#hero-img has width="1200"');
+  assert(heroImg && heroImg.getAttribute("height") === "600", '#hero-img has height="600"');
+
+  // Section 2: picture element
+  const picture = document.getElementById("art-directed");
+  assert(picture !== null, '#art-directed element exists');
+  assert(picture && picture.tagName.toLowerCase() === "picture", '#art-directed is a <picture> element');
+  const sources = picture && picture.querySelectorAll("source");
+  assert(sources && sources.length >= 2, '<picture> contains at least 2 <source> elements');
+  const firstSource = sources && sources[0];
+  assert(firstSource && firstSource.hasAttribute("media"), 'First <source> has a media attribute');
+  const picImg = picture && picture.querySelector("img");
+  assert(picImg !== null, '<picture> contains an <img> fallback');
+  assert(picImg && (picImg.getAttribute("alt") || "").trim() !== "", '<picture> img has non-empty alt text');
+
+  // Section 3: lazy loading
+  const lazyImg = document.getElementById("lazy-img");
+  assert(lazyImg !== null, '#lazy-img exists');
+  assert(lazyImg && lazyImg.getAttribute("loading") === "lazy", '#lazy-img has loading="lazy"');
+  assert(lazyImg && lazyImg.getAttribute("decoding") === "async", '#lazy-img has decoding="async"');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 4.2 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 1.3 — Links & Images  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 1.3 — Links &amp; Images</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; margin-top: 6px; }
+    .output { background: #fafafa; border: 1px solid #eee; padding: 8px; border-radius: 3px; margin-top: 6px; }
+    pre { background: #f5f5f5; padding: 8px; border-radius: 3px; overflow-x: auto; font-size: 12px; margin: 4px 0; }
+  </style>
+</head>
+<body>
+<h1>Examples 1.3 — Links &amp; Images</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Basic hyperlink</h3>
+  <div class="output"><a href="https://www.example.com">Visit Example.com</a></div>
+  <pre>&lt;a href="https://www.example.com"&gt;Visit Example.com&lt;/a&gt;</pre>
+  <p class="label">The href attribute specifies the URL destination. Absolute URLs include the protocol.</p>
+</div>
+
+<div class="example">
+  <h3>2. Relative link</h3>
+  <div class="output"><a href="about.html">About Page</a></div>
+  <pre>&lt;a href="about.html"&gt;About Page&lt;/a&gt;
+&lt;a href="../index.html"&gt;Home (one level up)&lt;/a&gt;
+&lt;a href="/contact"&gt;Contact (from root)&lt;/a&gt;</pre>
+  <p class="label">Relative URLs are resolved relative to the current page URL. Prefer them for internal links.</p>
+</div>
+
+<div class="example">
+  <h3>3. Link opening in new tab</h3>
+  <div class="output"><a href="https://www.example.com" target="_blank" rel="noopener noreferrer">Open in new tab</a></div>
+  <pre>&lt;a href="https://www.example.com"
+   target="_blank"
+   rel="noopener noreferrer"&gt;Open in new tab&lt;/a&gt;</pre>
+  <p class="label">Always add rel="noopener noreferrer" with target="_blank" to prevent tabnapping attacks.</p>
+</div>
+
+<div class="example">
+  <h3>4. Anchor link (in-page navigation)</h3>
+  <div class="output"><a href="#section-id">Jump to section</a></div>
+  <pre>&lt;a href="#section-id"&gt;Jump to section&lt;/a&gt;
+...
+&lt;section id="section-id"&gt;...&lt;/section&gt;</pre>
+  <p class="label">Fragment identifiers (#id) scroll the page to the matching element.</p>
+</div>
+
+<div class="example">
+  <h3>5. Email link</h3>
+  <div class="output"><a href="mailto:hello@example.com">hello@example.com</a></div>
+  <pre>&lt;a href="mailto:hello@example.com"&gt;hello@example.com&lt;/a&gt;
+&lt;a href="mailto:support@example.com?subject=Help&amp;body=I%20need%20help"&gt;Email Support&lt;/a&gt;</pre>
+  <p class="label">mailto: links open the user's default email client. Use URL encoding for subject/body.</p>
+</div>
+
+<div class="example">
+  <h3>6. Phone link</h3>
+  <div class="output"><a href="tel:+15551234567">+1 (555) 123-4567</a></div>
+  <pre>&lt;a href="tel:+15551234567"&gt;+1 (555) 123-4567&lt;/a&gt;</pre>
+  <p class="label">tel: links allow mobile users to tap to call. Use E.164 format (+countrycode...).</p>
+</div>
+
+<div class="example">
+  <h3>7. Download link</h3>
+  <div class="output"><a href="report.pdf" download>Download Report (PDF)</a></div>
+  <pre>&lt;a href="report.pdf" download&gt;Download Report (PDF)&lt;/a&gt;
+&lt;a href="data.csv" download="export-2026.csv"&gt;Download CSV&lt;/a&gt;</pre>
+  <p class="label">The download attribute triggers a download instead of navigation. Optionally specify a filename.</p>
+</div>
+
+<div class="example">
+  <h3>8. Basic image</h3>
+  <div class="output"><img src="https://via.placeholder.com/150x100" alt="A grey placeholder image" width="150" height="100"></div>
+  <pre>&lt;img src="photo.jpg" alt="A grey placeholder image" width="150" height="100"&gt;</pre>
+  <p class="label">Always include alt, width, and height. Width/height prevent layout shift (CLS).</p>
+</div>
+
+<div class="example">
+  <h3>9. Decorative image with empty alt</h3>
+  <div class="output"><img src="https://via.placeholder.com/60x60" alt="" width="60" height="60"></div>
+  <pre>&lt;img src="decorative-border.png" alt=""&gt;</pre>
+  <p class="label">Empty alt="" tells screen readers to skip the image entirely — correct for purely decorative images.</p>
+</div>
+
+<div class="example">
+  <h3>10. Lazy-loaded image</h3>
+  <pre>&lt;img src="large-photo.jpg"
+     alt="Mountain landscape at sunset"
+     width="800" height="600"
+     loading="lazy"&gt;</pre>
+  <p class="label">loading="lazy" defers loading until the image is near the viewport. Do NOT lazy-load above-the-fold (LCP) images.</p>
+</div>
+
+<div class="example">
+  <h3>11. Image with explicit dimensions for CLS</h3>
+  <pre>&lt;img src="hero.jpg"
+     alt="Team members at the office"
+     width="1200"
+     height="630"&gt;</pre>
+  <p class="label">Setting width and height lets the browser reserve space before the image loads, preventing cumulative layout shift.</p>
+</div>
+
+<div class="example">
+  <h3>12. Image as a link</h3>
+  <div class="output">
+    <a href="https://www.example.com">
+      <img src="https://via.placeholder.com/120x40" alt="Example.com — visit our homepage" width="120" height="40">
+    </a>
+  </div>
+  <pre>&lt;a href="https://www.example.com"&gt;
+  &lt;img src="logo.png" alt="Acme Co — go to homepage" width="120" height="40"&gt;
+&lt;/a&gt;</pre>
+  <p class="label">When an image is the sole content of a link, the alt text must describe the link's destination.</p>
+</div>
+
+<div class="example">
+  <h3>13. Link with title attribute</h3>
+  <div class="output"><a href="glossary.html" title="Opens the full glossary of terms">Glossary</a></div>
+  <pre>&lt;a href="glossary.html" title="Opens the full glossary of terms"&gt;Glossary&lt;/a&gt;</pre>
+  <p class="label">The title attribute shows a tooltip on hover. It is NOT a substitute for clear link text.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Skip navigation link</h3>
+  <pre>&lt;a href="#main-content" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+&lt;nav&gt;...&lt;/nav&gt;
+&lt;main id="main-content"&gt;...&lt;/main&gt;
+
+&lt;style&gt;
+  .skip-link { position: absolute; top: -40px; }
+  .skip-link:focus { top: 0; }
+&lt;/style&gt;</pre>
+  <p class="label">A skip link lets keyboard users bypass repetitive navigation. Essential for accessibility (WCAG 2.4.1).</p>
+</div>
+
+<div class="example">
+  <h3>15. Link with aria-label for icon buttons</h3>
+  <pre>&lt;a href="/notifications" aria-label="View 3 notifications"&gt;
+  &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
+&lt;/a&gt;</pre>
+  <p class="label">When a link contains only an icon, add aria-label to describe the destination for screen reader users.</p>
+</div>
+
+<div class="example">
+  <h3>16. Image crossorigin for canvas use</h3>
+  <pre>&lt;img src="https://cdn.example.com/photo.jpg"
+     alt="Cross-origin image"
+     crossorigin="anonymous"&gt;</pre>
+  <p class="label">crossorigin="anonymous" is required when drawing cross-origin images to a canvas, otherwise the canvas is tainted and data can't be read.</p>
+</div>
+
+<div class="example">
+  <h3>17. Responsive image with max-width</h3>
+  <pre>&lt;img src="photo.jpg" alt="Landscape" style="max-width: 100%; height: auto;"&gt;</pre>
+  <p class="label">The CSS pattern max-width: 100%; height: auto; is the classic way to make images scale within their container.</p>
+</div>
+
+<div class="example">
+  <h3>18. Image with decoding="async"</h3>
+  <pre>&lt;img src="large-image.jpg"
+     alt="Large illustration"
+     decoding="async"
+     loading="lazy"&gt;</pre>
+  <p class="label">decoding="async" allows the browser to decode the image off the main thread, reducing jank.</p>
+</div>
+
+<div class="example">
+  <h3>19. Figure with figcaption</h3>
+  <div class="output">
+    <figure>
+      <img src="https://via.placeholder.com/200x120" alt="A chart showing quarterly revenue" width="200" height="120">
+      <figcaption>Figure 1: Quarterly revenue for 2026 (in millions).</figcaption>
+    </figure>
+  </div>
+  <pre>&lt;figure&gt;
+  &lt;img src="chart.png" alt="Chart showing quarterly revenue" width="800" height="400"&gt;
+  &lt;figcaption&gt;Figure 1: Quarterly revenue for 2026.&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">&lt;figure&gt;/&lt;figcaption&gt; groups an image with its caption. The caption supplements (not duplicates) the alt text.</p>
+</div>
+
+<div class="example">
+  <h3>20. Link with rel="nofollow"</h3>
+  <pre>&lt;a href="https://sponsor.example.com" rel="nofollow sponsored"&gt;Our Sponsor&lt;/a&gt;
+&lt;a href="https://user-submitted.example.com" rel="nofollow ugc"&gt;User Link&lt;/a&gt;</pre>
+  <p class="label">rel="nofollow" tells search engines not to pass PageRank. "sponsored" and "ugc" (user-generated content) are specialized variants.</p>
+</div>
+
+<div class="example">
+  <h3>21. Link to specific page with hreflang</h3>
+  <pre>&lt;a href="/fr/accueil" hreflang="fr"&gt;Version française&lt;/a&gt;
+&lt;a href="/de/startseite" hreflang="de"&gt;Deutsche Version&lt;/a&gt;</pre>
+  <p class="label">hreflang on &lt;a&gt; indicates the language of the linked resource. Used for language switchers.</p>
+</div>
+
+<div class="example">
+  <h3>22. Link with referrerpolicy</h3>
+  <pre>&lt;a href="https://example.com"
+   referrerpolicy="no-referrer"
+   target="_blank"
+   rel="noopener"&gt;Private Link&lt;/a&gt;</pre>
+  <p class="label">referrerpolicy controls how much referrer info is sent. "no-referrer" sends nothing; useful for privacy-sensitive links.</p>
+</div>
+
+<div class="example">
+  <h3>23. Image with fetchpriority</h3>
+  <pre>&lt;!-- Hero/LCP image — load it fast --&gt;
+&lt;img src="hero.jpg" alt="Hero banner" fetchpriority="high" width="1200" height="630"&gt;
+
+&lt;!-- Below-fold image — deprioritize --&gt;
+&lt;img src="thumbnail.jpg" alt="Article thumbnail" fetchpriority="low" loading="lazy"&gt;</pre>
+  <p class="label">fetchpriority hints allow you to boost or reduce image load priority relative to the browser's default heuristics.</p>
+</div>
+
+<div class="example">
+  <h3>24. Anchor with ping attribute</h3>
+  <pre>&lt;a href="https://example.com" ping="https://analytics.mysite.com/track"&gt;
+  Tracked Link
+&lt;/a&gt;</pre>
+  <p class="label">ping sends a POST request to the listed URLs when the link is followed. Used for analytics. Some browsers block it.</p>
+</div>
+
+<div class="example">
+  <h3>25. SMS link</h3>
+  <pre>&lt;a href="sms:+15551234567"&gt;Send SMS&lt;/a&gt;
+&lt;a href="sms:+15551234567?body=Hello%20there"&gt;Pre-filled SMS&lt;/a&gt;</pre>
+  <p class="label">sms: links open the SMS app on mobile devices. Useful for contact pages and support flows.</p>
+</div>
+
+<div class="example">
+  <h3>26. image loading="eager" for LCP</h3>
+  <pre>&lt;!-- Above-the-fold hero image — do NOT lazy load --&gt;
+&lt;img src="hero.webp"
+     alt="Product hero shot"
+     width="1200" height="600"
+     loading="eager"
+     fetchpriority="high"&gt;</pre>
+  <p class="label">loading="eager" is the default. Be explicit for hero images to counter any framework that mass-applies lazy loading.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Navigation with logo and links</h3>
+  <div class="output">
+    <nav style="display:flex;gap:16px;align-items:center;background:#f0f0f0;padding:8px">
+      <a href="/">
+        <img src="https://via.placeholder.com/80x30" alt="Acme Co — Home" width="80" height="30">
+      </a>
+      <a href="/products">Products</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+    </nav>
+  </div>
+  <p class="label">Logo linked to home page. The alt text of the logo image describes the link destination.</p>
+</div>
+
+<div class="example">
+  <h3>28. Card with image and link</h3>
+  <div class="output">
+    <article style="border:1px solid #ddd;width:200px;border-radius:4px;overflow:hidden">
+      <a href="/article/1">
+        <img src="https://via.placeholder.com/200x120" alt="" width="200" height="120" style="display:block">
+      </a>
+      <div style="padding:8px">
+        <h3 style="margin:0 0 4px"><a href="/article/1">Article Title</a></h3>
+        <p style="margin:0;font-size:13px">Short description of the article content.</p>
+      </div>
+    </article>
+  </div>
+  <p class="label">Card pattern: the thumbnail image link has empty alt (the heading link already names the destination).</p>
+</div>
+
+<div class="example">
+  <h3>29. Image gallery grid</h3>
+  <div class="output" style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">
+    <a href="#"><img src="https://via.placeholder.com/120x90?text=1" alt="Gallery image 1" width="120" height="90" style="display:block;width:100%"></a>
+    <a href="#"><img src="https://via.placeholder.com/120x90?text=2" alt="Gallery image 2" width="120" height="90" style="display:block;width:100%"></a>
+    <a href="#"><img src="https://via.placeholder.com/120x90?text=3" alt="Gallery image 3" width="120" height="90" style="display:block;width:100%"></a>
+  </div>
+  <p class="label">Gallery grid: each image wrapped in a link. Each has a descriptive alt text.</p>
+</div>
+
+<div class="example">
+  <h3>30. Breadcrumb navigation with links</h3>
+  <div class="output">
+    <nav aria-label="Breadcrumb">
+      <ol style="list-style:none;padding:0;display:flex;gap:8px">
+        <li><a href="/">Home</a></li>
+        <li aria-hidden="true">/</li>
+        <li><a href="/products">Products</a></li>
+        <li aria-hidden="true">/</li>
+        <li><span aria-current="page">Widget Pro</span></li>
+      </ol>
+    </nav>
+  </div>
+  <p class="label">Breadcrumb navigation pattern with aria-label and aria-current="page" on the last item.</p>
+</div>
+
+<div class="example">
+  <h3>31. Link with external icon</h3>
+  <div class="output">
+    <a href="https://example.com" target="_blank" rel="noopener">
+      Example.com <span aria-hidden="true">↗</span>
+      <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">(opens in new tab)</span>
+    </a>
+  </div>
+  <p class="label">Visually indicate external links with an icon, and add screen-reader-only text to announce the new-tab behavior.</p>
+</div>
+
+<div class="example">
+  <h3>32. Image map (usemap)</h3>
+  <pre>&lt;img src="world-map.png" alt="World map — click a continent" usemap="#worldmap" width="600" height="300"&gt;
+&lt;map name="worldmap"&gt;
+  &lt;area shape="rect" coords="100,50,200,150" href="/europe" alt="Europe"&gt;
+  &lt;area shape="circle" coords="350,150,60" href="/asia" alt="Asia"&gt;
+  &lt;area shape="poly" coords="80,200,120,180,160,220" href="/africa" alt="Africa"&gt;
+&lt;/map&gt;</pre>
+  <p class="label">Image maps allow clickable regions on an image. Consider SVG for better accessibility and responsiveness.</p>
+</div>
+
+<div class="example">
+  <h3>33. Progressive image loading (blur-up)</h3>
+  <pre>&lt;img
+  src="placeholder-tiny.jpg"
+  data-src="full-size.jpg"
+  alt="Scenic landscape"
+  class="lazy"
+  width="1200"
+  height="800"&gt;
+
+&lt;script&gt;
+  const observer = new IntersectionObserver(entries =&gt; {
+    entries.forEach(e =&gt; {
+      if (e.isIntersecting) {
+        e.target.src = e.target.dataset.src;
+        observer.unobserve(e.target);
+      }
+    });
+  });
+  document.querySelectorAll("img.lazy").forEach(img =&gt; observer.observe(img));
+&lt;/script&gt;</pre>
+  <p class="label">Custom lazy loading with IntersectionObserver for browsers that don't support loading="lazy" or for custom effects.</p>
+</div>
+
+<div class="example">
+  <h3>34. Download link with Content-Disposition fallback info</h3>
+  <pre>&lt;!-- download attribute works for same-origin or data URLs --&gt;
+&lt;a href="/generate-report?format=csv" download="report-2026-q1.csv"&gt;
+  Download Q1 2026 Report (CSV)
+&lt;/a&gt;
+
+&lt;!-- Cross-origin: rely on Content-Disposition header instead --&gt;
+&lt;a href="https://cdn.example.com/data.csv"&gt;
+  Download Data (CSV)
+&lt;/a&gt;</pre>
+  <p class="label">The download attribute only works for same-origin URLs; cross-origin requires a Content-Disposition: attachment response header.</p>
+</div>
+
+<div class="example">
+  <h3>35. Link list as navigation menu</h3>
+  <div class="output">
+    <ul style="list-style:none;padding:0;display:flex;gap:12px;background:#333;padding:8px;border-radius:4px">
+      <li><a href="/" style="color:#fff">Home</a></li>
+      <li><a href="/about" style="color:#fff">About</a></li>
+      <li><a href="/services" style="color:#fff">Services</a></li>
+      <li><a href="/blog" style="color:#fff">Blog</a></li>
+      <li><a href="/contact" style="color:#fff">Contact</a></li>
+    </ul>
+  </div>
+  <p class="label">Navigation menus should use &lt;nav&gt; + &lt;ul&gt;&lt;li&gt;&lt;a&gt; for semantic structure.</p>
+</div>
+
+<div class="example">
+  <h3>36. Inline SVG as link content</h3>
+  <pre>&lt;a href="/" aria-label="Home"&gt;
+  &lt;svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"&gt;
+    &lt;path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/&gt;
+  &lt;/svg&gt;
+&lt;/a&gt;</pre>
+  <p class="label">SVG icons in links: aria-hidden on the SVG (decorative), aria-label on the link to name the destination.</p>
+</div>
+
+<div class="example">
+  <h3>37. Image with object-fit CSS</h3>
+  <div class="output">
+    <div style="width:200px;height:120px;overflow:hidden;border:1px solid #ddd">
+      <img src="https://via.placeholder.com/400x300" alt="Cropped thumbnail" style="width:100%;height:100%;object-fit:cover">
+    </div>
+  </div>
+  <p class="label">object-fit: cover fills the container while maintaining aspect ratio and cropping edges — ideal for thumbnails.</p>
+</div>
+
+<div class="example">
+  <h3>38. Data URI image (inline)</h3>
+  <pre>&lt;!-- Tiny inline PNG (base64 encoded) --&gt;
+&lt;img
+  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+  alt="1x1 pixel tracker"
+  width="1" height="1"&gt;</pre>
+  <p class="label">Data URI images are embedded inline as base64. Useful for very small images to avoid HTTP requests. Large images should remain external files.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Anchor targeting iframe</h3>
+  <pre>&lt;a href="page.html" target="preview-frame"&gt;Preview&lt;/a&gt;
+&lt;iframe name="preview-frame" src="about:blank" title="Preview pane"&gt;&lt;/iframe&gt;</pre>
+  <p class="label">The target attribute can name an iframe. Clicking the link loads the URL into that iframe.</p>
+</div>
+
+<div class="example">
+  <h3>40. Pre-connected link for faster image loading</h3>
+  <pre>&lt;head&gt;
+  &lt;link rel="preconnect" href="https://images.cdn.example.com"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;img src="https://images.cdn.example.com/photo.jpg" alt="CDN hosted photo"&gt;
+&lt;/body&gt;</pre>
+  <p class="label">preconnect establishes the TCP/TLS connection to the CDN early, reducing image load latency.</p>
+</div>
+
+<div class="example">
+  <h3>41. Link with data-* attribute for JS hooks</h3>
+  <pre>&lt;a href="/product/42"
+   data-product-id="42"
+   data-track="product-click"
+   class="product-link"&gt;
+  Buy Now
+&lt;/a&gt;
+
+&lt;script&gt;
+  document.querySelectorAll(".product-link").forEach(link =&gt; {
+    link.addEventListener("click", e =&gt; {
+      analytics.track(link.dataset.track, { id: link.dataset.productId });
+    });
+  });
+&lt;/script&gt;</pre>
+  <p class="label">data-* attributes store metadata for JavaScript without polluting the DOM with non-standard attributes.</p>
+</div>
+
+<div class="example">
+  <h3>42. Responsive art direction with picture</h3>
+  <pre>&lt;picture&gt;
+  &lt;source media="(min-width: 1024px)" srcset="hero-wide.webp" type="image/webp"&gt;
+  &lt;source media="(min-width: 768px)" srcset="hero-medium.webp" type="image/webp"&gt;
+  &lt;source srcset="hero-narrow.webp" type="image/webp"&gt;
+  &lt;img src="hero-narrow.jpg" alt="Product hero image" width="800" height="400"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">The &lt;picture&gt; element enables art direction: different images for different breakpoints plus format fallbacks.</p>
+</div>
+
+<div class="example">
+  <h3>43. Anchor preventing default with JavaScript</h3>
+  <pre>&lt;a href="/cart" id="add-to-cart"&gt;Add to Cart&lt;/a&gt;
+
+&lt;script&gt;
+  document.getElementById("add-to-cart").addEventListener("click", e =&gt; {
+    e.preventDefault(); // Stop navigation
+    addItemToCart();     // Custom logic
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Use e.preventDefault() on anchor click handlers to intercept navigation. Keep a real href for non-JS fallback and right-click "open in new tab".</p>
+</div>
+
+<div class="example">
+  <h3>44. Aspect ratio preservation with CSS</h3>
+  <pre>&lt;style&gt;
+  .img-16-9 {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    object-fit: cover;
+  }
+&lt;/style&gt;
+&lt;img class="img-16-9" src="banner.jpg" alt="Event banner"&gt;</pre>
+  <p class="label">CSS aspect-ratio ensures images maintain their ratio while scaling responsively — no need for padding-top hacks.</p>
+</div>
+
+<div class="example">
+  <h3>45. Image with error fallback via onerror</h3>
+  <pre>&lt;img
+  src="user-uploaded.jpg"
+  alt="User profile photo"
+  onerror="this.src='default-avatar.png'; this.onerror=null;"
+  width="64" height="64"&gt;</pre>
+  <p class="label">onerror provides a graceful fallback if an image fails to load. Set onerror=null to prevent infinite loops.</p>
+</div>
+
+<div class="example">
+  <h3>46. Link prefetch for next page</h3>
+  <pre>&lt;!-- In &lt;head&gt; --&gt;
+&lt;link rel="prefetch" href="/checkout"&gt;
+
+&lt;!-- In body --&gt;
+&lt;a href="/checkout"&gt;Proceed to Checkout&lt;/a&gt;</pre>
+  <p class="label">Prefetching the next likely page during idle time makes navigation feel instant. Use for predictable user flows.</p>
+</div>
+
+<div class="example">
+  <h3>47. Open Graph image meta tag</h3>
+  <pre>&lt;meta property="og:image" content="https://example.com/og-image.jpg"&gt;
+&lt;meta property="og:image:width" content="1200"&gt;
+&lt;meta property="og:image:height" content="630"&gt;
+&lt;meta property="og:image:alt" content="Screenshot of the dashboard"&gt;</pre>
+  <p class="label">OG images control the preview thumbnail on social media. Recommended size: 1200×630px. Always include og:image:alt.</p>
+</div>
+
+<div class="example">
+  <h3>48. Accessible icon link with tooltip</h3>
+  <pre>&lt;style&gt;
+  .icon-btn { position: relative; }
+  .icon-btn::after { content: attr(aria-label); position: absolute; bottom: 100%; left: 50%;
+    transform: translateX(-50%); background: #333; color: #fff; padding: 2px 6px;
+    border-radius: 3px; font-size: 12px; white-space: nowrap; opacity: 0; }
+  .icon-btn:hover::after, .icon-btn:focus::after { opacity: 1; }
+&lt;/style&gt;
+&lt;a href="/settings" class="icon-btn" aria-label="Settings"&gt;⚙️&lt;/a&gt;</pre>
+  <p class="label">CSS tooltip from aria-label: accessible, no JS needed, works on both hover and focus.</p>
+</div>
+
+<div class="example">
+  <h3>49. Image srcset with pixel density descriptors</h3>
+  <pre>&lt;img
+  src="logo.png"
+  srcset="logo.png 1x, logo@2x.png 2x, logo@3x.png 3x"
+  alt="Acme Co logo"
+  width="120" height="40"&gt;</pre>
+  <p class="label">Pixel density descriptors (1x, 2x, 3x) let high-DPI (Retina) displays use sharper images without affecting layout.</p>
+</div>
+
+<div class="example">
+  <h3>50. Complete responsive image with all best practices</h3>
+  <pre>&lt;figure&gt;
+  &lt;picture&gt;
+    &lt;source
+      media="(min-width: 1024px)"
+      srcset="hero-1200.webp 1200w, hero-2400.webp 2400w"
+      sizes="100vw"
+      type="image/webp"&gt;
+    &lt;source
+      media="(min-width: 600px)"
+      srcset="hero-800.webp 800w, hero-1600.webp 1600w"
+      sizes="100vw"
+      type="image/webp"&gt;
+    &lt;img
+      src="hero-400.jpg"
+      srcset="hero-400.jpg 400w, hero-800.jpg 800w"
+      sizes="100vw"
+      alt="Team celebrating product launch in the office"
+      width="1200" height="630"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"&gt;
+  &lt;/picture&gt;
+  &lt;figcaption&gt;The Acme team celebrating the v3.0 launch.&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">The gold-standard responsive image: picture + source (WebP + JPEG fallback) + srcset + sizes + alt + dimensions + loading + fetchpriority + figcaption.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 5.5 — Accessible Forms
+  ============================================================================
+  Build an accessible form with proper label associations, error messages,
+  required field indicators, and ARIA attributes.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 5.5 — Accessible Forms</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    label { display: block; margin-top: 16px; font-weight: bold; }
+    input, textarea { display: block; width: 100%; box-sizing: border-box; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+    .error-msg { color: red; font-size: 14px; display: none; }
+    .hint { font-size: 13px; color: #666; margin-top: 2px; }
+    button[type="submit"] { margin-top: 20px; padding: 10px 24px; font-size: 16px; }
+  </style>
+</head>
+<body>
+
+<h1>Accessible Forms Exercise</h1>
+
+<form id="contact-form" novalidate>
+
+  <!-- =========================================================
+       Section 1: Required field with error message
+       ========================================================= -->
+
+  <!-- TODO: Add a <label> with for="full-name" containing:
+       - Text "Full Name"
+       - A <span aria-hidden="true"> with text " *"
+       Then add an <input> with:
+       - id="full-name"
+       - type="text"
+       - name="full-name"
+       - required
+       - aria-required="true"
+       - aria-describedby="full-name-error"
+       Then add a <span> with:
+       - id="full-name-error"
+       - role="alert"
+       - aria-live="polite"
+       - class="error-msg"
+       Text: "Full name is required."
+  -->
+
+
+  <!-- =========================================================
+       Section 2: Field with hint and error
+       ========================================================= -->
+
+  <!-- TODO: Add a <label> with for="email-field" containing text "Email Address"
+       Then add an <input> with:
+       - id="email-field"
+       - type="email"
+       - name="email"
+       - aria-describedby="email-hint email-error"
+       Then add a <p> with:
+       - id="email-hint"
+       - class="hint"
+       Text: "We'll never share your email."
+       Then add a <span> with:
+       - id="email-error"
+       - role="alert"
+       - class="error-msg"
+       Text: "Please enter a valid email address."
+  -->
+
+
+  <!-- =========================================================
+       Section 3: Submit button
+       ========================================================= -->
+
+  <!-- TODO: Add a <button> with:
+       - id="submit-btn"
+       - type="submit"
+       Text: "Submit Form"
+  -->
+
+</form>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 5.5 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // Section 1: full name field
+  const fullNameLabel = document.querySelector('label[for="full-name"]');
+  assert(fullNameLabel !== null, 'label[for="full-name"] exists');
+  const fullNameInput = document.getElementById("full-name");
+  assert(fullNameInput !== null, '#full-name input exists');
+  assert(fullNameInput && fullNameInput.hasAttribute("required"), '#full-name has required attribute');
+  assert(fullNameInput && fullNameInput.getAttribute("aria-required") === "true", '#full-name has aria-required="true"');
+  assert(fullNameInput && (fullNameInput.getAttribute("aria-describedby") || "").includes("full-name-error"),
+    '#full-name aria-describedby includes "full-name-error"');
+  const fullNameError = document.getElementById("full-name-error");
+  assert(fullNameError !== null, '#full-name-error element exists');
+  assert(fullNameError && fullNameError.getAttribute("role") === "alert", '#full-name-error has role="alert"');
+  assert(fullNameError && fullNameError.hasAttribute("aria-live"), '#full-name-error has aria-live attribute');
+
+  // Section 2: email field
+  const emailLabel = document.querySelector('label[for="email-field"]');
+  assert(emailLabel !== null, 'label[for="email-field"] exists');
+  const emailInput = document.getElementById("email-field");
+  assert(emailInput !== null, '#email-field exists');
+  const emailDescribedby = emailInput && (emailInput.getAttribute("aria-describedby") || "");
+  assert(emailDescribedby.includes("email-hint"), '#email-field aria-describedby includes "email-hint"');
+  assert(emailDescribedby.includes("email-error"), '#email-field aria-describedby includes "email-error"');
+  const emailHint = document.getElementById("email-hint");
+  assert(emailHint !== null, '#email-hint element exists');
+  const emailError = document.getElementById("email-error");
+  assert(emailError !== null, '#email-error element exists');
+  assert(emailError && emailError.getAttribute("role") === "alert", '#email-error has role="alert"');
+
+  // Section 3: submit button
+  const submitBtn = document.getElementById("submit-btn");
+  assert(submitBtn !== null, '#submit-btn exists');
+  assert(submitBtn && submitBtn.getAttribute("type") === "submit", '#submit-btn has type="submit"');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 5.5 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

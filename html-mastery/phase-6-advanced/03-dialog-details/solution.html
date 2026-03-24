@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 6.3 — Dialog and Details
+  ============================================================================
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 6.3 — Dialog and Details</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    dialog { padding: 24px; border-radius: 8px; border: 1px solid #ccc; max-width: 400px; }
+    dialog::backdrop { background: rgba(0,0,0,0.5); }
+    details { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; }
+    summary { padding: 12px 16px; cursor: pointer; font-weight: bold; background: #f5f5f5; }
+    details > p { padding: 12px 16px; margin: 0; }
+    button { margin: 4px; padding: 8px 16px; }
+  </style>
+</head>
+<body>
+
+<h1>Dialog and Details — Solution</h1>
+
+<!-- Section 1: Modal dialog -->
+<button id="open-dialog-btn" onclick="document.getElementById('my-dialog').showModal()">Open Dialog</button>
+<dialog id="my-dialog">
+  <h2>Dialog Title</h2>
+  <p>This is a modal dialog.</p>
+  <button id="close-dialog-btn" onclick="document.getElementById('my-dialog').close()">Close</button>
+</dialog>
+
+<!-- Section 2: Non-modal info dialog -->
+<button id="open-info-btn" onclick="document.getElementById('info-dialog').show()">Show Info</button>
+<dialog id="info-dialog">
+  <p>This is a non-modal info panel.</p>
+  <button onclick="document.getElementById('info-dialog').close()">Dismiss</button>
+</dialog>
+
+<!-- Section 3: FAQ with details/summary -->
+<details id="faq-1">
+  <summary>What is HTML?</summary>
+  <p>HTML stands for HyperText Markup Language.</p>
+</details>
+
+<details id="faq-2" open>
+  <summary>What is CSS?</summary>
+  <p>CSS stands for Cascading Style Sheets.</p>
+</details>
+
+<details id="faq-3">
+  <summary>What is JavaScript?</summary>
+  <p>JavaScript is a programming language for the web.</p>
+</details>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 6.3 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const myDialog = document.getElementById("my-dialog");
+  assert(myDialog !== null, '#my-dialog element exists');
+  assert(myDialog && myDialog.tagName === "DIALOG", '#my-dialog is a <dialog> element');
+  const closeBtn = document.getElementById("close-dialog-btn");
+  assert(closeBtn !== null, '#close-dialog-btn exists inside #my-dialog');
+  const openDialogBtn = document.getElementById("open-dialog-btn");
+  assert(openDialogBtn !== null, '#open-dialog-btn exists');
+
+  const infoDialog = document.getElementById("info-dialog");
+  assert(infoDialog !== null, '#info-dialog element exists');
+  assert(infoDialog && infoDialog.tagName === "DIALOG", '#info-dialog is a <dialog> element');
+  const openInfoBtn = document.getElementById("open-info-btn");
+  assert(openInfoBtn !== null, '#open-info-btn exists');
+
+  const faq1 = document.getElementById("faq-1");
+  assert(faq1 !== null, '#faq-1 element exists');
+  assert(faq1 && faq1.tagName === "DETAILS", '#faq-1 is a <details> element');
+  assert(faq1 && faq1.querySelector("summary") !== null, '#faq-1 contains a <summary>');
+
+  const faq2 = document.getElementById("faq-2");
+  assert(faq2 !== null, '#faq-2 element exists');
+  assert(faq2 && faq2.hasAttribute("open"), '#faq-2 has the open attribute (starts expanded)');
+  assert(faq2 && faq2.querySelector("summary") !== null, '#faq-2 contains a <summary>');
+  assert(faq2 && (faq2.querySelector("summary") || {}).textContent.includes("CSS"),
+    '#faq-2 summary text includes "CSS"');
+
+  const faq3 = document.getElementById("faq-3");
+  assert(faq3 !== null, '#faq-3 element exists');
+  assert(faq3 && faq3.tagName === "DETAILS", '#faq-3 is a <details> element');
+  assert(faq3 && faq3.querySelector("summary") !== null, '#faq-3 contains a <summary>');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 6.3 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 3.3 — Select and Datalist
+  ============================================================================
+  Complete solution with all TODOs filled in correctly.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 3.3 — Select and Datalist</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 16px; }
+    label { display: block; margin-top: 14px; font-weight: bold; font-size: 14px; }
+    select, input { display: block; margin-top: 4px; padding: 6px 8px; width: 100%; box-sizing: border-box; }
+    button { margin-top: 16px; padding: 8px 20px; }
+  </style>
+</head>
+<body>
+
+<h1>Select and Datalist Exercise</h1>
+
+<form id="select-form" action="#" method="post">
+
+  <label for="country">Country</label>
+  <select id="country" name="country">
+    <option value="">-- Select country --</option>
+    <option value="us">United States</option>
+    <option value="uk">United Kingdom</option>
+    <option value="ca">Canada</option>
+    <option value="au">Australia</option>
+  </select>
+
+  <label for="language">Programming Language</label>
+  <select id="language" name="language">
+    <optgroup label="Frontend">
+      <option value="html">HTML</option>
+      <option value="css">CSS</option>
+      <option value="js">JavaScript</option>
+    </optgroup>
+    <optgroup label="Backend">
+      <option value="python">Python</option>
+      <option value="nodejs">Node.js</option>
+      <option value="ruby">Ruby</option>
+    </optgroup>
+  </select>
+
+  <label for="skills">Skills (hold Ctrl/Cmd to select multiple)</label>
+  <select id="skills" name="skills" multiple size="5">
+    <option value="html">HTML</option>
+    <option value="css">CSS</option>
+    <option value="js">JavaScript</option>
+    <option value="react">React</option>
+    <option value="node">Node.js</option>
+    <option value="sql">SQL</option>
+  </select>
+
+  <label for="browser">Favourite Browser</label>
+  <input type="text" id="browser" name="browser" list="browser-options" placeholder="Start typing...">
+  <datalist id="browser-options">
+    <option value="Chrome">
+    <option value="Firefox">
+    <option value="Safari">
+    <option value="Edge">
+    <option value="Opera">
+  </datalist>
+
+  <button type="submit">Submit</button>
+</form>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 3.3 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const countryEl = document.getElementById("country");
+  assert(countryEl !== null, '#country select exists');
+  assert(countryEl !== null && countryEl.tagName === "SELECT", '#country is a <select>');
+  assert(countryEl !== null && countryEl.options.length >= 3, '#country has at least 3 options');
+
+  const langEl = document.getElementById("language");
+  assert(langEl !== null, '#language select exists');
+  assert(langEl !== null && langEl.querySelectorAll("optgroup").length >= 2,
+    '#language has at least 2 <optgroup> elements');
+
+  const skillsEl = document.getElementById("skills");
+  assert(skillsEl !== null, '#skills select exists');
+  assert(skillsEl !== null && skillsEl.hasAttribute("multiple"), '#skills has multiple attribute');
+  assert(skillsEl !== null && skillsEl.options.length >= 5, '#skills has at least 5 options');
+
+  const browserEl = document.getElementById("browser");
+  assert(browserEl !== null, '#browser input exists');
+  assert(browserEl !== null && browserEl.hasAttribute("list"), '#browser input has list attribute');
+  const dlId = browserEl ? browserEl.getAttribute("list") : null;
+  const datalistEl = dlId ? document.getElementById(dlId) : null;
+  assert(datalistEl !== null, '<datalist> element exists and is linked');
+  assert(datalistEl !== null && datalistEl.querySelectorAll("option").length >= 4,
+    'datalist has at least 4 options');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 3.3 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

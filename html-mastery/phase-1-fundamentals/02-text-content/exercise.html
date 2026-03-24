@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Exercise 1.2 — Text Content
+  ============================================================================
+  Mark up a blog post excerpt using correct heading hierarchy and inline
+  semantic elements: h1–h3, p, strong, em, mark, del, ins, blockquote,
+  cite, pre, code, kbd, abbr, br, and hr.
+
+  Instructions: Fill in every <!-- TODO --> section so all assertions pass.
+  Open in a browser — green = pass, red = fail.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 1.2 — Text Content</title>
+</head>
+<body>
+
+<!-- =========================================================
+     Section 1: Heading Hierarchy
+     ========================================================= -->
+
+<!-- TODO: Add an <h1> element with the text "Understanding HTML Text Elements" -->
+
+<!-- TODO: Add an <h2> element with the text "Why Semantics Matter" -->
+
+<!-- TODO: Add an <h3> element with the text "Screen Readers and Assistive Technology" -->
+
+<!-- =========================================================
+     Section 2: Paragraphs and Inline Semantics
+     ========================================================= -->
+
+<!-- TODO: Add a <p> element that contains:
+     - the word "HTML" wrapped in <strong>
+     - the phrase "HyperText Markup Language" wrapped in <abbr title="HyperText Markup Language">
+     - at least one word wrapped in <em>
+-->
+
+<!-- =========================================================
+     Section 3: Blockquote and Code
+     ========================================================= -->
+
+<!-- TODO: Add a <blockquote cite="https://www.w3.org/"> element with a <p> inside it containing
+     any quote about the web. The blockquote must have a cite attribute. -->
+
+<!-- TODO: Add a <p> containing an inline <code> element with the text "document.querySelector" -->
+
+<!-- =========================================================
+     Section 4: Deleted and Inserted Text
+     ========================================================= -->
+
+<!-- TODO: Add a <p> that contains a <del> element (strikethrough) and an <ins> element (underline)
+     to show a price change, e.g. "Was <del>$50</del>, now <ins>$35</ins>" -->
+
+<!-- =========================================================
+     Section 5: Mark and Preformatted Text
+     ========================================================= -->
+
+<!-- TODO: Add a <p> containing a <mark> element highlighting a search term -->
+
+<!-- TODO: Add a <pre> block containing a small multiline code snippet (any 2–3 line snippet) -->
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Exercise 1.2 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  // 1. h1 exists
+  assert(document.querySelector("h1") !== null, "<h1> element exists on the page");
+
+  // 2. h2 exists
+  assert(document.querySelector("h2") !== null, "<h2> element exists on the page");
+
+  // 3. h3 exists
+  assert(document.querySelector("h3") !== null, "<h3> element exists on the page");
+
+  // 4. p element exists
+  assert(document.querySelector("p") !== null, "<p> element exists on the page");
+
+  // 5. strong exists inside a paragraph
+  assert(document.querySelector("p strong") !== null, "<strong> element exists inside a <p>");
+
+  // 6. em exists
+  assert(document.querySelector("em") !== null, "<em> element exists on the page");
+
+  // 7. abbr with title attribute exists
+  const abbrEl = document.querySelector("abbr[title]");
+  assert(abbrEl !== null, "<abbr> element with title attribute exists");
+
+  // 8. blockquote with cite attribute exists
+  const bq = document.querySelector("blockquote[cite]");
+  assert(bq !== null, "<blockquote> with cite attribute exists");
+
+  // 9. code element exists
+  assert(document.querySelector("code") !== null, "<code> element exists on the page");
+
+  // 10. del and ins elements exist
+  assert(document.querySelector("del") !== null && document.querySelector("ins") !== null,
+    "<del> and <ins> elements both exist");
+
+  // 11. mark element exists
+  assert(document.querySelector("mark") !== null, "<mark> element exists on the page");
+
+  // 12. pre element exists
+  assert(document.querySelector("pre") !== null, "<pre> element exists on the page");
+
+  // Summary
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Exercise 1.2 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

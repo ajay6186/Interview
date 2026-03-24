@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+  Examples 5.1 — ARIA Basics  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================ -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 5.1 — ARIA Basics</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 5.1 — ARIA Basics</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. aria-label on a button with no visible text</h3>
+  <pre>&lt;button aria-label="Close dialog"&gt;
+  &lt;svg aria-hidden="true" focusable="false"&gt;
+    &lt;use href="#icon-x"&gt;&lt;/use&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;</pre>
+  <p class="label">When a button contains only an icon, aria-label provides the accessible name that screen readers announce. The SVG is hidden from the accessibility tree with aria-hidden.</p>
+</div>
+
+<div class="example">
+  <h3>2. Icon button — search</h3>
+  <pre>&lt;button aria-label="Search"&gt;
+  &lt;svg aria-hidden="true" focusable="false" width="16" height="16"&gt;
+    &lt;path d="M11 11l4 4M7 13A6 6 0 107 1a6 6 0 000 12z"/&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;
+
+&lt;!-- Alternative: visually hidden span --&gt;
+&lt;button&gt;
+  &lt;svg aria-hidden="true" focusable="false"&gt;...&lt;/svg&gt;
+  &lt;span class="sr-only"&gt;Search&lt;/span&gt;
+&lt;/button&gt;</pre>
+  <p class="label">Two equivalent patterns for naming icon-only buttons. The sr-only (visually hidden) class approach keeps text in the DOM for translation tools.</p>
+</div>
+
+<div class="example">
+  <h3>3. aria-labelledby referencing a visible heading</h3>
+  <pre>&lt;section aria-labelledby="section-heading"&gt;
+  &lt;h2 id="section-heading"&gt;Recent Orders&lt;/h2&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Order #1042 — Shipped&lt;/li&gt;
+    &lt;li&gt;Order #1041 — Delivered&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/section&gt;</pre>
+  <p class="label">aria-labelledby points to the ID of an existing visible element. The section's accessible name becomes "Recent Orders". Prefer this over aria-label when the label text is already visible.</p>
+</div>
+
+<div class="example">
+  <h3>4. aria-describedby for supplementary hint text</h3>
+  <pre>&lt;label for="password"&gt;Password&lt;/label&gt;
+&lt;input
+  type="password"
+  id="password"
+  aria-describedby="password-hint"
+/&gt;
+&lt;p id="password-hint"&gt;
+  Must be at least 8 characters with one uppercase letter.
+&lt;/p&gt;</pre>
+  <p class="label">aria-describedby links the input to a description element. Screen readers announce the label first, then (after a pause) the description. Unlike aria-labelledby, it adds supplementary—not primary—information.</p>
+</div>
+
+<div class="example">
+  <h3>5. aria-hidden="true" on purely decorative elements</h3>
+  <pre>&lt;!-- Decorative divider --&gt;
+&lt;hr aria-hidden="true"&gt;
+
+&lt;!-- Decorative icon beside labeled text --&gt;
+&lt;span aria-hidden="true"&gt;★&lt;/span&gt;
+&lt;span&gt;Featured&lt;/span&gt;
+
+&lt;!-- Decorative image --&gt;
+&lt;img src="wave.png" alt="" aria-hidden="true"&gt;</pre>
+  <p class="label">aria-hidden="true" removes an element and its subtree from the accessibility tree entirely. Use it for decorative icons, repeated separators, and visual flourishes that add no information.</p>
+</div>
+
+<div class="example">
+  <h3>6. role="presentation" to remove implicit semantics</h3>
+  <pre>&lt;!-- Layout table — not data --&gt;
+&lt;table role="presentation"&gt;
+  &lt;tr&gt;
+    &lt;td&gt;&lt;img src="logo.png" alt="Acme Inc"&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;nav&gt;...&lt;/nav&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;!-- List used only for visual spacing --&gt;
+&lt;ul role="presentation"&gt;
+  &lt;li&gt;Item A&lt;/li&gt;
+  &lt;li&gt;Item B&lt;/li&gt;
+&lt;/ul&gt;</pre>
+  <p class="label">role="presentation" strips an element's native role from the accessibility tree while keeping it visible. Child elements retain their own roles. Equivalent to role="none".</p>
+</div>
+
+<div class="example">
+  <h3>7. role="none" — modern alias for presentation</h3>
+  <pre>&lt;!-- Preferred modern form --&gt;
+&lt;div role="none"&gt;
+  &lt;img src="divider.svg" alt=""&gt;
+&lt;/div&gt;
+
+&lt;!-- Both are identical; "none" is listed first in ARIA 1.2 --&gt;
+&lt;li role="none"&gt;&lt;a href="/home"&gt;Home&lt;/a&gt;&lt;/li&gt;</pre>
+  <p class="label">role="none" is the preferred modern alias for role="presentation". The li element's list-item role is removed so screen readers only encounter the link, which is a common pattern for navigation lists.</p>
+</div>
+
+<div class="example">
+  <h3>8. aria-hidden on icon font spans</h3>
+  <pre>&lt;button&gt;
+  &lt;i class="fa fa-trash" aria-hidden="true"&gt;&lt;/i&gt;
+  Delete item
+&lt;/button&gt;
+
+&lt;!-- Without aria-hidden, some screen readers announce
+     the Unicode character used by the icon font --&gt;
+&lt;button&gt;
+  &lt;i class="fa fa-envelope" aria-hidden="true"&gt;&lt;/i&gt;
+  Send email
+&lt;/button&gt;</pre>
+  <p class="label">Icon fonts insert characters via CSS :before pseudo-elements. Without aria-hidden="true", some AT may announce the underlying Unicode private-use character. Always hide icon-font elements.</p>
+</div>
+
+<div class="example">
+  <h3>9. When NOT to use ARIA — first rule of ARIA</h3>
+  <pre>&lt;!-- BAD: reinventing a native button --&gt;
+&lt;div role="button" tabindex="0" onclick="submit()"&gt;Submit&lt;/div&gt;
+
+&lt;!-- GOOD: use the native element --&gt;
+&lt;button type="submit"&gt;Submit&lt;/button&gt;
+
+&lt;!-- BAD: adding redundant role --&gt;
+&lt;button role="button"&gt;Click me&lt;/button&gt;
+
+&lt;!-- GOOD: native semantics are already correct --&gt;
+&lt;button&gt;Click me&lt;/button&gt;</pre>
+  <p class="label">The first rule of ARIA: don't use ARIA if a native HTML element already provides the semantics. Native elements have built-in keyboard behavior, role, and state that ARIA-on-div lacks.</p>
+</div>
+
+<div class="example">
+  <h3>10. aria-label on form inputs</h3>
+  <pre>&lt;!-- When a visible label would be redundant (e.g. table cell inputs) --&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th&gt;Item&lt;/th&gt;&lt;th&gt;Quantity&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Widget A&lt;/td&gt;
+      &lt;td&gt;
+        &lt;input type="number" aria-label="Quantity for Widget A" value="1"&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+  <p class="label">aria-label is appropriate when a visible label would be redundant or impractical, such as quantity fields in a table where the column header and row header together provide context visually.</p>
+</div>
+
+<div class="example">
+  <h3>11. aria-expanded for accordion disclosure</h3>
+  <pre>&lt;button
+  aria-expanded="false"
+  aria-controls="faq-1-body"
+  id="faq-1-btn"
+&gt;
+  What is your return policy?
+&lt;/button&gt;
+&lt;div id="faq-1-body" hidden&gt;
+  &lt;p&gt;You may return items within 30 days...&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- When opened, JS sets: --&gt;
+&lt;!-- button.setAttribute('aria-expanded', 'true') --&gt;
+&lt;!-- div.removeAttribute('hidden') --&gt;</pre>
+  <p class="label">aria-expanded conveys the open/closed state of a controlled region. Pair it with aria-controls pointing to the controlled element's ID. Toggle both the attribute and the hidden state in JS.</p>
+</div>
+
+<div class="example">
+  <h3>12. aria-controls for widget relationships</h3>
+  <pre>&lt;!-- Dropdown that controls a listbox --&gt;
+&lt;button
+  id="sort-btn"
+  aria-controls="sort-list"
+  aria-expanded="false"
+  aria-haspopup="listbox"
+&gt;
+  Sort by: Relevance
+&lt;/button&gt;
+&lt;ul id="sort-list" role="listbox" aria-labelledby="sort-btn" hidden&gt;
+  &lt;li role="option" aria-selected="true"&gt;Relevance&lt;/li&gt;
+  &lt;li role="option" aria-selected="false"&gt;Price: Low to High&lt;/li&gt;
+  &lt;li role="option" aria-selected="false"&gt;Newest&lt;/li&gt;
+&lt;/ul&gt;</pre>
+  <p class="label">aria-controls identifies the element(s) a widget controls. It is an IDREF relationship — both elements must be in the same document. Support varies; always pair with visible/hidden state changes.</p>
+</div>
+
+<div class="example">
+  <h3>13. aria-required on form fields</h3>
+  <pre>&lt;form&gt;
+  &lt;label for="email"&gt;
+    Email address
+    &lt;span aria-hidden="true"&gt; *&lt;/span&gt;
+  &lt;/label&gt;
+  &lt;input
+    type="email"
+    id="email"
+    name="email"
+    aria-required="true"
+    autocomplete="email"
+  &gt;
+  &lt;p&gt;&lt;span aria-hidden="true"&gt;*&lt;/span&gt; Required field&lt;/p&gt;
+&lt;/form&gt;</pre>
+  <p class="label">aria-required="true" informs AT that the field must be filled before submission. The native required attribute also adds browser validation; use both. The asterisk is decorative, so it is hidden from AT with aria-hidden.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. aria-checked for a custom checkbox</h3>
+  <pre>&lt;div
+  role="checkbox"
+  aria-checked="false"
+  tabindex="0"
+  id="custom-cb"
+  aria-labelledby="cb-label"
+&gt;
+  &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
+&lt;/div&gt;
+&lt;span id="cb-label"&gt;Subscribe to newsletter&lt;/span&gt;
+
+&lt;script&gt;
+  const cb = document.getElementById('custom-cb');
+  cb.addEventListener('keydown', e =&gt; {
+    if (e.key === ' ') {
+      e.preventDefault();
+      const checked = cb.getAttribute('aria-checked') === 'true';
+      cb.setAttribute('aria-checked', String(!checked));
+    }
+  });
+  cb.addEventListener('click', () =&gt; {
+    const checked = cb.getAttribute('aria-checked') === 'true';
+    cb.setAttribute('aria-checked', String(!checked));
+  });
+&lt;/script&gt;</pre>
+  <p class="label">When building a custom checkbox, you must implement role="checkbox", aria-checked state management, tabindex="0", and keyboard handling (Space to toggle). Prefer native &lt;input type="checkbox"&gt; whenever possible.</p>
+</div>
+
+<div class="example">
+  <h3>15. aria-checked for tri-state (mixed)</h3>
+  <pre>&lt;!-- Parent checkbox with indeterminate state --&gt;
+&lt;div
+  role="checkbox"
+  aria-checked="mixed"
+  tabindex="0"
+  id="select-all"
+&gt;
+  Select all
+&lt;/div&gt;
+
+&lt;!-- In JS, set aria-checked to:
+     "true"  — all children checked
+     "false" — no children checked
+     "mixed" — some children checked --&gt;</pre>
+  <p class="label">aria-checked="mixed" represents an indeterminate state. This is used for "select all" controls when only some subordinate items are selected. Native &lt;input&gt; achieves this via the indeterminate JS property.</p>
+</div>
+
+<div class="example">
+  <h3>16. aria-selected for a tab panel widget</h3>
+  <pre>&lt;div role="tablist" aria-label="Product details"&gt;
+  &lt;button role="tab" aria-selected="true"  aria-controls="panel-desc" id="tab-desc"&gt;Description&lt;/button&gt;
+  &lt;button role="tab" aria-selected="false" aria-controls="panel-spec" id="tab-spec" tabindex="-1"&gt;Specs&lt;/button&gt;
+  &lt;button role="tab" aria-selected="false" aria-controls="panel-rev"  id="tab-rev"  tabindex="-1"&gt;Reviews&lt;/button&gt;
+&lt;/div&gt;
+&lt;div role="tabpanel" id="panel-desc" aria-labelledby="tab-desc"&gt;...&lt;/div&gt;
+&lt;div role="tabpanel" id="panel-spec" aria-labelledby="tab-spec" hidden&gt;...&lt;/div&gt;
+&lt;div role="tabpanel" id="panel-rev"  aria-labelledby="tab-rev"  hidden&gt;...&lt;/div&gt;</pre>
+  <p class="label">aria-selected="true" marks the active tab. Non-selected tabs use tabindex="-1" so only one tab is in the natural tab order (roving tabindex pattern). Arrow keys navigate between tabs.</p>
+</div>
+
+<div class="example">
+  <h3>17. aria-selected for a listbox option</h3>
+  <pre>&lt;ul role="listbox" aria-label="Choose a color" aria-multiselectable="false"&gt;
+  &lt;li role="option" aria-selected="false"&gt;Red&lt;/li&gt;
+  &lt;li role="option" aria-selected="true"&gt;Green&lt;/li&gt;
+  &lt;li role="option" aria-selected="false"&gt;Blue&lt;/li&gt;
+&lt;/ul&gt;</pre>
+  <p class="label">Within a listbox, aria-selected conveys which option is chosen. For multi-select listboxes, add aria-multiselectable="true" and allow multiple options to have aria-selected="true".</p>
+</div>
+
+<div class="example">
+  <h3>18. aria-disabled vs the disabled attribute</h3>
+  <pre>&lt;!-- Native disabled: removed from tab order, not focusable --&gt;
+&lt;button disabled&gt;Submit&lt;/button&gt;
+
+&lt;!-- aria-disabled: focusable but announced as disabled --&gt;
+&lt;button aria-disabled="true" onclick="return false;"&gt;
+  Submit
+&lt;/button&gt;
+
+&lt;!-- Use aria-disabled when you want the element to remain
+     focusable — e.g., so users can hear why it is disabled --&gt;
+&lt;button
+  aria-disabled="true"
+  aria-describedby="submit-why-disabled"
+  onclick="return false;"
+&gt;Submit&lt;/button&gt;
+&lt;p id="submit-why-disabled"&gt;Complete all required fields to enable.&lt;/p&gt;</pre>
+  <p class="label">aria-disabled="true" marks a widget as disabled without removing it from the tab order. This is useful when you want keyboard users to reach the element and hear the associated description explaining why it is disabled.</p>
+</div>
+
+<div class="example">
+  <h3>19. aria-readonly on a read-only field</h3>
+  <pre>&lt;label for="username"&gt;Username&lt;/label&gt;
+&lt;input
+  type="text"
+  id="username"
+  value="jsmith"
+  readonly
+  aria-readonly="true"
+  aria-describedby="username-note"
+&gt;
+&lt;p id="username-note"&gt;
+  Username cannot be changed after registration.
+&lt;/p&gt;</pre>
+  <p class="label">aria-readonly="true" signals that the field value cannot be modified. The native readonly attribute already conveys this for inputs, but aria-readonly is needed for custom editable widgets (e.g., contenteditable divs styled as inputs).</p>
+</div>
+
+<div class="example">
+  <h3>20. aria-invalid with aria-errormessage</h3>
+  <pre>&lt;label for="phone"&gt;Phone number&lt;/label&gt;
+&lt;input
+  type="tel"
+  id="phone"
+  aria-invalid="true"
+  aria-errormessage="phone-error"
+  aria-describedby="phone-error"
+  value="abc"
+&gt;
+&lt;p id="phone-error" role="alert"&gt;
+  Please enter a valid phone number (digits only).
+&lt;/p&gt;
+
+&lt;!-- aria-invalid values: "true" | "false" | "grammar" | "spelling" --&gt;</pre>
+  <p class="label">aria-invalid="true" flags the field as having an invalid value. aria-errormessage points to the ID of the error description. Using role="alert" on the error paragraph ensures immediate announcement when it appears.</p>
+</div>
+
+<div class="example">
+  <h3>21. aria-pressed for toggle buttons</h3>
+  <pre>&lt;button aria-pressed="false" id="bold-btn"&gt;
+  &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
+  Bold
+&lt;/button&gt;
+
+&lt;script&gt;
+  const btn = document.getElementById('bold-btn');
+  btn.addEventListener('click', () =&gt; {
+    const pressed = btn.getAttribute('aria-pressed') === 'true';
+    btn.setAttribute('aria-pressed', String(!pressed));
+    // Apply/remove bold formatting
+  });
+&lt;/script&gt;
+
+&lt;!-- Screen reader announces: "Bold, toggle button, not pressed" --&gt;
+&lt;!-- After click:             "Bold, toggle button, pressed"     --&gt;</pre>
+  <p class="label">aria-pressed turns a button into a toggle button with three possible states: "true" (pressed/active), "false" (not pressed), and "mixed" (partially applied, e.g., mixed bold in a text selection).</p>
+</div>
+
+<div class="example">
+  <h3>22. aria-current="page" for active nav link</h3>
+  <pre>&lt;nav aria-label="Main"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"      aria-current="page"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/blog"&gt; Blog&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;!-- Other aria-current values:
+     "step"     — current step in a wizard
+     "date"     — current date in a calendar
+     "location" — current location in a map/flowchart
+     "true"     — generic current item --&gt;</pre>
+  <p class="label">aria-current="page" marks the link corresponding to the currently loaded page. Screen readers announce "current" alongside the link name. Set it dynamically in SPAs when the route changes.</p>
+</div>
+
+<div class="example">
+  <h3>23. aria-haspopup for menus and dialogs</h3>
+  <pre>&lt;!-- Menu button --&gt;
+&lt;button aria-haspopup="menu" aria-expanded="false" aria-controls="user-menu"&gt;
+  My Account
+&lt;/button&gt;
+&lt;ul role="menu" id="user-menu" hidden&gt;
+  &lt;li role="menuitem"&gt;&lt;a href="/profile"&gt;Profile&lt;/a&gt;&lt;/li&gt;
+  &lt;li role="menuitem"&gt;&lt;a href="/settings"&gt;Settings&lt;/a&gt;&lt;/li&gt;
+  &lt;li role="menuitem"&gt;&lt;button&gt;Sign out&lt;/button&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- aria-haspopup values:
+     "menu"    | "listbox" | "tree"
+     "grid"    | "dialog"  | "true" (= menu) --&gt;</pre>
+  <p class="label">aria-haspopup tells AT that activating the element will open a popup of the specified type. This primes the user to expect a secondary layer. The value should match the role of the popup container.</p>
+</div>
+
+<div class="example">
+  <h3>24. aria-owns for non-hierarchical DOM relationships</h3>
+  <pre>&lt;!-- A tree node owns its sub-tree, even if the sub-tree
+     is elsewhere in the DOM (e.g., rendered in a portal) --&gt;
+&lt;li
+  role="treeitem"
+  aria-owns="subtree-42"
+  aria-expanded="true"
+&gt;
+  Documents
+&lt;/li&gt;
+
+&lt;!-- Elsewhere in the DOM (e.g., portal container): --&gt;
+&lt;ul role="group" id="subtree-42"&gt;
+  &lt;li role="treeitem"&gt;Resume.pdf&lt;/li&gt;
+  &lt;li role="treeitem"&gt;Cover Letter.docx&lt;/li&gt;
+&lt;/ul&gt;</pre>
+  <p class="label">aria-owns creates a parent-child relationship in the accessibility tree that does not exist in the DOM. Use it sparingly — only when DOM reordering is impossible. It can cause confusion if misused.</p>
+</div>
+
+<div class="example">
+  <h3>25. aria-activedescendant for composite widgets</h3>
+  <pre>&lt;!-- The container holds focus; aria-activedescendant tracks
+     the currently "active" child visually --&gt;
+&lt;ul
+  role="listbox"
+  tabindex="0"
+  id="fruit-list"
+  aria-activedescendant="opt-banana"
+  aria-label="Favourite fruit"
+&gt;
+  &lt;li role="option" id="opt-apple"  aria-selected="false"&gt;Apple&lt;/li&gt;
+  &lt;li role="option" id="opt-banana" aria-selected="true"&gt;Banana&lt;/li&gt;
+  &lt;li role="option" id="opt-cherry" aria-selected="false"&gt;Cherry&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- On arrow key, JS updates aria-activedescendant to the new option's ID --&gt;</pre>
+  <p class="label">aria-activedescendant is used in "managed focus" composites. The container element holds real DOM focus; AT follows aria-activedescendant to know which child is currently active, avoiding focus-thrashing on every keystroke.</p>
+</div>
+
+<div class="example">
+  <h3>26. aria-valuenow / aria-valuemin / aria-valuemax / aria-valuetext for sliders</h3>
+  <pre>&lt;div
+  role="slider"
+  tabindex="0"
+  aria-label="Volume"
+  aria-valuenow="60"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  aria-valuetext="60 percent"
+  id="volume-slider"
+&gt;
+  &lt;div class="thumb" style="left: 60%"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  // On arrow key, update aria-valuenow and aria-valuetext
+  slider.setAttribute('aria-valuenow', newValue);
+  slider.setAttribute('aria-valuetext', newValue + ' percent');
+&lt;/script&gt;</pre>
+  <p class="label">Custom sliders need all four value attributes. aria-valuetext overrides the numeric announcement with a human-friendly string — essential when the raw number is meaningless (e.g., "Low / Medium / High" positions).</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Complete tab widget ARIA pattern</h3>
+  <pre>&lt;!-- Tab list --&gt;
+&lt;div role="tablist" aria-label="Settings sections"&gt;
+  &lt;button
+    role="tab"
+    id="tab-general"
+    aria-selected="true"
+    aria-controls="panel-general"
+  &gt;General&lt;/button&gt;
+  &lt;button
+    role="tab"
+    id="tab-security"
+    aria-selected="false"
+    aria-controls="panel-security"
+    tabindex="-1"
+  &gt;Security&lt;/button&gt;
+  &lt;button
+    role="tab"
+    id="tab-billing"
+    aria-selected="false"
+    aria-controls="panel-billing"
+    tabindex="-1"
+  &gt;Billing&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- Tab panels --&gt;
+&lt;div
+  role="tabpanel"
+  id="panel-general"
+  aria-labelledby="tab-general"
+  tabindex="0"
+&gt;
+  &lt;h2&gt;General Settings&lt;/h2&gt;
+  &lt;!-- content --&gt;
+&lt;/div&gt;
+&lt;div
+  role="tabpanel"
+  id="panel-security"
+  aria-labelledby="tab-security"
+  tabindex="0"
+  hidden
+&gt;
+  &lt;!-- content --&gt;
+&lt;/div&gt;
+&lt;div
+  role="tabpanel"
+  id="panel-billing"
+  aria-labelledby="tab-billing"
+  tabindex="0"
+  hidden
+&gt;
+  &lt;!-- content --&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Full tab widget: tablist container, tab buttons with aria-selected and aria-controls, tabpanel with aria-labelledby and tabindex="0" so panel content is reachable. Non-active tabs use tabindex="-1"; arrow keys cycle through them.</p>
+</div>
+
+<div class="example">
+  <h3>28. Accordion pattern with ARIA</h3>
+  <pre>&lt;div class="accordion"&gt;
+  &lt;!-- Item 1 --&gt;
+  &lt;h3&gt;
+    &lt;button
+      type="button"
+      aria-expanded="true"
+      aria-controls="acc-body-1"
+      id="acc-hd-1"
+    &gt;
+      Shipping &amp; Delivery
+    &lt;/button&gt;
+  &lt;/h3&gt;
+  &lt;div
+    id="acc-body-1"
+    role="region"
+    aria-labelledby="acc-hd-1"
+  &gt;
+    &lt;p&gt;Standard shipping takes 5-7 business days...&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Item 2 --&gt;
+  &lt;h3&gt;
+    &lt;button
+      type="button"
+      aria-expanded="false"
+      aria-controls="acc-body-2"
+      id="acc-hd-2"
+    &gt;
+      Returns &amp; Refunds
+    &lt;/button&gt;
+  &lt;/h3&gt;
+  &lt;div
+    id="acc-body-2"
+    role="region"
+    aria-labelledby="acc-hd-2"
+    hidden
+  &gt;
+    &lt;p&gt;Return within 30 days for a full refund...&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+  <p class="label">The WAI-ARIA accordion pattern: heading > button with aria-expanded, paired panel div with role="region" and aria-labelledby. The role="region" creates a landmark only when the section has a label, enabling screen reader landmark navigation.</p>
+</div>
+
+<div class="example">
+  <h3>29. Dropdown menu ARIA pattern</h3>
+  <pre>&lt;div class="menu-wrapper"&gt;
+  &lt;button
+    type="button"
+    id="nav-menu-btn"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls="nav-menu"
+  &gt;
+    Products
+    &lt;svg aria-hidden="true"&gt;&lt;!-- chevron --&gt;&lt;/svg&gt;
+  &lt;/button&gt;
+
+  &lt;ul
+    role="menu"
+    id="nav-menu"
+    aria-labelledby="nav-menu-btn"
+    hidden
+  &gt;
+    &lt;li role="none"&gt;
+      &lt;a role="menuitem" href="/widgets"&gt;Widgets&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li role="none"&gt;
+      &lt;a role="menuitem" href="/gadgets"&gt;Gadgets&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li role="none"&gt;
+      &lt;button role="menuitem"&gt;Compare all&lt;/button&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Menu pattern: button with aria-haspopup="menu" and aria-expanded, ul with role="menu", li with role="none", and links/buttons with role="menuitem". Arrow keys navigate items; Escape closes and returns focus to the button.</p>
+</div>
+
+<div class="example">
+  <h3>30. Dialog with ARIA</h3>
+  <pre>&lt;div
+  role="dialog"
+  id="confirm-dialog"
+  aria-modal="true"
+  aria-labelledby="dialog-title"
+  aria-describedby="dialog-desc"
+&gt;
+  &lt;h2 id="dialog-title"&gt;Confirm deletion&lt;/h2&gt;
+  &lt;p id="dialog-desc"&gt;
+    This will permanently delete your account and all data.
+    This action cannot be undone.
+  &lt;/p&gt;
+  &lt;button type="button" id="dialog-cancel"&gt;Cancel&lt;/button&gt;
+  &lt;button type="button" id="dialog-confirm"&gt;Delete account&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- On open:
+     - Move focus to first focusable element (Cancel button)
+     - Trap Tab/Shift+Tab within dialog
+     - Escape key closes dialog and restores focus --&gt;</pre>
+  <p class="label">Dialogs need role="dialog", aria-modal="true" (tells AT to ignore content outside), aria-labelledby (title), and aria-describedby (description). On open, focus must move into the dialog; on close, it must return to the trigger.</p>
+</div>
+
+<div class="example">
+  <h3>31. Listbox pattern</h3>
+  <pre>&lt;label id="lang-label"&gt;Preferred language&lt;/label&gt;
+&lt;ul
+  role="listbox"
+  aria-labelledby="lang-label"
+  tabindex="0"
+  aria-activedescendant="opt-en"
+&gt;
+  &lt;li role="option" id="opt-en" aria-selected="true"&gt;English&lt;/li&gt;
+  &lt;li role="option" id="opt-fr" aria-selected="false"&gt;French&lt;/li&gt;
+  &lt;li role="option" id="opt-de" aria-selected="false"&gt;German&lt;/li&gt;
+  &lt;li role="option" id="opt-ja" aria-selected="false"&gt;Japanese&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Keyboard: Arrow keys move aria-activedescendant,
+               Enter/Space selects (sets aria-selected="true") --&gt;</pre>
+  <p class="label">A listbox is a scrollable selection widget. The container holds focus via tabindex="0" and aria-activedescendant. Each option has role="option" and aria-selected. This pattern is used when a native &lt;select&gt; cannot be styled sufficiently.</p>
+</div>
+
+<div class="example">
+  <h3>32. Combobox basics (ARIA 1.2 pattern)</h3>
+  <pre>&lt;label for="city-input"&gt;City&lt;/label&gt;
+&lt;div class="combobox-wrapper"&gt;
+  &lt;input
+    type="text"
+    id="city-input"
+    role="combobox"
+    aria-autocomplete="list"
+    aria-expanded="false"
+    aria-controls="city-listbox"
+    aria-activedescendant=""
+    autocomplete="off"
+  &gt;
+  &lt;ul
+    role="listbox"
+    id="city-listbox"
+    aria-label="Cities"
+    hidden
+  &gt;
+    &lt;li role="option" id="opt-nyc"&gt;New York&lt;/li&gt;
+    &lt;li role="option" id="opt-la"&gt;Los Angeles&lt;/li&gt;
+    &lt;li role="option" id="opt-chi"&gt;Chicago&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</pre>
+  <p class="label">The ARIA 1.2 combobox pattern places role="combobox" on the input itself (not a wrapper div). aria-autocomplete="list" means suggestions are shown in a popup list. aria-expanded and aria-activedescendant update as the user types.</p>
+</div>
+
+<div class="example">
+  <h3>33. Tooltip pattern</h3>
+  <pre>&lt;button
+  type="button"
+  aria-describedby="tt-copy"
+  id="copy-btn"
+&gt;
+  &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
+  &lt;span class="sr-only"&gt;Copy&lt;/span&gt;
+&lt;/button&gt;
+
+&lt;div
+  role="tooltip"
+  id="tt-copy"
+  hidden
+&gt;
+  Copy to clipboard
+&lt;/div&gt;
+
+&lt;!-- Show tooltip on focus/hover; hide on blur/mouseleave --&gt;
+&lt;!-- Tooltip is supplementary; the button already has "Copy" --&gt;</pre>
+  <p class="label">role="tooltip" marks descriptive popups that appear on hover/focus. Link the trigger with aria-describedby. The tooltip should not contain interactive elements and should be dismissible with Escape (WCAG 1.4.13). It is supplementary — not the primary label.</p>
+</div>
+
+<div class="example">
+  <h3>34. Tree widget</h3>
+  <pre>&lt;ul role="tree" aria-label="File browser"&gt;
+  &lt;li
+    role="treeitem"
+    aria-expanded="true"
+    aria-selected="false"
+  &gt;
+    &lt;span&gt;src&lt;/span&gt;
+    &lt;ul role="group"&gt;
+      &lt;li role="treeitem" aria-selected="true"&gt;
+        &lt;span&gt;index.ts&lt;/span&gt;
+      &lt;/li&gt;
+      &lt;li
+        role="treeitem"
+        aria-expanded="false"
+        aria-selected="false"
+      &gt;
+        &lt;span&gt;components&lt;/span&gt;
+        &lt;ul role="group"&gt;
+          &lt;li role="treeitem" aria-selected="false"&gt;
+            &lt;span&gt;Button.tsx&lt;/span&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</pre>
+  <p class="label">Tree widgets use role="tree" on the root, role="treeitem" on each node, and role="group" for child subtrees. Expandable nodes need aria-expanded. Keyboard: arrows navigate, Enter/Space select or expand/collapse.</p>
+</div>
+
+<div class="example">
+  <h3>35. Grid widget</h3>
+  <pre>&lt;table
+  role="grid"
+  aria-label="Task list"
+  aria-rowcount="100"
+  aria-colcount="4"
+&gt;
+  &lt;thead&gt;
+    &lt;tr role="row"&gt;
+      &lt;th role="columnheader" aria-sort="ascending"&gt;Title&lt;/th&gt;
+      &lt;th role="columnheader" aria-sort="none"&gt;Status&lt;/th&gt;
+      &lt;th role="columnheader" aria-sort="none"&gt;Priority&lt;/th&gt;
+      &lt;th role="columnheader"&gt;Actions&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr role="row" aria-rowindex="1"&gt;
+      &lt;td role="gridcell"&gt;Design review&lt;/td&gt;
+      &lt;td role="gridcell"&gt;In progress&lt;/td&gt;
+      &lt;td role="gridcell"&gt;High&lt;/td&gt;
+      &lt;td role="gridcell"&gt;&lt;button&gt;Edit&lt;/button&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+  <p class="label">role="grid" turns a table into an interactive widget where cells can receive focus and contain interactive elements. aria-sort indicates the sort direction on column headers. Arrow keys navigate cells; Tab moves to next interactive element.</p>
+</div>
+
+<div class="example">
+  <h3>36. Custom star rating widget</h3>
+  <pre>&lt;div
+  role="radiogroup"
+  aria-label="Product rating"
+  aria-required="true"
+&gt;
+  &lt;span&gt;Rate this product:&lt;/span&gt;
+  &lt;button role="radio" aria-checked="false" aria-label="1 star"&gt;★&lt;/button&gt;
+  &lt;button role="radio" aria-checked="false" aria-label="2 stars"&gt;★&lt;/button&gt;
+  &lt;button role="radio" aria-checked="true"  aria-label="3 stars"&gt;★&lt;/button&gt;
+  &lt;button role="radio" aria-checked="false" aria-label="4 stars"&gt;★&lt;/button&gt;
+  &lt;button role="radio" aria-checked="false" aria-label="5 stars"&gt;★&lt;/button&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Star rating widgets group radio-like controls with role="radiogroup". Each star uses role="radio" with aria-checked. aria-label on each star gives a meaningful name ("3 stars") rather than the visual character "★".</p>
+</div>
+
+<div class="example">
+  <h3>37. Spinbutton (numeric stepper)</h3>
+  <pre>&lt;label id="qty-label"&gt;Quantity&lt;/label&gt;
+&lt;div
+  role="spinbutton"
+  aria-labelledby="qty-label"
+  aria-valuenow="1"
+  aria-valuemin="1"
+  aria-valuemax="99"
+  tabindex="0"
+  id="qty-spin"
+&gt;
+  &lt;button
+    aria-label="Decrease quantity"
+    tabindex="-1"
+    id="qty-dec"
+  &gt;−&lt;/button&gt;
+  &lt;span aria-hidden="true"&gt;1&lt;/span&gt;
+  &lt;button
+    aria-label="Increase quantity"
+    tabindex="-1"
+    id="qty-inc"
+  &gt;+&lt;/button&gt;
+&lt;/div&gt;</pre>
+  <p class="label">role="spinbutton" is for widgets that let users select a value from a numeric range. The container holds focus; Up/Down arrows increment/decrement. The inner buttons are tabindex="-1" so only one tab stop exists.</p>
+</div>
+
+<div class="example">
+  <h3>38. role="button" on a div — full keyboard implementation</h3>
+  <pre>&lt;div
+  role="button"
+  tabindex="0"
+  id="custom-btn"
+  aria-pressed="false"
+  class="custom-toggle"
+&gt;
+  Enable notifications
+&lt;/div&gt;
+
+&lt;script&gt;
+  const btn = document.getElementById('custom-btn');
+
+  btn.addEventListener('click', toggle);
+  btn.addEventListener('keydown', e =&gt; {
+    // buttons activate on both Enter and Space
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault(); // prevent page scroll on Space
+      toggle();
+    }
+  });
+
+  function toggle() {
+    const pressed = btn.getAttribute('aria-pressed') === 'true';
+    btn.setAttribute('aria-pressed', String(!pressed));
+  }
+&lt;/script&gt;</pre>
+  <p class="label">When role="button" is used on a non-button element, you must manually add tabindex="0", click handler, AND keydown handler for both Enter and Space. Native &lt;button&gt; handles all this automatically — always prefer it.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Live region combined with ARIA role</h3>
+  <pre>&lt;!-- Combining role="status" (implicit aria-live="polite") with ARIA --&gt;
+&lt;div
+  role="status"
+  aria-label="Application notifications"
+  aria-atomic="true"
+&gt;
+  &lt;!-- Content injected by JS; will be announced politely --&gt;
+&lt;/div&gt;
+
+&lt;!-- Combining role="alert" (implicit aria-live="assertive") with ARIA --&gt;
+&lt;div
+  role="alert"
+  aria-atomic="true"
+  aria-live="assertive"
+&gt;
+  &lt;!-- Critical errors injected here --&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  // Best practice: always put the live region in the DOM on page load
+  // Never inject the live region element itself dynamically
+  document.querySelector('[role="status"]').textContent =
+    'Your settings have been saved.';
+&lt;/script&gt;</pre>
+  <p class="label">role="alert" carries implicit aria-live="assertive" and aria-atomic="true". role="status" carries implicit aria-live="polite". Declaring aria-live explicitly alongside the role is redundant but harmless for clarity.</p>
+</div>
+
+<div class="example">
+  <h3>40. ARIA for a custom &lt;select&gt; replacement</h3>
+  <pre>&lt;div class="custom-select"&gt;
+  &lt;!-- Trigger --&gt;
+  &lt;button
+    type="button"
+    id="select-btn"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-labelledby="select-label select-btn"
+  &gt;
+    &lt;span id="select-value"&gt;United States&lt;/span&gt;
+    &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
+  &lt;/button&gt;
+
+  &lt;!-- Dropdown --&gt;
+  &lt;ul
+    role="listbox"
+    id="select-listbox"
+    aria-labelledby="select-label"
+    hidden
+  &gt;
+    &lt;li role="option" id="opt-us" aria-selected="true"&gt;United States&lt;/li&gt;
+    &lt;li role="option" id="opt-ca" aria-selected="false"&gt;Canada&lt;/li&gt;
+    &lt;li role="option" id="opt-uk" aria-selected="false"&gt;United Kingdom&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+&lt;label id="select-label"&gt;Country&lt;/label&gt;</pre>
+  <p class="label">Custom selects need a button trigger with aria-haspopup="listbox" + aria-expanded, and a listbox with options having aria-selected. The button label chains aria-labelledby to both the label and the button itself for full context.</p>
+</div>
+
+<div class="example">
+  <h3>41. Virtual scroll accessibility with aria-rowcount</h3>
+  <pre>&lt;div
+  role="grid"
+  aria-label="Employee directory"
+  aria-rowcount="5000"
+  aria-colcount="3"
+&gt;
+  &lt;div role="rowgroup"&gt;
+    &lt;div role="row"&gt;
+      &lt;span role="columnheader"&gt;Name&lt;/span&gt;
+      &lt;span role="columnheader"&gt;Department&lt;/span&gt;
+      &lt;span role="columnheader"&gt;Location&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- Only 20 rows rendered at a time --&gt;
+  &lt;div role="rowgroup"&gt;
+    &lt;div role="row" aria-rowindex="101"&gt;
+      &lt;span role="gridcell"&gt;Alice Johnson&lt;/span&gt;
+      &lt;span role="gridcell"&gt;Engineering&lt;/span&gt;
+      &lt;span role="gridcell"&gt;Seattle&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+  <p class="label">For virtual scrolling grids, aria-rowcount declares the total row count (even if not all are rendered) and aria-rowindex on each row gives its position in the full set. Screen readers can then announce "row 101 of 5000".</p>
+</div>
+
+<div class="example">
+  <h3>42. ARIA ownership with portals</h3>
+  <pre>&lt;!-- Combobox input in the normal flow --&gt;
+&lt;input
+  role="combobox"
+  aria-expanded="true"
+  aria-controls="portal-listbox"
+  aria-activedescendant="opt-1"
+  id="search-input"
+  type="text"
+&gt;
+
+&lt;!-- Listbox rendered in a portal at body root for z-index/overflow --&gt;
+&lt;ul
+  role="listbox"
+  id="portal-listbox"
+  aria-label="Search suggestions"
+&gt;
+  &lt;li role="option" id="opt-1" aria-selected="true"&gt;Accessibility&lt;/li&gt;
+  &lt;li role="option" id="opt-2" aria-selected="false"&gt;Accessible design&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- aria-controls and aria-activedescendant work across DOM positions
+     as long as both elements are in the same document --&gt;</pre>
+  <p class="label">ARIA IDREF attributes (aria-controls, aria-activedescendant) work across DOM positions since they reference IDs, not DOM ancestors. This lets popup listboxes be rendered in portals at the document root while maintaining correct AT relationships.</p>
+</div>
+
+<div class="example">
+  <h3>43. Complex sortable data grid with ARIA</h3>
+  <pre>&lt;table role="grid" aria-label="Sales report" aria-rowcount="250"&gt;
+  &lt;thead&gt;
+    &lt;tr role="row"&gt;
+      &lt;th
+        role="columnheader"
+        aria-sort="none"
+        tabindex="0"
+        aria-label="Region, click to sort"
+      &gt;Region&lt;/th&gt;
+      &lt;th
+        role="columnheader"
+        aria-sort="descending"
+        tabindex="0"
+        aria-label="Revenue, sorted descending, click to sort ascending"
+      &gt;
+        Revenue
+        &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
+      &lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr role="row" aria-rowindex="1"&gt;
+      &lt;td role="gridcell" tabindex="-1"&gt;North&lt;/td&gt;
+      &lt;td role="gridcell" tabindex="-1"&gt;$1,200,000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+  <p class="label">Sortable grids use aria-sort on columnheader: "none" | "ascending" | "descending" | "other". Include the sort state in aria-label for verbose announcement. Cells use tabindex="-1" so arrow-key navigation can move focus to them.</p>
+</div>
+
+<div class="example">
+  <h3>44. Testing ARIA implementation with axe-core</h3>
+  <pre>&lt;!-- In your test file (Jest + jsdom / Playwright / Cypress) --&gt;
+
+&lt;!-- Method 1: axe-core in browser devtools --&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.9.0/axe.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  axe.run(document, {}, (err, results) =&gt; {
+    if (err) throw err;
+    results.violations.forEach(v =&gt; {
+      console.error('[axe]', v.impact, v.description);
+      v.nodes.forEach(n =&gt; console.error('  Node:', n.html));
+    });
+  });
+&lt;/script&gt;
+
+&lt;!-- Method 2: jest-axe (Jest unit tests) --&gt;
+&lt;!-- import { axe, toHaveNoViolations } from 'jest-axe'; --&gt;
+&lt;!-- expect.extend(toHaveNoViolations);                   --&gt;
+&lt;!-- const results = await axe(container);               --&gt;
+&lt;!-- expect(results).toHaveNoViolations();               --&gt;</pre>
+  <p class="label">Automated ARIA testing catches ~30-40% of accessibility issues. axe-core checks for missing labels, invalid role usage, incorrect ownership, contrast failures, and more. Always supplement with manual screen reader and keyboard testing.</p>
+</div>
+
+<div class="example">
+  <h3>45. ARIA in shadow DOM</h3>
+  <pre>&lt;!-- Custom element with shadow DOM --&gt;
+&lt;my-toggle id="notif-toggle"&gt;&lt;/my-toggle&gt;
+
+&lt;!-- Inside the shadow root: --&gt;
+&lt;template id="toggle-template"&gt;
+  &lt;button
+    part="button"
+    aria-pressed="false"
+  &gt;
+    &lt;slot&gt;Toggle&lt;/slot&gt;
+  &lt;/button&gt;
+&lt;/template&gt;
+
+&lt;!-- Cross-root ARIA (AOM / ARIA reflection) --&gt;
+&lt;script&gt;
+  class MyToggle extends HTMLElement {
+    connectedCallback() {
+      const shadow = this.attachShadow({ mode: 'open' });
+      // ARIA attributes on host element may not reach shadow DOM
+      // Use element internals for proper cross-root ARIA
+      this._internals = this.attachInternals();
+      this._internals.ariaPressed = 'false';
+    }
+  }
+  customElements.define('my-toggle', MyToggle);
+&lt;/script&gt;</pre>
+  <p class="label">Shadow DOM creates ARIA isolation problems. ARIA IDREFs cannot cross shadow boundaries. Use ElementInternals (attachInternals()) and ARIA reflection (element.ariaLabel, etc.) to expose accessibility state from within shadow roots.</p>
+</div>
+
+<div class="example">
+  <h3>46. Dynamic content patterns with ARIA</h3>
+  <pre>&lt;!-- Pattern: announce dynamic content without focus disruption --&gt;
+&lt;div id="announcement" role="status" aria-live="polite" class="sr-only"&gt;&lt;/div&gt;
+
+&lt;button id="load-more"&gt;Load more articles&lt;/button&gt;
+&lt;div id="article-list"&gt;
+  &lt;!-- Articles appended here --&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  document.getElementById('load-more').addEventListener('click', async () =&gt; {
+    const articles = await fetchMoreArticles();
+    const list = document.getElementById('article-list');
+    const count = articles.length;
+
+    articles.forEach(a =&gt; list.append(renderArticle(a)));
+
+    // Announce result without moving focus
+    const msg = document.getElementById('announcement');
+    msg.textContent = ''; // clear first for re-announcement
+    requestAnimationFrame(() =&gt; {
+      msg.textContent = `${count} more articles loaded. ${list.children.length} total.`;
+    });
+  });
+&lt;/script&gt;</pre>
+  <p class="label">When dynamic content is appended, announce a summary via a live region rather than moving focus into the new content. Clearing and re-setting textContent with rAF ensures the same message re-triggers screen reader announcement.</p>
+</div>
+
+<div class="example">
+  <h3>47. aria-busy for loading states</h3>
+  <pre>&lt;div
+  id="search-results"
+  aria-live="polite"
+  aria-busy="false"
+  aria-label="Search results"
+&gt;
+  &lt;!-- Results rendered here --&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  async function search(query) {
+    const region = document.getElementById('search-results');
+
+    // Signal loading — AT may wait before reading the region
+    region.setAttribute('aria-busy', 'true');
+    region.innerHTML = '&lt;p&gt;Loading...&lt;/p&gt;';
+
+    const results = await fetchResults(query);
+    region.innerHTML = renderResults(results);
+
+    // Signal complete — AT will now announce the updated content
+    region.setAttribute('aria-busy', 'false');
+  }
+&lt;/script&gt;</pre>
+  <p class="label">aria-busy="true" signals to AT that the region is being updated and they should wait before reading it. Set it before starting the update and clear it to "false" when complete. Useful for live regions that make multiple rapid changes.</p>
+</div>
+
+<div class="example">
+  <h3>48. ARIA patterns for drag and drop</h3>
+  <pre>&lt;ul aria-label="Task board" role="list"&gt;
+  &lt;li
+    role="listitem"
+    draggable="true"
+    aria-grabbed="true"
+    aria-describedby="dnd-instructions"
+    tabindex="0"
+  &gt;
+    Task: Write docs
+  &lt;/li&gt;
+  &lt;li role="listitem" draggable="true" aria-grabbed="false" tabindex="0"&gt;
+    Task: Fix bug
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p id="dnd-instructions" class="sr-only"&gt;
+  Press Space to pick up. Use arrow keys to move. Press Space to drop.
+  Press Escape to cancel.
+&lt;/p&gt;
+
+&lt;div role="status" aria-live="polite" id="dnd-status"&gt;&lt;/div&gt;</pre>
+  <p class="label">Drag-and-drop needs keyboard alternatives. Provide instructions via aria-describedby, use aria-grabbed to indicate grabbed state, and announce moves via a live region status element. Escape should cancel the operation.</p>
+</div>
+
+<div class="example">
+  <h3>49. ARIA for multi-level breadcrumb navigation</h3>
+  <pre>&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/electronics"&gt;Electronics&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/electronics/phones"&gt;Phones&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;
+      &lt;!-- Current page: link or span? --&gt;
+      &lt;a href="/electronics/phones/iphone-15" aria-current="page"&gt;
+        iPhone 15
+      &lt;/a&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;
+
+&lt;!-- Separator characters (›, /, &gt;) are decorative:
+&lt;li aria-hidden="true"&gt; &gt; &lt;/li&gt;
+or via CSS content — no ARIA needed --&gt;</pre>
+  <p class="label">Breadcrumbs use a nav with aria-label="Breadcrumb" and an ordered list. The current page item carries aria-current="page". Separator glyphs should be hidden from AT (aria-hidden or CSS only). An ordered list correctly conveys the hierarchy level count.</p>
+</div>
+
+<div class="example">
+  <h3>50. ARIA label computation priority order</h3>
+  <pre>&lt;!-- ARIA accessible name computation (highest → lowest priority): --&gt;
+
+&lt;!-- 1. aria-labelledby (highest) --&gt;
+&lt;input aria-labelledby="lbl" /&gt;&lt;span id="lbl"&gt;Name&lt;/span&gt;
+
+&lt;!-- 2. aria-label --&gt;
+&lt;input aria-label="Full name" /&gt;
+
+&lt;!-- 3. Linked &lt;label for=...&gt; or wrapping &lt;label&gt; --&gt;
+&lt;label for="fn"&gt;Full name&lt;/label&gt;&lt;input id="fn" /&gt;
+
+&lt;!-- 4. title attribute (also provides tooltip) --&gt;
+&lt;input title="Full name" /&gt;
+
+&lt;!-- 5. placeholder (LAST RESORT — disappears on input, avoid) --&gt;
+&lt;input placeholder="Full name" /&gt;
+
+&lt;!-- If aria-labelledby and aria-label are both present,
+     aria-labelledby wins. Always prefer visible labels
+     (option 3) for the best user experience. --&gt;</pre>
+  <p class="label">Understanding ARIA label computation priority helps debug "why is the screen reader saying that?". aria-labelledby always wins, then aria-label, then associated &lt;label&gt;, then title, then placeholder. Visible &lt;label&gt; elements are the gold standard for forms.</p>
+</div>
+
+</body>
+</html>

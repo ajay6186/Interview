@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 3.5 — Advanced Forms  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 3.5 — Advanced Forms</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 3.5 — Advanced Forms</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. output element</h3>
+  <pre>&lt;input type="range" id="slider" min="0" max="100" value="50"
+       oninput="result.value = slider.value"&gt;
+&lt;output id="result" for="slider"&gt;50&lt;/output&gt;</pre>
+  <p class="label">output displays the result of a calculation. The for attribute links it to input elements.</p>
+</div>
+
+<div class="example">
+  <h3>2. progress element</h3>
+  <pre>&lt;progress id="file-progress" value="32" max="100"&gt;32%&lt;/progress&gt;</pre>
+  <p class="label">progress shows task completion. Without value it shows an indeterminate state. Fallback text inside for old browsers.</p>
+</div>
+
+<div class="example">
+  <h3>3. Indeterminate progress bar</h3>
+  <pre>&lt;progress id="loading"&gt;&lt;/progress&gt;
+&lt;!-- No value attribute = indeterminate (animated) --&gt;</pre>
+  <p class="label">Omitting the value attribute creates an animated "unknown duration" progress bar.</p>
+</div>
+
+<div class="example">
+  <h3>4. meter element</h3>
+  <pre>&lt;meter value="0.6" min="0" max="1"&gt;60%&lt;/meter&gt;</pre>
+  <p class="label">meter represents a scalar measurement in a known range. Unlike progress, it has semantic coloring based on low/high/optimum.</p>
+</div>
+
+<div class="example">
+  <h3>5. meter with low, high, optimum</h3>
+  <pre>&lt;meter value="0.3" min="0" max="1" low="0.25" high="0.75" optimum="0.5"&gt;
+  30% capacity
+&lt;/meter&gt;</pre>
+  <p class="label">low/high partition the range into zones. optimum sets the "good" zone. Browser shows yellow or red for non-optimal values.</p>
+</div>
+
+<div class="example">
+  <h3>6. form attribute — external control</h3>
+  <pre>&lt;form id="order-form" action="/order" method="post"&gt;
+  &lt;input type="text" name="item" placeholder="Item name"&gt;
+&lt;/form&gt;
+
+&lt;!-- Outside the form element: --&gt;
+&lt;input type="number" name="qty" form="order-form" placeholder="Qty"&gt;
+&lt;button type="submit" form="order-form"&gt;Order&lt;/button&gt;</pre>
+  <p class="label">The form attribute associates any control or button with a form by its id, even when placed outside the form element.</p>
+</div>
+
+<div class="example">
+  <h3>7. datalist for autocomplete</h3>
+  <pre>&lt;input list="browsers" name="browser" placeholder="Choose browser"&gt;
+&lt;datalist id="browsers"&gt;
+  &lt;option value="Chrome"&gt;
+  &lt;option value="Firefox"&gt;
+  &lt;option value="Safari"&gt;
+  &lt;option value="Edge"&gt;
+&lt;/datalist&gt;</pre>
+  <p class="label">datalist provides autocomplete suggestions. The list attribute on input references the datalist id. Users can still type custom values.</p>
+</div>
+
+<div class="example">
+  <h3>8. datalist with labels</h3>
+  <pre>&lt;input list="airports" name="departure"&gt;
+&lt;datalist id="airports"&gt;
+  &lt;option value="LHR"&gt;London Heathrow&lt;/option&gt;
+  &lt;option value="JFK"&gt;New York JFK&lt;/option&gt;
+  &lt;option value="CDG"&gt;Paris Charles de Gaulle&lt;/option&gt;
+&lt;/datalist&gt;</pre>
+  <p class="label">option elements inside datalist can have both a value and a label. The label shows in the dropdown; the value is submitted.</p>
+</div>
+
+<div class="example">
+  <h3>9. novalidate attribute</h3>
+  <pre>&lt;form action="/submit" novalidate&gt;
+  &lt;input type="email" name="email" required&gt;
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</pre>
+  <p class="label">novalidate disables browser built-in form validation, allowing custom validation logic instead.</p>
+</div>
+
+<div class="example">
+  <h3>10. formnovalidate on submit button</h3>
+  <pre>&lt;form action="/checkout"&gt;
+  &lt;input type="email" name="email" required&gt;
+  &lt;button type="submit"&gt;Complete Purchase&lt;/button&gt;
+  &lt;button type="submit" formnovalidate formaction="/save-draft"&gt;Save Draft&lt;/button&gt;
+&lt;/form&gt;</pre>
+  <p class="label">formnovalidate on a specific button skips validation only for that button's submission.</p>
+</div>
+
+<div class="example">
+  <h3>11. formaction — button-specific action</h3>
+  <pre>&lt;form action="/save"&gt;
+  &lt;input type="text" name="title"&gt;
+  &lt;button type="submit"&gt;Save&lt;/button&gt;
+  &lt;button type="submit" formaction="/publish"&gt;Publish&lt;/button&gt;
+  &lt;button type="submit" formaction="/delete" formmethod="post"&gt;Delete&lt;/button&gt;
+&lt;/form&gt;</pre>
+  <p class="label">formaction, formmethod, formenctype can override form attributes per button.</p>
+</div>
+
+<div class="example">
+  <h3>12. input pattern attribute</h3>
+  <pre>&lt;input type="text" name="postcode" pattern="[A-Z]{1,2}[0-9]{1,2}[A-Z]? [0-9][A-Z]{2}"
+       title="UK postcode (e.g., SW1A 1AA)" placeholder="SW1A 1AA"&gt;</pre>
+  <p class="label">pattern applies a regular expression constraint. title provides the validation message shown to the user.</p>
+</div>
+
+<div class="example">
+  <h3>13. minlength and maxlength</h3>
+  <pre>&lt;input type="text" name="username" minlength="3" maxlength="20"
+       pattern="[a-z0-9_]+" title="3–20 lowercase letters, numbers, or underscores"&gt;</pre>
+  <p class="label">minlength enforces minimum character count. maxlength limits maximum. Both trigger built-in validation messages.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Constraint Validation API</h3>
+  <pre>const input = document.getElementById('email');
+console.log(input.validity.valid);       // true/false
+console.log(input.validity.valueMissing); // required missing
+console.log(input.validity.typeMismatch); // wrong type (e.g., bad email)
+console.log(input.validity.patternMismatch); // pattern failed
+console.log(input.validationMessage);    // browser's error message</pre>
+  <p class="label">The validity object reports which constraint failed. Use for custom validation UI.</p>
+</div>
+
+<div class="example">
+  <h3>15. setCustomValidity</h3>
+  <pre>const pw = document.getElementById('password');
+const confirm = document.getElementById('confirm-pw');
+confirm.addEventListener('input', () =&gt; {
+  if (confirm.value !== pw.value) {
+    confirm.setCustomValidity('Passwords do not match');
+  } else {
+    confirm.setCustomValidity(''); // clear error
+  }
+});</pre>
+  <p class="label">setCustomValidity sets a custom error message. Pass an empty string to clear the error.</p>
+</div>
+
+<div class="example">
+  <h3>16. reportValidity()</h3>
+  <pre>const form = document.getElementById('my-form');
+document.getElementById('check-btn').addEventListener('click', () =&gt; {
+  if (!form.reportValidity()) {
+    console.log('Form has errors — shown to user');
+  }
+});</pre>
+  <p class="label">reportValidity() triggers the browser's built-in validation UI without submitting the form.</p>
+</div>
+
+<div class="example">
+  <h3>17. checkValidity() on individual input</h3>
+  <pre>const emailInput = document.getElementById('email');
+if (!emailInput.checkValidity()) {
+  // Show custom error UI
+  emailInput.classList.add('invalid');
+  document.getElementById('email-error').textContent = emailInput.validationMessage;
+}</pre>
+  <p class="label">checkValidity() returns false (and fires an invalid event) if the input fails validation, without showing browser UI.</p>
+</div>
+
+<div class="example">
+  <h3>18. Custom validation on submit</h3>
+  <pre>form.addEventListener('submit', e =&gt; {
+  e.preventDefault();
+  let valid = true;
+  form.querySelectorAll('[required]').forEach(field =&gt; {
+    if (!field.value.trim()) {
+      field.classList.add('error');
+      valid = false;
+    } else {
+      field.classList.remove('error');
+    }
+  });
+  if (valid) form.submit();
+});</pre>
+  <p class="label">Custom submit handler: prevent default, validate each field manually, submit if all pass.</p>
+</div>
+
+<div class="example">
+  <h3>19. FormData API</h3>
+  <pre>form.addEventListener('submit', async e =&gt; {
+  e.preventDefault();
+  const data = new FormData(form);
+  // Access individual values:
+  console.log(data.get('email'));
+  // Append extra fields:
+  data.append('timestamp', Date.now());
+  // Send with fetch:
+  await fetch('/api/submit', { method: 'POST', body: data });
+});</pre>
+  <p class="label">FormData automatically collects all named form controls. Works with fetch for AJAX form submission.</p>
+</div>
+
+<div class="example">
+  <h3>20. FormData iteration</h3>
+  <pre>const data = new FormData(form);
+// Iterate all entries:
+for (const [name, value] of data.entries()) {
+  console.log(`${name}: ${value}`);
+}
+// Convert to plain object:
+const obj = Object.fromEntries(data.entries());</pre>
+  <p class="label">FormData is iterable. Use entries() to loop, or Object.fromEntries() to convert to a plain object.</p>
+</div>
+
+<div class="example">
+  <h3>21. File upload with FormData</h3>
+  <pre>&lt;input id="file-input" type="file" name="avatar" accept="image/*"&gt;
+
+&lt;script&gt;
+document.getElementById('upload-btn').addEventListener('click', async () =&gt; {
+  const file = document.getElementById('file-input').files[0];
+  const data = new FormData();
+  data.append('avatar', file);
+  data.append('userId', '42');
+  await fetch('/upload', { method: 'POST', body: data });
+});
+&lt;/script&gt;</pre>
+  <p class="label">FormData handles file uploads natively. Don't set Content-Type header — fetch will set it with the correct boundary.</p>
+</div>
+
+<div class="example">
+  <h3>22. Encoding JSON data as form field</h3>
+  <pre>const form = document.getElementById('my-form');
+const metadata = { version: 2, tags: ['html', 'forms'] };
+const hiddenInput = document.createElement('input');
+hiddenInput.type = 'hidden';
+hiddenInput.name = 'metadata';
+hiddenInput.value = JSON.stringify(metadata);
+form.appendChild(hiddenInput);</pre>
+  <p class="label">Store structured data in hidden inputs by JSON-stringifying. Parse on the server.</p>
+</div>
+
+<div class="example">
+  <h3>23. input event vs change event</h3>
+  <pre>// input fires on every keystroke / drag:
+slider.addEventListener('input', () =&gt; output.value = slider.value);
+
+// change fires when value is committed (blur, Enter):
+textInput.addEventListener('change', () =&gt; console.log('Committed:', textInput.value));
+
+// For real-time validation use input; for final validation use change or blur</pre>
+  <p class="label">input fires continuously; change fires once when the user finishes. Use the right one for your UX.</p>
+</div>
+
+<div class="example">
+  <h3>24. autocomplete attribute</h3>
+  <pre>&lt;input type="text" name="name" autocomplete="name"&gt;
+&lt;input type="email" name="email" autocomplete="email"&gt;
+&lt;input type="tel" name="phone" autocomplete="tel"&gt;
+&lt;input type="text" name="street" autocomplete="address-line1"&gt;
+&lt;input type="text" name="city" autocomplete="address-level2"&gt;
+&lt;input type="text" name="cc-number" autocomplete="cc-number"&gt;</pre>
+  <p class="label">autocomplete tokens tell browsers what type of data to autofill. Use WHATWG tokens for best browser support.</p>
+</div>
+
+<div class="example">
+  <h3>25. inputmode for mobile keyboard</h3>
+  <pre>&lt;input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="PIN"&gt;
+&lt;input type="text" inputmode="tel" placeholder="Phone"&gt;
+&lt;input type="text" inputmode="email" placeholder="Email"&gt;
+&lt;input type="text" inputmode="url" placeholder="URL"&gt;
+&lt;input type="text" inputmode="search" placeholder="Search"&gt;</pre>
+  <p class="label">inputmode controls the mobile keyboard layout without restricting input type validation.</p>
+</div>
+
+<div class="example">
+  <h3>26. enterkeyhint for mobile</h3>
+  <pre>&lt;input type="search" enterkeyhint="search" placeholder="Search..."&gt;
+&lt;input type="text" enterkeyhint="next" placeholder="First name"&gt;
+&lt;input type="text" enterkeyhint="done" placeholder="Last name"&gt;</pre>
+  <p class="label">enterkeyhint customizes the mobile keyboard's Enter key label. Values: enter, done, go, next, previous, search, send.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Volume slider with live output</h3>
+  <pre>&lt;label for="volume"&gt;Volume: &lt;output id="vol-out" for="volume"&gt;50&lt;/output&gt;%&lt;/label&gt;
+&lt;input id="volume" type="range" min="0" max="100" value="50"
+       oninput="document.getElementById('vol-out').value = this.value"
+       style="width:200px"&gt;
+&lt;meter value="50" min="0" max="100" low="20" high="80" optimum="60"
+       id="vol-meter" style="width:200px"&gt;&lt;/meter&gt;
+&lt;script&gt;
+document.getElementById('volume').addEventListener('input', function() {
+  document.getElementById('vol-meter').value = this.value;
+});
+&lt;/script&gt;</pre>
+  <p class="label">Range → output → meter: three elements synchronized. meter shows color feedback (green/yellow/red).</p>
+</div>
+
+<div class="example">
+  <h3>28. Multi-step form with progress</h3>
+  <pre>&lt;progress id="form-progress" value="1" max="3"&gt;Step 1 of 3&lt;/progress&gt;
+&lt;p&gt;Step &lt;output id="step-num"&gt;1&lt;/output&gt; of 3&lt;/p&gt;
+&lt;section id="step-1"&gt;...Step 1 fields...&lt;/section&gt;
+&lt;section id="step-2" hidden&gt;...Step 2 fields...&lt;/section&gt;
+&lt;section id="step-3" hidden&gt;...Step 3 fields...&lt;/section&gt;
+&lt;button onclick="nextStep()"&gt;Next&lt;/button&gt;</pre>
+  <p class="label">Sync progress element value with the current step number for a visual stepper.</p>
+</div>
+
+<div class="example">
+  <h3>29. Character count with meter</h3>
+  <pre>&lt;textarea id="bio" maxlength="200" rows="4" cols="40"
+          oninput="updateCount(this)"&gt;&lt;/textarea&gt;
+&lt;meter id="char-meter" min="0" max="200" low="50" high="180" optimum="100"&gt;&lt;/meter&gt;
+&lt;output id="char-count"&gt;0&lt;/output&gt;/200
+
+&lt;script&gt;
+function updateCount(ta) {
+  const len = ta.value.length;
+  document.getElementById('char-count').value = len;
+  document.getElementById('char-meter').value = len;
+}
+&lt;/script&gt;</pre>
+  <p class="label">Character counter using meter: turns yellow near limit, red when over. Synced with output for screen readers.</p>
+</div>
+
+<div class="example">
+  <h3>30. External submit button</h3>
+  <pre>&lt;form id="newsletter" action="/subscribe" method="post"&gt;
+  &lt;input type="email" name="email" required placeholder="your@email.com"&gt;
+  &lt;input type="checkbox" name="weekly" id="weekly"&gt;
+  &lt;label for="weekly"&gt;Weekly digest&lt;/label&gt;
+&lt;/form&gt;
+
+&lt;!-- In a sticky footer: --&gt;
+&lt;footer&gt;
+  &lt;button type="submit" form="newsletter"&gt;Subscribe&lt;/button&gt;
+  &lt;button type="reset" form="newsletter"&gt;Clear&lt;/button&gt;
+&lt;/footer&gt;</pre>
+  <p class="label">Sticky footer buttons can submit/reset the form anywhere on the page using the form attribute.</p>
+</div>
+
+<div class="example">
+  <h3>31. Datalist with dynamic options</h3>
+  <pre>&lt;input list="cities" id="city-input" name="city" placeholder="Type a city..."&gt;
+&lt;datalist id="cities"&gt;&lt;/datalist&gt;
+
+&lt;script&gt;
+document.getElementById('city-input').addEventListener('input', async function() {
+  if (this.value.length &lt; 2) return;
+  const res = await fetch('/api/cities?q=' + encodeURIComponent(this.value));
+  const cities = await res.json();
+  const dl = document.getElementById('cities');
+  dl.innerHTML = cities.map(c =&gt; `&lt;option value="${c.name}"&gt;${c.country}&lt;/option&gt;`).join('');
+});
+&lt;/script&gt;</pre>
+  <p class="label">Dynamic datalist: fetch suggestions on input, rebuild options. Simpler than a full autocomplete widget.</p>
+</div>
+
+<div class="example">
+  <h3>32. Form with multiple submit buttons</h3>
+  <pre>&lt;form id="doc-form" action="/save"&gt;
+  &lt;textarea name="content" rows="10"&gt;&lt;/textarea&gt;
+  &lt;div class="actions"&gt;
+    &lt;button type="submit" name="action" value="save"&gt;Save&lt;/button&gt;
+    &lt;button type="submit" name="action" value="preview"
+            formaction="/preview"&gt;Preview&lt;/button&gt;
+    &lt;button type="submit" name="action" value="publish"
+            formaction="/publish"&gt;Publish&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;</pre>
+  <p class="label">name+value on the submit button identifies which button was clicked. formaction overrides the form action per button.</p>
+</div>
+
+<div class="example">
+  <h3>33. Range with tick marks using datalist</h3>
+  <pre>&lt;input type="range" min="0" max="100" step="25" list="ticks"&gt;
+&lt;datalist id="ticks"&gt;
+  &lt;option value="0" label="0%"&gt;
+  &lt;option value="25" label="25%"&gt;
+  &lt;option value="50" label="50%"&gt;
+  &lt;option value="75" label="75%"&gt;
+  &lt;option value="100" label="100%"&gt;
+&lt;/datalist&gt;</pre>
+  <p class="label">Connecting a datalist to a range input adds tick marks at the specified positions (Chrome/Edge).</p>
+</div>
+
+<div class="example">
+  <h3>34. File upload with progress bar</h3>
+  <pre>&lt;input type="file" id="upload-input"&gt;
+&lt;progress id="upload-bar" value="0" max="100" style="display:none"&gt;&lt;/progress&gt;
+&lt;script&gt;
+document.getElementById('upload-input').addEventListener('change', async function() {
+  const file = this.files[0];
+  const bar = document.getElementById('upload-bar');
+  bar.style.display = '';
+  const xhr = new XMLHttpRequest();
+  xhr.upload.addEventListener('progress', e =&gt; {
+    if (e.lengthComputable) bar.value = (e.loaded / e.total) * 100;
+  });
+  xhr.open('POST', '/upload');
+  xhr.send(new FormData(document.getElementById('upload-form')));
+});
+&lt;/script&gt;</pre>
+  <p class="label">XHR upload progress event feeds the progress element for real-time upload feedback.</p>
+</div>
+
+<div class="example">
+  <h3>35. Output element for BMI calculator</h3>
+  <pre>&lt;form oninput="bmi.value = (weight.value / (height.value/100)**2).toFixed(1)"&gt;
+  &lt;label&gt;Height (cm): &lt;input id="height" type="number" value="170"&gt;&lt;/label&gt;
+  &lt;label&gt;Weight (kg): &lt;input id="weight" type="number" value="70"&gt;&lt;/label&gt;
+  &lt;output id="bmi" name="bmi" for="height weight"&gt;&lt;/output&gt; kg/m²
+&lt;/form&gt;</pre>
+  <p class="label">oninput on the form element triggers on any input change. The for attribute on output lists all contributing inputs.</p>
+</div>
+
+<div class="example">
+  <h3>36. Custom file input button</h3>
+  <pre>&lt;label for="avatar-upload" class="custom-file-btn"&gt;
+  Choose Avatar
+  &lt;input id="avatar-upload" type="file" accept="image/*"
+         style="position:absolute;width:1px;height:1px;opacity:0"&gt;
+&lt;/label&gt;
+&lt;span id="file-name"&gt;No file chosen&lt;/span&gt;
+&lt;script&gt;
+document.getElementById('avatar-upload').addEventListener('change', function() {
+  document.getElementById('file-name').textContent = this.files[0]?.name || 'No file chosen';
+});
+&lt;/script&gt;</pre>
+  <p class="label">Style the label as a button, hide the native input visually (not display:none — it must remain focusable).</p>
+</div>
+
+<div class="example">
+  <h3>37. Readonly vs disabled</h3>
+  <pre>&lt;!-- readonly: submitted with form, user can still focus/select --&gt;
+&lt;input type="text" name="order-id" value="ORD-12345" readonly&gt;
+
+&lt;!-- disabled: NOT submitted, visually greyed out --&gt;
+&lt;input type="text" name="promo" value="SUMMER20" disabled&gt;
+
+&lt;!-- To submit disabled value: use a hidden field --&gt;
+&lt;input type="hidden" name="promo" value="SUMMER20"&gt;</pre>
+  <p class="label">readonly prevents editing but submits the value. disabled prevents editing AND submission.</p>
+</div>
+
+<div class="example">
+  <h3>38. Autofocus and form navigation</h3>
+  <pre>&lt;form&gt;
+  &lt;input type="text" name="first" autofocus placeholder="First (auto-focused)"&gt;
+  &lt;input type="text" name="last" placeholder="Last"&gt;
+  &lt;textarea name="bio" placeholder="Bio"&gt;&lt;/textarea&gt;
+  &lt;button type="submit"&gt;Save&lt;/button&gt;
+&lt;/form&gt;</pre>
+  <p class="label">autofocus moves focus to the input on page load. Use only once per page. Tab navigates forward, Shift+Tab backward.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Form-associated custom elements</h3>
+  <pre>class StarRating extends HTMLElement {
+  static formAssociated = true;
+  #internals;
+  constructor() {
+    super();
+    this.#internals = this.attachInternals();
+  }
+  set value(v) { this.#internals.setFormValue(v); }
+  get value() { return this.#internals.form?.elements[this.name]?.value; }
+  get validity() { return this.#internals.validity; }
+}
+customElements.define('star-rating', StarRating);</pre>
+  <p class="label">Form-associated custom elements participate in form submission and validation via ElementInternals.</p>
+</div>
+
+<div class="example">
+  <h3>40. Validation with ElementInternals</h3>
+  <pre>class MyInput extends HTMLElement {
+  static formAssociated = true;
+  #internals = this.attachInternals();
+  validate() {
+    if (!this.value) {
+      this.#internals.setValidity(
+        { valueMissing: true },
+        'This field is required',
+        this.shadowRoot.querySelector('input')
+      );
+    } else {
+      this.#internals.setValidity({});
+    }
+  }
+}</pre>
+  <p class="label">setValidity() on ElementInternals integrates custom elements into the browser's constraint validation system.</p>
+</div>
+
+<div class="example">
+  <h3>41. Debounced validation</h3>
+  <pre>let debounceTimer;
+emailInput.addEventListener('input', () =&gt; {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() =&gt; {
+    fetch('/api/check-email?email=' + encodeURIComponent(emailInput.value))
+      .then(r =&gt; r.json())
+      .then(data =&gt; {
+        emailInput.setCustomValidity(data.taken ? 'Email already registered' : '');
+        emailInput.reportValidity();
+      });
+  }, 500);
+});</pre>
+  <p class="label">Debounce async validation to avoid excessive API calls while the user is typing.</p>
+</div>
+
+<div class="example">
+  <h3>42. FormData with JSON submission</h3>
+  <pre>form.addEventListener('submit', async e =&gt; {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target).entries());
+  const res = await fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  const result = await res.json();
+  console.log(result);
+});</pre>
+  <p class="label">Convert FormData to JSON using Object.fromEntries, then send as application/json for REST APIs.</p>
+</div>
+
+<div class="example">
+  <h3>43. Progress with fetch streaming</h3>
+  <pre>const response = await fetch('/large-file.bin');
+const reader = response.body.getReader();
+const total = +response.headers.get('Content-Length');
+let loaded = 0;
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  loaded += value.length;
+  progressEl.value = (loaded / total) * 100;
+}</pre>
+  <p class="label">Update a progress element from a streaming fetch response by tracking bytes read.</p>
+</div>
+
+<div class="example">
+  <h3>44. Constraint Validation API — all states</h3>
+  <pre>const v = input.validity;
+// v.valueMissing   — required but empty
+// v.typeMismatch   — wrong type (e.g., email)
+// v.patternMismatch — pattern regex failed
+// v.tooShort       — shorter than minlength
+// v.tooLong        — longer than maxlength
+// v.rangeUnderflow — less than min
+// v.rangeOverflow  — greater than max
+// v.stepMismatch   — not a multiple of step
+// v.badInput       — browser can't convert value to type
+// v.customError    — setCustomValidity was called
+// v.valid          — all constraints passed</pre>
+  <p class="label">Every validity flag and what triggers it. Build precise custom UIs targeting specific failures.</p>
+</div>
+
+<div class="example">
+  <h3>45. Live form validation pattern</h3>
+  <pre>function validateField(field) {
+  const errEl = document.getElementById(field.id + '-error');
+  if (!errEl) return;
+  if (field.validity.valid) {
+    field.removeAttribute('aria-invalid');
+    errEl.textContent = '';
+    errEl.hidden = true;
+  } else {
+    field.setAttribute('aria-invalid', 'true');
+    errEl.textContent = field.validationMessage;
+    errEl.hidden = false;
+  }
+}
+form.querySelectorAll('input, select, textarea').forEach(f =&gt; {
+  f.addEventListener('blur', () =&gt; validateField(f));
+  f.addEventListener('input', () =&gt; { if (f.dataset.touched) validateField(f); });
+  f.addEventListener('blur', () =&gt; { f.dataset.touched = 'true'; }, { once: true });
+});</pre>
+  <p class="label">Validate on blur (first interaction), then live as user types. Set aria-invalid for screen readers.</p>
+</div>
+
+<div class="example">
+  <h3>46. form.elements collection</h3>
+  <pre>const form = document.getElementById('survey');
+// Access by name:
+const age = form.elements['age'].value;
+// Access by index:
+const first = form.elements[0];
+// Iterate all controls:
+Array.from(form.elements).forEach(el =&gt; {
+  console.log(el.name, el.value, el.type);
+});</pre>
+  <p class="label">form.elements is an HTMLFormControlsCollection of all controls in document order. Access by name or index.</p>
+</div>
+
+<div class="example">
+  <h3>47. requestSubmit() vs submit()</h3>
+  <pre>// submit() — bypasses validation and submit event listeners:
+form.submit();
+
+// requestSubmit() — triggers validation and fires submit event:
+form.requestSubmit();
+
+// requestSubmit with a specific button (to get its formaction, name/value):
+form.requestSubmit(document.getElementById('publish-btn'));</pre>
+  <p class="label">Always use requestSubmit() for programmatic submission — it respects novalidate and fires the submit event.</p>
+</div>
+
+<div class="example">
+  <h3>48. FormDataEvent</h3>
+  <pre>form.addEventListener('formdata', e =&gt; {
+  // Called automatically during form submission to collect data
+  e.formData.append('csrf', getCsrfToken());
+  e.formData.append('clientTime', Date.now());
+  // Remove a field:
+  e.formData.delete('internal-id');
+});</pre>
+  <p class="label">The formdata event fires before submission and receives the FormData object for last-minute modifications.</p>
+</div>
+
+<div class="example">
+  <h3>49. Meter as disk usage gauge</h3>
+  <pre>&lt;dl&gt;
+  &lt;dt&gt;System&lt;/dt&gt;
+  &lt;dd&gt;
+    &lt;meter value="45" min="0" max="500" low="100" high="400" optimum="200"&gt;45 GB&lt;/meter&gt;
+    45 GB / 500 GB
+  &lt;/dd&gt;
+  &lt;dt&gt;User files&lt;/dt&gt;
+  &lt;dd&gt;
+    &lt;meter value="380" min="0" max="500" low="100" high="400" optimum="200"&gt;380 GB&lt;/meter&gt;
+    380 GB / 500 GB &lt;strong style="color:orange"&gt;Running low&lt;/strong&gt;
+  &lt;/dd&gt;
+&lt;/dl&gt;</pre>
+  <p class="label">meter elements in a definition list for a storage dashboard. High value (380) exceeds high threshold (400) → yellow.</p>
+</div>
+
+<div class="example">
+  <h3>50. Reactive form state with Proxy</h3>
+  <pre>const state = new Proxy({ name: '', email: '' }, {
+  set(obj, prop, value) {
+    obj[prop] = value;
+    // Sync to DOM:
+    const input = document.querySelector(`[name="${prop}"]`);
+    if (input) input.value = value;
+    // Update output/meter/progress:
+    updatePreview(obj);
+    return true;
+  }
+});
+// Bind inputs to state:
+form.querySelectorAll('input').forEach(input =&gt; {
+  input.addEventListener('input', () =&gt; state[input.name] = input.value);
+});</pre>
+  <p class="label">Proxy-based two-way binding: DOM changes update state; state changes update DOM. Simulates React/Vue reactivity in vanilla JS.</p>
+</div>
+
+</body>
+</html>

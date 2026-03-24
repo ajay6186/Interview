@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 6.5 — Meta and SEO
+  ============================================================================
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 6.5 — Meta and SEO</title>
+
+  <!-- Section 1: Basic SEO meta tags -->
+  <meta name="description" content="Learn HTML from beginner to expert with hands-on exercises.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://example.com/html-mastery">
+
+  <!-- Section 2: Open Graph meta tags -->
+  <meta property="og:title" content="HTML Mastery Exercises">
+  <meta property="og:description" content="Hands-on HTML exercises from beginner to expert.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://example.com/html-mastery">
+  <meta property="og:image" content="https://example.com/images/og-image.jpg">
+
+  <!-- Section 3: Twitter Card meta tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HTML Mastery Exercises">
+  <meta name="twitter:description" content="Hands-on HTML exercises from beginner to expert.">
+  <meta name="twitter:image" content="https://example.com/images/twitter-image.jpg">
+
+  <!-- Section 4: JSON-LD structured data -->
+  <script id="json-ld" type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "HTML Mastery Exercises",
+    "description": "Hands-on HTML exercises from beginner to expert.",
+    "url": "https://example.com/html-mastery"
+  }
+  </script>
+
+</head>
+<body>
+
+<h1>Meta and SEO — Solution</h1>
+<p>All the work for this exercise is in the <code>&lt;head&gt;</code> element above.</p>
+<p>Open DevTools → Elements to inspect the meta tags. The assertions below verify them via JavaScript.</p>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 6.5 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const metaDesc = document.querySelector('meta[name="description"]');
+  assert(metaDesc !== null && (metaDesc.getAttribute("content") || "").trim() !== "",
+    'meta[name="description"] exists with non-empty content');
+
+  const metaRobots = document.querySelector('meta[name="robots"]');
+  assert(metaRobots !== null, 'meta[name="robots"] exists');
+  assert(metaRobots && (metaRobots.getAttribute("content") || "").includes("index"),
+    'robots content includes "index"');
+
+  const canonical = document.querySelector('link[rel="canonical"]');
+  assert(canonical !== null, 'link[rel="canonical"] exists');
+  assert(canonical && (canonical.getAttribute("href") || "").trim() !== "",
+    'canonical link has non-empty href');
+
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  assert(ogTitle !== null && (ogTitle.getAttribute("content") || "").trim() !== "",
+    'og:title meta exists with non-empty content');
+
+  const ogDesc = document.querySelector('meta[property="og:description"]');
+  assert(ogDesc !== null && (ogDesc.getAttribute("content") || "").trim() !== "",
+    'og:description meta exists with non-empty content');
+
+  const ogType = document.querySelector('meta[property="og:type"]');
+  assert(ogType !== null && ogType.getAttribute("content") === "website",
+    'og:type meta has content="website"');
+
+  const ogUrl = document.querySelector('meta[property="og:url"]');
+  assert(ogUrl !== null && (ogUrl.getAttribute("content") || "").trim() !== "",
+    'og:url meta exists with non-empty content');
+
+  const ogImage = document.querySelector('meta[property="og:image"]');
+  assert(ogImage !== null && (ogImage.getAttribute("content") || "").trim() !== "",
+    'og:image meta exists with non-empty content');
+
+  const twCard = document.querySelector('meta[name="twitter:card"]');
+  assert(twCard !== null && (twCard.getAttribute("content") || "").trim() !== "",
+    'twitter:card meta exists with non-empty content');
+
+  const twTitle = document.querySelector('meta[name="twitter:title"]');
+  assert(twTitle !== null && (twTitle.getAttribute("content") || "").trim() !== "",
+    'twitter:title meta exists with non-empty content');
+
+  const twDesc = document.querySelector('meta[name="twitter:description"]');
+  assert(twDesc !== null && (twDesc.getAttribute("content") || "").trim() !== "",
+    'twitter:description meta exists with non-empty content');
+
+  const jsonLd = document.getElementById("json-ld");
+  assert(jsonLd !== null, '#json-ld script element exists');
+  assert(jsonLd && jsonLd.getAttribute("type") === "application/ld+json",
+    '#json-ld has type="application/ld+json"');
+  assert(jsonLd && jsonLd.textContent.includes("@context"),
+    'JSON-LD contains "@context"');
+  assert(jsonLd && jsonLd.textContent.includes("schema.org"),
+    'JSON-LD contains "schema.org"');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 6.5 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

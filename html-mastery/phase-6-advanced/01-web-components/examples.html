@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 6.1 — Web Components  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 6.1 — Web Components</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 6.1 — Web Components</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. customElements.define — registering a custom element</h3>
+  <pre>
+class MyGreeting extends HTMLElement {}
+
+customElements.define('my-greeting', MyGreeting);
+// First arg: tag name (must contain a hyphen)
+// Second arg: class extending HTMLElement
+
+// Use it in HTML:
+// &lt;my-greeting&gt;&lt;/my-greeting&gt;</pre>
+  <p class="label">customElements.define(tagName, constructor) registers a new autonomous custom element globally.</p>
+</div>
+
+<div class="example">
+  <h3>2. Extending HTMLElement — the base class</h3>
+  <pre>
+class UserCard extends HTMLElement {
+  // Custom elements MUST extend HTMLElement (or a subclass).
+  // The class gets all native element methods: getAttribute,
+  // setAttribute, addEventListener, remove(), etc.
+}
+
+customElements.define('user-card', UserCard);
+
+// ✅ Valid — extends HTMLElement
+// ❌ Invalid — plain class without HTMLElement base</pre>
+  <p class="label">Every autonomous custom element class must extend HTMLElement to integrate with the browser's element upgrade system.</p>
+</div>
+
+<div class="example">
+  <h3>3. connectedCallback — element added to the DOM</h3>
+  <pre>
+class MyBanner extends HTMLElement {
+  connectedCallback() {
+    // Runs every time the element is inserted into a document.
+    // Safe to access this.ownerDocument, parent, attributes here.
+    console.log('my-banner connected to DOM');
+    this.textContent = 'Hello from web component!';
+  }
+}
+
+customElements.define('my-banner', MyBanner);</pre>
+  <p class="label">connectedCallback fires after the element is attached to the document — the right place to set up UI and start work.</p>
+</div>
+
+<div class="example">
+  <h3>4. Adding innerHTML inside connectedCallback</h3>
+  <pre>
+class AlertBox extends HTMLElement {
+  connectedCallback() {
+    const type = this.getAttribute('type') || 'info';
+    this.innerHTML = `
+      &lt;div class="alert alert--${type}"&gt;
+        &lt;strong&gt;${type.toUpperCase()}&lt;/strong&gt;
+        &lt;slot&gt;&lt;/slot&gt;
+      &lt;/div&gt;
+    `;
+  }
+}
+
+customElements.define('alert-box', AlertBox);
+
+// Usage: &lt;alert-box type="error"&gt;Something went wrong&lt;/alert-box&gt;</pre>
+  <p class="label">Setting innerHTML in connectedCallback renders the component's template. Use getAttribute to read configuration at connect time.</p>
+</div>
+
+<div class="example">
+  <h3>5. Using a custom element in HTML</h3>
+  <pre>
+&lt;!-- Register the element in a script first --&gt;
+&lt;script&gt;
+  class MyTag extends HTMLElement {
+    connectedCallback() { this.textContent = 'I am custom!'; }
+  }
+  customElements.define('my-tag', MyTag);
+&lt;/script&gt;
+
+&lt;!-- Then use it anywhere in the document --&gt;
+&lt;my-tag&gt;&lt;/my-tag&gt;
+
+&lt;!-- Or use the tag before define() — the browser upgrades it later --&gt;
+&lt;my-tag&gt;&lt;/my-tag&gt;
+&lt;script&gt;customElements.define('my-tag', MyTag);&lt;/script&gt;</pre>
+  <p class="label">Custom elements can appear before or after their define() call. Unresolved elements are upgraded once define() runs.</p>
+</div>
+
+<div class="example">
+  <h3>6. Custom element names must contain a hyphen</h3>
+  <pre>
+// ✅ Valid names — contain a hyphen
+customElements.define('my-component', MyComponent);
+customElements.define('x-button', XButton);
+customElements.define('app-header', AppHeader);
+customElements.define('ui-card--featured', Card);
+
+// ❌ Invalid — no hyphen (reserved for built-in elements)
+// customElements.define('mycomponent', ...);  // SyntaxError
+// customElements.define('button', ...);        // SyntaxError
+// customElements.define('h1', ...);            // SyntaxError</pre>
+  <p class="label">The hyphen requirement prevents name collisions with current and future HTML elements, which never contain hyphens.</p>
+</div>
+
+<div class="example">
+  <h3>7. Class fields vs attributes — initial state</h3>
+  <pre>
+class ThemeButton extends HTMLElement {
+  // Class field — JS-only internal state (not visible in HTML)
+  #clickCount = 0;
+
+  // Attribute — reflected in HTML, accessible to CSS selectors
+  // &lt;theme-button color="blue"&gt;
+
+  connectedCallback() {
+    this.addEventListener('click', () =&gt; {
+      this.#clickCount++;
+      // Read attribute at runtime:
+      const color = this.getAttribute('color') ?? 'gray';
+      console.log(`Clicked ${this.#clickCount}x, color: ${color}`);
+    });
+  }
+}
+
+customElements.define('theme-button', ThemeButton);</pre>
+  <p class="label">Use private class fields for internal JS state and HTML attributes for data that should be serialisable, CSS-selectable, or HTML-authorable.</p>
+</div>
+
+<div class="example">
+  <h3>8. Autonomous vs customized built-in elements</h3>
+  <pre>
+// ── Autonomous custom element ─────────────────────────────────────
+// Extends HTMLElement directly; used as its own tag.
+class MyCard extends HTMLElement {}
+customElements.define('my-card', MyCard);
+// &lt;my-card&gt;&lt;/my-card&gt;
+
+// ── Customized built-in element ───────────────────────────────────
+// Extends a specific built-in (e.g. HTMLButtonElement).
+class FancyButton extends HTMLButtonElement {
+  connectedCallback() { this.style.background = 'hotpink'; }
+}
+customElements.define('fancy-button', FancyButton, { extends: 'button' });
+// &lt;button is="fancy-button"&gt;Click me&lt;/button&gt;
+
+// Note: Safari does NOT support customized built-ins without a polyfill.</pre>
+  <p class="label">Autonomous elements are brand-new tags; customized built-ins extend existing HTML elements via the { extends } third argument and the is= attribute.</p>
+</div>
+
+<div class="example">
+  <h3>9. customElements.get() — retrieve a registered constructor</h3>
+  <pre>
+class MyWidget extends HTMLElement {}
+customElements.define('my-widget', MyWidget);
+
+// Get the constructor back by tag name:
+const Ctor = customElements.get('my-widget');
+console.log(Ctor === MyWidget); // true
+
+// Returns undefined for unregistered names:
+const missing = customElements.get('not-defined');
+console.log(missing); // undefined
+
+// Useful for conditional registration:
+if (!customElements.get('my-widget')) {
+  customElements.define('my-widget', MyWidget);
+}</pre>
+  <p class="label">customElements.get() lets you check whether a name is already registered and retrieve the constructor — essential for avoiding duplicate define() errors.</p>
+</div>
+
+<div class="example">
+  <h3>10. customElements.whenDefined() — promise that resolves on registration</h3>
+  <pre>
+// whenDefined returns a Promise that resolves with the constructor
+// as soon as the element is defined (or immediately if already defined).
+
+customElements.whenDefined('lazy-chart').then((ChartClass) =&gt; {
+  console.log('lazy-chart is now defined:', ChartClass);
+  document.querySelectorAll('lazy-chart').forEach(el =&gt; el.refresh());
+});
+
+// Useful with dynamic import:
+async function loadChart() {
+  await import('./chart-component.js');
+  await customElements.whenDefined('lazy-chart');
+  console.log('Safe to interact with lazy-chart elements');
+}</pre>
+  <p class="label">whenDefined() prevents race conditions when a custom element's script loads asynchronously — await it before querying or upgrading elements.</p>
+</div>
+
+<div class="example">
+  <h3>11. dataset.initialized pattern — guard against double-init</h3>
+  <pre>
+class SafeInit extends HTMLElement {
+  connectedCallback() {
+    // Guard: connectedCallback can fire multiple times if the element
+    // is moved between documents or removed/re-added to the DOM.
+    if (this.dataset.initialized) return;
+    this.dataset.initialized = 'true';
+
+    this.innerHTML = '&lt;p&gt;Initialized once!&lt;/p&gt;';
+    this.addEventListener('click', this.#handleClick);
+  }
+
+  #handleClick = () =&gt; console.log('clicked');
+}
+
+customElements.define('safe-init', SafeInit);</pre>
+  <p class="label">connectedCallback fires each time the element re-enters the DOM. Set a flag (dataset, WeakMap, or private field) to skip repeated initialisation.</p>
+</div>
+
+<div class="example">
+  <h3>12. Passing data via attributes</h3>
+  <pre>
+class UserAvatar extends HTMLElement {
+  connectedCallback() {
+    const name = this.getAttribute('name') ?? 'Anonymous';
+    const src  = this.getAttribute('src')  ?? 'default.png';
+    const size = this.getAttribute('size') ?? '40';
+
+    this.innerHTML = `
+      &lt;img
+        src="${src}"
+        alt="${name}'s avatar"
+        width="${size}"
+        height="${size}"
+        style="border-radius:50%"
+      &gt;
+    `;
+  }
+}
+
+customElements.define('user-avatar', UserAvatar);
+
+// &lt;user-avatar name="Alice" src="alice.jpg" size="64"&gt;&lt;/user-avatar&gt;</pre>
+  <p class="label">HTML attributes are the standard way to pass initial configuration — they're HTML-author friendly, serialisable, and work with SSR.</p>
+</div>
+
+<div class="example">
+  <h3>13. constructor() basics — what belongs there</h3>
+  <pre>
+class MyEl extends HTMLElement {
+  constructor() {
+    super(); // MUST be first — initialises the HTMLElement base
+
+    // ✅ OK in constructor:
+    this.#state = { count: 0 };     // set up private state
+    this.attachShadow({ mode: 'open' }); // attach shadow root
+
+    // ❌ NOT safe in constructor (element not yet in DOM):
+    // this.getAttribute('x')  — attributes may not be stamped yet
+    // this.innerHTML = '...'  — shadow root exists but upgrade still running
+    // this.parentNode          — null; not connected yet
+  }
+
+  #state;
+
+  connectedCallback() {
+    // Do DOM work here instead
+    this.shadowRoot.innerHTML = '&lt;p&gt;Ready&lt;/p&gt;';
+  }
+}
+
+customElements.define('my-el', MyEl);</pre>
+  <p class="label">The constructor should only call super(), attach shadow, and set up private fields. All DOM manipulation and attribute reads belong in connectedCallback.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. disconnectedCallback — cleanup when removed from DOM</h3>
+  <pre>
+class LiveClock extends HTMLElement {
+  #intervalId = null;
+
+  connectedCallback() {
+    this.#render();
+    // Start a repeating timer when added to DOM
+    this.#intervalId = setInterval(() =&gt; this.#render(), 1000);
+  }
+
+  disconnectedCallback() {
+    // ✅ Clean up to prevent memory leaks
+    clearInterval(this.#intervalId);
+    this.#intervalId = null;
+    console.log('Clock stopped — element removed from DOM');
+  }
+
+  #render() {
+    this.textContent = new Date().toLocaleTimeString();
+  }
+}
+
+customElements.define('live-clock', LiveClock);</pre>
+  <p class="label">disconnectedCallback fires whenever the element leaves the document. Use it to clear timers, abort fetches, and remove external event listeners.</p>
+</div>
+
+<div class="example">
+  <h3>15. attributeChangedCallback — react to attribute changes</h3>
+  <pre>
+class ColorSwatch extends HTMLElement {
+  static observedAttributes = ['color'];
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    // name     — which attribute changed
+    // oldValue — previous value (null if first set)
+    // newValue — new value (null if removed)
+    if (name === 'color') {
+      this.style.backgroundColor = newValue ?? 'transparent';
+      console.log(`color: ${oldValue} → ${newValue}`);
+    }
+  }
+}
+
+customElements.define('color-swatch', ColorSwatch);
+
+// In JS:
+// const el = document.querySelector('color-swatch');
+// el.setAttribute('color', 'tomato');  // triggers callback</pre>
+  <p class="label">attributeChangedCallback receives the attribute name and both old and new values. It only fires for attributes listed in observedAttributes.</p>
+</div>
+
+<div class="example">
+  <h3>16. observedAttributes static getter — declaring watched attributes</h3>
+  <pre>
+class ProgressBar extends HTMLElement {
+  // Must be a static getter (or static class field) returning an array.
+  // Only attributes in this list trigger attributeChangedCallback.
+  static get observedAttributes() {
+    return ['value', 'max', 'label'];
+  }
+
+  // Equivalent modern syntax (class field):
+  // static observedAttributes = ['value', 'max', 'label'];
+
+  attributeChangedCallback(name, _old, newVal) {
+    this.#render();
+  }
+
+  #render() {
+    const val = Number(this.getAttribute('value') ?? 0);
+    const max = Number(this.getAttribute('max')   ?? 100);
+    const pct = Math.round((val / max) * 100);
+    if (this.shadowRoot)
+      this.shadowRoot.querySelector('.bar').style.width = pct + '%';
+  }
+}
+
+customElements.define('progress-bar', ProgressBar);</pre>
+  <p class="label">observedAttributes is a static property that acts as an allowlist — unlisted attributes never trigger the callback, which keeps the component efficient.</p>
+</div>
+
+<div class="example">
+  <h3>17. Reflecting attributes to properties — two-way sync</h3>
+  <pre>
+class RatingEl extends HTMLElement {
+  static observedAttributes = ['value'];
+
+  // Property getter reads from attribute (source of truth in HTML)
+  get value() {
+    return Number(this.getAttribute('value') ?? 0);
+  }
+
+  // Property setter writes to attribute so CSS and HTML stay in sync
+  set value(v) {
+    this.setAttribute('value', String(v));
+  }
+
+  attributeChangedCallback() {
+    this.#update();
+  }
+
+  #update() {
+    this.textContent = '★'.repeat(this.value);
+  }
+}
+
+customElements.define('rating-el', RatingEl);
+
+// Both work identically:
+// el.setAttribute('value', '4');
+// el.value = 4;</pre>
+  <p class="label">Reflecting attributes to properties keeps JS and HTML in sync: the attribute is the single source of truth, and the property is a typed JavaScript alias for it.</p>
+</div>
+
+<div class="example">
+  <h3>18. Shadow DOM with attachShadow</h3>
+  <pre>
+class FancyCard extends HTMLElement {
+  constructor() {
+    super();
+    // attachShadow creates an encapsulated subtree.
+    // Returns the ShadowRoot — also stored as this.shadowRoot.
+    const shadow = this.attachShadow({ mode: 'open' });
+    shadow.innerHTML = `
+      &lt;style&gt;
+        :host { display: block; border: 2px solid navy; padding: 12px; }
+        h2    { color: navy; margin: 0 0 8px; }
+      &lt;/style&gt;
+      &lt;h2&gt;Card Title&lt;/h2&gt;
+      &lt;slot&gt;&lt;/slot&gt;
+    `;
+  }
+}
+
+customElements.define('fancy-card', FancyCard);
+
+// &lt;fancy-card&gt;Card body content here.&lt;/fancy-card&gt;</pre>
+  <p class="label">attachShadow() creates an encapsulated DOM subtree. Styles inside the shadow root do not leak out, and outside styles do not leak in.</p>
+</div>
+
+<div class="example">
+  <h3>19. Shadow DOM mode — open vs closed</h3>
+  <pre>
+// ── open mode ────────────────────────────────────────────────────
+class OpenEl extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    // this.shadowRoot is the ShadowRoot
+  }
+}
+// From outside: el.shadowRoot.querySelector('p')  ← works
+
+// ── closed mode ──────────────────────────────────────────────────
+class ClosedEl extends HTMLElement {
+  #root; // store reference internally
+  constructor() {
+    super();
+    this.#root = this.attachShadow({ mode: 'closed' });
+    // this.shadowRoot === null  ← no external access
+  }
+}
+// From outside: el.shadowRoot  → null  ← intentionally blocked
+
+// closed mode is NOT a security boundary — devtools can still access it.
+// Use closed to signal "implementation detail, do not poke".</pre>
+  <p class="label">Open shadow roots expose shadowRoot externally; closed roots return null. Neither is a security boundary — closed is an API encapsulation hint.</p>
+</div>
+
+<div class="example">
+  <h3>20. Slots in Shadow DOM — projecting light DOM children</h3>
+  <pre>
+class MyPanel extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;div class="panel"&gt;
+        &lt;!-- Default slot: receives all un-named children --&gt;
+        &lt;slot&gt;(no content provided)&lt;/slot&gt;
+      &lt;/div&gt;
+    `;
+  }
+}
+customElements.define('my-panel', MyPanel);
+
+// Usage:
+// &lt;my-panel&gt;
+//   &lt;p&gt;This paragraph is projected into the slot.&lt;/p&gt;
+// &lt;/my-panel&gt;
+
+// The &lt;p&gt; stays in the light DOM but is *rendered* inside the shadow.</pre>
+  <p class="label">A &lt;slot&gt; in the shadow DOM projects light DOM children into the rendered position without moving them in the DOM tree.</p>
+</div>
+
+<div class="example">
+  <h3>21. Named slots — routing children to specific positions</h3>
+  <pre>
+class ArticleLayout extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;article&gt;
+        &lt;header&gt;&lt;slot name="heading"&gt;&lt;/slot&gt;&lt;/header&gt;
+        &lt;section&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/section&gt;
+        &lt;footer&gt;&lt;slot name="footer"&gt;© 2026&lt;/slot&gt;&lt;/footer&gt;
+      &lt;/article&gt;
+    `;
+  }
+}
+customElements.define('article-layout', ArticleLayout);
+
+// Usage:
+// &lt;article-layout&gt;
+//   &lt;h1 slot="heading"&gt;My Post&lt;/h1&gt;
+//   &lt;p&gt;Body text goes to the default slot.&lt;/p&gt;
+//   &lt;p slot="footer"&gt;Posted 2026-01-01&lt;/p&gt;
+// &lt;/article-layout&gt;</pre>
+  <p class="label">Elements with slot="name" are projected into the matching &lt;slot name="name"&gt;. Unslotted children go to the default (unnamed) slot.</p>
+</div>
+
+<div class="example">
+  <h3>22. CSS in Shadow DOM with :host</h3>
+  <pre>
+class PillBadge extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        /* :host refers to the custom element itself */
+        :host {
+          display: inline-flex;
+          align-items: center;
+          padding: 2px 10px;
+          border-radius: 999px;
+          background: #e0e7ff;
+          color: #3730a3;
+          font-size: 12px;
+          font-weight: 600;
+        }
+        /* :host([variant="danger"]) — conditional on attribute */
+        :host([variant="danger"]) {
+          background: #fee2e2;
+          color: #991b1b;
+        }
+      &lt;/style&gt;
+      &lt;slot&gt;&lt;/slot&gt;
+    `;
+  }
+}
+customElements.define('pill-badge', PillBadge);</pre>
+  <p class="label">:host selects the shadow host element from inside the shadow DOM. :host([attr]) applies styles conditionally based on host attributes.</p>
+</div>
+
+<div class="example">
+  <h3>23. CSS custom properties crossing the shadow boundary</h3>
+  <pre>
+&lt;!-- component definition --&gt;
+class ThemedBox extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host {
+          display: block;
+          /* CSS custom properties DO cross the shadow boundary */
+          background: var(--box-bg, #f0f9ff);
+          color:      var(--box-color, #0c4a6e);
+          padding:    var(--box-padding, 16px);
+          border-radius: 8px;
+        }
+      &lt;/style&gt;
+      &lt;slot&gt;&lt;/slot&gt;
+    `;
+  }
+}
+customElements.define('themed-box', ThemedBox);
+
+// From outside the component (light DOM CSS):
+// themed-box { --box-bg: #fdf4ff; --box-color: #581c87; }
+
+// This is the primary theming API for shadow DOM components.</pre>
+  <p class="label">Regular CSS properties are blocked by shadow DOM, but CSS custom properties (--*) inherit through shadow boundaries, making them the standard theming API.</p>
+</div>
+
+<div class="example">
+  <h3>24. adoptedCallback — element moved to a new document</h3>
+  <pre>
+class TrackingEl extends HTMLElement {
+  connectedCallback()    { console.log('connected to', this.ownerDocument.title); }
+  disconnectedCallback() { console.log('disconnected'); }
+
+  adoptedCallback(oldDoc, newDoc) {
+    // Fires when the element is moved via document.adoptNode()
+    // or into an &lt;iframe&gt;'s contentDocument.
+    console.log('adopted from', oldDoc.title, 'to', newDoc.title);
+  }
+}
+customElements.define('tracking-el', TrackingEl);
+
+// Example: move element to an iframe's document
+// const iframe = document.querySelector('iframe');
+// const el     = document.querySelector('tracking-el');
+// iframe.contentDocument.adoptNode(el); // triggers adoptedCallback</pre>
+  <p class="label">adoptedCallback fires when a custom element is moved between documents (e.g. into an iframe). It is rarely needed but useful for cross-document widgets.</p>
+</div>
+
+<div class="example">
+  <h3>25. Form-associated custom elements</h3>
+  <pre>
+class StarRating extends HTMLElement {
+  // Opt-in to form association
+  static formAssociated = true;
+
+  #internals;
+  #value = '';
+
+  constructor() {
+    super();
+    // ElementInternals gives access to form APIs
+    this.#internals = this.attachInternals();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  // Form APIs now available:
+  get form()     { return this.#internals.form; }
+  get name()     { return this.getAttribute('name'); }
+  get validity() { return this.#internals.validity; }
+
+  #setValue(v) {
+    this.#value = v;
+    // Notify the form of the new value
+    this.#internals.setFormValue(v);
+  }
+}
+
+customElements.define('star-rating', StarRating);
+
+// &lt;form&gt;
+//   &lt;star-rating name="rating"&gt;&lt;/star-rating&gt;
+//   &lt;button type="submit"&gt;Submit&lt;/button&gt;
+// &lt;/form&gt;</pre>
+  <p class="label">Setting formAssociated = true and calling attachInternals() lets a custom element participate in forms: it submits values, validates, and resets like native inputs.</p>
+</div>
+
+<div class="example">
+  <h3>26. CSS ::part() — styling shadow DOM from outside</h3>
+  <pre>
+class MyButton extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        button { padding: 8px 16px; border: none; border-radius: 4px; }
+      &lt;/style&gt;
+      &lt;!-- 'part' attribute exposes the element to outside CSS --&gt;
+      &lt;button part="button"&gt;
+        &lt;span part="label"&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/span&gt;
+      &lt;/button&gt;
+    `;
+  }
+}
+customElements.define('my-button', MyButton);
+
+// Light DOM CSS can now style the exposed parts:
+// my-button::part(button) { background: royalblue; color: white; }
+// my-button::part(label)  { font-weight: bold; letter-spacing: 1px; }</pre>
+  <p class="label">::part() lets component authors explicitly expose shadow DOM internals to outside CSS, providing a controlled styling API without breaking encapsulation.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Card component with shadow DOM</h3>
+  <pre>
+class InfoCard extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host { display:block; border-radius:8px; box-shadow:0 2px 8px #0002;
+                overflow:hidden; font-family:sans-serif; }
+        .cover  { height:140px; background:var(--cover-bg,#6366f1); }
+        .body   { padding:16px; }
+        .title  { margin:0 0 8px; font-size:18px; }
+        .meta   { font-size:13px; color:#666; }
+        .footer { padding:12px 16px; border-top:1px solid #eee; }
+      &lt;/style&gt;
+      &lt;div class="cover"&gt;&lt;/div&gt;
+      &lt;div class="body"&gt;
+        &lt;h2 class="title"&gt;&lt;slot name="title"&gt;Card Title&lt;/slot&gt;&lt;/h2&gt;
+        &lt;p  class="meta"&gt;&lt;slot name="meta"&gt;&lt;/slot&gt;&lt;/p&gt;
+        &lt;slot&gt;&lt;/slot&gt;
+      &lt;/div&gt;
+      &lt;div class="footer"&gt;&lt;slot name="footer"&gt;&lt;/slot&gt;&lt;/div&gt;
+    `;
+  }
+}
+customElements.define('info-card', InfoCard);
+
+// &lt;info-card style="--cover-bg:#0ea5e9"&gt;
+//   &lt;span slot="title"&gt;Ocean Depths&lt;/span&gt;
+//   &lt;span slot="meta"&gt;Published Jan 2026&lt;/span&gt;
+//   &lt;p&gt;Discover the mysteries below.&lt;/p&gt;
+//   &lt;a slot="footer" href="/read"&gt;Read more →&lt;/a&gt;
+// &lt;/info-card&gt;</pre>
+  <p class="label">A card with shadow DOM encapsulates layout, supports multiple named slots for flexible content injection, and exposes a CSS custom property for theming.</p>
+</div>
+
+<div class="example">
+  <h3>28. Icon component</h3>
+  <pre>
+class SvgIcon extends HTMLElement {
+  static observedAttributes = ['name', 'size', 'color'];
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host { display:inline-block; line-height:0; }
+        svg   { fill:currentColor; }
+      &lt;/style&gt;
+      &lt;svg viewBox="0 0 24 24" aria-hidden="true"&gt;&lt;/svg&gt;
+    `;
+  }
+
+  connectedCallback() { this.#update(); }
+  attributeChangedCallback() { this.#update(); }
+
+  #paths = {
+    check: 'M20 6L9 17l-5-5',
+    close: 'M18 6L6 18M6 6l12 12',
+    star:  'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+  };
+
+  #update() {
+    const size  = this.getAttribute('size')  ?? '24';
+    const color = this.getAttribute('color') ?? 'currentColor';
+    const path  = this.#paths[this.getAttribute('name')] ?? '';
+    const svg   = this.shadowRoot.querySelector('svg');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.style.color = color;
+    svg.innerHTML = `&lt;path d="${path}" stroke-width="2" fill="none" stroke="currentColor" stroke-linecap="round"/&gt;`;
+  }
+}
+customElements.define('svg-icon', SvgIcon);</pre>
+  <p class="label">An icon component uses observedAttributes to re-render when name/size/color change, producing inline SVG without external sprite files.</p>
+</div>
+
+<div class="example">
+  <h3>29. Badge component with variant attribute</h3>
+  <pre>
+class CountBadge extends HTMLElement {
+  static observedAttributes = ['count', 'variant'];
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host         { display:inline-flex; align-items:center;
+                        justify-content:center; border-radius:999px;
+                        min-width:20px; height:20px; padding:0 6px;
+                        font-size:11px; font-weight:700; font-family:sans-serif; }
+        :host([variant="success"]) { background:#d1fae5; color:#065f46; }
+        :host([variant="danger"])  { background:#fee2e2; color:#991b1b; }
+        :host(:not([variant]))     { background:#e0e7ff; color:#3730a3; }
+      &lt;/style&gt;
+      &lt;span id="ct"&gt;&lt;/span&gt;
+    `;
+  }
+
+  attributeChangedCallback(name, _, val) {
+    if (name === 'count') {
+      this.shadowRoot.querySelector('#ct').textContent = val;
+      this.setAttribute('aria-label', `${val} notifications`);
+    }
+  }
+}
+customElements.define('count-badge', CountBadge);
+
+// &lt;count-badge count="3" variant="danger"&gt;&lt;/count-badge&gt;</pre>
+  <p class="label">A numeric badge component styles itself based on variant attribute selectors in the shadow CSS, keeping all display logic inside the component.</p>
+</div>
+
+<div class="example">
+  <h3>30. Star rating widget</h3>
+  <pre>
+class StarWidget extends HTMLElement {
+  static observedAttributes = ['value', 'max'];
+  static formAssociated = true;
+  #internals;
+
+  constructor() {
+    super();
+    this.#internals = this.attachInternals();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() { this.#render(); }
+  attributeChangedCallback() { this.#render(); }
+
+  #render() {
+    const max = Number(this.getAttribute('max') ?? 5);
+    const val = Number(this.getAttribute('value') ?? 0);
+    const stars = Array.from({ length: max }, (_, i) =&gt; {
+      const filled = i &lt; val ? 'filled' : '';
+      return `&lt;button part="star" class="${filled}" data-v="${i + 1}"&gt;★&lt;/button&gt;`;
+    }).join('');
+    this.shadowRoot.innerHTML = `
+      &lt;style&gt;
+        :host { display:inline-flex; gap:4px; }
+        button { background:none; border:none; cursor:pointer; font-size:24px;
+                 color:#ddd; padding:0; line-height:1; }
+        .filled { color:#f59e0b; }
+      &lt;/style&gt;
+      ${stars}
+    `;
+    this.shadowRoot.addEventListener('click', e =&gt; {
+      const v = e.target.dataset.v;
+      if (v) { this.setAttribute('value', v); this.#internals.setFormValue(v); }
+    });
+  }
+}
+customElements.define('star-widget', StarWidget);</pre>
+  <p class="label">A form-associated star rating widget re-renders on attribute change, sets the form value via ElementInternals, and exposes stars via ::part() for styling.</p>
+</div>
+
+<div class="example">
+  <h3>31. Progress component</h3>
+  <pre>
+class RingProgress extends HTMLElement {
+  static observedAttributes = ['value', 'max', 'label'];
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() { this.#render(); }
+  attributeChangedCallback() { this.#render(); }
+
+  #render() {
+    const val  = Number(this.getAttribute('value') ?? 0);
+    const max  = Number(this.getAttribute('max')   ?? 100);
+    const lbl  = this.getAttribute('label') ?? '';
+    const pct  = Math.min(Math.max(val / max, 0), 1);
+    const r = 40, circ = 2 * Math.PI * r;
+    const dash = (1 - pct) * circ;
+    this.shadowRoot.innerHTML = `
+      &lt;style&gt;
+        :host { display:inline-block; width:100px; height:100px; }
+        svg { transform:rotate(-90deg); }
+        circle.track { fill:none; stroke:#e5e7eb; stroke-width:8; }
+        circle.bar   { fill:none; stroke:var(--progress-color,#6366f1);
+                       stroke-width:8; stroke-linecap:round;
+                       transition:stroke-dashoffset .4s; }
+        text { transform:rotate(90deg) translate(50%,-50%);
+               transform-box:fill-box; font-size:14px; text-anchor:middle;
+               dominant-baseline:middle; fill:#374151; }
+      &lt;/style&gt;
+      &lt;svg viewBox="0 0 100 100"&gt;
+        &lt;circle class="track" cx="50" cy="50" r="${r}"/&gt;
+        &lt;circle class="bar" cx="50" cy="50" r="${r}"
+          stroke-dasharray="${circ}" stroke-dashoffset="${dash}"/&gt;
+        &lt;text x="50" y="50"&gt;${Math.round(pct*100)}%&lt;/text&gt;
+      &lt;/svg&gt;
+    `;
+    this.setAttribute('aria-valuenow', val);
+    this.setAttribute('aria-valuemax', max);
+    this.setAttribute('role', 'progressbar');
+  }
+}
+customElements.define('ring-progress', RingProgress);</pre>
+  <p class="label">A SVG ring-progress component recalculates stroke-dashoffset on every attribute change to animate the arc, and sets ARIA attributes for accessibility.</p>
+</div>
+
+<div class="example">
+  <h3>32. Tooltip component</h3>
+  <pre>
+class TipEl extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host { position:relative; display:inline-block; }
+        #tip  { position:absolute; bottom:calc(100% + 6px); left:50%;
+                transform:translateX(-50%); background:#1f2937; color:#fff;
+                padding:4px 8px; border-radius:4px; font-size:12px;
+                white-space:nowrap; pointer-events:none;
+                opacity:0; transition:opacity .15s; }
+        :host(:hover) #tip, :host(:focus-within) #tip { opacity:1; }
+      &lt;/style&gt;
+      &lt;slot&gt;&lt;/slot&gt;
+      &lt;div id="tip" role="tooltip"&gt;&lt;/div&gt;
+    `;
+  }
+
+  connectedCallback() {
+    this.shadowRoot.querySelector('#tip').textContent =
+      this.getAttribute('tip') ?? '';
+  }
+}
+customElements.define('tip-el', TipEl);
+
+// &lt;tip-el tip="Opens settings"&gt;&lt;button&gt;⚙&lt;/button&gt;&lt;/tip-el&gt;</pre>
+  <p class="label">A CSS-driven tooltip wraps any trigger element, showing the tip text on hover/focus via :host(:hover) without any JavaScript event handlers.</p>
+</div>
+
+<div class="example">
+  <h3>33. Modal component</h3>
+  <pre>
+class ModalDialog extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host([open]) .overlay { display:flex; }
+        .overlay { display:none; position:fixed; inset:0; background:#0008;
+                   align-items:center; justify-content:center; z-index:100; }
+        .box     { background:#fff; border-radius:8px; min-width:300px;
+                   max-width:90vw; padding:24px; }
+        .close   { float:right; background:none; border:none; font-size:20px;
+                   cursor:pointer; }
+      &lt;/style&gt;
+      &lt;div class="overlay"&gt;
+        &lt;div class="box" role="dialog" aria-modal="true"&gt;
+          &lt;button class="close" aria-label="Close"&gt;✕&lt;/button&gt;
+          &lt;slot name="header"&gt;&lt;/slot&gt;
+          &lt;slot&gt;&lt;/slot&gt;
+          &lt;slot name="footer"&gt;&lt;/slot&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    `;
+    this.shadowRoot.querySelector('.close').addEventListener('click', () =&gt; this.close());
+    this.shadowRoot.querySelector('.overlay').addEventListener('click', e =&gt; {
+      if (e.target === e.currentTarget) this.close();
+    });
+  }
+
+  open()  { this.setAttribute('open', ''); }
+  close() { this.removeAttribute('open'); this.dispatchEvent(new Event('close')); }
+}
+customElements.define('modal-dialog', ModalDialog);</pre>
+  <p class="label">A modal component toggles via open attribute presence, closes on overlay click or X button, dispatches a close event, and uses slots for flexible content.</p>
+</div>
+
+<div class="example">
+  <h3>34. Date display component</h3>
+  <pre>
+class DateDisplay extends HTMLElement {
+  static observedAttributes = ['datetime', 'format'];
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML =
+      `&lt;time&gt;&lt;/time&gt;`;
+  }
+
+  connectedCallback()    { this.#render(); }
+  attributeChangedCallback() { this.#render(); }
+
+  #render() {
+    const dt  = this.getAttribute('datetime');
+    const fmt = this.getAttribute('format') ?? 'long';
+    if (!dt) return;
+
+    const date = new Date(dt);
+    const opts = {
+      short:    { month:'short', day:'numeric', year:'numeric' },
+      long:     { weekday:'long', year:'numeric', month:'long', day:'numeric' },
+      relative: null,
+    };
+
+    const el = this.shadowRoot.querySelector('time');
+    el.setAttribute('datetime', dt);
+    el.textContent = fmt === 'relative'
+      ? this.#relative(date)
+      : date.toLocaleDateString(undefined, opts[fmt] ?? opts.long);
+  }
+
+  #relative(date) {
+    const diff = Math.round((date - Date.now()) / 86400000);
+    const rtf  = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+    return rtf.format(diff, 'day');
+  }
+}
+customElements.define('date-display', DateDisplay);
+
+// &lt;date-display datetime="2026-06-15" format="relative"&gt;&lt;/date-display&gt;</pre>
+  <p class="label">A date component uses Intl.RelativeTimeFormat and Intl-aware toLocaleDateString to render human-readable dates in different formats from a datetime attribute.</p>
+</div>
+
+<div class="example">
+  <h3>35. Accordion component</h3>
+  <pre>
+class AccordionEl extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        :host { display:block; border:1px solid #e5e7eb; border-radius:6px;
+                overflow:hidden; font-family:sans-serif; }
+        ::slotted(details) { border-bottom:1px solid #e5e7eb; margin:0; }
+        ::slotted(summary) { padding:12px 16px; cursor:pointer; list-style:none;
+                             font-weight:600; }
+        ::slotted(details[open] summary) { color:#6366f1; }
+      &lt;/style&gt;
+      &lt;slot&gt;&lt;/slot&gt;
+    `;
+    // Enforce single-open behavior
+    this.addEventListener('toggle', e =&gt; {
+      if (e.target.open) {
+        this.querySelectorAll('details').forEach(d =&gt; {
+          if (d !== e.target) d.open = false;
+        });
+      }
+    }, true);
+  }
+}
+customElements.define('accordion-el', AccordionEl);
+
+// &lt;accordion-el&gt;
+//   &lt;details&gt;&lt;summary&gt;Section A&lt;/summary&gt;&lt;p&gt;...&lt;/p&gt;&lt;/details&gt;
+//   &lt;details&gt;&lt;summary&gt;Section B&lt;/summary&gt;&lt;p&gt;...&lt;/p&gt;&lt;/details&gt;
+// &lt;/accordion-el&gt;</pre>
+  <p class="label">An accordion wraps native &lt;details&gt; elements and listens to toggle events to close others when one opens, using ::slotted() to style projected children.</p>
+</div>
+
+<div class="example">
+  <h3>36. Copy-to-clipboard button</h3>
+  <pre>
+class CopyButton extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `
+      &lt;style&gt;
+        button { display:inline-flex; align-items:center; gap:6px; padding:6px 12px;
+                 border:1px solid #d1d5db; border-radius:6px; background:#fff;
+                 cursor:pointer; font-size:13px; }
+        button[data-copied] { border-color:#10b981; color:#10b981; }
+      &lt;/style&gt;
+      &lt;button part="btn"&gt;
+        &lt;span class="icon"&gt;📋&lt;/span&gt;
+        &lt;slot&gt;Copy&lt;/slot&gt;
+      &lt;/button&gt;
+    `;
+    this.shadowRoot.querySelector('button').addEventListener('click', async () =&gt; {
+      const target = document.querySelector(this.getAttribute('for'));
+      const text   = target ? target.textContent : this.getAttribute('text') ?? '';
+      await navigator.clipboard.writeText(text);
+      const btn = this.shadowRoot.querySelector('button');
+      btn.dataset.copied = 'true';
+      btn.querySelector('.icon').textContent = '✅';
+      setTimeout(() =&gt; { delete btn.dataset.copied; btn.querySelector('.icon').textContent = '📋'; }, 1500);
+    });
+  }
+}
+customElements.define('copy-button', CopyButton);</pre>
+  <p class="label">A copy button reads text from a target element (via for= attribute) or a text= attribute, writes it to the clipboard, and gives visual feedback for 1.5 s.</p>
+</div>
+
+<div class="example">
+  <h3>37. Color picker swatch list</h3>
+  <pre>
+class SwatchPicker extends HTMLElement {
+  static observedAttributes = ['colors', 'value'];
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() { this.#render(); }
+  attributeChangedCallback() { this.#render(); }
+
+  #render() {
+    const colors  = (this.getAttribute('colors') ?? '#6366f1,#ec4899,#10b981,#f59e0b').split(',');
+    const current = this.getAttribute('value') ?? colors[0];
+
+    this.shadowRoot.innerHTML = `
+      &lt;style&gt;
+        :host { display:inline-flex; gap:8px; }
+        button { width:28px; height:28px; border-radius:50%; border:3px solid transparent;
+                 cursor:pointer; transition:.15s; }
+        button.active { border-color:#1f2937; transform:scale(1.2); }
+      &lt;/style&gt;
+      ${colors.map(c =&gt; `
+        &lt;button style="background:${c}" class="${c===current?'active':''}"
+                data-color="${c}" title="${c}"&gt;&lt;/button&gt;
+      `).join('')}
+    `;
+    this.shadowRoot.addEventListener('click', e =&gt; {
+      const c = e.target.dataset.color;
+      if (c) { this.setAttribute('value', c); this.dispatchEvent(new CustomEvent('change', { detail:c, bubbles:true })); }
+    });
+  }
+}
+customElements.define('swatch-picker', SwatchPicker);</pre>
+  <p class="label">A color swatch picker generates circular buttons from a comma-separated colors attribute, marks the active swatch, and fires a change event with the selected color.</p>
+</div>
+
+<div class="example">
+  <h3>38. Data table component</h3>
+  <pre>
+class DataTable extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    const cols = JSON.parse(this.getAttribute('columns') ?? '[]');
+    const rows = JSON.parse(this.getAttribute('rows')    ?? '[]');
+
+    this.shadowRoot.innerHTML = `
+      &lt;style&gt;
+        :host { display:block; overflow-x:auto; }
+        table { width:100%; border-collapse:collapse; font-size:14px; }
+        th    { background:#f3f4f6; text-align:left; padding:8px 12px;
+                border-bottom:2px solid #e5e7eb; }
+        td    { padding:8px 12px; border-bottom:1px solid #e5e7eb; }
+        tr:hover td { background:#f9fafb; }
+      &lt;/style&gt;
+      &lt;table&gt;
+        &lt;thead&gt;&lt;tr&gt;${cols.map(c =&gt; `&lt;th&gt;${c.label}&lt;/th&gt;`).join('')}&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;${rows.map(r =&gt;
+          `&lt;tr&gt;${cols.map(c =&gt; `&lt;td&gt;${r[c.key] ?? ''}&lt;/td&gt;`).join('')}&lt;/tr&gt;`
+        ).join('')}&lt;/tbody&gt;
+      &lt;/table&gt;
+    `;
+  }
+}
+customElements.define('data-table', DataTable);
+
+// &lt;data-table
+//   columns='[{"key":"name","label":"Name"},{"key":"age","label":"Age"}]'
+//   rows='[{"name":"Alice","age":30},{"name":"Bob","age":25}]'&gt;
+// &lt;/data-table&gt;</pre>
+  <p class="label">A data table reads column definitions and row data from JSON attributes, renders a styled table in shadow DOM with hover states, inside a horizontally scrollable host.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. customElements.upgrade — upgrading pre-existing DOM elements</h3>
+  <pre>
+// Elements created before define() are "undefined custom elements".
+// The browser auto-upgrades them on define(), but you can force
+// an immediate upgrade with customElements.upgrade(element).
+
+// Scenario: DOM parsed before script loaded
+const el = document.createElement('my-counter');
+document.body.appendChild(el);
+// At this point el is an HTMLElement, not yet a MyCounter
+
+class MyCounter extends HTMLElement {
+  connectedCallback() { this.textContent = 'Upgraded!'; }
+}
+customElements.define('my-counter', MyCounter);
+// Browser upgrades el automatically on the next microtask...
+
+// Force synchronous upgrade (useful in tests):
+customElements.upgrade(el);
+console.log(el instanceof MyCounter); // true  (immediately)</pre>
+  <p class="label">customElements.upgrade() forces synchronous element upgrade — useful in unit tests and when you need to access custom element methods before the next microtask.</p>
+</div>
+
+<div class="example">
+  <h3>40. Extending built-in elements — customized built-ins</h3>
+  <pre>
+// Extend a specific HTML element for built-in behaviour (a11y, etc.)
+class LazyImage extends HTMLImageElement {
+  connectedCallback() {
+    // Built-in img behaviour is preserved
+    if ('loading' in HTMLImageElement.prototype) {
+      this.loading = 'lazy'; // native lazy load
+    } else {
+      // Intersection Observer polyfill approach
+      const io = new IntersectionObserver(([e]) =&gt; {
+        if (e.isIntersecting) { this.src = this.dataset.src; io.disconnect(); }
+      });
+      this.dataset.src = this.src;
+      this.src = '';
+      io.observe(this);
+    }
+  }
+}
+
+customElements.define('lazy-image', LazyImage, { extends: 'img' });
+
+// HTML usage (note: is= attribute, not a custom tag):
+// &lt;img is="lazy-image" data-src="photo.jpg" alt="..."&gt;</pre>
+  <p class="label">Customized built-in elements extend existing HTML elements to inherit their native semantics and accessibility, using { extends } and the is= HTML attribute.</p>
+</div>
+
+<div class="example">
+  <h3>41. Lifecycle timing — constructor → attributeChangedCallback → connectedCallback</h3>
+  <pre>
+class LifecycleDemo extends HTMLElement {
+  static observedAttributes = ['value'];
+
+  constructor() {
+    super();
+    console.log('1. constructor()');
+    // Attributes are NOT available here yet (parsing not complete)
+  }
+
+  attributeChangedCallback(name, old, val) {
+    // Fires BEFORE connectedCallback when parsed from HTML,
+    // because attributes are part of the element's initial state.
+    console.log(`2. attributeChangedCallback(${name}, ${old} → ${val})`);
+  }
+
+  connectedCallback() {
+    console.log('3. connectedCallback()');
+    // By now getAttribute() is reliable for all attributes.
+    console.log('value attr:', this.getAttribute('value'));
+  }
+}
+customElements.define('lifecycle-demo', LifecycleDemo);
+
+// &lt;lifecycle-demo value="42"&gt;&lt;/lifecycle-demo&gt;
+// Output order: 1. constructor → 2. attributeChanged → 3. connected</pre>
+  <p class="label">When parsed from HTML, attributeChangedCallback fires before connectedCallback. In JS-created elements (createElement) attribute callbacks fire only when setAttribute is called.</p>
+</div>
+
+<div class="example">
+  <h3>42. Lazy-loading custom elements with dynamic import</h3>
+  <pre>
+// Strategy: register a "hollow" placeholder, then upgrade with the
+// real implementation once it's needed.
+
+// Initial lightweight placeholder (no JS logic)
+if (!customElements.get('heavy-chart')) {
+  class PlaceholderChart extends HTMLElement {
+    connectedCallback() { this.textContent = 'Loading chart…'; }
+  }
+  customElements.define('heavy-chart', PlaceholderChart);
+}
+
+// Later — e.g. when visible via IntersectionObserver:
+async function loadChart(el) {
+  // Import the full implementation
+  const { HeavyChart } = await import('/components/heavy-chart.js');
+
+  // The real class must be defined under the same name,
+  // which requires a re-registration trick or customElements.upgrade.
+  // In practice: define once from a lazy import.
+  if (!customElements.get('real-heavy-chart')) {
+    customElements.define('real-heavy-chart', HeavyChart);
+  }
+  el.replaceWith(Object.assign(document.createElement('real-heavy-chart'), { dataset: el.dataset }));
+}</pre>
+  <p class="label">Lazy-loading custom elements defers the heavy script bundle until the component is needed, improving initial page load while keeping the HTML declaration in place.</p>
+</div>
+
+<div class="example">
+  <h3>43. Testing custom elements</h3>
+  <pre>
+// Using plain DOM APIs in a test (e.g. Vitest / Jest with jsdom):
+
+import { MyCounter } from './my-counter.js';
+
+if (!customElements.get('my-counter'))
+  customElements.define('my-counter', MyCounter);
+
+test('increments count on click', async () =&gt; {
+  // Create the element
+  const el = document.createElement('my-counter');
+  document.body.appendChild(el);
+
+  // Force synchronous upgrade (jsdom may need this)
+  customElements.upgrade(el);
+
+  // Wait for whenDefined in case of async registration
+  await customElements.whenDefined('my-counter');
+
+  el.shadowRoot.querySelector('button').click();
+  expect(el.getAttribute('count')).toBe('1');
+
+  // Cleanup
+  el.remove();
+});</pre>
+  <p class="label">Testing custom elements requires define(), upgrade(), and whenDefined() to ensure the element is fully initialised before assertions run in jsdom environments.</p>
+</div>
+
+<div class="example">
+  <h3>44. Custom elements in SSR — Declarative Shadow DOM</h3>
+  <pre>
+&lt;!-- Server renders the shadow DOM declaratively using a &lt;template&gt; --&gt;
+&lt;!-- No JavaScript required for initial paint --&gt;
+
+&lt;user-profile name="Alice"&gt;
+  &lt;template shadowrootmode="open"&gt;
+    &lt;style&gt;
+      :host { display:flex; align-items:center; gap:12px; font-family:sans-serif; }
+    &lt;/style&gt;
+    &lt;img src="alice.jpg" width="48" height="48" style="border-radius:50%"&gt;
+    &lt;div&gt;
+      &lt;strong&gt;Alice&lt;/strong&gt;
+      &lt;p&gt;Software Engineer&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/template&gt;
+&lt;/user-profile&gt;
+
+&lt;!-- When the custom element JS loads later, it "hydrates" the existing
+     shadow root rather than replacing it, enabling progressive enhancement. --&gt;</pre>
+  <p class="label">Declarative Shadow DOM (shadowrootmode attribute on &lt;template&gt;) lets servers render shadow content as plain HTML, making web components SSR-friendly without JavaScript.</p>
+</div>
+
+<div class="example">
+  <h3>45. TypeScript for custom elements — typing attributes and events</h3>
+  <pre>
+// custom-counter.ts
+interface CounterEvents {
+  change: CustomEvent&lt;{ count: number }&gt;;
+}
+
+class CustomCounter extends HTMLElement {
+  static observedAttributes = ['start'] as const;
+
+  // Typed property mirroring attribute
+  get start(): number {
+    return Number(this.getAttribute('start') ?? 0);
+  }
+
+  // Dispatch a typed custom event
+  #emit(count: number) {
+    this.dispatchEvent(
+      new CustomEvent&lt;{ count: number }&gt;('change', {
+        detail: { count },
+        bubbles: true,
+        composed: true,  // crosses shadow boundary
+      })
+    );
+  }
+}
+
+// Extend HTMLElementTagNameMap for JSX / querySelector typing:
+declare global {
+  interface HTMLElementTagNameMap {
+    'custom-counter': CustomCounter;
+  }
+}
+
+customElements.define('custom-counter', CustomCounter);</pre>
+  <p class="label">Extending HTMLElementTagNameMap gives TypeScript consumers correct types from querySelector and JSX usage. Using CustomEvent&lt;T&gt; types the event detail payload.</p>
+</div>
+
+<div class="example">
+  <h3>46. Lit library basics — reactive properties and declarative templates</h3>
+  <pre>
+// Lit is a lightweight library built on top of native web component APIs.
+// It adds reactive properties, tagged template literals, and efficient updates.
+
+import { LitElement, html, css } from 'lit';
+import { property } from 'lit/decorators.js';
+
+class MyTimer extends LitElement {
+  static styles = css`
+    :host { display:block; font-family:sans-serif; font-size:24px; }
+    span  { color: var(--timer-color, #6366f1); }
+  `;
+
+  @property({ type: Number }) seconds = 0;
+
+  render() {
+    return html`
+      &lt;p&gt;Elapsed: &lt;span&gt;${this.seconds}s&lt;/span&gt;&lt;/p&gt;
+      &lt;button @click=${() =&gt; this.seconds++}&gt;Tick&lt;/button&gt;
+    `;
+  }
+}
+customElements.define('my-timer', MyTimer);
+
+// Lit handles:
+//  - Shadow DOM attachment
+//  - Re-render only changed parts (efficient)
+//  - Attribute ↔ property reflection via @property</pre>
+  <p class="label">Lit eliminates manual DOM manipulation by providing reactive @property decorators and a tagged-template render() method — while still producing a native custom element.</p>
+</div>
+
+<div class="example">
+  <h3>47. Composed events — crossing shadow DOM boundaries</h3>
+  <pre>
+class InnerButton extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = `&lt;button&gt;Click&lt;/button&gt;`;
+
+    this.shadowRoot.querySelector('button').addEventListener('click', () =&gt; {
+      // Without composed:true, this event stops at the shadow root.
+      // With composed:true, it bubbles into the light DOM.
+      this.dispatchEvent(new CustomEvent('action', {
+        bubbles:  true,
+        composed: true,   // ← crosses shadow boundary
+        detail:   { source: 'inner-button' },
+      }));
+    });
+  }
+}
+customElements.define('inner-button', InnerButton);
+
+// Light DOM listener:
+// document.addEventListener('action', e =&gt; {
+//   console.log(e.detail.source); // 'inner-button' — event crossed boundary
+// });</pre>
+  <p class="label">Events dispatched inside shadow DOM are retargeted at the shadow root boundary unless composed: true is set, which allows them to bubble up into ancestor light DOM.</p>
+</div>
+
+<div class="example">
+  <h3>48. State machine pattern in a custom element</h3>
+  <pre>
+class FetchButton extends HTMLElement {
+  #state = 'idle'; // 'idle' | 'loading' | 'success' | 'error'
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    this.#render();
+    this.shadowRoot.addEventListener('click', () =&gt; this.#fetch());
+  }
+
+  async #fetch() {
+    this.#transition('loading');
+    try {
+      const res  = await fetch(this.getAttribute('url') ?? '/api/data');
+      const data = await res.json();
+      this.dispatchEvent(new CustomEvent('data', { detail: data, bubbles: true }));
+      this.#transition('success');
+    } catch {
+      this.#transition('error');
+    }
+  }
+
+  #transition(next) {
+    this.#state = next;
+    this.setAttribute('state', next); // CSS hooks via [state=...]
+    this.#render();
+  }
+
+  #render() {
+    const labels = { idle:'Load', loading:'Loading…', success:'Done ✓', error:'Retry' };
+    this.shadowRoot.innerHTML = `
+      &lt;button ?disabled="${this.#state === 'loading'}"&gt;
+        ${labels[this.#state]}
+      &lt;/button&gt;
+    `;
+  }
+}
+customElements.define('fetch-button', FetchButton);</pre>
+  <p class="label">Modelling component state as an explicit state machine prevents impossible states, makes transitions traceable, and exposes the current state as an attribute for CSS hooks.</p>
+</div>
+
+<div class="example">
+  <h3>49. Intersecting custom element with IntersectionObserver</h3>
+  <pre>
+class LazySection extends HTMLElement {
+  #observer = null;
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML =
+      `&lt;style&gt;:host{display:block;min-height:200px;}&lt;/style&gt;&lt;slot&gt;&lt;/slot&gt;`;
+  }
+
+  connectedCallback() {
+    this.#observer = new IntersectionObserver(
+      ([entry]) =&gt; {
+        if (entry.isIntersecting) {
+          this.removeAttribute('hidden-content');
+          this.setAttribute('visible', '');
+          this.dispatchEvent(new Event('visible', { bubbles: true }));
+          this.#observer.disconnect();
+        }
+      },
+      { rootMargin: '0px 0px -100px 0px', threshold: 0 }
+    );
+    this.#observer.observe(this);
+  }
+
+  disconnectedCallback() {
+    this.#observer?.disconnect();
+    this.#observer = null;
+  }
+}
+customElements.define('lazy-section', LazySection);</pre>
+  <p class="label">Connecting an IntersectionObserver in connectedCallback and disconnecting in disconnectedCallback gives elements self-managed viewport detection with zero memory leaks.</p>
+</div>
+
+<div class="example">
+  <h3>50. Custom element design API checklist</h3>
+  <pre>
+// ── Checklist for a production-ready custom element ───────────────
+
+// 1. Name: contains a hyphen; descriptive and scoped (e.g. app-button)
+// 2. Constructor: only super() + attachShadow + private fields
+// 3. Attributes: list ALL in observedAttributes; reflect to properties
+// 4. CSS: use :host for self-styling; expose --custom-props for theming
+// 5. Slots: use named slots for structure; document the slot API
+// 6. Events: dispatch CustomEvents with composed:true when needed
+// 7. Cleanup: clear timers/observers/listeners in disconnectedCallback
+// 8. Forms: use formAssociated + ElementInternals when needed
+// 9. A11y: set role/aria-* on host or shadow; manage focus
+// 10. SSR: support Declarative Shadow DOM for server-rendered content
+// 11. TypeScript: extend HTMLElementTagNameMap for consumer types
+// 12. Tests: define + upgrade + whenDefined before assertions
+// 13. ::part(): expose internals for external styling where appropriate
+// 14. Lazy-load: guard with customElements.get() before define()
+// 15. Error states: reflect error/loading/success as attributes/state</pre>
+  <p class="label">A production custom element follows a predictable API contract: documented attributes, CSS custom properties, events, slots, and proper lifecycle management.</p>
+</div>
+
+</body>
+</html>

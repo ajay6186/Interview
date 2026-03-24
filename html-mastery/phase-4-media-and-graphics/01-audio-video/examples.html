@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 4.1 — Audio and Video  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 4.1 — Audio and Video</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 4.1 — Audio and Video</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Minimal audio element</h3>
+  <pre>&lt;audio src="podcast.mp3" controls&gt;&lt;/audio&gt;</pre>
+  <p class="label">The src attribute directly on the element. Simple but limits fallback options.</p>
+</div>
+
+<div class="example">
+  <h3>2. Audio with source child</h3>
+  <pre>&lt;audio controls&gt;
+  &lt;source src="podcast.mp3" type="audio/mpeg"&gt;
+  Your browser does not support audio.
+&lt;/audio&gt;</pre>
+  <p class="label">Using &lt;source&gt; child allows multiple formats and a text fallback.</p>
+</div>
+
+<div class="example">
+  <h3>3. Minimal video element</h3>
+  <pre>&lt;video src="demo.mp4" controls width="640"&gt;&lt;/video&gt;</pre>
+  <p class="label">Direct src on the video element with controls and a width.</p>
+</div>
+
+<div class="example">
+  <h3>4. Video with source child</h3>
+  <pre>&lt;video controls width="640"&gt;
+  &lt;source src="demo.mp4" type="video/mp4"&gt;
+  Your browser does not support video.
+&lt;/video&gt;</pre>
+  <p class="label">Source child with MIME type helps browsers decide if they can play the file.</p>
+</div>
+
+<div class="example">
+  <h3>5. controls attribute</h3>
+  <pre>&lt;audio controls&gt;...&lt;/audio&gt;
+&lt;video controls&gt;...&lt;/video&gt;</pre>
+  <p class="label">Shows the browser's built-in play/pause, volume, and seek controls.</p>
+</div>
+
+<div class="example">
+  <h3>6. autoplay attribute</h3>
+  <pre>&lt;video src="intro.mp4" autoplay muted&gt;&lt;/video&gt;</pre>
+  <p class="label">autoplay starts playback immediately. Most browsers require muted for autoplay to work.</p>
+</div>
+
+<div class="example">
+  <h3>7. loop attribute</h3>
+  <pre>&lt;audio src="bg-music.mp3" loop muted&gt;&lt;/audio&gt;</pre>
+  <p class="label">loop restarts playback from the beginning when it ends.</p>
+</div>
+
+<div class="example">
+  <h3>8. muted attribute</h3>
+  <pre>&lt;video src="banner.mp4" autoplay loop muted&gt;&lt;/video&gt;</pre>
+  <p class="label">muted starts playback silenced. Required for autoplay in most browsers.</p>
+</div>
+
+<div class="example">
+  <h3>9. preload attribute</h3>
+  <pre>&lt;audio preload="none"&gt;...&lt;/audio&gt;
+&lt;audio preload="metadata"&gt;...&lt;/audio&gt;
+&lt;audio preload="auto"&gt;...&lt;/audio&gt;</pre>
+  <p class="label">none: don't preload. metadata: only duration/dimensions. auto: browser decides (default).</p>
+</div>
+
+<div class="example">
+  <h3>10. poster attribute on video</h3>
+  <pre>&lt;video controls poster="thumbnail.jpg"&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</pre>
+  <p class="label">poster shows an image before the video plays or while it loads.</p>
+</div>
+
+<div class="example">
+  <h3>11. width and height on video</h3>
+  <pre>&lt;video controls width="1280" height="720"&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</pre>
+  <p class="label">Prevents layout shift by reserving space before the video loads.</p>
+</div>
+
+<div class="example">
+  <h3>12. Fallback text</h3>
+  <pre>&lt;audio controls&gt;
+  &lt;source src="sound.mp3" type="audio/mpeg"&gt;
+  &lt;p&gt;Your browser doesn't support audio. &lt;a href="sound.mp3"&gt;Download the file&lt;/a&gt;.&lt;/p&gt;
+&lt;/audio&gt;</pre>
+  <p class="label">Content between tags is shown in browsers that don't support the element.</p>
+</div>
+
+<div class="example">
+  <h3>13. audio/mpeg MIME type</h3>
+  <pre>&lt;source src="file.mp3" type="audio/mpeg"&gt;
+&lt;source src="file.ogg" type="audio/ogg"&gt;</pre>
+  <p class="label">Common audio MIME types. The browser picks the first it can play.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Multiple source formats for audio</h3>
+  <pre>&lt;audio controls&gt;
+  &lt;source src="podcast.mp3" type="audio/mpeg"&gt;
+  &lt;source src="podcast.ogg" type="audio/ogg"&gt;
+  &lt;source src="podcast.wav" type="audio/wav"&gt;
+  Your browser does not support audio.
+&lt;/audio&gt;</pre>
+  <p class="label">Browser tries each source in order; plays the first supported format.</p>
+</div>
+
+<div class="example">
+  <h3>15. Multiple source formats for video</h3>
+  <pre>&lt;video controls width="640"&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+  &lt;source src="video.webm" type="video/webm"&gt;
+  &lt;source src="video.ogv" type="video/ogg"&gt;
+&lt;/video&gt;</pre>
+  <p class="label">mp4 (H.264) has the widest support; webm is smaller but needs newer browsers.</p>
+</div>
+
+<div class="example">
+  <h3>16. track element for subtitles</h3>
+  <pre>&lt;video controls&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+  &lt;track kind="subtitles" src="subtitles/en.vtt" srclang="en" label="English"&gt;
+  &lt;track kind="subtitles" src="subtitles/fr.vtt" srclang="fr" label="Français"&gt;
+&lt;/video&gt;</pre>
+  <p class="label">track provides text tracks. kind can be: subtitles, captions, descriptions, chapters, metadata.</p>
+</div>
+
+<div class="example">
+  <h3>17. track with default attribute</h3>
+  <pre>&lt;track kind="subtitles" src="en.vtt" srclang="en" label="English" default&gt;</pre>
+  <p class="label">default enables this track automatically when the user hasn't selected one.</p>
+</div>
+
+<div class="example">
+  <h3>18. WebVTT cue format</h3>
+  <pre>WEBVTT
+
+00:00:01.000 --&gt; 00:00:04.000
+Hello and welcome to this video.
+
+00:00:05.500 --&gt; 00:00:08.000
+Today we'll cover HTML media elements.</pre>
+  <p class="label">WebVTT format for subtitle/caption files (.vtt). Timestamps are HH:MM:SS.mmm.</p>
+</div>
+
+<div class="example">
+  <h3>19. Controlling media with JavaScript</h3>
+  <pre>const video = document.getElementById('my-video');
+video.play();
+video.pause();
+video.currentTime = 30; // seek to 30 seconds
+video.volume = 0.5;     // 50% volume
+video.playbackRate = 1.5; // 1.5x speed</pre>
+  <p class="label">HTMLMediaElement API for programmatic control.</p>
+</div>
+
+<div class="example">
+  <h3>20. Media events</h3>
+  <pre>video.addEventListener('play', () =&gt; console.log('playing'));
+video.addEventListener('pause', () =&gt; console.log('paused'));
+video.addEventListener('ended', () =&gt; console.log('ended'));
+video.addEventListener('timeupdate', () =&gt; {
+  console.log(video.currentTime);
+});</pre>
+  <p class="label">Key events: play, pause, ended, timeupdate, loadedmetadata, canplay, error.</p>
+</div>
+
+<div class="example">
+  <h3>21. canplay and canplaythrough events</h3>
+  <pre>video.addEventListener('canplay', () =&gt; {
+  console.log('Can start playing');
+});
+video.addEventListener('canplaythrough', () =&gt; {
+  console.log('Can play without buffering');
+});</pre>
+  <p class="label">canplay fires when enough data is available to start; canplaythrough when the whole video can play without pausing.</p>
+</div>
+
+<div class="example">
+  <h3>22. Checking readyState</h3>
+  <pre>// readyState values:
+// 0 HAVE_NOTHING
+// 1 HAVE_METADATA
+// 2 HAVE_CURRENT_DATA
+// 3 HAVE_FUTURE_DATA
+// 4 HAVE_ENOUGH_DATA
+if (video.readyState >= 3) {
+  video.play();
+}</pre>
+  <p class="label">readyState tells you how much data is loaded.</p>
+</div>
+
+<div class="example">
+  <h3>23. Custom video controls</h3>
+  <pre>&lt;video id="vid" src="movie.mp4"&gt;&lt;/video&gt;
+&lt;button onclick="document.getElementById('vid').play()"&gt;Play&lt;/button&gt;
+&lt;button onclick="document.getElementById('vid').pause()"&gt;Pause&lt;/button&gt;
+&lt;input type="range" min="0" max="1" step="0.1" value="1"
+  oninput="document.getElementById('vid').volume = this.value"&gt;</pre>
+  <p class="label">Omit controls attribute and build custom UI with JS for full design control.</p>
+</div>
+
+<div class="example">
+  <h3>24. Fullscreen API</h3>
+  <pre>const btn = document.getElementById('fullscreen-btn');
+btn.addEventListener('click', () =&gt; {
+  if (video.requestFullscreen) {
+    video.requestFullscreen();
+  }
+});</pre>
+  <p class="label">requestFullscreen() makes the video go fullscreen. Also available on any element.</p>
+</div>
+
+<div class="example">
+  <h3>25. Picture-in-Picture</h3>
+  <pre>video.addEventListener('click', async () =&gt; {
+  if (document.pictureInPictureElement) {
+    await document.exitPictureInPicture();
+  } else {
+    await video.requestPictureInPicture();
+  }
+});</pre>
+  <p class="label">Picture-in-Picture API lets videos float in a small overlay window.</p>
+</div>
+
+<div class="example">
+  <h3>26. disablepictureinpicture attribute</h3>
+  <pre>&lt;video src="video.mp4" controls disablepictureinpicture
+       controlslist="nodownload noremoteplayback"&gt;&lt;/video&gt;</pre>
+  <p class="label">Restricts browser controls. controlslist values: nodownload, nofullscreen, noremoteplayback.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Video inside a figure</h3>
+  <pre>&lt;figure&gt;
+  &lt;video controls width="640"&gt;
+    &lt;source src="demo.mp4" type="video/mp4"&gt;
+  &lt;/video&gt;
+  &lt;figcaption&gt;Demo of the new feature — recorded 2026-01&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Wrapping in figure+figcaption provides a semantic caption.</p>
+</div>
+
+<div class="example">
+  <h3>28. Audio player UI</h3>
+  <pre>&lt;div class="player"&gt;
+  &lt;audio id="player" src="episode.mp3" preload="metadata"&gt;&lt;/audio&gt;
+  &lt;button id="play-btn" aria-label="Play"&gt;▶&lt;/button&gt;
+  &lt;span id="time"&gt;0:00&lt;/span&gt;
+  &lt;input type="range" id="seek" value="0"&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Custom audio player with accessible play button and seek bar.</p>
+</div>
+
+<div class="example">
+  <h3>29. Video with multiple tracks and fallback</h3>
+  <pre>&lt;video controls width="800" poster="thumb.jpg"&gt;
+  &lt;source src="film.mp4" type="video/mp4"&gt;
+  &lt;source src="film.webm" type="video/webm"&gt;
+  &lt;track kind="subtitles" src="en.vtt" srclang="en" label="English" default&gt;
+  &lt;track kind="subtitles" src="es.vtt" srclang="es" label="Español"&gt;
+  &lt;track kind="chapters" src="chapters.vtt" srclang="en" label="Chapters"&gt;
+  &lt;p&gt;Download: &lt;a href="film.mp4"&gt;MP4&lt;/a&gt; | &lt;a href="film.webm"&gt;WebM&lt;/a&gt;&lt;/p&gt;
+&lt;/video&gt;</pre>
+  <p class="label">Production-ready video with multiple formats, subtitles, and download fallback.</p>
+</div>
+
+<div class="example">
+  <h3>30. Responsive video with aspect ratio</h3>
+  <pre>&lt;style&gt;
+.video-wrap { position: relative; padding-bottom: 56.25%; height: 0; }
+.video-wrap video { position: absolute; top:0; left:0; width:100%; height:100%; }
+&lt;/style&gt;
+&lt;div class="video-wrap"&gt;
+  &lt;video controls&gt;
+    &lt;source src="video.mp4" type="video/mp4"&gt;
+  &lt;/video&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Classic padding-bottom trick for 16:9 responsive video (56.25% = 9/16).</p>
+</div>
+
+<div class="example">
+  <h3>31. aspect-ratio CSS approach</h3>
+  <pre>&lt;style&gt;
+video { width: 100%; aspect-ratio: 16 / 9; }
+&lt;/style&gt;
+&lt;video controls&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</pre>
+  <p class="label">Modern CSS aspect-ratio is simpler than the padding-bottom hack.</p>
+</div>
+
+<div class="example">
+  <h3>32. MediaSource Extensions</h3>
+  <pre>const ms = new MediaSource();
+video.src = URL.createObjectURL(ms);
+ms.addEventListener('sourceopen', () =&gt; {
+  const sb = ms.addSourceBuffer('video/mp4; codecs="avc1.42E01E"');
+  fetch('segment.mp4').then(r =&gt; r.arrayBuffer()).then(data =&gt; {
+    sb.appendBuffer(data);
+  });
+});</pre>
+  <p class="label">MSE enables adaptive streaming (HLS/DASH) by feeding segments to a SourceBuffer.</p>
+</div>
+
+<div class="example">
+  <h3>33. Progress bar with timeupdate</h3>
+  <pre>&lt;video id="v" src="video.mp4" controls&gt;&lt;/video&gt;
+&lt;progress id="bar" value="0" max="1"&gt;&lt;/progress&gt;
+&lt;script&gt;
+v.addEventListener('timeupdate', () =&gt; {
+  bar.value = v.currentTime / v.duration;
+});
+&lt;/script&gt;</pre>
+  <p class="label">Custom progress bar synchronized with video playback position.</p>
+</div>
+
+<div class="example">
+  <h3>34. Detecting codec support</h3>
+  <pre>const v = document.createElement('video');
+const canH264 = v.canPlayType('video/mp4; codecs="avc1.42E01E"');
+const canVP9  = v.canPlayType('video/webm; codecs="vp9"');
+// Returns: "" (no), "maybe", or "probably"
+console.log(canH264, canVP9);</pre>
+  <p class="label">canPlayType() returns "" (unsupported), "maybe", or "probably" for codec support.</p>
+</div>
+
+<div class="example">
+  <h3>35. Capturing a frame with canvas</h3>
+  <pre>const canvas = document.createElement('canvas');
+canvas.width  = video.videoWidth;
+canvas.height = video.videoHeight;
+canvas.getContext('2d').drawImage(video, 0, 0);
+const dataURL = canvas.toDataURL('image/png');</pre>
+  <p class="label">Draw the current video frame to canvas to capture a screenshot.</p>
+</div>
+
+<div class="example">
+  <h3>36. Media session API</h3>
+  <pre>navigator.mediaSession.metadata = new MediaMetadata({
+  title: 'Episode 42',
+  artist: 'My Podcast',
+  album: 'Season 3',
+  artwork: [{ src: 'cover.jpg', sizes: '512x512', type: 'image/jpeg' }]
+});
+navigator.mediaSession.setActionHandler('play', () =&gt; audio.play());
+navigator.mediaSession.setActionHandler('pause', () =&gt; audio.pause());</pre>
+  <p class="label">Media Session API populates OS media notification with title, artist, and controls.</p>
+</div>
+
+<div class="example">
+  <h3>37. Preloading metadata only</h3>
+  <pre>&lt;video id="v" src="big-file.mp4" preload="metadata"&gt;&lt;/video&gt;
+&lt;script&gt;
+v.addEventListener('loadedmetadata', () =&gt; {
+  console.log('Duration:', v.duration);
+  console.log('Dimensions:', v.videoWidth, 'x', v.videoHeight);
+});
+&lt;/script&gt;</pre>
+  <p class="label">preload="metadata" downloads just enough to know duration and dimensions.</p>
+</div>
+
+<div class="example">
+  <h3>38. Intersection Observer for lazy video</h3>
+  <pre>const observer = new IntersectionObserver(entries =&gt; {
+  entries.forEach(e =&gt; {
+    if (e.isIntersecting) {
+      e.target.src = e.target.dataset.src;
+      observer.unobserve(e.target);
+    }
+  });
+});
+document.querySelectorAll('video[data-src]').forEach(v =&gt; observer.observe(v));</pre>
+  <p class="label">Lazy-load videos by setting data-src instead of src, then swapping with IntersectionObserver.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Web Audio API basic setup</h3>
+  <pre>const ctx = new AudioContext();
+const source = ctx.createMediaElementSource(audioEl);
+const gainNode = ctx.createGain();
+source.connect(gainNode).connect(ctx.destination);
+gainNode.gain.value = 0.5; // 50% volume</pre>
+  <p class="label">Web Audio API enables advanced audio processing: EQ, reverb, visualizations, etc.</p>
+</div>
+
+<div class="example">
+  <h3>40. Visualizing audio with analyser</h3>
+  <pre>const analyser = ctx.createAnalyser();
+source.connect(analyser).connect(ctx.destination);
+const data = new Uint8Array(analyser.frequencyBinCount);
+function draw() {
+  analyser.getByteFrequencyData(data);
+  // draw data to canvas...
+  requestAnimationFrame(draw);
+}
+draw();</pre>
+  <p class="label">AnalyserNode provides frequency/time-domain data for audio visualizations.</p>
+</div>
+
+<div class="example">
+  <h3>41. getUserMedia for camera</h3>
+  <pre>const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+videoEl.srcObject = stream;</pre>
+  <p class="label">getUserMedia captures camera/microphone. Always requires user permission.</p>
+</div>
+
+<div class="example">
+  <h3>42. Screen capture</h3>
+  <pre>const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+videoEl.srcObject = stream;</pre>
+  <p class="label">getDisplayMedia captures the screen or a window/tab.</p>
+</div>
+
+<div class="example">
+  <h3>43. MediaRecorder API</h3>
+  <pre>const recorder = new MediaRecorder(stream);
+const chunks = [];
+recorder.ondataavailable = e =&gt; chunks.push(e.data);
+recorder.onstop = () =&gt; {
+  const blob = new Blob(chunks, { type: 'video/webm' });
+  videoEl.src = URL.createObjectURL(blob);
+};
+recorder.start();
+setTimeout(() =&gt; recorder.stop(), 5000);</pre>
+  <p class="label">MediaRecorder records a MediaStream to a downloadable blob.</p>
+</div>
+
+<div class="example">
+  <h3>44. Remote playback API</h3>
+  <pre>const availability = await video.remote.watchAvailability(available =&gt; {
+  castBtn.disabled = !available;
+});
+castBtn.addEventListener('click', () =&gt; video.remote.prompt());</pre>
+  <p class="label">Remote Playback API enables casting to Chromecast, AirPlay, etc.</p>
+</div>
+
+<div class="example">
+  <h3>45. Encrypted Media Extensions (EME)</h3>
+  <pre>video.addEventListener('encrypted', async e =&gt; {
+  const session = mediaKeys.createSession();
+  await session.generateRequest(e.initDataType, e.initData);
+});
+const access = await navigator.requestMediaKeySystemAccess('com.widevine.alpha', config);
+const mediaKeys = await access.createMediaKeys();
+await video.setMediaKeys(mediaKeys);</pre>
+  <p class="label">EME enables DRM-protected content (Widevine, PlayReady, FairPlay).</p>
+</div>
+
+<div class="example">
+  <h3>46. Adaptive Bitrate with hls.js</h3>
+  <pre>&lt;script src="https://cdn.jsdelivr.net/npm/hls.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+if (Hls.isSupported()) {
+  const hls = new Hls();
+  hls.loadSource('stream.m3u8');
+  hls.attachMedia(video);
+} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+  video.src = 'stream.m3u8'; // Safari native HLS
+}
+&lt;/script&gt;</pre>
+  <p class="label">hls.js brings HLS adaptive streaming to browsers without native support.</p>
+</div>
+
+<div class="example">
+  <h3>47. Video text track programmatic access</h3>
+  <pre>const tracks = video.textTracks;
+for (const track of tracks) {
+  track.mode = 'showing'; // or 'hidden' or 'disabled'
+  track.addEventListener('cuechange', () =&gt; {
+    const cues = track.activeCues;
+    console.log(cues[0]?.text);
+  });
+}</pre>
+  <p class="label">Access and control text tracks and active cues programmatically.</p>
+</div>
+
+<div class="example">
+  <h3>48. Chapters track</h3>
+  <pre>&lt;video controls&gt;
+  &lt;source src="lecture.mp4" type="video/mp4"&gt;
+  &lt;track kind="chapters" src="chapters.vtt" srclang="en" default&gt;
+&lt;/video&gt;
+&lt;!-- chapters.vtt:
+WEBVTT
+
+00:00:00.000 --&gt; 00:05:00.000
+Introduction
+
+00:05:00.000 --&gt; 00:20:00.000
+Main Topic
+--&gt;</pre>
+  <p class="label">Chapters track enables chapter navigation in the browser's video controls.</p>
+</div>
+
+<div class="example">
+  <h3>49. Spatial audio with PannerNode</h3>
+  <pre>const panner = ctx.createPanner();
+panner.panningModel = 'HRTF';
+panner.setPosition(x, y, z);
+source.connect(panner).connect(ctx.destination);</pre>
+  <p class="label">PannerNode places audio in 3D space — used for games and VR experiences.</p>
+</div>
+
+<div class="example">
+  <h3>50. AV1 codec with WebM</h3>
+  <pre>&lt;video controls&gt;
+  &lt;source src="video.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'&gt;
+  &lt;source src="video.vp9.webm" type='video/webm; codecs="vp9"'&gt;
+  &lt;source src="video.h264.mp4" type='video/mp4; codecs="avc1.42E01E"'&gt;
+&lt;/video&gt;</pre>
+  <p class="label">AV1 is the most efficient codec; include VP9 and H.264 fallbacks for older browsers.</p>
+</div>
+
+</body>
+</html>

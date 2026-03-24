@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 1.2 — Text Content  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 1.2 — Text Content</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; margin-top: 6px; }
+    .output { background: #fafafa; border: 1px solid #eee; padding: 8px; border-radius: 3px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+<h1>Examples 1.2 — Text Content</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. All six heading levels</h3>
+  <div class="output">
+    <h1 style="margin:2px 0">Heading 1 — Page Title</h1>
+    <h2 style="margin:2px 0">Heading 2 — Section</h2>
+    <h3 style="margin:2px 0">Heading 3 — Subsection</h3>
+    <h4 style="margin:2px 0">Heading 4</h4>
+    <h5 style="margin:2px 0">Heading 5</h5>
+    <h6 style="margin:2px 0">Heading 6</h6>
+  </div>
+  <p class="label">h1 is largest and most important. Never skip levels (e.g., h1 → h3).</p>
+</div>
+
+<div class="example">
+  <h3>2. Paragraph element</h3>
+  <div class="output">
+    <p>This is a paragraph. Paragraphs are block-level elements separated by whitespace above and below.</p>
+    <p>A second paragraph. The browser adds margin between them automatically.</p>
+  </div>
+  <p class="label">&lt;p&gt; is the most common block element. Never use &lt;br&gt; to fake paragraph spacing.</p>
+</div>
+
+<div class="example">
+  <h3>3. strong — important text</h3>
+  <div class="output">
+    <p>Please read the <strong>terms and conditions</strong> before proceeding.</p>
+  </div>
+  <p class="label">&lt;strong&gt; conveys importance or urgency. Screen readers may add emphasis. Renders bold by default.</p>
+</div>
+
+<div class="example">
+  <h3>4. em — stressed emphasis</h3>
+  <div class="output">
+    <p>I <em>really</em> mean it — this is important.</p>
+    <p>She said she <em>did</em> finish the homework.</p>
+  </div>
+  <p class="label">&lt;em&gt; indicates vocal stress. Renders italic by default. Contrast with &lt;i&gt; which is just typographic italic.</p>
+</div>
+
+<div class="example">
+  <h3>5. mark — highlighted text</h3>
+  <div class="output">
+    <p>Your search for "<mark>semantic HTML</mark>" returned 12 results.</p>
+  </div>
+  <p class="label">&lt;mark&gt; represents text highlighted for reference, like search results. Yellow background by default.</p>
+</div>
+
+<div class="example">
+  <h3>6. del and ins — edits</h3>
+  <div class="output">
+    <p>The meeting is on <del>Tuesday</del> <ins>Wednesday</ins>.</p>
+    <p>Price: <del>$99</del> <ins>$79</ins></p>
+  </div>
+  <p class="label">&lt;del&gt; = removed content (strikethrough). &lt;ins&gt; = inserted content (underline). Both accept datetime attributes.</p>
+</div>
+
+<div class="example">
+  <h3>7. abbr — abbreviations</h3>
+  <div class="output">
+    <p><abbr title="HyperText Markup Language">HTML</abbr> was created by Tim Berners-Lee.</p>
+    <p><abbr title="Cascading Style Sheets">CSS</abbr> controls the visual presentation.</p>
+  </div>
+  <p class="label">&lt;abbr title="..."&gt; provides the full expansion. Hover over it to see the tooltip.</p>
+</div>
+
+<div class="example">
+  <h3>8. code — inline code</h3>
+  <div class="output">
+    <p>Use <code>Array.prototype.map()</code> to transform array elements.</p>
+    <p>The <code>color</code> property accepts hex, rgb, or named values.</p>
+  </div>
+  <p class="label">&lt;code&gt; is for inline code fragments. Use &lt;pre&gt;&lt;code&gt; for blocks. Renders in monospace.</p>
+</div>
+
+<div class="example">
+  <h3>9. pre — preformatted text</h3>
+  <div class="output">
+<pre>const add = (a, b) => a + b;
+console.log(add(2, 3)); // 5</pre>
+  </div>
+  <p class="label">&lt;pre&gt; preserves whitespace and line breaks. Ideal for code blocks. Renders in monospace.</p>
+</div>
+
+<div class="example">
+  <h3>10. kbd — keyboard input</h3>
+  <div class="output">
+    <p>Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to copy selected text.</p>
+    <p>Save your file with <kbd>Cmd</kbd> + <kbd>S</kbd> on Mac.</p>
+  </div>
+  <p class="label">&lt;kbd&gt; represents keyboard input. Useful in documentation. Renders in monospace.</p>
+</div>
+
+<div class="example">
+  <h3>11. blockquote</h3>
+  <div class="output">
+    <blockquote cite="https://www.brainyquote.com/">
+      <p>The Web does not just connect machines, it connects people.</p>
+    </blockquote>
+  </div>
+  <p class="label">&lt;blockquote&gt; is for extended quotations. The cite attribute (URL) credits the source. Add &lt;cite&gt; for the author name.</p>
+</div>
+
+<div class="example">
+  <h3>12. br — line break</h3>
+  <div class="output">
+    <address>
+      123 Main Street<br>
+      Suite 4B<br>
+      Springfield, IL 62701
+    </address>
+  </div>
+  <p class="label">&lt;br&gt; inserts a line break within flow content. Use sparingly — only where the break is semantically meaningful (addresses, poetry).</p>
+</div>
+
+<div class="example">
+  <h3>13. hr — thematic break</h3>
+  <div class="output">
+    <p>End of Chapter 1.</p>
+    <hr>
+    <p>Chapter 2 begins here.</p>
+  </div>
+  <p class="label">&lt;hr&gt; is a thematic break between sections, not just a decorative line. Renders as a horizontal rule.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. samp — sample output</h3>
+  <div class="output">
+    <p>After running the script, you should see: <samp>Build succeeded in 2.4s</samp></p>
+  </div>
+  <p class="label">&lt;samp&gt; represents sample output from a program. Often used with &lt;kbd&gt; in terminal documentation.</p>
+</div>
+
+<div class="example">
+  <h3>15. var — variable name</h3>
+  <div class="output">
+    <p>Set <var>x</var> = 5 and <var>y</var> = 10, then compute <var>x</var> + <var>y</var>.</p>
+  </div>
+  <p class="label">&lt;var&gt; marks a variable in a mathematical expression or programming context. Renders italic by default.</p>
+</div>
+
+<div class="example">
+  <h3>16. sub and sup — subscript and superscript</h3>
+  <div class="output">
+    <p>Water is H<sub>2</sub>O.</p>
+    <p>Einstein's famous equation: E = mc<sup>2</sup></p>
+    <p>The 1<sup>st</sup> of January is a holiday.</p>
+  </div>
+  <p class="label">&lt;sub&gt; and &lt;sup&gt; are for mathematical formulas, footnote references, and chemical formulas.</p>
+</div>
+
+<div class="example">
+  <h3>17. small — fine print</h3>
+  <div class="output">
+    <p>Buy now for $9.99/month. <small>Billed annually. Cancel anytime.</small></p>
+  </div>
+  <p class="label">&lt;small&gt; represents side comments, fine print, or copyright notices. Renders at a smaller font size.</p>
+</div>
+
+<div class="example">
+  <h3>18. b vs strong — typographic bold vs important</h3>
+  <div class="output">
+    <p>Product name: <b>Ultra Widget Pro</b></p>
+    <p><strong>Warning:</strong> This product contains nuts.</p>
+  </div>
+  <p class="label">&lt;b&gt; is purely typographic (draw attention without importance). &lt;strong&gt; conveys semantic importance. Both render bold.</p>
+</div>
+
+<div class="example">
+  <h3>19. i vs em — typographic italic vs emphasis</h3>
+  <div class="output">
+    <p>The ship was named <i>HMS Victory</i>.</p>
+    <p>You <em>must</em> read the safety instructions.</p>
+  </div>
+  <p class="label">&lt;i&gt; is for technical terms, foreign words, ship names, thoughts. &lt;em&gt; is for spoken emphasis. Both render italic.</p>
+</div>
+
+<div class="example">
+  <h3>20. blockquote with cite element</h3>
+  <div class="output">
+    <figure>
+      <blockquote>
+        <p>First, solve the problem. Then, write the code.</p>
+      </blockquote>
+      <figcaption>— <cite>John Johnson</cite></figcaption>
+    </figure>
+  </div>
+  <p class="label">&lt;cite&gt; marks the title of a work or author name. The &lt;figure&gt;/&lt;figcaption&gt; pattern is the recommended way to attribute quotes.</p>
+</div>
+
+<div class="example">
+  <h3>21. del with datetime attribute</h3>
+  <div class="output">
+    <p>The deadline was <del datetime="2026-01-15">January 15th</del> <ins datetime="2026-02-01">February 1st</ins>.</p>
+  </div>
+  <p class="label">The datetime attribute on &lt;del&gt; and &lt;ins&gt; records when the change was made in ISO 8601 format.</p>
+</div>
+
+<div class="example">
+  <h3>22. dfn — defining instance</h3>
+  <div class="output">
+    <p>The <dfn id="def-html">HTML</dfn> (HyperText Markup Language) is the standard language for web pages.</p>
+  </div>
+  <p class="label">&lt;dfn&gt; marks the defining instance of a term. Often paired with an &lt;abbr&gt; inside it.</p>
+</div>
+
+<div class="example">
+  <h3>23. q — inline quotation</h3>
+  <div class="output">
+    <p>Tim Berners-Lee said <q cite="https://www.w3.org/">The Web is for everyone.</q></p>
+  </div>
+  <p class="label">&lt;q&gt; is for short inline quotations. Browsers add quotation marks automatically. Use &lt;blockquote&gt; for longer quotes.</p>
+</div>
+
+<div class="example">
+  <h3>24. u — underline for non-emphasis</h3>
+  <div class="output">
+    <p>This text has a <u>spell-checking annotation</u> or Chinese proper noun marker.</p>
+  </div>
+  <p class="label">&lt;u&gt; is for annotations that don't imply emphasis — like spelling errors or proper nouns in certain languages. Not for hyperlinks.</p>
+</div>
+
+<div class="example">
+  <h3>25. data element with machine-readable value</h3>
+  <div class="output">
+    <p>The product costs <data value="4999">$49.99</data>.</p>
+    <p>Temperature: <data value="37.2">37.2°C</data></p>
+  </div>
+  <p class="label">&lt;data&gt; links human-readable content with a machine-readable value attribute. For time values, prefer &lt;time&gt;.</p>
+</div>
+
+<div class="example">
+  <h3>26. wbr — word break opportunity</h3>
+  <div class="output">
+    <p>This_is_a_very_long_<wbr>identifier_that_might_<wbr>need_a_break_point_added.</p>
+  </div>
+  <p class="label">&lt;wbr&gt; suggests a possible line-break location for the browser. Useful for long compound words or URLs.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. pre + code block</h3>
+  <div class="output">
+<pre><code>function fibonacci(n) {
+  if (n &lt;= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}</code></pre>
+  </div>
+  <p class="label">&lt;pre&gt;&lt;code&gt; is the correct pattern for multi-line code blocks. Note escaped &lt; as &amp;lt;.</p>
+</div>
+
+<div class="example">
+  <h3>28. Nested emphasis</h3>
+  <div class="output">
+    <p>This is <strong>very <em>important</em> information</strong> that you should not ignore.</p>
+  </div>
+  <p class="label">You can nest &lt;em&gt; inside &lt;strong&gt; (or vice versa) for combined emphasis.</p>
+</div>
+
+<div class="example">
+  <h3>29. Blockquote with nested structure</h3>
+  <div class="output">
+    <blockquote>
+      <p>Good code is its own best documentation.</p>
+      <p>As you're about to add a comment, ask yourself:</p>
+      <p><q>How can I improve the code so that this comment isn't needed?</q></p>
+      <footer>— <cite>Steve McConnell, Code Complete</cite></footer>
+    </blockquote>
+  </div>
+  <p class="label">Blockquotes can contain paragraphs, nested quotes, and a footer for attribution.</p>
+</div>
+
+<div class="example">
+  <h3>30. Full heading hierarchy in context</h3>
+  <div class="output">
+    <article style="border:1px solid #eee; padding:8px">
+      <h2 style="margin:4px 0">Web Typography</h2>
+      <p>Choosing the right typeface is critical.</p>
+      <h3 style="margin:4px 0">Serif vs Sans-serif</h3>
+      <p>Serif fonts have small strokes at the ends of letters.</p>
+      <h4 style="margin:4px 0">Common Serif Fonts</h4>
+      <p>Georgia, Times New Roman, Garamond.</p>
+    </article>
+  </div>
+  <p class="label">Inside &lt;article&gt; or &lt;section&gt;, headings start a new outline. h2 is fine as the first heading inside a section.</p>
+</div>
+
+<div class="example">
+  <h3>31. Marking up a terminal session</h3>
+  <div class="output">
+    <pre><samp>$ <kbd>git status</kbd>
+On branch main
+nothing to commit, working tree clean
+$ <kbd>git log --oneline -3</kbd>
+a3f2c1b Add feature
+9e1d4a0 Fix bug
+c4b7e2f Initial commit</samp></pre>
+  </div>
+  <p class="label">Combine &lt;pre&gt;, &lt;samp&gt;, and &lt;kbd&gt; to mark up interactive terminal sessions semantically.</p>
+</div>
+
+<div class="example">
+  <h3>32. Paragraph with multiple inline semantics</h3>
+  <div class="output">
+    <p>
+      The <dfn><abbr title="Document Object Model">DOM</abbr></dfn> is a programming interface
+      for <abbr title="HyperText Markup Language">HTML</abbr> documents. Use
+      <code>document.getElementById(<var>id</var>)</code> to get an element — it returns
+      <code>null</code> if <em>no match is found</em>.
+    </p>
+  </div>
+  <p class="label">Real-world paragraphs often combine dfn, abbr, code, var, em for rich semantic markup.</p>
+</div>
+
+<div class="example">
+  <h3>33. Address element</h3>
+  <div class="output">
+    <address>
+      Written by <a href="mailto:jane@example.com">Jane Doe</a>.<br>
+      Visit us at:<br>
+      123 Main Street<br>
+      Springfield, IL 62701
+    </address>
+  </div>
+  <p class="label">&lt;address&gt; provides contact information for its nearest &lt;article&gt; or &lt;body&gt; ancestor. Not for generic postal addresses.</p>
+</div>
+
+<div class="example">
+  <h3>34. time element with datetime</h3>
+  <div class="output">
+    <p>Published on <time datetime="2026-03-24">March 24, 2026</time>.</p>
+    <p>The event starts at <time datetime="2026-04-01T09:00">9 AM on April 1st</time>.</p>
+    <p>Duration: <time datetime="PT2H30M">2 hours and 30 minutes</time>.</p>
+  </div>
+  <p class="label">&lt;time&gt; provides machine-readable datetime in ISO 8601 format while showing human-friendly text.</p>
+</div>
+
+<div class="example">
+  <h3>35. Mixing del, ins, and mark</h3>
+  <div class="output">
+    <p>
+      The project deadline is <del datetime="2026-01-01">Q1 2026</del>
+      <ins datetime="2026-03-01">Q2 2026</ins>.
+      The most <mark>critical milestone</mark> is the design review.
+    </p>
+  </div>
+  <p class="label">Combine editing markup (&lt;del&gt;/&lt;ins&gt;) with &lt;mark&gt; highlights in document revision workflows.</p>
+</div>
+
+<div class="example">
+  <h3>36. Poetry with br</h3>
+  <div class="output">
+    <p>
+      Roses are red,<br>
+      Violets are blue,<br>
+      <strong>HTML</strong> is semantic,<br>
+      And <em>so should you</em>.
+    </p>
+  </div>
+  <p class="label">Use &lt;br&gt; inside &lt;p&gt; for verse/poetry where line breaks are meaningful. Alternatively use &lt;br&gt; inside a dedicated poem container.</p>
+</div>
+
+<div class="example">
+  <h3>37. Figure with code caption</h3>
+  <div class="output">
+    <figure>
+      <pre><code>const square = x =&gt; x * x;
+[1,2,3].map(square); // [1, 4, 9]</code></pre>
+      <figcaption>Listing 1: Arrow function used with Array.map()</figcaption>
+    </figure>
+  </div>
+  <p class="label">&lt;figure&gt; can wrap code listings, giving them a &lt;figcaption&gt; for cross-reference.</p>
+</div>
+
+<div class="example">
+  <h3>38. Complex article excerpt</h3>
+  <div class="output">
+    <article style="border:1px solid #eee;padding:8px">
+      <header>
+        <h2 style="margin:2px 0">The Rise of <abbr title="Artificial Intelligence">AI</abbr></h2>
+        <p><small>By <cite>Jane Smith</cite> · <time datetime="2026-01-15">January 15, 2026</time></small></p>
+      </header>
+      <p>
+        <strong>Artificial intelligence</strong> has <mark>transformed</mark> every industry.
+        The old prediction — <q>AI will never beat humans at chess</q> — was proven
+        <del>correct</del> <ins>wrong</ins> in 1997.
+      </p>
+    </article>
+  </div>
+  <p class="label">A realistic article excerpt combining header, time, abbr, strong, mark, q, del, and ins.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Ruby annotations (East Asian typography)</h3>
+  <div class="output">
+    <ruby>漢<rt>かん</rt>字<rt>じ</rt></ruby>
+    <p><small>Furigana above kanji characters.</small></p>
+  </div>
+  <p class="label">&lt;ruby&gt; and &lt;rt&gt; provide phonetic annotations, used primarily for East Asian scripts.</p>
+</div>
+
+<div class="example">
+  <h3>40. bdi — bidirectional isolation</h3>
+  <div class="output">
+    <p>User <bdi>مرحبا</bdi> has posted 42 comments.</p>
+  </div>
+  <p class="label">&lt;bdi&gt; isolates a span of text with an unknown text direction from surrounding content, preventing bidirectional algorithm issues.</p>
+</div>
+
+<div class="example">
+  <h3>41. bdo — bidirectional override</h3>
+  <div class="output">
+    <p>Normal text direction.</p>
+    <p><bdo dir="rtl">This text renders right to left.</bdo></p>
+  </div>
+  <p class="label">&lt;bdo&gt; overrides the Unicode Bidirectional Algorithm entirely, forcing a specific text direction.</p>
+</div>
+
+<div class="example">
+  <h3>42. Footnote-style notation with sup and links</h3>
+  <div class="output">
+    <p>This claim needs a citation.<sup><a href="#fn1" id="ref1">[1]</a></sup></p>
+    <hr>
+    <p id="fn1"><sup>1</sup> Source: Example Journal, 2026. <a href="#ref1">↩</a></p>
+  </div>
+  <p class="label">Classical HTML footnote pattern using &lt;sup&gt; and anchor links. ARIA can enhance accessibility further.</p>
+</div>
+
+<div class="example">
+  <h3>43. Controlled heading hierarchy in a sidebar</h3>
+  <div class="output">
+    <div style="display:flex;gap:16px">
+      <main style="flex:1;border:1px solid #eee;padding:8px">
+        <h2 style="margin:4px 0">Main Article Heading</h2>
+        <h3 style="margin:4px 0">First Subsection</h3>
+      </main>
+      <aside style="width:200px;border:1px solid #eee;padding:8px">
+        <h2 style="margin:4px 0">Related Topics</h2>
+        <ul><li>Topic A</li><li>Topic B</li></ul>
+      </aside>
+    </div>
+  </div>
+  <p class="label">Both &lt;main&gt; and &lt;aside&gt; can restart with h2 — the sectioning context resets the outline.</p>
+</div>
+
+<div class="example">
+  <h3>44. Accessible code block with language hint</h3>
+  <div class="output">
+    <figure>
+      <figcaption>JavaScript example:</figcaption>
+      <pre><code class="language-js">// Debounce function
+function debounce(fn, delay) {
+  let timer;
+  return (...args) =&gt; {
+    clearTimeout(timer);
+    timer = setTimeout(() =&gt; fn(...args), delay);
+  };
+}</code></pre>
+    </figure>
+  </div>
+  <p class="label">The class="language-*" convention is used by syntax highlighters like Prism.js and highlight.js.</p>
+</div>
+
+<div class="example">
+  <h3>45. Dialog-like blockquote with nested quotation</h3>
+  <div class="output">
+    <blockquote>
+      <p>She asked, <q>Are you sure this is correct?</q></p>
+      <p>He replied, <q>Absolutely — I double-checked <q>every single value</q>.</q></p>
+    </blockquote>
+  </div>
+  <p class="label">Nested &lt;q&gt; elements auto-apply outer/inner quotation marks based on the document language.</p>
+</div>
+
+<div class="example">
+  <h3>46. Truncated text with title tooltip</h3>
+  <div class="output">
+    <p style="width:200px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis"
+       title="This is the full text that got truncated in the UI">
+      This is the full text that got truncated in the UI
+    </p>
+  </div>
+  <p class="label">The title attribute provides a tooltip. Combined with CSS text-overflow, it reveals hidden content on hover.</p>
+</div>
+
+<div class="example">
+  <h3>47. Legalese with small and abbr</h3>
+  <div class="output">
+    <p>
+      <strong>IMPORTANT NOTICE</strong><br>
+      <small>
+        By using this service, you agree to our
+        <abbr title="Terms of Service">ToS</abbr> and
+        <abbr title="Privacy Policy">PP</abbr>.
+        All transactions are subject to
+        <abbr title="Value Added Tax">VAT</abbr> where applicable.
+      </small>
+    </p>
+  </div>
+  <p class="label">Legal/fine-print text often combines &lt;small&gt; (reduced importance) with multiple &lt;abbr&gt; definitions.</p>
+</div>
+
+<div class="example">
+  <h3>48. Keyboard shortcut documentation</h3>
+  <div class="output">
+    <table style="border-collapse:collapse;font-size:13px">
+      <tr>
+        <td style="padding:4px 8px"><kbd>Ctrl</kbd> + <kbd>Z</kbd></td>
+        <td style="padding:4px 8px">Undo</td>
+      </tr>
+      <tr>
+        <td style="padding:4px 8px"><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td>
+        <td style="padding:4px 8px">Redo</td>
+      </tr>
+      <tr>
+        <td style="padding:4px 8px"><kbd>Ctrl</kbd> + <kbd>K</kbd></td>
+        <td style="padding:4px 8px">Insert link</td>
+      </tr>
+    </table>
+  </div>
+  <p class="label">Tables with &lt;kbd&gt; elements are a common pattern in keyboard shortcut references.</p>
+</div>
+
+<div class="example">
+  <h3>49. Scientific content mixing math semantics</h3>
+  <div class="output">
+    <p>
+      The quadratic formula is:
+      <var>x</var> = (−<var>b</var> ± √(<var>b</var><sup>2</sup> − 4<var>a</var><var>c</var>)) / 2<var>a</var>
+    </p>
+    <p>
+      The density of water is approximately 1000 kg/m<sup>3</sup> at 4°C.
+      Avogadro's number is 6.022 × 10<sup>23</sup> mol<sup>−1</sup>.
+    </p>
+  </div>
+  <p class="label">Use &lt;var&gt; for variables and &lt;sup&gt;/&lt;sub&gt; for exponents. For full MathML support, use the &lt;math&gt; element.</p>
+</div>
+
+<div class="example">
+  <h3>50. Full article with rich text semantics</h3>
+  <div class="output" style="font-size:14px">
+    <article>
+      <h2 style="margin:4px 0">Deploying with <abbr title="Continuous Integration">CI</abbr>/<abbr title="Continuous Deployment">CD</abbr></h2>
+      <p><time datetime="2026-03-01">March 1, 2026</time> · <small>5 min read</small></p>
+      <p>
+        <strong>Automated deployment</strong> has become <em>essential</em> for modern teams.
+        The old approach — <del>manually FTP-ing files</del> <ins>using pipeline automation</ins> — is now standard.
+      </p>
+      <blockquote>
+        <p>Deploy early, deploy often.</p>
+        <footer>— <cite>Continuous Delivery, Jez Humble</cite></footer>
+      </blockquote>
+      <p>
+        Run <code>git push origin main</code> and your pipeline does the rest.
+        Common tools include <mark>GitHub Actions</mark>, CircleCI, and Jenkins.
+      </p>
+      <pre><code>name: Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest</code></pre>
+    </article>
+  </div>
+  <p class="label">A complete article using: abbr, time, small, strong, em, del, ins, blockquote, cite, code, mark, pre — all semantically appropriate.</p>
+</div>
+
+</body>
+</html>

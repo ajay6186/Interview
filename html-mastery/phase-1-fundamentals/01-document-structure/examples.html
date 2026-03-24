@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 1.1 — Document Structure  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 1.1 — Document Structure</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 1.1 — Document Structure</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Minimal valid HTML5 document</h3>
+  <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Page Title&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;p&gt;Hello, world!&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  <p class="label">The smallest possible valid HTML5 document.</p>
+</div>
+
+<div class="example">
+  <h3>2. DOCTYPE declaration</h3>
+  <pre>&lt;!DOCTYPE html&gt;</pre>
+  <p class="label">Always the very first line. Tells the browser to use standards mode. Case-insensitive but lowercase is conventional.</p>
+</div>
+
+<div class="example">
+  <h3>3. html element with lang attribute</h3>
+  <pre>&lt;html lang="en"&gt;</pre>
+  <p class="label"><code>lang</code> helps screen readers choose the correct language/accent and aids spell-checkers. Use BCP-47 codes: "en", "fr", "de", "zh-CN", etc.</p>
+</div>
+
+<div class="example">
+  <h3>4. meta charset</h3>
+  <pre>&lt;meta charset="UTF-8"&gt;</pre>
+  <p class="label">Declares character encoding. UTF-8 supports every Unicode character. Must appear within the first 1024 bytes of the document.</p>
+</div>
+
+<div class="example">
+  <h3>5. meta viewport for responsive design</h3>
+  <pre>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</pre>
+  <p class="label">Without this, mobile browsers zoom out to show a desktop-width page. <code>width=device-width</code> sets the viewport to the device width.</p>
+</div>
+
+<div class="example">
+  <h3>6. title element</h3>
+  <pre>&lt;title&gt;My Awesome Website — Home&lt;/title&gt;</pre>
+  <p class="label">Shows in browser tabs, bookmarks, and search results. Keep it under ~60 characters. Format: "Page Name — Site Name".</p>
+</div>
+
+<div class="example">
+  <h3>7. meta description</h3>
+  <pre>&lt;meta name="description" content="Learn HTML from basics to advanced with hands-on exercises."&gt;</pre>
+  <p class="label">Used by search engines as the snippet under the title in search results. Aim for 150–160 characters.</p>
+</div>
+
+<div class="example">
+  <h3>8. head element — what belongs inside</h3>
+  <pre>&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Page Title&lt;/title&gt;
+  &lt;meta name="description" content="..."&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+  &lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;</pre>
+  <p class="label">The <code>&lt;head&gt;</code> holds metadata — nothing rendered directly. CSS and deferred JS go here too.</p>
+</div>
+
+<div class="example">
+  <h3>9. body element</h3>
+  <pre>&lt;body&gt;
+  &lt;h1&gt;Welcome&lt;/h1&gt;
+  &lt;p&gt;All visible content lives inside &lt;body&gt;.&lt;/p&gt;
+&lt;/body&gt;</pre>
+  <p class="label">All rendered content goes inside <code>&lt;body&gt;</code>. There must be exactly one.</p>
+</div>
+
+<div class="example">
+  <h3>10. lang attribute for a different language</h3>
+  <pre>&lt;html lang="ja"&gt; &lt;!-- Japanese --&gt;
+&lt;html lang="ar" dir="rtl"&gt; &lt;!-- Arabic, right-to-left --&gt;
+&lt;html lang="zh-Hans"&gt; &lt;!-- Simplified Chinese --&gt;</pre>
+  <p class="label">Use subtags for regional variants. Add <code>dir="rtl"</code> for right-to-left languages.</p>
+</div>
+
+<div class="example">
+  <h3>11. Multiple meta tags in head</h3>
+  <pre>&lt;meta charset="UTF-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+&lt;meta name="description" content="..."&gt;
+&lt;meta name="author" content="Jane Doe"&gt;
+&lt;meta name="keywords" content="html, tutorial, beginner"&gt;</pre>
+  <p class="label"><code>&lt;meta&gt;</code> is a void element (no closing tag). Stack as many as needed.</p>
+</div>
+
+<div class="example">
+  <h3>12. link element for favicon</h3>
+  <pre>&lt;link rel="icon" type="image/png" href="/favicon.png"&gt;
+&lt;link rel="apple-touch-icon" href="/apple-touch-icon.png"&gt;</pre>
+  <p class="label">Favicons appear in browser tabs and bookmarks. SVG favicons are increasingly supported.</p>
+</div>
+
+<div class="example">
+  <h3>13. script with defer vs async</h3>
+  <pre>&lt;script src="app.js" defer&gt;&lt;/script&gt;   &lt;!-- runs after DOM parsed --&gt;
+&lt;script src="lib.js" async&gt;&lt;/script&gt;   &lt;!-- runs as soon as downloaded --&gt;
+&lt;script src="old.js"&gt;&lt;/script&gt;         &lt;!-- blocks parsing (avoid) --&gt;</pre>
+  <p class="label">Prefer <code>defer</code> for most scripts. Use <code>async</code> for independent analytics or ads scripts.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Canonical link tag</h3>
+  <pre>&lt;link rel="canonical" href="https://example.com/page/"&gt;</pre>
+  <p class="label">Tells search engines which URL is the authoritative version, preventing duplicate-content penalties.</p>
+</div>
+
+<div class="example">
+  <h3>15. Theme color meta tag</h3>
+  <pre>&lt;meta name="theme-color" content="#4285f4"&gt;
+&lt;meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"&gt;
+&lt;meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)"&gt;</pre>
+  <p class="label">Colors the browser chrome on mobile. Can be conditional on color scheme.</p>
+</div>
+
+<div class="example">
+  <h3>16. base element</h3>
+  <pre>&lt;base href="https://example.com/" target="_blank"&gt;</pre>
+  <p class="label">Sets the base URL for all relative links on the page. Only one <code>&lt;base&gt;</code> allowed per document.</p>
+</div>
+
+<div class="example">
+  <h3>17. robots meta tag</h3>
+  <pre>&lt;meta name="robots" content="index, follow"&gt;       &lt;!-- default --&gt;
+&lt;meta name="robots" content="noindex, nofollow"&gt;    &lt;!-- block crawlers --&gt;
+&lt;meta name="robots" content="noindex, follow"&gt;      &lt;!-- follow links but don't index --&gt;</pre>
+  <p class="label">Controls search engine crawling. Use <code>noindex</code> on staging environments, login pages, etc.</p>
+</div>
+
+<div class="example">
+  <h3>18. Content-Security-Policy via meta</h3>
+  <pre>&lt;meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src *; script-src 'self'"&gt;</pre>
+  <p class="label">Restricts what resources the page can load, reducing XSS risk. Prefer HTTP header CSP in production.</p>
+</div>
+
+<div class="example">
+  <h3>19. http-equiv refresh redirect</h3>
+  <pre>&lt;meta http-equiv="refresh" content="5; url=https://example.com/new-page"&gt;</pre>
+  <p class="label">Redirects after N seconds. Avoid in production — use a server-side 301 redirect instead.</p>
+</div>
+
+<div class="example">
+  <h3>20. preload and prefetch link hints</h3>
+  <pre>&lt;link rel="preload" href="hero.jpg" as="image"&gt;
+&lt;link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin&gt;
+&lt;link rel="prefetch" href="/next-page.html"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;</pre>
+  <p class="label">Resource hints improve performance. <code>preload</code> is for current page needs; <code>prefetch</code> for future navigation.</p>
+</div>
+
+<div class="example">
+  <h3>21. DNS prefetch</h3>
+  <pre>&lt;link rel="dns-prefetch" href="//fonts.googleapis.com"&gt;
+&lt;link rel="dns-prefetch" href="//cdn.example.com"&gt;</pre>
+  <p class="label">Tells the browser to resolve DNS for external domains early, reducing connection latency.</p>
+</div>
+
+<div class="example">
+  <h3>22. X-UA-Compatible for IE (legacy)</h3>
+  <pre>&lt;meta http-equiv="X-UA-Compatible" content="IE=edge"&gt;</pre>
+  <p class="label">Forces IE to use its highest standards mode. Largely irrelevant now but you may see it in older codebases.</p>
+</div>
+
+<div class="example">
+  <h3>23. Language variation with hreflang</h3>
+  <pre>&lt;link rel="alternate" hreflang="en" href="https://example.com/en/"&gt;
+&lt;link rel="alternate" hreflang="es" href="https://example.com/es/"&gt;
+&lt;link rel="alternate" hreflang="x-default" href="https://example.com/"&gt;</pre>
+  <p class="label">Tells search engines about language/regional variants of the same page.</p>
+</div>
+
+<div class="example">
+  <h3>24. Inline styles in head (valid but discouraged)</h3>
+  <pre>&lt;head&gt;
+  &lt;style&gt;
+    body { margin: 0; font-family: sans-serif; }
+  &lt;/style&gt;
+&lt;/head&gt;</pre>
+  <p class="label">Inline <code>&lt;style&gt;</code> is valid inside <code>&lt;head&gt;</code>. For small critical CSS it avoids a render-blocking request.</p>
+</div>
+
+<div class="example">
+  <h3>25. noscript fallback</h3>
+  <pre>&lt;noscript&gt;
+  &lt;p&gt;Please enable JavaScript to use this website.&lt;/p&gt;
+&lt;/noscript&gt;</pre>
+  <p class="label"><code>&lt;noscript&gt;</code> content is shown only when JS is disabled. Use sparingly — most features should degrade gracefully.</p>
+</div>
+
+<div class="example">
+  <h3>26. manifest link for PWA</h3>
+  <pre>&lt;link rel="manifest" href="/manifest.json"&gt;</pre>
+  <p class="label">Links a Web App Manifest for Progressive Web App features (install prompt, splash screen, icons).</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Complete production-ready head</h3>
+  <pre>&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Product Page — Acme Co&lt;/title&gt;
+  &lt;meta name="description" content="Buy widgets from Acme Co. Fast shipping."&gt;
+  &lt;link rel="canonical" href="https://acme.co/products/"&gt;
+  &lt;link rel="icon" href="/favicon.svg" type="image/svg+xml"&gt;
+  &lt;link rel="manifest" href="/manifest.json"&gt;
+  &lt;meta name="theme-color" content="#0066cc"&gt;
+  &lt;link rel="stylesheet" href="/styles/main.css"&gt;
+  &lt;script src="/scripts/app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;</pre>
+  <p class="label">A comprehensive, ordered head element for a real production page.</p>
+</div>
+
+<div class="example">
+  <h3>28. Document with nested lang overrides</h3>
+  <pre>&lt;html lang="en"&gt;
+&lt;body&gt;
+  &lt;p&gt;This paragraph is in English.&lt;/p&gt;
+  &lt;p lang="fr"&gt;Ce paragraphe est en français.&lt;/p&gt;
+  &lt;blockquote lang="de"&gt;Das ist ein deutsches Zitat.&lt;/blockquote&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  <p class="label"><code>lang</code> can be overridden on any element, not just <code>&lt;html&gt;</code>.</p>
+</div>
+
+<div class="example">
+  <h3>29. HTML document with ARIA landmark roles</h3>
+  <pre>&lt;body&gt;
+  &lt;header role="banner"&gt;...&lt;/header&gt;
+  &lt;nav role="navigation"&gt;...&lt;/nav&gt;
+  &lt;main role="main"&gt;...&lt;/main&gt;
+  &lt;aside role="complementary"&gt;...&lt;/aside&gt;
+  &lt;footer role="contentinfo"&gt;...&lt;/footer&gt;
+&lt;/body&gt;</pre>
+  <p class="label">Semantic HTML5 elements implicitly carry ARIA roles. Explicit roles add redundancy for older assistive tech.</p>
+</div>
+
+<div class="example">
+  <h3>30. Conditional comments (IE legacy pattern)</h3>
+  <pre>&lt;!--[if lt IE 9]&gt;
+  &lt;script src="html5shiv.js"&gt;&lt;/script&gt;
+&lt;![endif]--&gt;</pre>
+  <p class="label">Conditional comments were IE-specific. They are ignored by all modern browsers. For reference only.</p>
+</div>
+
+<div class="example">
+  <h3>31. Template document shell with Open Graph</h3>
+  <pre>&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Article Title — Site Name&lt;/title&gt;
+  &lt;meta property="og:title" content="Article Title"&gt;
+  &lt;meta property="og:description" content="A short summary."&gt;
+  &lt;meta property="og:image" content="https://example.com/og-image.jpg"&gt;
+  &lt;meta property="og:url" content="https://example.com/article/"&gt;
+  &lt;meta property="og:type" content="article"&gt;
+&lt;/head&gt;</pre>
+  <p class="label">Open Graph tags control how the page looks when shared on Facebook, LinkedIn, Slack, etc.</p>
+</div>
+
+<div class="example">
+  <h3>32. Document with inline SVG favicon</h3>
+  <pre>&lt;link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg'
+  viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;🔥&lt;/text&gt;&lt;/svg&gt;"&gt;</pre>
+  <p class="label">A data URI SVG favicon that renders an emoji icon. No file needed.</p>
+</div>
+
+<div class="example">
+  <h3>33. Skeleton HTML with critical CSS inlined</h3>
+  <pre>&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;style&gt;
+    /* Critical above-the-fold CSS */
+    body { margin: 0; font-family: system-ui; }
+    .hero { background: #0066cc; color: #fff; padding: 2rem; }
+  &lt;/style&gt;
+  &lt;link rel="stylesheet" href="non-critical.css" media="print" onload="this.media='all'"&gt;
+&lt;/head&gt;</pre>
+  <p class="label">The print media trick loads CSS asynchronously, avoiding a render-blocking request.</p>
+</div>
+
+<div class="example">
+  <h3>34. Document structure for an email (HTML email skeleton)</h3>
+  <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta http-equiv="X-UA-Compatible" content="IE=edge"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Email Subject Line&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Email clients strip most head content; inline all styles --&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  <p class="label">HTML email requires extra legacy support. Most CSS must be inlined.</p>
+</div>
+
+<div class="example">
+  <h3>35. Viewport meta variations</h3>
+  <pre>&lt;!-- Standard responsive --&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+
+&lt;!-- Prevent user zoom (accessibility concern — avoid) --&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"&gt;
+
+&lt;!-- Minimum/maximum scale --&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=5"&gt;</pre>
+  <p class="label">Never use <code>user-scalable=no</code> — it prevents accessibility zooming.</p>
+</div>
+
+<div class="example">
+  <h3>36. Document with JSON-LD structured data</h3>
+  <pre>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "My Article Title",
+  "author": { "@type": "Person", "name": "Jane Doe" },
+  "datePublished": "2026-01-01",
+  "image": "https://example.com/photo.jpg"
+}
+&lt;/script&gt;</pre>
+  <p class="label">JSON-LD in the <code>&lt;head&gt;</code> provides structured data for rich search results.</p>
+</div>
+
+<div class="example">
+  <h3>37. Documenting character entity references</h3>
+  <pre>&lt;p&gt;&amp;amp;  → &amp; (ampersand)&lt;/p&gt;
+&lt;p&gt;&amp;lt;   → &lt; (less-than)&lt;/p&gt;
+&lt;p&gt;&amp;gt;   → &gt; (greater-than)&lt;/p&gt;
+&lt;p&gt;&amp;quot; → " (double quote)&lt;/p&gt;
+&lt;p&gt;&amp;apos; → ' (apostrophe)&lt;/p&gt;
+&lt;p&gt;&amp;nbsp; → non-breaking space&lt;/p&gt;
+&lt;p&gt;&amp;copy; → © (copyright)&lt;/p&gt;</pre>
+  <p class="label">Character entity references let you include special characters safely in HTML.</p>
+</div>
+
+<div class="example">
+  <h3>38. Document with a comment block</h3>
+  <pre>&lt;!-- This is a single-line comment --&gt;
+
+&lt;!--
+  This is a multi-line comment.
+  Comments are NOT sent to the browser but ARE visible in page source.
+  Never put passwords or secrets in HTML comments.
+--&gt;
+
+&lt;!-- TODO: Replace this placeholder with real content --&gt;</pre>
+  <p class="label">HTML comments use <code>&lt;!-- ... --&gt;</code>. They cannot be nested.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. Content-Type enforcement via meta</h3>
+  <pre>&lt;meta http-equiv="content-type" content="text/html; charset=utf-8"&gt;</pre>
+  <p class="label">The HTML5 <code>&lt;meta charset&gt;</code> shorthand replaced this verbose form. You may see it in older codebases.</p>
+</div>
+
+<div class="example">
+  <h3>40. Multiple stylesheets with media queries</h3>
+  <pre>&lt;link rel="stylesheet" href="base.css"&gt;
+&lt;link rel="stylesheet" href="print.css" media="print"&gt;
+&lt;link rel="stylesheet" href="narrow.css" media="(max-width: 600px)"&gt;
+&lt;link rel="stylesheet" href="dark.css" media="(prefers-color-scheme: dark)"&gt;</pre>
+  <p class="label">Conditionally load stylesheets based on media queries. Non-matching stylesheets still download but don't block rendering.</p>
+</div>
+
+<div class="example">
+  <h3>41. Integrity and crossorigin attributes</h3>
+  <pre>&lt;script
+  src="https://cdn.example.com/library.js"
+  integrity="sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/ux..."
+  crossorigin="anonymous"&gt;
+&lt;/script&gt;</pre>
+  <p class="label">Subresource Integrity (SRI) ensures the fetched file hasn't been tampered with. Required when using CDN-hosted scripts securely.</p>
+</div>
+
+<div class="example">
+  <h3>42. Document outline and heading hierarchy</h3>
+  <pre>&lt;body&gt;
+  &lt;h1&gt;Site Name&lt;/h1&gt;
+  &lt;main&gt;
+    &lt;h2&gt;Main Article Title&lt;/h2&gt;
+    &lt;section&gt;
+      &lt;h3&gt;Section One&lt;/h3&gt;
+      &lt;p&gt;...&lt;/p&gt;
+      &lt;h4&gt;Subsection&lt;/h4&gt;
+    &lt;/section&gt;
+    &lt;section&gt;
+      &lt;h3&gt;Section Two&lt;/h3&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+&lt;/body&gt;</pre>
+  <p class="label">Use headings in logical order (h1 → h2 → h3). Never skip levels. One h1 per page is best practice.</p>
+</div>
+
+<div class="example">
+  <h3>43. document.readyState and DOMContentLoaded</h3>
+  <pre>&lt;script&gt;
+  // Fires when HTML is parsed (before images, CSS finish loading)
+  document.addEventListener("DOMContentLoaded", () =&gt; {
+    console.log("DOM ready");
+  });
+
+  // Fires when everything (images, CSS, fonts) is loaded
+  window.addEventListener("load", () =&gt; {
+    console.log("Page fully loaded");
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Understanding load order is critical for scripts that manipulate the DOM.</p>
+</div>
+
+<div class="example">
+  <h3>44. HTML document for a web app (SPA shell)</h3>
+  <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;My App&lt;/title&gt;
+  &lt;link rel="stylesheet" href="/dist/styles.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div id="app"&gt;&lt;/div&gt;
+  &lt;noscript&gt;You need JavaScript to run this app.&lt;/noscript&gt;
+  &lt;script type="module" src="/dist/main.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  <p class="label">Single-page applications often have a minimal HTML shell. <code>type="module"</code> scripts are deferred automatically.</p>
+</div>
+
+<div class="example">
+  <h3>45. XML declaration (not needed in HTML5)</h3>
+  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml" lang="en"&gt;</pre>
+  <p class="label">XHTML required an XML declaration and namespace. Pure HTML5 does not. Avoid this pattern in new projects.</p>
+</div>
+
+<div class="example">
+  <h3>46. Tracking load performance with PerformanceNavigationTiming</h3>
+  <pre>&lt;script&gt;
+  window.addEventListener("load", () =&gt; {
+    const [nav] = performance.getEntriesByType("navigation");
+    console.log("TTFB:", nav.responseStart - nav.requestStart, "ms");
+    console.log("DOM loaded:", nav.domContentLoadedEventEnd - nav.startTime, "ms");
+    console.log("Full load:", nav.loadEventEnd - nav.startTime, "ms");
+  });
+&lt;/script&gt;</pre>
+  <p class="label">Use the Performance API to measure real user timing without external libraries.</p>
+</div>
+
+<div class="example">
+  <h3>47. Feature detection in head</h3>
+  <pre>&lt;script&gt;
+  // Add classes based on feature support
+  if ('IntersectionObserver' in window) {
+    document.documentElement.classList.add('has-intersection-observer');
+  }
+  if (CSS.supports('display', 'grid')) {
+    document.documentElement.classList.add('has-css-grid');
+  }
+&lt;/script&gt;</pre>
+  <p class="label">Feature detection (not browser detection) applied to the root element lets CSS conditionally apply fallbacks.</p>
+</div>
+
+<div class="example">
+  <h3>48. Print stylesheet considerations</h3>
+  <pre>&lt;link rel="stylesheet" href="print.css" media="print"&gt;
+
+&lt;!-- Or inline with @media print --&gt;
+&lt;style&gt;
+  @media print {
+    nav, aside, footer { display: none; }
+    body { font-size: 12pt; color: black; }
+    a::after { content: " (" attr(href) ")"; }
+  }
+&lt;/style&gt;</pre>
+  <p class="label">Print styles hide navigation, show link URLs, and optimize for paper. Often forgotten.</p>
+</div>
+
+<div class="example">
+  <h3>49. Meta referrer policy</h3>
+  <pre>&lt;meta name="referrer" content="strict-origin-when-cross-origin"&gt;</pre>
+  <p class="label">Controls how much referrer information is sent when the user follows links. <code>strict-origin-when-cross-origin</code> is the browser default since ~2020.</p>
+</div>
+
+<div class="example">
+  <h3>50. Full document template with all best practices</h3>
+  <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en" dir="ltr"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Page Title — Brand Name&lt;/title&gt;
+  &lt;meta name="description" content="150 char description for SEO."&gt;
+  &lt;meta name="robots" content="index, follow"&gt;
+  &lt;link rel="canonical" href="https://example.com/page/"&gt;
+  &lt;link rel="icon" href="/favicon.svg" type="image/svg+xml"&gt;
+  &lt;link rel="manifest" href="/manifest.json"&gt;
+  &lt;meta name="theme-color" content="#ffffff"&gt;
+  &lt;!-- Open Graph --&gt;
+  &lt;meta property="og:title" content="Page Title"&gt;
+  &lt;meta property="og:description" content="OG description."&gt;
+  &lt;meta property="og:image" content="https://example.com/og.jpg"&gt;
+  &lt;meta property="og:url" content="https://example.com/page/"&gt;
+  &lt;meta property="og:type" content="website"&gt;
+  &lt;!-- Twitter Card --&gt;
+  &lt;meta name="twitter:card" content="summary_large_image"&gt;
+  &lt;meta name="twitter:title" content="Page Title"&gt;
+  &lt;meta name="twitter:image" content="https://example.com/twitter.jpg"&gt;
+  &lt;!-- Performance hints --&gt;
+  &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+  &lt;link rel="preload" href="/hero.jpg" as="image"&gt;
+  &lt;link rel="stylesheet" href="/styles/main.css"&gt;
+  &lt;script src="/scripts/app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- page content --&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  <p class="label">The gold-standard document template combining SEO, performance, accessibility, and social sharing.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 1.1 — Document Structure
+  ============================================================================
+  Build a minimal, valid HTML document with the correct skeleton elements:
+  DOCTYPE, html[lang], head with meta charset, meta viewport, title, and
+  a meta description. Understand why each piece matters.
+
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- Section 1: Viewport Meta Tag -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Section 2: Page Title -->
+  <title>My First HTML Page</title>
+
+  <!-- Section 3: Meta Description -->
+  <meta name="description" content="A minimal, valid HTML document demonstrating proper document structure.">
+
+</head>
+<body>
+
+  <h1>Document Structure Exercise</h1>
+  <p>This page tests whether you have built a correct HTML document skeleton.</p>
+
+  <!-- =========================================================
+       Assertions (do not edit below)
+       ========================================================= -->
+  <hr>
+  <div id="results"><h2 style="font-family:sans-serif">Solution 1.1 — Results</h2></div>
+  <script>
+    const _r = document.getElementById("results");
+    let _p = 0, _f = 0;
+    function assert(cond, msg) {
+      const el = document.createElement("p");
+      el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+      if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+      else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+      _r.appendChild(el);
+    }
+
+    // 1. DOCTYPE is present
+    assert(document.doctype !== null, "document.doctype exists (<!DOCTYPE html> is present)");
+
+    // 2. <html> has a lang attribute
+    assert(document.documentElement.hasAttribute("lang") && document.documentElement.getAttribute("lang").trim() !== "",
+      '<html> element has a non-empty lang attribute');
+
+    // 3. <meta charset> exists
+    const metaCharset = document.querySelector('meta[charset]');
+    assert(metaCharset !== null, '<meta charset> tag is present in <head>');
+
+    // 4. <title> exists and has non-empty text
+    const titleEl = document.querySelector('title');
+    assert(titleEl !== null && titleEl.textContent.trim() !== "", '<title> element exists and has non-empty text');
+
+    // 5. <meta name="viewport"> exists
+    const metaViewport = document.querySelector('meta[name="viewport"]');
+    assert(metaViewport !== null, '<meta name="viewport"> tag is present');
+
+    // 6. viewport content includes width=device-width
+    assert(metaViewport !== null && (metaViewport.getAttribute("content") || "").includes("width=device-width"),
+      'viewport content includes "width=device-width"');
+
+    // 7. <meta name="description"> exists with non-empty content
+    const metaDesc = document.querySelector('meta[name="description"]');
+    assert(metaDesc !== null && (metaDesc.getAttribute("content") || "").trim() !== "",
+      '<meta name="description"> exists with non-empty content');
+
+    // Summary
+    const _s = document.createElement("p");
+    _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+    _s.style.color = _f === 0 ? "green" : "red";
+    _s.textContent = _f === 0
+      ? `Solution 1.1 — All ${_p} assertions passed!`
+      : `${_f} assertion(s) failed, ${_p} passed.`;
+    _r.appendChild(_s);
+  </script>
+</body>
+</html>

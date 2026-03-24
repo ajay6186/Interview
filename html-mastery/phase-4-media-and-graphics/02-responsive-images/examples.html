@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Examples 4.2 — Responsive Images  (50 examples)
+  BASIC (1–13) | INTERMEDIATE (14–26) | NESTED (27–38) | ADVANCED (39–50)
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples 4.2 — Responsive Images</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; }
+    .example { border: 1px solid #ddd; border-radius: 4px; margin: 8px 0; padding: 12px; }
+    .example h3 { margin: 0 0 8px; font-size: 13px; color: #666; }
+    .label { font-size: 12px; color: #999; font-family: monospace; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 13px; margin: 4px 0; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 2px; font-size: 13px; }
+  </style>
+</head>
+<body>
+<h1>Examples 4.2 — Responsive Images</h1>
+
+<h2>BASIC (1–13)</h2>
+
+<div class="example">
+  <h3>1. Basic img element</h3>
+  <pre>&lt;img src="photo.jpg" alt="A mountain landscape"&gt;</pre>
+  <p class="label">Always include alt text. Empty alt="" for decorative images, descriptive text for informational ones.</p>
+</div>
+
+<div class="example">
+  <h3>2. width and height attributes</h3>
+  <pre>&lt;img src="photo.jpg" alt="Mountain" width="800" height="600"&gt;</pre>
+  <p class="label">Always set width and height to prevent layout shift (CLS). Browser reserves space before image loads.</p>
+</div>
+
+<div class="example">
+  <h3>3. loading="lazy"</h3>
+  <pre>&lt;img src="below-fold.jpg" alt="Below the fold" loading="lazy"&gt;</pre>
+  <p class="label">Defers loading until the image approaches the viewport. Never use on above-the-fold images.</p>
+</div>
+
+<div class="example">
+  <h3>4. loading="eager" (default)</h3>
+  <pre>&lt;img src="hero.jpg" alt="Hero" loading="eager"&gt;</pre>
+  <p class="label">Loads immediately. Default behavior. Use explicitly on important above-the-fold images.</p>
+</div>
+
+<div class="example">
+  <h3>5. decoding="async"</h3>
+  <pre>&lt;img src="photo.jpg" alt="Photo" loading="lazy" decoding="async"&gt;</pre>
+  <p class="label">Allows browser to decode the image off the main thread, preventing jank.</p>
+</div>
+
+<div class="example">
+  <h3>6. srcset with width descriptors</h3>
+  <pre>&lt;img src="hero-800.jpg" alt="Hero"
+     srcset="hero-400.jpg 400w, hero-800.jpg 800w, hero-1600.jpg 1600w"&gt;</pre>
+  <p class="label">Browser picks the best size based on device width and pixel density. src is the fallback.</p>
+</div>
+
+<div class="example">
+  <h3>7. srcset with pixel density descriptors</h3>
+  <pre>&lt;img src="logo.png" alt="Logo"
+     srcset="logo.png 1x, logo@2x.png 2x, logo@3x.png 3x"&gt;</pre>
+  <p class="label">1x/2x/3x descriptors serve high-DPI versions to retina screens.</p>
+</div>
+
+<div class="example">
+  <h3>8. sizes attribute</h3>
+  <pre>&lt;img src="photo.jpg" alt="Photo"
+     srcset="small.jpg 400w, medium.jpg 800w, large.jpg 1200w"
+     sizes="(max-width: 600px) 400px, (max-width: 900px) 800px, 1200px"&gt;</pre>
+  <p class="label">sizes tells the browser how wide the image will be at each breakpoint, enabling optimal selection.</p>
+</div>
+
+<div class="example">
+  <h3>9. picture element</h3>
+  <pre>&lt;picture&gt;
+  &lt;source srcset="image.avif" type="image/avif"&gt;
+  &lt;source srcset="image.webp" type="image/webp"&gt;
+  &lt;img src="image.jpg" alt="Description"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">picture allows format fallbacks. Browser uses first supported source; img is always the fallback.</p>
+</div>
+
+<div class="example">
+  <h3>10. picture for art direction</h3>
+  <pre>&lt;picture&gt;
+  &lt;source media="(max-width: 600px)" srcset="portrait.jpg"&gt;
+  &lt;source media="(min-width: 601px)" srcset="landscape.jpg"&gt;
+  &lt;img src="landscape.jpg" alt="Photo"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">media attribute selects different images for different viewport sizes — not just different resolutions.</p>
+</div>
+
+<div class="example">
+  <h3>11. Decorative image</h3>
+  <pre>&lt;img src="divider.png" alt=""&gt;</pre>
+  <p class="label">Empty alt hides the image from screen readers. Use for purely decorative images.</p>
+</div>
+
+<div class="example">
+  <h3>12. fetchpriority</h3>
+  <pre>&lt;img src="hero.jpg" alt="Hero" fetchpriority="high"&gt;
+&lt;img src="thumbnail.jpg" alt="Thumb" fetchpriority="low"&gt;</pre>
+  <p class="label">fetchpriority hints the browser about image importance. Use "high" for LCP images.</p>
+</div>
+
+<div class="example">
+  <h3>13. crossorigin attribute</h3>
+  <pre>&lt;img src="https://cdn.example.com/photo.jpg" alt="CDN photo"
+     crossorigin="anonymous"&gt;</pre>
+  <p class="label">Required for images drawn to canvas from a different origin without tainting it.</p>
+</div>
+
+<h2>INTERMEDIATE (14–26)</h2>
+
+<div class="example">
+  <h3>14. Complete responsive hero image</h3>
+  <pre>&lt;img src="hero-1200.jpg"
+     alt="Mountain landscape at sunset"
+     width="1200" height="600"
+     srcset="hero-400.jpg 400w,
+             hero-800.jpg 800w,
+             hero-1200.jpg 1200w,
+             hero-2400.jpg 2400w"
+     sizes="100vw"
+     fetchpriority="high"
+     decoding="async"&gt;</pre>
+  <p class="label">Full-width hero best practice: srcset for resolution, sizes="100vw", high fetch priority.</p>
+</div>
+
+<div class="example">
+  <h3>15. Combining picture + srcset + format</h3>
+  <pre>&lt;picture&gt;
+  &lt;source type="image/avif"
+    srcset="photo-400.avif 400w, photo-800.avif 800w"
+    sizes="(max-width: 600px) 400px, 800px"&gt;
+  &lt;source type="image/webp"
+    srcset="photo-400.webp 400w, photo-800.webp 800w"
+    sizes="(max-width: 600px) 400px, 800px"&gt;
+  &lt;img src="photo-800.jpg" alt="Photo" width="800" height="600"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">Best of both worlds: format negotiation (avif→webp→jpg) plus resolution switching.</p>
+</div>
+
+<div class="example">
+  <h3>16. Image in a grid layout</h3>
+  <pre>&lt;style&gt;
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid img { width: 100%; height: 200px; object-fit: cover; }
+&lt;/style&gt;
+&lt;div class="grid"&gt;
+  &lt;img src="a.jpg" alt="A" loading="lazy"&gt;
+  &lt;img src="b.jpg" alt="B" loading="lazy"&gt;
+  &lt;img src="c.jpg" alt="C" loading="lazy"&gt;
+&lt;/div&gt;</pre>
+  <p class="label">object-fit: cover fills the fixed area without distortion. Use loading="lazy" for grid images.</p>
+</div>
+
+<div class="example">
+  <h3>17. sizes with calc()</h3>
+  <pre>&lt;img src="card.jpg" alt="Card image"
+     srcset="card-300.jpg 300w, card-600.jpg 600w, card-900.jpg 900w"
+     sizes="(max-width: 800px) calc(50vw - 32px), 400px"&gt;</pre>
+  <p class="label">calc() in sizes accounts for grid gaps, padding, and margins in layout calculations.</p>
+</div>
+
+<div class="example">
+  <h3>18. WebP with JPEG fallback</h3>
+  <pre>&lt;picture&gt;
+  &lt;source srcset="image.webp" type="image/webp"&gt;
+  &lt;img src="image.jpg" alt="Product photo" width="400" height="400"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">WebP is ~30% smaller than JPEG. All modern browsers support it; IE11 gets the JPEG fallback.</p>
+</div>
+
+<div class="example">
+  <h3>19. AVIF with WebP and JPEG fallbacks</h3>
+  <pre>&lt;picture&gt;
+  &lt;source srcset="image.avif" type="image/avif"&gt;
+  &lt;source srcset="image.webp" type="image/webp"&gt;
+  &lt;img src="image.jpg" alt="Photo" width="800" height="600"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">AVIF is ~50% smaller than JPEG. Add WebP as intermediate fallback for broader browser support.</p>
+</div>
+
+<div class="example">
+  <h3>20. SVG as img src</h3>
+  <pre>&lt;img src="logo.svg" alt="Company logo" width="200" height="80"&gt;</pre>
+  <p class="label">SVG scales to any resolution. Always set intrinsic dimensions for layout stability.</p>
+</div>
+
+<div class="example">
+  <h3>21. Responsive SVG with picture</h3>
+  <pre>&lt;picture&gt;
+  &lt;source media="(max-width: 480px)" srcset="logo-small.svg"&gt;
+  &lt;img src="logo-full.svg" alt="Logo" width="300" height="100"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">Different SVG variations for mobile (simplified) vs desktop (detailed).</p>
+</div>
+
+<div class="example">
+  <h3>22. CSS background-image vs img</h3>
+  <pre>&lt;!-- Decorative background --&gt;
+&lt;div style="background-image: url('pattern.jpg')"&gt;Content&lt;/div&gt;
+
+&lt;!-- Content image --&gt;
+&lt;img src="product.jpg" alt="Blue sneakers"&gt;</pre>
+  <p class="label">background-image is for decoration (no alt, not indexed). img is for content images (accessible, SEO).</p>
+</div>
+
+<div class="example">
+  <h3>23. onerror fallback</h3>
+  <pre>&lt;img src="avatar.jpg" alt="User avatar"
+     onerror="this.src='default-avatar.png'; this.onerror=null;"&gt;</pre>
+  <p class="label">onerror switches to a fallback image when the original fails to load. null prevents infinite loop.</p>
+</div>
+
+<div class="example">
+  <h3>24. usemap for image maps</h3>
+  <pre>&lt;img src="world-map.jpg" alt="World map" usemap="#continents"&gt;
+&lt;map name="continents"&gt;
+  &lt;area shape="rect" coords="100,50,200,150" href="europe.html" alt="Europe"&gt;
+  &lt;area shape="circle" coords="350,200,80" href="asia.html" alt="Asia"&gt;
+&lt;/map&gt;</pre>
+  <p class="label">Image maps define clickable areas. Shape options: rect, circle, poly.</p>
+</div>
+
+<div class="example">
+  <h3>25. intrinsicsize (not yet widely supported)</h3>
+  <pre>&lt;!-- Modern: always specify width+height attributes --&gt;
+&lt;img src="photo.jpg" alt="Photo" width="800" height="600"&gt;</pre>
+  <p class="label">Setting width+height attributes lets browsers calculate aspect ratio and reserve space without loading the image.</p>
+</div>
+
+<div class="example">
+  <h3>26. Image color-scheme</h3>
+  <pre>&lt;picture&gt;
+  &lt;source srcset="logo-dark.png" media="(prefers-color-scheme: dark)"&gt;
+  &lt;img src="logo-light.png" alt="Logo"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">Serve different images for dark and light mode using media queries in picture.</p>
+</div>
+
+<h2>NESTED (27–38)</h2>
+
+<div class="example">
+  <h3>27. Figure with responsive image</h3>
+  <pre>&lt;figure&gt;
+  &lt;picture&gt;
+    &lt;source srcset="chart.avif" type="image/avif"&gt;
+    &lt;img src="chart.png" alt="Q4 revenue chart showing 20% growth"
+         width="800" height="400" loading="lazy"&gt;
+  &lt;/picture&gt;
+  &lt;figcaption&gt;Q4 2025 Revenue — 20% year-over-year growth&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+  <p class="label">Nested picture inside figure with descriptive figcaption — semantic and accessible.</p>
+</div>
+
+<div class="example">
+  <h3>28. Card component with responsive image</h3>
+  <pre>&lt;article class="card"&gt;
+  &lt;picture&gt;
+    &lt;source srcset="thumb.webp" type="image/webp"&gt;
+    &lt;img src="thumb.jpg" alt="" width="400" height="200"
+         loading="lazy" class="card__img"&gt;
+  &lt;/picture&gt;
+  &lt;div class="card__body"&gt;
+    &lt;h2&gt;Article Title&lt;/h2&gt;
+    &lt;p&gt;Summary text...&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/article&gt;</pre>
+  <p class="label">Card pattern: empty alt (decorative), lazy loading, webp format, fixed dimensions.</p>
+</div>
+
+<div class="example">
+  <h3>29. Avatar with srcset</h3>
+  <pre>&lt;img src="avatar-48.jpg" alt="Jane Doe's avatar"
+     srcset="avatar-48.jpg 1x, avatar-96.jpg 2x, avatar-144.jpg 3x"
+     width="48" height="48"
+     style="border-radius: 50%"&gt;</pre>
+  <p class="label">Pixel density srcset for UI elements at fixed CSS sizes (avatars, icons, logos).</p>
+</div>
+
+<div class="example">
+  <h3>30. Lazy loading below-fold gallery</h3>
+  <pre>&lt;div class="gallery"&gt;
+  &lt;img src="p1.jpg" alt="Photo 1" width="300" height="200" loading="lazy" decoding="async"&gt;
+  &lt;img src="p2.jpg" alt="Photo 2" width="300" height="200" loading="lazy" decoding="async"&gt;
+  &lt;img src="p3.jpg" alt="Photo 3" width="300" height="200" loading="lazy" decoding="async"&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Always lazy-load gallery images. Always specify dimensions to prevent layout shift.</p>
+</div>
+
+<div class="example">
+  <h3>31. Responsive product images</h3>
+  <pre>&lt;picture&gt;
+  &lt;source media="(max-width: 480px)"
+    srcset="product-mobile.avif" type="image/avif"&gt;
+  &lt;source media="(max-width: 480px)"
+    srcset="product-mobile.webp" type="image/webp"&gt;
+  &lt;source srcset="product-desktop.avif" type="image/avif"&gt;
+  &lt;source srcset="product-desktop.webp" type="image/webp"&gt;
+  &lt;img src="product-desktop.jpg" alt="Red leather wallet"
+       width="600" height="600"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">Full art-direction + format negotiation for e-commerce product images.</p>
+</div>
+
+<div class="example">
+  <h3>32. Blurred placeholder technique</h3>
+  <pre>&lt;div style="position:relative;background:url(tiny-blur.jpg) center/cover"&gt;
+  &lt;img src="full.jpg" alt="Full image"
+       loading="lazy" style="opacity:0;transition:opacity 0.3s"
+       onload="this.style.opacity=1"&gt;
+&lt;/div&gt;</pre>
+  <p class="label">Show a tiny blurred placeholder (LQIP) while the full image loads, then fade it in.</p>
+</div>
+
+<div class="example">
+  <h3>33. IntersectionObserver lazy loading (JS)</h3>
+  <pre>&lt;img data-src="photo.jpg" alt="Lazy photo" class="lazy"&gt;
+&lt;script&gt;
+const obs = new IntersectionObserver(entries =&gt; {
+  entries.forEach(e =&gt; {
+    if (e.isIntersecting) {
+      e.target.src = e.target.dataset.src;
+      obs.unobserve(e.target);
+    }
+  });
+});
+document.querySelectorAll('img.lazy').forEach(img =&gt; obs.observe(img));
+&lt;/script&gt;</pre>
+  <p class="label">Custom lazy loading with IntersectionObserver — useful for older browser support.</p>
+</div>
+
+<div class="example">
+  <h3>34. Object-fit in responsive layout</h3>
+  <pre>&lt;style&gt;
+.hero { width: 100%; height: 50vh; }
+.hero img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+&lt;/style&gt;
+&lt;div class="hero"&gt;
+  &lt;img src="hero.jpg" alt="Team photo"&gt;
+&lt;/div&gt;</pre>
+  <p class="label">object-fit: cover fills fixed area; object-position controls focal point of the crop.</p>
+</div>
+
+<div class="example">
+  <h3>35. srcset with sizes for card grid</h3>
+  <pre>&lt;img src="card.jpg" alt="Card"
+     srcset="card-300.jpg 300w, card-600.jpg 600w, card-900.jpg 900w"
+     sizes="(max-width: 480px) 100vw,
+            (max-width: 900px) calc(50vw - 32px),
+            300px"&gt;</pre>
+  <p class="label">Sizes for a 1→2→3 column responsive grid. 32px accounts for gap/padding.</p>
+</div>
+
+<div class="example">
+  <h3>36. picture with orientation</h3>
+  <pre>&lt;picture&gt;
+  &lt;source media="(orientation: portrait)"  srcset="portrait.jpg"&gt;
+  &lt;source media="(orientation: landscape)" srcset="landscape.jpg"&gt;
+  &lt;img src="landscape.jpg" alt="Photo"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">Serve portrait or landscape crops based on device orientation.</p>
+</div>
+
+<div class="example">
+  <h3>37. Sprite sheet</h3>
+  <pre>&lt;style&gt;
+.icon { width:32px; height:32px; background: url('sprite.png') no-repeat; }
+.icon-home  { background-position: 0 0; }
+.icon-user  { background-position: -32px 0; }
+.icon-cart  { background-position: -64px 0; }
+&lt;/style&gt;
+&lt;span class="icon icon-home" role="img" aria-label="Home"&gt;&lt;/span&gt;</pre>
+  <p class="label">CSS sprite sheet reduces HTTP requests. Add role+aria-label for accessibility.</p>
+</div>
+
+<div class="example">
+  <h3>38. Base64 inline image</h3>
+  <pre>&lt;img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+     alt="1px red dot" width="1" height="1"&gt;</pre>
+  <p class="label">Inline base64 avoids an HTTP request. Only use for tiny images — base64 is 33% larger than binary.</p>
+</div>
+
+<h2>ADVANCED (39–50)</h2>
+
+<div class="example">
+  <h3>39. preload hint in head</h3>
+  <pre>&lt;link rel="preload" as="image" href="hero.webp" type="image/webp"&gt;
+&lt;link rel="preload" as="image" href="hero.jpg"&gt;</pre>
+  <p class="label">Preloads the LCP image early, before the browser parses the img tag. Critical for performance.</p>
+</div>
+
+<div class="example">
+  <h3>40. preload with imagesrcset</h3>
+  <pre>&lt;link rel="preload" as="image"
+      imagesrcset="hero-400.jpg 400w, hero-800.jpg 800w"
+      imagesizes="(max-width: 600px) 400px, 800px"
+      fetchpriority="high"&gt;</pre>
+  <p class="label">imagesrcset/imagesizes in link[rel=preload] matches the img srcset/sizes for optimal preloading.</p>
+</div>
+
+<div class="example">
+  <h3>41. Content negotiation via Accept header</h3>
+  <pre>&lt;!-- Server-side: respond with AVIF if Accept: image/avif --&gt;
+&lt;!-- Client-side: just use a picture element --&gt;
+&lt;picture&gt;
+  &lt;source srcset="/image?format=avif" type="image/avif"&gt;
+  &lt;img src="/image?format=jpg" alt="Server-negotiated format"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">Combine server-side format negotiation with picture element for maximum compatibility.</p>
+</div>
+
+<div class="example">
+  <h3>42. Preventing image dragging</h3>
+  <pre>&lt;img src="photo.jpg" alt="Photo" draggable="false"
+     style="-webkit-user-drag: none; user-select: none;"&gt;</pre>
+  <p class="label">draggable="false" prevents default drag behavior. Add CSS for cross-browser coverage.</p>
+</div>
+
+<div class="example">
+  <h3>43. Canvas-based image processing</h3>
+  <pre>const img = new Image();
+img.crossOrigin = 'anonymous';
+img.onload = () =&gt; {
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  // process pixels...
+};
+img.src = 'photo.jpg';</pre>
+  <p class="label">Draw images to canvas to access pixel data for filters, analysis, or manipulation.</p>
+</div>
+
+<div class="example">
+  <h3>44. PerformanceObserver for LCP</h3>
+  <pre>new PerformanceObserver(list =&gt; {
+  const entries = list.getEntries();
+  const last = entries[entries.length - 1];
+  console.log('LCP element:', last.element);
+  console.log('LCP time:', last.startTime);
+}).observe({ type: 'largest-contentful-paint', buffered: true });</pre>
+  <p class="label">Monitor which image is your LCP (Largest Contentful Paint) element.</p>
+</div>
+
+<div class="example">
+  <h3>45. Detecting WebP support</h3>
+  <pre>async function supportsWebP() {
+  const webP = new Image();
+  webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+  return new Promise(r =&gt; webP.onload = webP.onerror = () =&gt; r(webP.height === 2));
+}</pre>
+  <p class="label">Feature-detect WebP support. Modern approach: just use picture element instead.</p>
+</div>
+
+<div class="example">
+  <h3>46. CSS image-rendering for pixel art</h3>
+  <pre>&lt;img src="sprite.png" alt="Pixel art"
+     width="320" height="320"
+     style="image-rendering: pixelated"&gt;</pre>
+  <p class="label">image-rendering: pixelated preserves crisp edges when scaling up pixel art.</p>
+</div>
+
+<div class="example">
+  <h3>47. Service Worker image caching</h3>
+  <pre>self.addEventListener('fetch', e =&gt; {
+  if (e.request.destination === 'image') {
+    e.respondWith(
+      caches.match(e.request).then(r =&gt; r || fetch(e.request))
+    );
+  }
+});</pre>
+  <p class="label">Cache-first strategy for images: serve from cache if available, else fetch and cache.</p>
+</div>
+
+<div class="example">
+  <h3>48. Blur-up progressive loading</h3>
+  <pre>&lt;style&gt;
+.progressive { filter: blur(20px); transition: filter 0.5s; }
+.progressive.loaded { filter: none; }
+&lt;/style&gt;
+&lt;img src="tiny.jpg" data-src="full.jpg" alt="Progressive" class="progressive"&gt;
+&lt;script&gt;
+document.querySelectorAll('.progressive').forEach(img =&gt; {
+  const full = new Image();
+  full.onload = () =&gt; { img.src = full.src; img.classList.add('loaded'); };
+  full.src = img.dataset.src;
+});
+&lt;/script&gt;</pre>
+  <p class="label">Start with tiny blurred image, load full size in background, fade out blur on load.</p>
+</div>
+
+<div class="example">
+  <h3>49. Resolution Media Query</h3>
+  <pre>&lt;picture&gt;
+  &lt;source media="(min-resolution: 2dppx)" srcset="photo@2x.jpg"&gt;
+  &lt;img src="photo.jpg" alt="High-res photo"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">min-resolution targets high-DPI screens. Equivalent to srcset 2x but in picture/source.</p>
+</div>
+
+<div class="example">
+  <h3>50. Complete optimized image component</h3>
+  <pre>&lt;picture&gt;
+  &lt;!-- Mobile art direction --&gt;
+  &lt;source media="(max-width: 640px)"
+    type="image/avif" srcset="hero-sm.avif"&gt;
+  &lt;source media="(max-width: 640px)"
+    type="image/webp" srcset="hero-sm.webp"&gt;
+  &lt;source media="(max-width: 640px)"
+    srcset="hero-sm.jpg"&gt;
+  &lt;!-- Desktop --&gt;
+  &lt;source type="image/avif"
+    srcset="hero-800.avif 800w, hero-1600.avif 1600w"
+    sizes="100vw"&gt;
+  &lt;source type="image/webp"
+    srcset="hero-800.webp 800w, hero-1600.webp 1600w"
+    sizes="100vw"&gt;
+  &lt;img src="hero-1600.jpg"
+       alt="Team working in a modern office"
+       width="1600" height="900"
+       fetchpriority="high"
+       decoding="async"&gt;
+&lt;/picture&gt;</pre>
+  <p class="label">Production-grade: art direction + format negotiation + resolution switching + LCP optimization.</p>
+</div>
+
+</body>
+</html>

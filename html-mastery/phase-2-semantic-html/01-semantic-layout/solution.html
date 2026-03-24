@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 2.1 — Semantic Layout
+  ============================================================================
+  Complete solution with all TODOs filled in correctly.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 2.1 — Semantic Layout</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; }
+    header, nav, main, aside, footer { padding: 12px 16px; }
+    header { background: #2c3e50; color: white; }
+    header h1, header p { margin: 4px 0; }
+    nav { background: #34495e; color: white; }
+    nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 16px; }
+    nav a { color: white; text-decoration: none; }
+    .page-body { display: flex; gap: 16px; padding: 16px; }
+    main { flex: 1; border: 1px solid #ddd; padding: 16px; }
+    aside { width: 220px; border: 1px solid #ddd; padding: 16px; }
+    footer { background: #2c3e50; color: white; }
+  </style>
+</head>
+<body>
+
+<!-- Section 1: Page Header -->
+<header>
+  <h1>Tech Blog</h1>
+  <p>The latest in web development</p>
+</header>
+
+<!-- Section 2: Navigation -->
+<nav aria-label="Main navigation">
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Articles</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Section 3: Main Content and Aside -->
+<div class="page-body">
+
+  <main>
+    <h2>Featured Articles</h2>
+    <p>Discover the latest trends in web development, from HTML and CSS to JavaScript frameworks and beyond.</p>
+  </main>
+
+  <aside aria-label="Sidebar">
+    <h2>Categories</h2>
+    <ul>
+      <li><a href="#">HTML &amp; CSS</a></li>
+      <li><a href="#">JavaScript</a></li>
+      <li><a href="#">Performance</a></li>
+      <li><a href="#">Accessibility</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<!-- Section 4: Page Footer -->
+<footer>
+  <p><small>&copy; 2026 Tech Blog. All rights reserved.</small></p>
+</footer>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 2.1 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  assert(document.querySelector("header") !== null, "<header> element exists");
+  assert(document.querySelector("header h1") !== null, "<h1> exists inside <header>");
+  assert(document.querySelector("nav") !== null, "<nav> element exists");
+  const navEl = document.querySelector("nav[aria-label]");
+  assert(navEl !== null, '<nav aria-label="..."> has an aria-label attribute');
+  assert(document.querySelectorAll("nav a").length >= 2, "<nav> contains at least 2 links");
+  assert(document.querySelector("main") !== null, "<main> element exists");
+  assert(document.querySelectorAll("main").length === 1, "Only one <main> element on the page");
+  assert(document.querySelector("aside") !== null, "<aside> element exists");
+  assert(document.querySelector("footer") !== null, "<footer> element exists");
+  assert(document.querySelector("main h2") !== null, "<h2> exists inside <main>");
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 2.1 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

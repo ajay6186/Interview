@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 6.4 — Data Attributes
+  ============================================================================
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 6.4 — Data Attributes</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 10px; border: 1px solid #ddd; margin: 4px 0; border-radius: 4px; }
+    li[data-in-stock="false"] { opacity: 0.5; text-decoration: line-through; }
+    li[data-category="electronics"] { border-left: 4px solid steelblue; }
+    li[data-category="books"] { border-left: 4px solid coral; }
+    button { margin: 4px; padding: 6px 14px; }
+    [data-tooltip] { cursor: help; border-bottom: 1px dotted #666; }
+  </style>
+</head>
+<body>
+
+<h1>Data Attributes — Solution</h1>
+
+<!-- Section 1: Product list with data attributes -->
+<ul id="product-list">
+  <li id="product-1" data-id="1" data-price="29.99" data-category="books" data-in-stock="true">
+    The Great Gatsby — $29.99
+  </li>
+  <li id="product-2" data-id="2" data-price="49.99" data-category="electronics" data-in-stock="false">
+    Wireless Headphones — $49.99
+  </li>
+  <li id="product-3" data-id="3" data-price="15.99" data-category="books" data-in-stock="true">
+    Clean Code — $15.99
+  </li>
+</ul>
+
+<!-- Section 2: Filter controls and script -->
+<button id="filter-books-btn" onclick="filterProducts('books')">Show Books Only</button>
+<button id="reset-btn" onclick="resetFilter()">Show All</button>
+
+<script>
+  function filterProducts(category) {
+    document.querySelectorAll('#product-list li').forEach(li => {
+      li.style.display = li.dataset.category === category ? '' : 'none';
+    });
+    document.getElementById('product-list').dataset.filtered = category;
+  }
+  function resetFilter() {
+    document.querySelectorAll('#product-list li').forEach(li => li.style.display = '');
+    document.getElementById('product-list').dataset.filtered = '';
+  }
+</script>
+
+<!-- Section 3: Tooltip element -->
+<span id="tooltip-el" data-tooltip="This is helpful tooltip text" tabindex="0">Hover me for a tooltip</span>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 6.4 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const p1 = document.getElementById("product-1");
+  assert(p1 !== null, '#product-1 exists');
+  assert(p1 && p1.dataset.id === "1", '#product-1 dataset.id === "1"');
+  assert(p1 && p1.dataset.price === "29.99", '#product-1 dataset.price === "29.99"');
+  assert(p1 && p1.dataset.category === "books", '#product-1 dataset.category === "books"');
+  assert(p1 && p1.dataset.inStock === "true", '#product-1 dataset.inStock === "true"');
+
+  const p2 = document.getElementById("product-2");
+  assert(p2 !== null, '#product-2 exists');
+  assert(p2 && p2.dataset.category === "electronics", '#product-2 dataset.category === "electronics"');
+  assert(p2 && p2.dataset.inStock === "false", '#product-2 dataset.inStock === "false"');
+
+  const p3 = document.getElementById("product-3");
+  assert(p3 !== null, '#product-3 exists');
+  assert(p3 && p3.dataset.id === "3", '#product-3 dataset.id === "3"');
+
+  const productList = document.getElementById("product-list");
+  assert(productList !== null, '#product-list exists');
+
+  const filterBtn = document.getElementById("filter-books-btn");
+  assert(filterBtn !== null, '#filter-books-btn exists');
+  if (filterBtn) filterBtn.click();
+  assert(productList && productList.dataset.filtered === "books",
+    'After clicking filter, product-list dataset.filtered === "books"');
+
+  const tooltipEl = document.getElementById("tooltip-el");
+  assert(tooltipEl !== null, '#tooltip-el exists');
+  assert(tooltipEl && tooltipEl.hasAttribute("data-tooltip"), '#tooltip-el has data-tooltip attribute');
+  assert(tooltipEl && (tooltipEl.getAttribute("data-tooltip") || "").trim() !== "",
+    '#tooltip-el data-tooltip has non-empty content');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 6.4 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>

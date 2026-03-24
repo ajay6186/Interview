@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  Solution 4.4 — Canvas
+  ============================================================================
+  This is the complete solution with all TODOs filled in.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution 4.4 — Canvas</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; }
+    canvas { display: block; margin: 8px 0; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+
+<h1>Canvas — Solution</h1>
+
+<!-- Section 1: Main canvas element -->
+<canvas id="main-canvas" width="400" height="300">Your browser does not support canvas.</canvas>
+
+<!-- Section 2: Drawing script -->
+<script>
+  const canvas = document.getElementById('main-canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'steelblue';
+  ctx.fillRect(20, 20, 150, 80);
+  ctx.beginPath();
+  ctx.arc(300, 80, 40, 0, Math.PI * 2);
+  ctx.fillStyle = 'coral';
+  ctx.fill();
+  ctx.fillStyle = 'navy';
+  ctx.font = '20px sans-serif';
+  ctx.fillText('Canvas!', 20, 200);
+  canvas.dataset.drawn = 'true';
+</script>
+
+<!-- Section 3: Small secondary canvas -->
+<canvas id="small-canvas" width="100" height="100"></canvas>
+
+<!-- =========================================================
+     Assertions (do not edit below)
+     ========================================================= -->
+<hr>
+<div id="results"><h2 style="font-family:sans-serif">Solution 4.4 — Results</h2></div>
+<script>
+  const _r = document.getElementById("results");
+  let _p = 0, _f = 0;
+  function assert(cond, msg) {
+    const el = document.createElement("p");
+    el.style.cssText = "margin:4px 0;font-family:monospace;font-size:14px";
+    if (cond) { el.style.color = "green"; el.textContent = "✓ " + msg; _p++; }
+    else       { el.style.color = "red";   el.textContent = "✗ FAIL: " + msg; _f++; }
+    _r.appendChild(el);
+  }
+
+  const mainCanvas = document.getElementById("main-canvas");
+  assert(mainCanvas !== null, '#main-canvas exists');
+  assert(mainCanvas && mainCanvas.tagName.toLowerCase() === "canvas", '#main-canvas is a <canvas> element');
+  assert(mainCanvas && mainCanvas.getAttribute("width") === "400", '#main-canvas has width="400"');
+  assert(mainCanvas && mainCanvas.getAttribute("height") === "300", '#main-canvas has height="300"');
+  assert(mainCanvas && mainCanvas.textContent.trim() !== "", '#main-canvas has fallback text content');
+  assert(mainCanvas && typeof mainCanvas.getContext === "function", '#main-canvas supports getContext');
+  assert(mainCanvas && mainCanvas.getContext("2d") !== null, 'getContext("2d") returns a 2D context');
+  assert(mainCanvas && mainCanvas.dataset.drawn === "true", 'canvas.dataset.drawn === "true" (drawing script ran)');
+
+  const smallCanvas = document.getElementById("small-canvas");
+  assert(smallCanvas !== null, '#small-canvas exists');
+  assert(smallCanvas && smallCanvas.getAttribute("width") === "100", '#small-canvas has width="100"');
+  assert(smallCanvas && smallCanvas.getAttribute("height") === "100", '#small-canvas has height="100"');
+
+  const _s = document.createElement("p");
+  _s.style.cssText = "margin-top:12px;font-weight:bold;font-family:sans-serif";
+  _s.style.color = _f === 0 ? "green" : "red";
+  _s.textContent = _f === 0
+    ? `Solution 4.4 — All ${_p} assertions passed!`
+    : `${_f} assertion(s) failed, ${_p} passed.`;
+  _r.appendChild(_s);
+</script>
+</body>
+</html>
