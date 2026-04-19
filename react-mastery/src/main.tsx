@@ -16,7 +16,7 @@ import ReactDOM from "react-dom/client";
 // import { App } from "./Welcome";
 
 // --- Phase 1: Fundamentals ---
-// import { App } from "../exercises/phase-1-fundamentals/01-jsx-and-rendering/exercise";
+import { App } from "../exercises/phase-1-fundamentals/01-jsx-and-rendering/exercise";
 // import { App } from "../exercises/phase-1-fundamentals/01-jsx-and-rendering/solution";
 // import { App } from "../exercises/phase-1-fundamentals/02-functional-components/exercise";
 // import { App } from "../exercises/phase-1-fundamentals/02-functional-components/solution";
@@ -36,7 +36,7 @@ import ReactDOM from "react-dom/client";
 // import { App } from "../exercises/phase-2-hooks/02-useEffect/exercise";
 // import { App } from "../exercises/phase-2-hooks/02-useEffect/solution";
 // import { App } from "../exercises/phase-2-hooks/02-useEffect/useEffect-examples.tsx"
-import { App } from "../exercises/phase-2-hooks/03-useContext/exercise";
+// import { App } from "../exercises/phase-2-hooks/03-useContext/exercise";
 // import { App } from "../exercises/phase-2-hooks/03-useContext/solution";
 // import { App } from "../exercises/phase-2-hooks/04-useReducer/exercise";
 // import { App } from "../exercises/phase-2-hooks/04-useReducer/solution";

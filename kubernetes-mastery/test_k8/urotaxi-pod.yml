@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: urotaxi
+  labels:
+    appName: urotaxi
+    version: "1.0"
+spec:
+  containers:
+    - name: urotaxi
+      image: urotaxi:1.0
+      ports:
+        - name: urotaxiport
+          containerPort: 8080
+          protocol: TCP
+      env:
+        - name: "spring.datasource.username"
+          valueFrom:
+            secretKeyRef:
+              name: urotaxidbsecret
+              key: username
+        - name: "spring.datasource.password"
+          valueFrom:
+            secretKeyRef:
+              name: urotaxidbsecret
+              key: password

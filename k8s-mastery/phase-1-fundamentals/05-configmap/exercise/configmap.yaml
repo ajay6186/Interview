@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: # TODO: name it "app-config"
+data:
+  APP_ENV: # TODO: set to "production"
+  LOG_LEVEL: # TODO: set to "info"
+  app.properties: | # TODO: multi-line value with "host=db" and "port=5432"

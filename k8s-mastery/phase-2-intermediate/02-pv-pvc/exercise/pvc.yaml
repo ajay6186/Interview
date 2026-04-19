@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: # TODO: name it "local-pvc"
+spec:
+  accessModes:
+    - # TODO: ReadWriteOnce (must match PV)
+  resources:
+    requests:
+      storage: # TODO: request "500Mi"

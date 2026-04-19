@@ -13,6 +13,9 @@ import { DatePipe, UpperCasePipe } from '@angular/common';
 //   • Built-in pipes        {{ value | pipeName }}
 // ============================================================
 
+// What is Interpolation?
+// Interpolation means embedding dynamic data (variables, expressions) into the UI (HTML).
+
 const user = {
   firstName: 'Jane',
   lastName: 'Doe',

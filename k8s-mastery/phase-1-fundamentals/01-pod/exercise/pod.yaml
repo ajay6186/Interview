@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: # TODO: set name to "nginx-pod"
+  labels:
+    app: # TODO: set label app to "nginx"
+spec:
+  containers:
+    - name: nginx
+      image: # TODO: use nginx:1.25
+      ports:
+        - containerPort: # TODO: expose port 80

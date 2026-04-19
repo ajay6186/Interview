@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: # TODO: set name to "nginx-deploy"
+spec:
+  replicas: # TODO: set to 3
+  selector:
+    matchLabels:
+      app: # TODO: set to "nginx"
+  template:
+    metadata:
+      labels:
+        app: # TODO: must match selector above
+    spec:
+      containers:
+        - name: nginx
+          image: # TODO: use nginx:1.25
+          ports:
+            - containerPort: # TODO: port 80

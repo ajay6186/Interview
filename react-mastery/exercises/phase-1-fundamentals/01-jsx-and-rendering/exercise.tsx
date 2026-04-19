@@ -111,16 +111,143 @@ function ExpressionsDemo() {
 //   - Each <li> should show the index + 1 and the skill name, e.g., "1. React"
 // function SkillsList() { ... }
 
+// Examples
+// 1. Static JSX — plain HTML-like structure
+function Ex01_StaticHeading() {
+  return <h1>Hello, World!</h1>;
+}
+
+// 2. String expression interpolation
+const appName = "React Mastery";
+function Ex02_StringExpression() {
+  return <p>Welcome to {appName}!</p>
+}
+
+// 3. Number expression
+const itemCount = 42;
+function Ex03_NumberExpression() {
+  return <p>Nuber Expression {itemCount}</p>
+}
+
+// 4. Arithmetic expression
+function Ex04_ArithmeticExpression() {
+  const price = 19.99;
+  const qty = 3;
+  return <p>Total: ${(price * qty).toFixed(2)}</p>;
+}
+
+// 5. Ternary inside JSX
+function Ex05_TernaryExpression() {
+  const isOnline = false;
+  return <p>{isOnline ? "Online" : "Offline"}</p>
+}
+
+// 6. Function call in JSX
+function formatDate(d: Date) {
+  return d.toLocaleDateString("en-US");
+}
+
+function Ex06_FunctionCall() {
+  return <p>Today Date : {formatDate(new Date())} </p>
+}
+
+// 7. className (not class)
+function Ex07_ClassName() {
+  return <button className="btn btn-primary">Click On</button>
+}
+//  color: "tomato", fontWeight: "bold", fontSize: 18 
+// 8. Inline style object
+function Ex08_InlineStyle() {
+  return <p style={{color:"tomato", fontWeight: "bold", fontSize: 18}}>Styled text</p>
+}
+
+// 9. Self-closing tags
+function Ex09_SelfClosing() {
+  return (
+    <div>
+      <img src="https://via.placeholder.com/100" alt="placeholder"/>
+      <br/>
+      <hr/>
+      <input type="text" placeholder="Type here"/>
+    </div>
+  )
+}
+
+// 10. Explicit Fragment (<Fragment>)
+function Ex10_ExplicitFragment() {
+  return (
+    <Fragment>
+      <h2>Tittle</h2>
+      <p>Paragraph - no extra wrapper div.</p>
+    </Fragment>
+  );
+}
+
+// 11. Short fragment syntax (<>)
+function Ex11_shortFragment() {
+  return (
+    <>
+      <dt>Term</dt>
+      <dd>Definition</dd>
+    </>
+  )
+}
+
+// 12. JSX comment (inside expression braces)
+
+function Ex12_Comment() {
+  return (
+    <div>
+      {/* This comment is invisible in the DOM */}
+      <p>Visible text</p>
+    </div>
+  )
+}
+
+// 13. Rendering null / undefined / false — all produce nothing
+function Ex13_NothingValues() {
+  const show = false;
+  return <div>
+    {null}
+    {undefined}
+    {false}
+    {show && <span>Never shown</span>}
+    <span>Always shown</span>
+  </div>
+}
+
+// 14. Spread attributes onto an element
+const anchorDefaults = {
+  targte: "_blank" as const,
+  rel: "noopner noreferrer",
+}
+function Ex14_SpreadAttrs() {
+  return <a {...anchorDefaults} href="https://react.dev">React Docs</a>
+}
+
 export function App() {
   return (
     <div style={{ fontFamily: "sans-serif", maxWidth: 600, margin: "0 auto", padding: 20 }}>
       <h1>Exercise 1: JSX and Rendering</h1>
-      <PageHeader/>
-      <ExpressionsDemo/>
+      {/* <PageHeader/>
+      <ExpressionsDemo/> */}
       {
       /* TODO 6: Render all five components below in order:
           PageHeader, ExpressionsDemo, SpreadDemo, FragmentsDemo, SkillsList
           Separate each with an <hr /> element */}
+          {/* <Ex01_StaticHeading/> */}
+          {/* <Ex02_StringExpression/> */}
+          {/* <Ex03_NumberExpression/> */}
+          {/* <Ex04_ArithmeticExpression/> */}
+          {/* <Ex05_TernaryExpression/> */}
+          {/* <Ex06_FunctionCall/> */}
+          {/* <Ex07_ClassName/> */}
+          {/* <Ex08_InlineStyle/> */}
+          {/* <Ex09_SelfClosing/> */}
+          {/* <Ex10_ExplicitFragment/> */}
+          {/* <Ex12_Comment/> */}
+          {/* <Ex13_NothingValues/> */}
+          <Ex14_SpreadAttrs/>
     </div>
   );
 }

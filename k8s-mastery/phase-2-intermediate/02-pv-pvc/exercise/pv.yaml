@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: # TODO: name it "local-pv"
+spec:
+  capacity:
+    storage: # TODO: set to "1Gi"
+  accessModes:
+    - # TODO: ReadWriteOnce
+  hostPath:
+    path: # TODO: "/data/pv001"
+  persistentVolumeReclaimPolicy: Retain

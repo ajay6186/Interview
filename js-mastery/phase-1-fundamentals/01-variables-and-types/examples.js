@@ -57,7 +57,8 @@ function ex08() {
   console.log("Ex08 — PI:", PI, "count:", count);
 }
 
-/** NaN special value */
+/** NaN special value */ 
+// (Not a Number)
 function ex09() {
   const result = Number("abc");
   console.log("Ex09 — NaN:", result, "isNaN:", isNaN(result), "Number.isNaN:", Number.isNaN(result));

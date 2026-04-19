@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: speed2replicaset
+  labels:
+    env: development
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      appName: speed2
+      version: "1.0"
+  template: #pod template
+    metadata:
+      name: speed2pod
+      labels:
+        appName: speed2
+        version: "1.0"
+    spec:
+      containers:
+        - name: speed2
+          image: speed2:1.0
+          ports:
+            - name: speed2port
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /speed2/actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /speed2/actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1024Mi"

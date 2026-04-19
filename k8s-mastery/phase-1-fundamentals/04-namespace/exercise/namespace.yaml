@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: # TODO: create "dev" namespace
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: # TODO: create "prod" namespace

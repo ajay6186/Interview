@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: nginx:1.25
+          env:
+            - name: APP_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: # TODO: reference "app-config"
+                  key: # TODO: key "APP_ENV"
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: # TODO: reference "app-config"
+                  key: # TODO: key "LOG_LEVEL"
+          volumeMounts:
+            - name: config-volume
+              mountPath: # TODO: mount at /etc/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: # TODO: reference "app-config"
+            items:
+              - key: # TODO: key "app.properties"
+                path: # TODO: filename "app.properties"

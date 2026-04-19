@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: # TODO: name it "web-clusterip"
+spec:
+  type: # TODO: ClusterIP (or omit — it's the default)
+  selector:
+    app: # TODO: must match Deployment pod labels
+  ports:
+    - port: # TODO: service port 80
+      targetPort: # TODO: container port 80

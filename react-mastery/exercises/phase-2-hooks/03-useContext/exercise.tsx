@@ -232,7 +232,7 @@ function ThemeInfo() {
 
 // const ThemeCtx = createContext<{theme: string; toggle: () => void}>({theme:"light", toggle: () => {}})
 // const UserCtx = createContext<{name: string; role: string}>({name: "Guest", role: "user"})
-const CountCtx = createContext<{count: number; inc: () => void; dec: () => void}>({count: 0, inc: () => {}, dec: () => {}})
+// const CountCtx = createContext<{count: number; inc: () => void; dec: () => void}>({count: 0, inc: () => {}, dec: () => {}})
 const LongCtx = createContext<{lang: string; setLang: (l: string) => void}>({lang:"EN", setLang: () => {}})
 const CartCtx = createContext<{items: string[]; add:(i: string) => void; remove:(i: string) => void}>({items: [], add: () => {}, remove: () => {}})
 const NotifCtx = createContext<{notify: (msg: string) => void}>({ notify: () => {}})
@@ -289,15 +289,75 @@ const UserCtx = createContext<{ name: string; role: string}>({ name: "Guest", ro
 
 
 function Ex04_UserContext() {
-  return <UserCtx.
+  return <UserCtx.Provider value={{name:"Ajay", role:"admin"}}>
+      <UserInfo/>
+  </UserCtx.Provider>
 }
 
+function UserInfo() {
+  const {name, role} = useContext(UserCtx);
+  return (
+    <p>Welcome, {name} ({role})</p>
+  )
+}
+
+// 05 — Counter context
+const CountCtx = createContext<{count: number; inc: ()=> void; dec: ()=> void}>(
+  {
+    count : 0,
+    inc : () => {},
+    dec : () => {}
+  }
+)
+
+
+
+function CountProvider05({ children }: { children: ReactNode }) {
+  const [count, setCount] = useState(0);
+  return <CountCtx.Provider value={{ count, inc: () => setCount((c) => c + 1), dec: () => setCount((c) => c - 1) }}>{children}</CountCtx.Provider>;
+}
+
+function CountDisplay05() {
+  const {count} = useContext(CountCtx);
+  return <p>Count: {count}</p>
+}
+
+function CountButton05() {
+  const {inc, dec} = useContext(CountCtx);
+  return <div><button onClick={inc}>+</button><button onClick={dec}>–</button></div>;
+}
+
+function Ex05_CounterContext() {
+  return <CountProvider05>
+            <CountDisplay05/>
+            <CountButton05 />
+        </CountProvider05>
+}
+
+// 06 — Language context
+
+const LangCtx = createContext<{lang: string, setLang: (l: string) => void}>({lang: "EN", setLang: () => {}})
+
+function LangProvider06({children}: {children: ReactNode}){
+  const [lang, setLang] = useState("EN");
+  return <LangCtx.Provider value={{lang, setLang}}>{children}</LangCtx.Provider>
+}
+
+function LangSwitcher06() { const { setLang } = useContext(LangCtx); return <div>{["EN", "AR", "FR"].map((l) => <button key={l} onClick={() => setLang(l)}>{l}</button>)}</div>; }
+
+function LangDisplay06() { const { lang } = useContext(LangCtx); return <p>Language: {lang}</p>; }
+
+function Ex06_LanguageContext() {
+  return <LangProvider06><LangSwitcher06 /><LangDisplay06 /></LangProvider06>;
+}
 
 export function App(){
   return(
   // <Ex01_SimpleValue/>
   // <Ex02_Defualtvalue/>
   // <Ex03_ThemeContext/>
+  // <Ex04_UserContext/>
+  // <Ex05_CounterContext/>
   )
 }
 

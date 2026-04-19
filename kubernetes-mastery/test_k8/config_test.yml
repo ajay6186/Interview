@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: healthinspectorconfigmap
+
+data:
+  district-healthinspectors.properties: |
+    Bangalore=Ramesh
+    Mysore=Suresh
+    Tumkur=Mahesh
