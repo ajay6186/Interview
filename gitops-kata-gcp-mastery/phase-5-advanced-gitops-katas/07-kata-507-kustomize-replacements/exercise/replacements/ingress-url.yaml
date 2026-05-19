@@ -1,0 +1,13 @@
+replacements:
+- source:
+    kind: ConfigMap
+    name: gitops-kata-configmap
+    fieldPath: data.ingress-url
+  targets:
+  - select:
+      kind: VirtualService
+      name: com1-0000
+    fieldPaths:
+    - spec.hosts.0
+    options:
+      create: true

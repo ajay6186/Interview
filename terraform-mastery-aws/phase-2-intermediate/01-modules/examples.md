@@ -1,10 +1,15 @@
 # Examples 2.1 — Modules (50 examples)
 
+> **Topic Overview:** Terraform modules are the primary mechanism for code reuse, encapsulation, and team collaboration. A module is any directory containing `.tf` files — the "root module" is your working directory, and any module called via `module` blocks is a "child module." Modules allow you to abstract away complexity, enforce organizational standards, and consume community-maintained infrastructure patterns. Understanding module sources, versioning, provider passing, `for_each`/`count` on modules, and output chaining is critical for building scalable Terraform architectures.
+
 ---
 
 ## Basic
 
 ### 1. Call a local module
+
+> The simplest module call — a relative path to a directory containing `.tf` files. Variables are passed as arguments. The module encapsulates all its resources; the caller only sees what the module explicitly outputs. Local modules are useful for organization within a monorepo, but for sharing across teams use registry or git sources.
+
 ```hcl
 module "vpc" {
   source = "./modules/vpc"
@@ -15,6 +20,9 @@ module "vpc" {
 ```
 
 ### 2. Module with required and optional variables
+
+> Every module should define its interface in `variables.tf`. Required variables (no `default`) must be supplied by the caller. Optional variables have `default` values. The `description` field is documentation — it appears in `terraform-docs` output and the Terraform Registry. Always describe what a variable is used for, not what type it is.
+
 ```hcl
 # modules/ec2/variables.tf
 variable "instance_type" {
@@ -35,6 +43,9 @@ variable "tags" {
 ```
 
 ### 3. Module outputs
+
+> Outputs in `outputs.tf` form the module's public API — only explicitly declared outputs are visible to the caller. This is what makes modules proper abstractions: internal implementation details (resource names, intermediate locals) are hidden. Add `description` to all outputs — they appear in `terraform output` and the Registry.
+
 ```hcl
 # modules/vpc/outputs.tf
 output "vpc_id" {
@@ -49,6 +60,9 @@ output "public_subnet_ids" {
 ```
 
 ### 4. Use module output in a resource
+
+> Module outputs are referenced as `module.<name>.<output_name>`. This creates an implicit dependency — `aws_instance.web` won't be created until `module.vpc` has applied successfully and produced the `public_subnet_ids` output. Terraform understands this dependency graph automatically.
+
 ```hcl
 module "vpc" {
   source = "./modules/vpc"
@@ -63,6 +77,9 @@ resource "aws_instance" "web" {
 ```
 
 ### 5. Call a registry module
+
+> The Terraform Registry (`registry.terraform.io`) hosts community and partner modules. The `source` format is `<namespace>/<module>/<provider>`. Always specify `version` — without it Terraform downloads the latest, which can break on upgrades. The `~>` constraint allows patch/minor updates but not major version bumps.
+
 ```hcl
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
@@ -78,6 +95,9 @@ module "s3_bucket" {
 ```
 
 ### 6. Module source — local path
+
+> Local paths (starting with `./` or `../`) refer to directories relative to the calling module. These are useful in monorepos where modules live alongside the root configuration. Terraform copies the module to `.terraform/modules/` on `init`. No `version` constraint is needed (or supported) for local modules.
+
 ```hcl
 module "security_groups" {
   source = "./modules/security-groups"
@@ -85,6 +105,9 @@ module "security_groups" {
 ```
 
 ### 7. Module source — Git repository
+
+> Git sources allow pinning modules to a specific commit reference (`?ref=`). Use a version tag (`v1.2.0`) rather than a branch name for reproducibility — branches move. The double-slash `//` separates the repository URL from the subdirectory path within the repo. Requires `git` to be installed when running `terraform init`.
+
 ```hcl
 module "vpc" {
   source = "git::https://github.com/myorg/terraform-modules.git//vpc?ref=v1.2.0"
@@ -92,6 +115,9 @@ module "vpc" {
 ```
 
 ### 8. Module source — registry with version
+
+> Community EKS module from the Terraform Registry with exact version management. The `cluster_version` parameter controls the Kubernetes API version. Using `module.vpc.vpc_id` and `module.vpc.private_subnets` shows output chaining — the VPC module provides values that the EKS module needs, creating an implicit dependency.
+
 ```hcl
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -105,12 +131,18 @@ module "eks" {
 ```
 
 ### 9. terraform get — download modules
+
+> `terraform get` downloads modules declared in the configuration to `.terraform/modules/`. `terraform init` calls `get` automatically. The `-update` flag checks for newer versions allowed by constraints. Run this after adding a new `module` block before running `plan`.
+
 ```bash
 terraform get          # download/update modules declared in config
 terraform get -update  # force update even if already downloaded
 ```
 
 ### 10. Module with minimal interface
+
+> A module with just two resources and no explicit variables defined here — in real code `var.bucket_name` would be declared in `variables.tf`. The website configuration resource is tightly coupled to the bucket — bundling related resources in a module ensures they're always deployed together and prevents partial configurations.
+
 ```hcl
 # modules/s3-website/main.tf
 resource "aws_s3_bucket" "site" {
@@ -125,6 +157,9 @@ resource "aws_s3_bucket_website_configuration" "site" {
 ```
 
 ### 11. Viewing module outputs after apply
+
+> `terraform output` shows root module outputs. `-json` returns machine-parseable output for scripting. `-raw` prints a scalar value without quotes — useful in shell scripts that capture the output: `SUBNET_ID=$(terraform output -raw public_subnet_id)`. Nested module outputs are only visible if re-exported from the root.
+
 ```bash
 terraform output                          # all outputs from root
 terraform output -json                    # JSON format
@@ -132,6 +167,9 @@ terraform output -raw vpc_id             # raw string value
 ```
 
 ### 12. Module versioning from public registry
+
+> Pinning to an exact version (`5.5.0`) makes the configuration completely reproducible — every `terraform init` downloads exactly that version. This is safer than `~>` for production infrastructure where unexpected behavior from upstream changes is unacceptable. Review changelogs before upgrading versions.
+
 ```hcl
 terraform {
   required_providers {
@@ -154,6 +192,9 @@ module "vpc" {
 ## Intermediate
 
 ### 13. Module with optional variables using defaults
+
+> Boolean feature flags and numeric limits make modules flexible without exposing every AWS resource argument. The `validation` block on `nat_gateway_count` enforces business rules at the module interface, not buried in resource logic. Callers get a clear error message rather than a cryptic AWS API error.
+
 ```hcl
 variable "enable_nat_gateway" {
   type    = bool
@@ -171,6 +212,9 @@ variable "nat_gateway_count" {
 ```
 
 ### 14. Pass provider alias to module
+
+> Modules inherit the default provider configuration automatically. To pass a non-default provider (alias), use the `providers` map argument. The map keys must match the provider references inside the module. This pattern is used for multi-region modules — the root defines regional provider aliases and passes them explicitly.
+
 ```hcl
 provider "aws" {
   region = "us-east-1"
@@ -190,6 +234,9 @@ module "replica_bucket" {
 ```
 
 ### 15. Module declaring required provider aliases
+
+> When a module needs a provider alias (not just the default), it must declare this in its own `terraform` block using `configuration_aliases`. Without this declaration, Terraform won't know the module needs the alias and won't pass it through. The module can then use `provider = aws.replica` on specific resources.
+
 ```hcl
 # modules/s3-replica/main.tf
 terraform {
@@ -213,6 +260,9 @@ resource "aws_s3_bucket" "replica" {
 ```
 
 ### 16. Module output used in another module
+
+> This shows multi-module dependency chaining. The `compute` module depends on `network` (needs vpc_id and subnets), and the `database` module depends on both (needs subnets from network and sg from compute). Terraform builds the correct apply order automatically from these output references — no `depends_on` needed here.
+
 ```hcl
 module "network" {
   source     = "./modules/network"
@@ -233,6 +283,9 @@ module "database" {
 ```
 
 ### 17. Module with complex object variable
+
+> Using `object()` type for a module variable groups related configuration and makes the interface self-documenting. `optional(bool, true)` (Terraform 1.3+) means the caller doesn't have to supply `enable_dns_hostnames` — it defaults to `true`. This is much cleaner than having four separate top-level variables for VPC configuration.
+
 ```hcl
 variable "vpc_config" {
   type = object({
@@ -245,6 +298,9 @@ variable "vpc_config" {
 ```
 
 ### 18. Module count — create multiple instances
+
+> `count` on a module creates N identical (but parameterized) instances. Access individual instances via `module.web_server[0]`, `[1]`, etc., or all at once with `module.web_server[*].instance_id`. Use `count.index` to differentiate instances. Downside: if you remove an element from the middle, all subsequent indices shift, causing unnecessary destroy/recreate.
+
 ```hcl
 module "web_server" {
   count  = 3
@@ -261,6 +317,9 @@ output "web_server_ids" {
 ```
 
 ### 19. Module for_each — one module per environment
+
+> `for_each` on a module is the preferred alternative to `count` — each instance has a stable string key, so adding/removing environments doesn't affect other instances. The `var.environments` map drives everything: add a new environment by adding an entry, no index shifting. Access outputs as `module.app["prod"].some_output`.
+
 ```hcl
 variable "environments" {
   type = map(object({
@@ -285,6 +344,9 @@ module "app" {
 ```
 
 ### 20. Module depends_on
+
+> `depends_on` on a module creates an explicit dependency when there's no implicit one through output references. This is necessary when a module uses data sources that query AWS resources created by another module — Terraform doesn't know about the dependency because data sources are evaluated during plan, before the creating module has run.
+
 ```hcl
 module "app" {
   source     = "./modules/app"
@@ -293,6 +355,9 @@ module "app" {
 ```
 
 ### 21. Module with lifecycle prevent_destroy
+
+> Applying `lifecycle` to a module block prevents Terraform from destroying the entire module's resources. This is a safety net for critical modules like databases or KMS keys. Note: it doesn't prevent individual resources within the module from having their own lifecycle settings.
+
 ```hcl
 module "database" {
   source = "./modules/rds"
@@ -304,6 +369,9 @@ module "database" {
 ```
 
 ### 22. Conditional module invocation
+
+> `count = var.enable_cdn ? 1 : 0` is the standard pattern for conditional module invocation. When the count is 0, no resources in the module are created. The output reference uses `[0]` with a ternary guard to avoid an out-of-bounds error when CDN is disabled. This is cleaner than wrapping every resource in `count`.
+
 ```hcl
 module "cdn" {
   count  = var.enable_cdn ? 1 : 0
@@ -318,6 +386,9 @@ output "cdn_domain" {
 ```
 
 ### 23. Module from private registry
+
+> Private Terraform Registry (Terraform Cloud/Enterprise) uses the format `app.terraform.io/<org>/<module>/<provider>`. These modules are accessible only to authenticated users in your organization. Useful for internal modules that shouldn't be public — enforces organizational standards across all teams.
+
 ```hcl
 module "vpc" {
   source  = "app.terraform.io/my-org/vpc/aws"
@@ -328,6 +399,9 @@ module "vpc" {
 ```
 
 ### 24. terraform-aws-modules/vpc complete example
+
+> The community `terraform-aws-modules/vpc` module is the most widely used Terraform module in production. Key parameters: `azs` (list of AZs to span), `private_subnets`/`public_subnets` (CIDR blocks per AZ), `single_nat_gateway` (one NAT GW for non-prod to save cost). This single module call replaces ~200 lines of resource definitions.
+
 ```hcl
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -352,6 +426,9 @@ module "vpc" {
 ```
 
 ### 25. Module with sensitive output
+
+> Sensitive outputs from a child module must be re-declared sensitive in the root module output. If the root doesn't mark it sensitive, the value will be displayed in terminal output. The `sensitive = true` propagation chain: child module output → root module output → `terraform output` (hidden by default, visible with `terraform output -raw`).
+
 ```hcl
 # modules/rds/outputs.tf
 output "db_password" {
@@ -372,6 +449,9 @@ output "db_password" {
 ## Nested
 
 ### 26. Three-level module hierarchy
+
+> Modules can call other modules — creating hierarchies. Here the root calls `platform`, which internally calls `network` and `compute`. Relative paths in nested modules are relative to the module's own directory, not the root. Deep hierarchies (>3 levels) become hard to debug — keep module graphs shallow and explicit.
+
 ```hcl
 # Root calls "platform" module
 module "platform" {
@@ -393,6 +473,9 @@ module "compute" {
 ```
 
 ### 27. Module composition for full stack
+
+> Module composition wires together four independent modules (vpc, ec2, rds, alb) through output references. Each module has a focused responsibility, and the composition happens at the root level where all outputs are visible. This pattern scales well: teams can work on individual modules independently and integration happens in the root.
+
 ```hcl
 module "vpc" {
   source = "./modules/vpc"
@@ -421,6 +504,9 @@ module "alb" {
 ```
 
 ### 28. Nested module with for_each for multi-region
+
+> `for_each = toset(var.regions)` creates one module instance per region. `toset()` converts the list to a set, which is required for `for_each` (sets have unique string keys). This is how you deploy identical infrastructure to multiple regions from a single root configuration. Access outputs as `module.regional_deploy["us-east-1"].some_output`.
+
 ```hcl
 variable "regions" {
   type    = list(string)
@@ -437,6 +523,9 @@ module "regional_deploy" {
 ```
 
 ### 29. Passing module outputs as a list
+
+> `concat()` merges two lists of subnet IDs from different VPC module instances into a single list. This enables an ASG to span across subnets from multiple VPCs (or regions if configured). The resulting `subnet_ids` list is built at plan time from the computed outputs of both VPC modules.
+
 ```hcl
 module "web_asg" {
   source = "./modules/asg"
@@ -450,6 +539,9 @@ module "web_asg" {
 ```
 
 ### 30. Module wrapping a registry module
+
+> Wrapper modules are a powerful pattern for enforcing organizational standards. Your internal `app-vpc` module wraps the community `terraform-aws-modules/vpc` module but auto-calculates subnets using `cidrsubnet`, auto-discovers AZs from data sources, and exposes a simplified interface. Teams call your wrapper — the community module is an implementation detail.
+
 ```hcl
 # modules/app-vpc/main.tf — wraps terraform-aws-modules/vpc
 module "vpc" {
@@ -473,6 +565,9 @@ output "public_subnets"    { value = module.vpc.public_subnets }
 ```
 
 ### 31. Module with moved block for refactoring
+
+> When you rename a module call (e.g., `module.legacy_app` → `module.app`) without a `moved` block, Terraform destroys all old resources and creates new ones. The `moved` block tells Terraform to update state addresses instead, preventing that destroy/recreate cycle. Keep moved blocks until all team members have run at least one `apply`.
+
 ```hcl
 # When renaming a module call without destroying resources
 moved {
@@ -487,6 +582,9 @@ moved {
 ```
 
 ### 32. Cross-module data sharing via locals
+
+> Using a `local` to aggregate outputs from multiple modules into a single `common_config` object simplifies downstream module interfaces. Instead of passing `vpc_id`, `private_subnet_ids`, and `sg_ids` as three separate arguments, you pass the whole object. The `app` module receives a structured network configuration it can destructure internally.
+
 ```hcl
 module "network" {
   source = "./modules/network"
@@ -513,6 +611,9 @@ module "app" {
 ```
 
 ### 33. Workspace-aware module configuration
+
+> `terraform.workspace` returns the current workspace name. Using a lookup map in `locals` lets you select environment-specific configuration based on the active workspace. This is a common pattern for workspace-based multi-environment deployments — single code base, workspace-driven parameters.
+
 ```hcl
 locals {
   env_config = {
@@ -530,6 +631,9 @@ module "app" {
 ```
 
 ### 34. Module outputs aggregated with for expression
+
+> When a module is instantiated with `for_each`, its output is a map keyed by the same keys as `for_each`. The `for` expression `{ for k, v in module.subnets : k => v.subnet_id }` transforms this into a clean `{ "public" = "subnet-123", "private" = "subnet-456" }` map — perfect for passing to other resources that need a map of subnet IDs.
+
 ```hcl
 module "subnets" {
   for_each = var.subnet_config
@@ -548,6 +652,9 @@ output "subnet_ids" {
 ## Advanced
 
 ### 35. Reusable VPC module implementation
+
+> This shows the internals of a proper VPC module. Key patterns: `slice()` limits AZ count to `var.az_count`, `cidrsubnet()` auto-calculates subnet CIDRs from the VPC CIDR, the NAT gateway count logic (`single_nat_gateway ? 1 : length(local.azs)`) controls cost vs HA, and `merge(var.tags, {...})` ensures local tags don't override caller tags.
+
 ```hcl
 # modules/vpc/main.tf
 locals {
@@ -596,6 +703,9 @@ resource "aws_nat_gateway" "main" {
 ```
 
 ### 36. Module with precondition and postcondition
+
+> Variable `validation` runs before plan. Resource `precondition` runs during plan (can reference other resources). Resource `postcondition` runs after apply to verify the created resource meets expectations. This creates a fail-fast contract: the module validates inputs, checks preconditions at plan, and asserts postconditions after creation.
+
 ```hcl
 variable "instance_type" {
   type = string
@@ -619,6 +729,9 @@ resource "aws_instance" "web" {
 ```
 
 ### 37. Module with complex output contracts
+
+> Returning a single structured object output (instead of multiple flat outputs) creates a stable contract. Callers reference `module.alb.alb.dns_name`, `module.alb.alb.listener.https_arn`, etc. When the module adds new fields to the object, callers are unaffected. This output style is preferred for modules with many related outputs.
+
 ```hcl
 # modules/alb/outputs.tf
 output "alb" {
@@ -638,6 +751,9 @@ output "alb" {
 ```
 
 ### 38. Publishing a module to Terraform Registry
+
+> Publishing to the public Registry requires: GitHub repo named `terraform-<provider>-<name>`, semantic version tags (`v1.0.0`), and the standard file structure. The Registry auto-generates documentation from variable/output descriptions. `examples/` subdirectories become runnable examples in the Registry UI.
+
 ```bash
 # Requirements:
 # 1. GitHub repo named: terraform-<PROVIDER>-<MODULE_NAME>
@@ -663,6 +779,9 @@ terraform-aws-vpc/
 ```
 
 ### 39. Module testing with terraform test (Terraform 1.6+)
+
+> `terraform test` (Terraform 1.6+) runs tests defined in `.tftest.hcl` files. `command = plan` validates without creating resources; `command = apply` creates real resources (and destroys them after). Tests can assert on plan output, resource counts, and attribute values. This is the native alternative to Terratest for module validation.
+
 ```hcl
 # tests/vpc.tftest.hcl
 run "create_vpc" {
@@ -690,6 +809,9 @@ run "full_deploy" {
 ```
 
 ### 40. Module with dynamic resource creation
+
+> Passing a `list(object(...))` of security group rules to a module allows callers to define arbitrary port/protocol combinations without modifying the module. The `dynamic "ingress"` block inside the module iterates the list and generates the correct number of ingress rules. This pattern eliminates the need for a separate security group module per service.
+
 ```hcl
 # modules/security-groups/main.tf
 variable "rules" {
@@ -726,6 +848,9 @@ resource "aws_security_group" "main" {
 ```
 
 ### 41. Module version constraints with ~> operator
+
+> `~>` is the "pessimistic constraint" — it allows the rightmost version component to increment. `~> 20.0` means `>= 20.0, < 21.0` (allows 20.x patches). `~> 20` would mean `>= 20, < 21` (same). Use `~>` for non-production and `=` for production to balance flexibility with reproducibility.
+
 ```hcl
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -739,6 +864,9 @@ module "vpc" {
 ```
 
 ### 42. Module with optional submodules
+
+> Passing boolean/conditional flags to a module allows it to conditionally create sub-resources. In this pattern, the app module internally uses `count = var.enable_monitoring ? 1 : 0` for its CloudWatch dashboards, `count = var.enable_cdn ? 1 : 0` for CloudFront, etc. The caller doesn't need to know the implementation — just set the flag.
+
 ```hcl
 module "app" {
   source = "./modules/app"
@@ -755,6 +883,9 @@ module "app" {
 ```
 
 ### 43. Aggregating multi-module security group IDs
+
+> Creating named security group modules and aggregating their IDs into a `local` map creates a clean interface for downstream resources. Rather than passing individual SG IDs around, consumers reference `local.all_sg_ids.web`, `local.all_sg_ids.app`, etc. This makes the security group inventory visible and auditable in one place.
+
 ```hcl
 module "web_sg"  { source = "./modules/sg"; name = "web"; rules = var.web_rules }
 module "app_sg"  { source = "./modules/sg"; name = "app"; rules = var.app_rules }
@@ -770,6 +901,9 @@ locals {
 ```
 
 ### 44. Module that creates IAM roles and policies
+
+> IAM modules are extremely common — every application needs an IAM role with specific permissions. Using `dynamic "statement"` driven by `var.policy_statements` makes the module generic: callers define what actions/resources the role needs, and the module handles the boilerplate (role creation, assume role policy, inline policy attachment).
+
 ```hcl
 # modules/app-iam/main.tf
 resource "aws_iam_role" "app" {
@@ -796,6 +930,9 @@ resource "aws_iam_role_policy" "app" {
 ```
 
 ### 45. Module source integrity with git tag and SHA
+
+> Pinning to a git commit SHA (`?ref=abc1234...`) is the most reproducible source reference — tags can be moved but commit SHAs are immutable. Use SHA pinning for security-sensitive modules in production. For internal modules, a version tag is usually sufficient. Never use a branch name (`?ref=main`) in production — branches change.
+
 ```hcl
 module "vpc" {
   # Pin to exact git commit hash for reproducibility
@@ -809,6 +946,9 @@ module "eks" {
 ```
 
 ### 46. Module wrapping for internal standards enforcement
+
+> This is the most important enterprise module pattern: an internal wrapper that enforces non-negotiable security standards (IMDSv2, encryption, monitoring, gp3 volumes). Engineers use the internal module instead of `aws_instance` directly — they get all the guardrails automatically. The module accepts only the parameters teams actually need to vary.
+
 ```hcl
 # internal/modules/ec2/main.tf — always enforces tagging, encryption, etc.
 resource "aws_instance" "this" {
@@ -837,6 +977,9 @@ resource "aws_instance" "this" {
 ```
 
 ### 47. Module with for_each and complex outputs
+
+> Using `for_each` with a services map and collecting outputs with a `for` expression is the standard microservices deployment pattern. Each service gets its own ECS service, task role, and other resources — all managed from a single module call. The `service_arns` and `task_role_arns` outputs give operations teams a complete inventory.
+
 ```hcl
 module "microservices" {
   for_each = var.services
@@ -864,6 +1007,9 @@ output "task_role_arns" {
 ```
 
 ### 48. Module generating multiple related resources
+
+> Some infrastructure components always come in pairs or groups (primary + replica S3 buckets with replication, VPC + peering connection, etc.). Bundling them in a module with `configuration_aliases` for the replica provider ensures both sides of the relationship are always provisioned correctly — callers can't forget the replication configuration.
+
 ```hcl
 # modules/s3-with-replication/main.tf
 resource "aws_s3_bucket" "primary" {
@@ -892,6 +1038,9 @@ resource "aws_s3_bucket_replication_configuration" "replication" {
 ```
 
 ### 49. Module documentation with README
+
+> Well-documented modules include a usage example, requirements table (Terraform and provider versions), and inputs/outputs tables. Tools like `terraform-docs` can auto-generate these tables from variable/output descriptions. The README is the first thing engineers see — it should answer "how do I use this?" in 30 seconds.
+
 ```markdown
 ## Usage
 module "vpc" {
@@ -917,6 +1066,9 @@ module "vpc" {
 ```
 
 ### 50. Complete multi-tier infrastructure with modules
+
+> The gold standard pattern: compose four community modules (vpc, alb, ecs, rds) into a complete production stack. Each module is versioned, wired together through output references, and configured with environment-specific parameters. This is how modern AWS infrastructure should be built — not hundreds of raw resource blocks, but composed, versioned, tested modules.
+
 ```hcl
 # main.tf
 module "vpc" {
@@ -962,3 +1114,37 @@ module "rds" {
   vpc_security_group_ids = [module.security.db_sg_id]
 }
 ```
+
+---
+
+## Key Takeaways
+
+- **Modules are the unit of reuse** — everything beyond a trivial single-resource config should be a module; they enforce encapsulation and enable team collaboration
+- **Source types**: local path (`./`), Git (`git::https://...?ref=`), registry (`namespace/module/provider`), private registry (`app.terraform.io/org/module/provider`)
+- **Always version-pin registry and git sources** — `~>` for flexibility, `=` for maximum reproducibility in production
+- **`for_each` on modules** is preferred over `count` — stable string keys prevent unintended destroy/recreate when the set changes
+- **Provider aliases must be explicitly passed** with the `providers` map; child modules must declare `configuration_aliases` to receive them
+- **`moved` blocks** are the safe way to rename/restructure modules — without them, renames cause destroy/recreate
+- **Wrapper modules** enforce organizational standards (IMDSv2, encryption, tagging) — engineers use internal wrappers, not raw resources
+- **`terraform test`** (1.6+) provides native module testing without external tools
+- **Module output objects** (single structured output vs. many flat outputs) create stable, evolvable interfaces
+- **Sensitive outputs** must be declared sensitive at every level of the module hierarchy to stay hidden in terminal output
+
+---
+
+## Common Interview Questions & Answers
+
+**Q: What's the difference between `count` and `for_each` on a module? When would you use each?**
+A: `count` creates N instances indexed by integers (0, 1, 2...). `for_each` creates instances keyed by map keys or set strings. The critical difference: with `count`, removing an element from the middle shifts all subsequent indices, causing Terraform to destroy and recreate all those resources. With `for_each`, each instance has a stable string key — removing one key doesn't affect others. Use `count` only for truly identical instances (like when N is the only dimension). Use `for_each` for named collections (environments, regions, microservices) where stability matters.
+
+**Q: How do you pass a provider alias into a module? Why is this necessary?**
+A: At the calling level, use the `providers` map: `providers = { aws = aws, aws.replica = aws.replica }`. Inside the module, declare `configuration_aliases = [aws.replica]` in the `required_providers` block. Without the declaration, Terraform doesn't know the module needs the alias and won't wire it through. This is necessary for multi-region resources (primary in us-east-1, replica in us-west-2) where both providers need to be active within the same module scope.
+
+**Q: How do you refactor a Terraform configuration — renaming a resource or moving it into a module — without destroying and recreating it?**
+A: Use `moved` blocks (Terraform 1.1+). Declare `moved { from = aws_instance.server; to = aws_instance.web }` or `moved { from = aws_vpc.main; to = module.network.aws_vpc.main }`. Terraform updates the state addresses during the next `terraform apply` without touching the real infrastructure. Without `moved` blocks, renamed resources appear as delete + create in the plan. Keep `moved` blocks in the configuration until all environments have been applied.
+
+**Q: What is a module's "interface" and why does it matter?**
+A: A module's interface consists of its input variables (`variables.tf`) and output values (`outputs.tf`). The interface matters because it's the contract between the module and its callers — you can freely change internal implementation (rename resources, restructure locals) without breaking callers, as long as the interface stays stable. Good module design: minimal required variables, sensible defaults, clear types with validation, and structured output objects for related values. Treat module interfaces like public API — breaking changes require version bumps.
+
+**Q: When should you use `depends_on` on a module vs. letting Terraform infer dependencies?**
+A: Terraform infers dependencies automatically when one module's output is used in another module's input — this is the preferred approach. Use explicit `depends_on` only when there's a hidden dependency Terraform can't see: typically when a module queries AWS using data sources and the queried resource is created by another module. For example, if `module.app` runs `data.aws_iam_role.existing` to look up a role created by `module.iam`, Terraform doesn't know about this data source dependency and may run them in the wrong order. `depends_on = [module.iam]` makes the ordering explicit.

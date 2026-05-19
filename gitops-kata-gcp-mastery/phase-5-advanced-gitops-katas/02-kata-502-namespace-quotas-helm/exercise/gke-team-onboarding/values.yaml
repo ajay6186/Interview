@@ -1,0 +1,19 @@
+namespace:
+  name: app-9999-default
+
+namespaceQuotas:
+  requests.cpu: "2"
+  requests.memory: 4Gi
+  limits.cpu: "4"
+  limits.memory: 8Gi
+
+limitRanges:
+  default:
+    cpu: "500m"
+    memory: "512Mi"
+  defaultRequest:
+    cpu: "250m"
+    memory: "256Mi"
+  max:
+    cpu: "2"
+    memory: "4Gi"

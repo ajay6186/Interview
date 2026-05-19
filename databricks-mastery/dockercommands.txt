@@ -1,0 +1,44 @@
+  1. Rebuild:                                                                                                                                
+  docker build -t databricks-mastery .
+                                                                                                                                             
+  2. Run with auto-reload:                                  
+  docker run --rm -it -v "%cd%:/workspace" databricks-mastery bash -c "find /workspace -name '*.py' | entr -r python
+  /workspace/phase-1-fundamentals/01-spark-basics/test1.py"
+
+  ● Now run:                                        
+  docker run --rm -it -v "%cd%:/workspace" -p 4040:4040 databricks-mastery python /workspace/phase-1-fundamentals/01-spark-basics/test1.py
+                                                                                                                                                                           
+  What you can see in the UI:
+                                                                                                                                                                           
+  ┌─────────────┬──────────────────────────────────────────┐
+  │     Tab     │                  Shows                   │
+  ├─────────────┼──────────────────────────────────────────┤
+  │ Jobs        │ All Spark jobs, duration, stages         │
+  ├─────────────┼──────────────────────────────────────────┤
+  │ Stages      │ Task-level breakdown, shuffle read/write │
+  ├─────────────┼──────────────────────────────────────────┤
+  │ Storage     │ Cached RDDs/DataFrames                   │
+  ├─────────────┼──────────────────────────────────────────┤
+● Now run:
+  docker run --rm -it -v "%cd%:/workspace" -p 4040:4040 databricks-mastery python /workspace/phase-1-fundamentals/01-spark-basics/test1.py
+
+  What you can see in the UI:
+
+  ┌─────────────┬──────────────────────────────────────────┐
+  │     Tab     │                  Shows                   │
+  ├─────────────┼──────────────────────────────────────────┤
+  │ Jobs        │ All Spark jobs, duration, stages         │
+  ├─────────────┼──────────────────────────────────────────┤
+  │ Stages      │ Task-level breakdown, shuffle read/write │
+  ├─────────────┼──────────────────────────────────────────┤
+  │ Storage     │ Cached RDDs/DataFrames                   │
+  ├─────────────┼──────────────────────────────────────────┤
+  │ Executors   │ Memory, CPU usage                        │
+  ├─────────────┼──────────────────────────────────────────┤
+  │ SQL         │ DataFrame query plans                    │
+  ├─────────────┼──────────────────────────────────────────┤
+  │ Environment │ Spark config, Java/Python versions       │
+  └─────────────┴──────────────────────────────────────────┘
+
+  The script will pause and keep the UI alive until you press Enter.
+  docker run --rm -it -v "%cd%:/workspace" -p 4040:4040 databricks-mastery python /workspace/phase-1-fundamentals/01-spark-basics/test1.py

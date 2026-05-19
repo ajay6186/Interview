@@ -1,0 +1,42 @@
+# ------------------------------------------------------------
+# These Config Connector resources apply only on a GKE cluster
+# with Config Connector enabled. They are provided here for
+# reference and GitOps PR practice — apply via your GitOps repo.
+# ------------------------------------------------------------
+
+# Resource 1: Create the GCP Service Account
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMServiceAccount
+metadata:
+  name: sv-9999-gsa-com1-0000
+  namespace: config-control
+spec:
+  displayName: sv-9999-gsa-com1-0000
+---
+# Resource 2: Grant the GSA a GCP role (Pub/Sub subscriber)
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: sv-9999-gsa-com1-0000-pubsub
+  namespace: config-control
+spec:
+  member: serviceAccount:sv-9999-gsa-com1-0000@prj-dv-gitops-kata-1737.iam.gserviceaccount.com
+  resourceRef:
+    apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+    kind: Project
+    external: prj-dv-gitops-kata-1737
+  role: roles/pubsub.subscriber
+---
+# Resource 3: Allow KSA to impersonate the GSA (Workload Identity binding)
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: sv-9999-gsa-com1-0000-ksawif
+  namespace: config-control
+spec:
+  member: serviceAccount:prj-dv-anthos-host-2315.svc.id.goog[app-9999-default/sv-9999-ksa-com1-0000]
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: sv-9999-gsa-com1-0000
+  role: roles/iam.workloadIdentityUser

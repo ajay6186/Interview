@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-label
+  annotations:
+    config.kubernetes.io/local-config: "true"
+data:
+  by-path: metadata.labels.environment
+  put-value: qa

@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: com1-0000
+  namespace: app-9999-default
+spec:
+  hosts:
+  - PLACEHOLDER_INGRESS_URL
+  gateways:
+  - istio-system/ingressgateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: hello-world
+        port:
+          number: 80

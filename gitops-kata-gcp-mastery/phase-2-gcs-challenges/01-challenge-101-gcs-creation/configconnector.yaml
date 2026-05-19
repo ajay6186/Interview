@@ -1,0 +1,7 @@
+apiVersion: core.cnrm.cloud.google.com/v1beta1
+kind: ConfigConnectorContext
+metadata:
+  name: configconnectorcontext.core.cnrm.cloud.google.com
+  namespace: config-connector
+spec:
+  googleServiceAccount: config-connector-sa@abiding-splicer-494411-m9.iam.gserviceaccount.com

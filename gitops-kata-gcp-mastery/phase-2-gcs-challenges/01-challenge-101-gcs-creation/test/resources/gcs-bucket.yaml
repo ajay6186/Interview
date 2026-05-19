@@ -1,0 +1,16 @@
+apiVersion: storage.cnrm.cloud.google.com/v1beta1
+kind: StorageBucket
+metadata:
+  name: bkt-dv-2188-e22402-0001        # globally unique — follow CME naming
+  namespace: config-connector
+  annotations:
+    cnrm.cloud.google.com/project-id: abiding-splicer-494411-m9
+spec:
+  location: us-central1
+  # location: us + customPlacementConfig
+  storageClass: STANDARD
+  uniformBucketLevelAccess: true
+  customPlacementConfig:
+    dataLocations:
+      - us-central1
+      - us-east5

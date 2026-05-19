@@ -1,10 +1,13 @@
 # Examples 1.2 — Resources & Blocks (50 examples)
 
+> **Topic Overview:** The `resource` block is the core building block of Terraform — it declares a piece of infrastructure you want to manage. Understanding block syntax, argument types, lifecycle rules, dependencies, and nested blocks is essential for writing correct and maintainable configurations. The `lifecycle` meta-argument is one of the most interview-critical topics in this section.
+
 ---
 
 ## Basic
 
 ### 1. Minimal resource block syntax
+> The resource type (`aws_s3_bucket`) maps to the AWS provider's S3 bucket resource. The local name (`my_bucket`) is used only within the Terraform config to reference this resource. Bucket names must be globally unique in S3.
 ```hcl
 resource "aws_s3_bucket" "my_bucket" {
   bucket = "my-unique-bucket-name-2024"
@@ -12,6 +15,7 @@ resource "aws_s3_bucket" "my_bucket" {
 ```
 
 ### 2. Resource with multiple arguments
+> Arguments inside the block are the resource's configuration. Required arguments (like `ami` and `instance_type`) must be provided; optional ones have provider defaults. Order of arguments doesn't matter to Terraform.
 ```hcl
 resource "aws_instance" "web" {
   ami           = "ami-0c55b159cbfafe1f0"
@@ -26,6 +30,7 @@ resource "aws_instance" "web" {
 ```
 
 ### 3. Resource type and name convention
+> The format is `resource "<PROVIDER_TYPE>" "<LOCAL_NAME>"`. The local name is arbitrary but must be unique per type. Convention is snake_case. The full resource address becomes `<type>.<name>` (e.g., `aws_vpc.main`).
 ```hcl
 # Format: resource "<PROVIDER_TYPE>" "<LOCAL_NAME>"
 resource "aws_vpc" "main" {}        # provider=aws, type=vpc, name=main
@@ -34,6 +39,7 @@ resource "aws_s3_bucket" "logs" {}
 ```
 
 ### 4. Referencing resource attributes
+> Use `<type>.<name>.<attribute>` syntax to reference output attributes of another resource. This creates an **implicit dependency** — Terraform automatically orders the VPC creation before the subnet.
 ```hcl
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
@@ -46,6 +52,7 @@ resource "aws_subnet" "public" {
 ```
 
 ### 5. Resource with tags map
+> Tags are a `map(string)` argument available on most AWS resources. They're key for cost allocation, access control via IAM tag conditions, and operational visibility. Use `default_tags` in the provider to avoid repetition.
 ```hcl
 resource "aws_instance" "app" {
   ami           = "ami-0c55b159cbfafe1f0"
@@ -60,6 +67,7 @@ resource "aws_instance" "app" {
 ```
 
 ### 6. aws_security_group basic
+> The security group itself is just a container — rules are now managed as separate `aws_vpc_security_group_ingress_rule` / `egress_rule` resources (preferred) or inline `ingress`/`egress` blocks (older style). The VPC association is required.
 ```hcl
 resource "aws_security_group" "web" {
   name        = "web-sg"
@@ -73,6 +81,7 @@ resource "aws_security_group" "web" {
 ```
 
 ### 7. Security group ingress rule (separate resource)
+> The modern approach (AWS provider v5+) separates each rule into its own resource. This avoids the cyclic dependency problem that occurred with inline rules when two security groups reference each other.
 ```hcl
 resource "aws_vpc_security_group_ingress_rule" "http" {
   security_group_id = aws_security_group.web.id
@@ -84,6 +93,7 @@ resource "aws_vpc_security_group_ingress_rule" "http" {
 ```
 
 ### 8. Security group egress rule
+> `ip_protocol = "-1"` means all traffic. Egress is often left fully open (0.0.0.0/0) for outbound traffic, while ingress is restricted. Always explicitly define egress even if it's open — don't rely on provider defaults.
 ```hcl
 resource "aws_vpc_security_group_egress_rule" "all" {
   security_group_id = aws_security_group.web.id
@@ -93,6 +103,7 @@ resource "aws_vpc_security_group_egress_rule" "all" {
 ```
 
 ### 9. Implicit dependency (Terraform infers order)
+> When resource A's argument references resource B's attribute, Terraform infers that B must be created before A. This implicit ordering handles ~95% of dependency cases; explicit `depends_on` is rarely needed.
 ```hcl
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
@@ -104,6 +115,7 @@ resource "aws_internet_gateway" "igw" {
 ```
 
 ### 10. Explicit depends_on
+> Use `depends_on` when there's a dependency that Terraform can't detect from attribute references — for example, when a resource depends on an IAM policy being attached before it starts (which isn't an attribute reference).
 ```hcl
 resource "aws_iam_role_policy_attachment" "app" {
   role       = aws_iam_role.app.name
@@ -120,6 +132,7 @@ resource "aws_instance" "app" {
 ```
 
 ### 11. Resource destroy / terraform destroy
+> `terraform destroy` removes all state-tracked resources from AWS. `-target` limits destruction to a specific resource. `terraform plan -destroy` shows what would be destroyed without doing it — always preview first.
 ```bash
 terraform destroy                    # destroy all resources
 terraform destroy -target=aws_instance.web  # destroy single resource
@@ -127,6 +140,7 @@ terraform plan -destroy              # preview destruction
 ```
 
 ### 12. terraform apply with target
+> `-target` applies changes only to the specified resource and its dependencies. Useful in emergencies but **avoid in normal workflows** — targeted applies leave your state partially applied and can cause drift.
 ```bash
 terraform apply -target=aws_vpc.main
 terraform apply -target=module.networking
@@ -137,6 +151,7 @@ terraform apply -target=module.networking
 ## Intermediate
 
 ### 13. lifecycle — create_before_destroy
+> By default Terraform destroys the old resource before creating the new one. `create_before_destroy = true` reverses this — critical for resources where downtime is unacceptable (e.g., ALB target groups, DNS records).
 ```hcl
 resource "aws_instance" "web" {
   ami           = var.ami_id
@@ -149,6 +164,7 @@ resource "aws_instance" "web" {
 ```
 
 ### 14. lifecycle — prevent_destroy
+> Guards critical resources against accidental deletion. When set, `terraform destroy` on this resource fails with an error. **Must be removed from code before you can delete the resource.** Use on RDS clusters, S3 buckets with data, KMS keys.
 ```hcl
 resource "aws_rds_cluster" "main" {
   cluster_identifier = "prod-aurora-cluster"
@@ -161,6 +177,7 @@ resource "aws_rds_cluster" "main" {
 ```
 
 ### 15. lifecycle — ignore_changes
+> Tells Terraform to ignore changes to specific attributes after initial creation. Common use: ignore `ami` so the resource isn't replaced every time a new AMI is published; ignore `user_data` to prevent replacement on script updates.
 ```hcl
 resource "aws_instance" "app" {
   ami           = "ami-0c55b159cbfafe1f0"
@@ -176,6 +193,7 @@ resource "aws_instance" "app" {
 ```
 
 ### 16. lifecycle — ignore all changes
+> `ignore_changes = all` tells Terraform to never update this resource after creation. Use for resources managed by external systems (e.g., auto-scaling, external config management) to prevent Terraform from fighting the external system.
 ```hcl
 resource "aws_instance" "bastion" {
   ami           = "ami-0c55b159cbfafe1f0"
@@ -188,6 +206,7 @@ resource "aws_instance" "bastion" {
 ```
 
 ### 17. lifecycle — replace_triggered_by
+> Forces recreation of this resource when another resource changes — even if the change is to an attribute not referenced here. Useful for ASGs that need new instances when a launch template changes.
 ```hcl
 resource "aws_launch_template" "app" {
   name_prefix   = "app-"
@@ -212,6 +231,7 @@ resource "aws_autoscaling_group" "app" {
 ```
 
 ### 18. timeouts block
+> Overrides the provider's default timeouts for create/update/delete operations. Critical for slow resources like RDS (can take 30+ min to create). Without this, Terraform may fail a valid operation that just takes long.
 ```hcl
 resource "aws_db_instance" "main" {
   identifier        = "prod-postgres"
@@ -228,6 +248,7 @@ resource "aws_db_instance" "main" {
 ```
 
 ### 19. Resource with nested block (inline rule — older style)
+> The inline `ingress`/`egress` blocks inside `aws_security_group` are the legacy approach. They work but create dependency cycles when two SGs reference each other. Prefer separate `aws_vpc_security_group_ingress_rule` resources.
 ```hcl
 resource "aws_security_group" "web" {
   name   = "web-sg"
@@ -250,6 +271,7 @@ resource "aws_security_group" "web" {
 ```
 
 ### 20. null_resource with local-exec
+> `null_resource` has no corresponding infrastructure — it exists only to run provisioners. `triggers` map forces re-execution when the referenced resource changes. Being replaced by `terraform_data` in modern configs.
 ```hcl
 resource "null_resource" "setup" {
   triggers = {
@@ -263,6 +285,7 @@ resource "null_resource" "setup" {
 ```
 
 ### 21. terraform_data (replacement for null_resource)
+> `terraform_data` is the built-in replacement for `null_resource` (Terraform 1.4+). No external provider required. `triggers_replace` re-runs provisioners when any value in the list changes.
 ```hcl
 resource "terraform_data" "bootstrap" {
   triggers_replace = [aws_instance.app.id]
@@ -274,6 +297,7 @@ resource "terraform_data" "bootstrap" {
 ```
 
 ### 22. Resource metadata (for provider reference)
+> The `provider` meta-argument selects a non-default provider instance. Any resource can override its provider — essential for deploying to multiple regions or accounts from one root module.
 ```hcl
 resource "aws_s3_bucket" "replica" {
   provider = aws.eu_west_1
@@ -282,6 +306,7 @@ resource "aws_s3_bucket" "replica" {
 ```
 
 ### 23. Resource self-reference in provisioner
+> `self` inside a provisioner block refers to the resource being created. This lets you reference the resource's own attributes (like `public_ip`) without hard-coding them, even before the resource exists in state.
 ```hcl
 resource "aws_instance" "web" {
   ami           = "ami-0c55b159cbfafe1f0"
@@ -300,6 +325,7 @@ resource "aws_instance" "web" {
 ```
 
 ### 24. lifecycle — precondition (Terraform 1.2+)
+> Preconditions are validated before the resource is created or updated. If the condition is false, the plan/apply fails with the custom error message. Use to enforce constraints the type system can't express.
 ```hcl
 resource "aws_instance" "app" {
   ami           = var.ami_id
@@ -315,6 +341,7 @@ resource "aws_instance" "app" {
 ```
 
 ### 25. lifecycle — postcondition
+> Postconditions are checked after the resource is created. If the resource was created but doesn't meet the condition, the apply fails. Useful for catching unexpected provider behavior or race conditions.
 ```hcl
 resource "aws_s3_bucket" "logs" {
   bucket = "my-access-logs"
@@ -333,6 +360,7 @@ resource "aws_s3_bucket" "logs" {
 ## Nested
 
 ### 26. Resource with complex nested block — aws_instance
+> Modern EC2 instances benefit from separate nested blocks for EBS, metadata options (IMDSv2), and network interfaces. `http_tokens = "required"` enforces IMDSv2 — a security best practice to prevent SSRF attacks.
 ```hcl
 resource "aws_instance" "app" {
   ami                  = "ami-0c55b159cbfafe1f0"
@@ -369,6 +397,7 @@ resource "aws_instance" "app" {
 ```
 
 ### 27. aws_s3_bucket nested lifecycle configuration
+> S3 lifecycle rules automatically transition objects to cheaper storage classes and expire old versions. This reduces storage costs without manual intervention. `noncurrent_version_expiration` cleans up old versions when versioning is enabled.
 ```hcl
 resource "aws_s3_bucket_lifecycle_configuration" "logs" {
   bucket = aws_s3_bucket.logs.id
@@ -399,6 +428,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs" {
 ```
 
 ### 28. aws_ecs_task_definition with nested container_definitions
+> ECS task definitions use `jsonencode()` for the container definitions array because the schema is dynamic (no fixed HCL schema). The `logConfiguration` block routes container output to CloudWatch Logs.
 ```hcl
 resource "aws_ecs_task_definition" "app" {
   family                   = "app-task"
@@ -429,6 +459,7 @@ resource "aws_ecs_task_definition" "app" {
 ```
 
 ### 29. aws_cloudfront_distribution nested blocks
+> CloudFront uses deeply nested blocks. `origin_access_control_id` (not legacy OAI) is the modern way to restrict S3 access to CloudFront only. `viewer_protocol_policy = "redirect-to-https"` forces HTTPS.
 ```hcl
 resource "aws_cloudfront_distribution" "cdn" {
   origin {
@@ -466,6 +497,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 ```
 
 ### 30. aws_lb nested health check and stickiness
+> Target group health checks determine which targets receive traffic. `matcher = "200"` means only HTTP 200 responses count as healthy. `stickiness` with `lb_cookie` routes a user's requests to the same target for session affinity.
 ```hcl
 resource "aws_lb_target_group" "app" {
   name        = "app-tg"
@@ -495,6 +527,7 @@ resource "aws_lb_target_group" "app" {
 ```
 
 ### 31. aws_autoscaling_group with mixed instances policy
+> Mixed instances policy reduces costs by blending On-Demand (base capacity) and Spot (overflow). `price-capacity-optimized` is the recommended Spot strategy — it picks the pool least likely to be interrupted.
 ```hcl
 resource "aws_autoscaling_group" "app" {
   name             = "app-asg"
@@ -528,6 +561,7 @@ resource "aws_autoscaling_group" "app" {
 ```
 
 ### 32. aws_wafv2_web_acl deeply nested rules
+> WAFv2 uses deeply nested blocks for rules, statements, overrides, and visibility config. `AWSManagedRulesCommonRuleSet` is AWS's managed ruleset covering OWASP Top 10. `override_action { none {} }` means "apply the managed rule's own actions."
 ```hcl
 resource "aws_wafv2_web_acl" "main" {
   name  = "main-waf"
@@ -568,6 +602,7 @@ resource "aws_wafv2_web_acl" "main" {
 ```
 
 ### 33. Moved block (Terraform 1.1+)
+> `moved` blocks let you rename or reorganize resources in code **without destroying and recreating them**. Terraform updates the state to point to the new address. Remove the `moved` block after the rename is applied to everyone.
 ```hcl
 # Rename a resource without destroying/recreating it
 moved {
@@ -577,6 +612,7 @@ moved {
 ```
 
 ### 34. Import block (Terraform 1.5+)
+> Declarative import brings existing AWS resources under Terraform management. Unlike `terraform import` CLI, the `import` block is version-controlled and reviewable. Run `terraform plan -generate-config-out=generated.tf` to auto-generate the resource block.
 ```hcl
 import {
   to = aws_s3_bucket.existing
@@ -589,6 +625,7 @@ resource "aws_s3_bucket" "existing" {
 ```
 
 ### 35. Import multiple resources with for_each (Terraform 1.7+)
+> Batch import with `for_each` eliminates writing one import block per resource. The `id` maps each key to the AWS resource's import ID. This is the modern way to onboard large existing infrastructures.
 ```hcl
 locals {
   buckets = {
@@ -611,6 +648,7 @@ resource "aws_s3_bucket" "buckets" {
 ```
 
 ### 36. Resource with connection block
+> The `connection` block configures how Terraform connects to the instance for `remote-exec` provisioners. The `host = self.public_ip` uses the resource's own IP — only available after the instance is created.
 ```hcl
 resource "aws_instance" "bastion" {
   ami             = "ami-0c55b159cbfafe1f0"
@@ -636,6 +674,7 @@ resource "aws_instance" "bastion" {
 ```
 
 ### 37. aws_vpc_endpoint with policy
+> VPC Gateway endpoints (for S3 and DynamoDB) route traffic through the AWS backbone, not the internet. The `policy` restricts which S3 buckets can be accessed through this endpoint — a security control for data exfiltration prevention.
 ```hcl
 resource "aws_vpc_endpoint" "s3" {
   vpc_id            = aws_vpc.main.id
@@ -661,6 +700,7 @@ resource "aws_vpc_endpoint" "s3" {
 ## Advanced
 
 ### 38. Resource with check block assertion
+> `check` blocks (Terraform 1.5+) are non-blocking assertions — they emit warnings but don't stop `apply`. Use them for compliance checks (e.g., "is this bucket really private?") that should alert but not block deployments.
 ```hcl
 resource "aws_s3_bucket" "public" {
   bucket = "my-public-bucket"
@@ -675,12 +715,14 @@ check "bucket_not_public" {
 ```
 
 ### 39. Resource replacement with -replace flag
+> `-replace` forces a specific resource to be destroyed and recreated, even if no config changes would trigger it. This is the modern replacement for `terraform taint`. Use when an instance is in a bad state and needs refreshing.
 ```bash
 terraform plan -replace=aws_instance.web
 terraform apply -replace=aws_instance.web
 ```
 
 ### 40. Tainting resources (deprecated, use -replace)
+> `terraform taint` is deprecated in Terraform 0.15+. It marked a resource for recreation on the next apply. Use `terraform apply -replace=<address>` instead — it's atomic and shows the replacement in the plan output.
 ```bash
 # Old way (deprecated):
 terraform taint aws_instance.web
@@ -690,6 +732,7 @@ terraform apply -replace=aws_instance.web
 ```
 
 ### 41. aws_iam_policy with complex JSON
+> `jsonencode()` generates valid JSON from HCL maps — safer than heredoc strings because it handles escaping and whitespace correctly. The `Condition` block with `StringLike` restricts S3 operations to a specific key prefix.
 ```hcl
 resource "aws_iam_policy" "app" {
   name        = "app-policy"
@@ -727,6 +770,7 @@ resource "aws_iam_policy" "app" {
 ```
 
 ### 42. aws_launch_template full config
+> Launch templates are the modern replacement for launch configurations. `http_tokens = "required"` enforces IMDSv2. `templatefile()` renders a startup script with dynamic values. `tag_specifications` applies tags to instances AND their EBS volumes.
 ```hcl
 resource "aws_launch_template" "app" {
   name_prefix   = "app-lt-"
@@ -783,6 +827,7 @@ resource "aws_launch_template" "app" {
 ```
 
 ### 43. aws_kinesis_firehose_delivery_stream nested config
+> Kinesis Firehose with dynamic partitioning uses metadata extraction (JQ queries on the JSON payload) to route records into date-partitioned S3 prefixes — enabling efficient Athena/Glue queries.
 ```hcl
 resource "aws_kinesis_firehose_delivery_stream" "logs" {
   name        = "app-logs"
@@ -821,6 +866,7 @@ resource "aws_kinesis_firehose_delivery_stream" "logs" {
 ```
 
 ### 44. aws_codepipeline with nested stages
+> CodePipeline uses nested `stage` blocks, each containing `action` blocks. `CodeStarSourceConnection` connects to GitHub/GitLab via an AWS-managed OAuth app — no stored PATs. The ECS deploy action performs a rolling update.
 ```hcl
 resource "aws_codepipeline" "app" {
   name     = "app-pipeline"
@@ -871,6 +917,7 @@ resource "aws_codepipeline" "app" {
 ```
 
 ### 45. aws_glue_job with connections and args
+> Glue jobs run PySpark or Python Shell scripts on managed Spark infrastructure. `G.1X` worker type allocates 4 vCPU / 16 GB RAM per worker. `enable-continuous-cloudwatch-log` streams driver and executor logs in near-real-time.
 ```hcl
 resource "aws_glue_job" "etl" {
   name     = "data-etl-job"
@@ -899,6 +946,7 @@ resource "aws_glue_job" "etl" {
 ```
 
 ### 46. aws_stepfunctions_state_machine
+> Step Functions orchestrate Lambda functions and other AWS services into workflows. `jsonencode()` generates the Amazon States Language definition. `Retry` with exponential backoff handles transient Lambda failures gracefully.
 ```hcl
 resource "aws_sfn_state_machine" "order_processor" {
   name     = "order-processor"
@@ -936,6 +984,7 @@ resource "aws_sfn_state_machine" "order_processor" {
 ```
 
 ### 47. aws_ecs_service with service connect
+> Service Connect (ECS's service mesh) enables service discovery via DNS names within a namespace. `deployment_circuit_breaker` auto-rolls back failed deployments — a critical production safety net.
 ```hcl
 resource "aws_ecs_service" "api" {
   name            = "api-service"
@@ -981,6 +1030,7 @@ resource "aws_ecs_service" "api" {
 ```
 
 ### 48. aws_api_gateway_rest_api full setup
+> API Gateway with `body` (OpenAPI spec) lets you define the entire API in one block using standard OpenAPI 3.0 format. The `x-amazon-apigateway-integration` extension wires each path to a Lambda function via proxy integration.
 ```hcl
 resource "aws_api_gateway_rest_api" "app" {
   name        = "app-api"
@@ -1010,6 +1060,7 @@ resource "aws_api_gateway_rest_api" "app" {
 ```
 
 ### 49. aws_cloudwatch_metric_alarm with complex conditions
+> `evaluation_periods = 3` means the alarm triggers only after 3 consecutive breaches — reducing false positives from spikes. `treat_missing_data = "notBreaching"` prevents alarms when metrics are temporarily absent (e.g., instance stopped).
 ```hcl
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   alarm_name          = "app-cpu-high"
@@ -1032,6 +1083,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
 ```
 
 ### 50. Full resource pattern — EC2 with all best practices
+> The production-ready EC2 pattern: data-source AMI lookup (not hardcoded), gp3 root volume with encryption and KMS, IMDSv2 enforced, user_data via templatefile, lifecycle guards against AMI-driven churn and nano in prod.
 ```hcl
 resource "aws_instance" "app" {
   ami                    = data.aws_ami.amazon_linux2.id
@@ -1080,3 +1132,31 @@ resource "aws_instance" "app" {
   depends_on = [aws_iam_role_policy_attachment.app]
 }
 ```
+
+---
+
+## Key Takeaways
+
+- **Implicit dependencies** (attribute references) handle ordering in ~95% of cases; use `depends_on` only for side-effect dependencies.
+- **`lifecycle` block** is one of the most interview-critical topics: know `create_before_destroy`, `prevent_destroy`, `ignore_changes`, `precondition`, `postcondition`, and `replace_triggered_by`.
+- **`moved` blocks** let you refactor resource addresses without destroying infrastructure — use before renaming any resource in production.
+- **Declarative `import` blocks** (Terraform 1.5+) are the modern way to onboard existing resources — version-controlled and reviewable.
+- `terraform_data` replaces `null_resource` — no external provider required.
+- `jsonencode()` is the safe way to build JSON arguments (IAM policies, ECS task definitions) — handles escaping automatically.
+
+## Common Interview Questions & Answers
+
+**Q: What is the difference between `create_before_destroy` and the default destroy-then-create behavior?**  
+A: By default, Terraform destroys the old resource first, then creates the new one — causing a brief outage. `create_before_destroy = true` reverses this: the new resource is created first, traffic is shifted, then the old one is deleted. Critical for zero-downtime deployments.
+
+**Q: How does `depends_on` differ from an attribute reference dependency?**  
+A: Attribute references (e.g., `vpc_id = aws_vpc.main.id`) create implicit ordering automatically. `depends_on` adds an explicit ordering for relationships Terraform can't infer from attributes — like "this EC2 instance needs an IAM policy attached before it runs."
+
+**Q: How do you rename a Terraform resource without destroying it?**  
+A: Use a `moved` block: `moved { from = aws_instance.old; to = aws_instance.new }`. Apply it once, then remove the block. Without `moved`, renaming in code causes destroy-then-create.
+
+**Q: What is `prevent_destroy` and what's its limitation?**  
+A: `prevent_destroy = true` in the lifecycle block causes `terraform destroy` (or any plan that would destroy the resource) to fail with an error. The limitation: you must remove this flag from the code before you can delete the resource — it's not permanent protection.
+
+**Q: When would you use `ignore_changes = all`?**  
+A: When a resource is managed by an external system after Terraform creates it (e.g., an EC2 instance managed by Ansible post-creation, or an ASG whose tags are updated by the auto-scaler). Tells Terraform: "create it, then hands off."

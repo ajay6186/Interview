@@ -1,0 +1,6 @@
+apiVersion: v2
+name: gke-team-onboarding
+description: Helm chart for GKE namespace onboarding with ResourceQuota and LimitRange
+type: application
+version: 1.0.0
+appVersion: "1.0.0"

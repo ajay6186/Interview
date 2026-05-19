@@ -1,0 +1,546 @@
+  Troubleshooting Quick Reference
+
+  ┌────────────────────────┬─────────────────────────┬─────────────────────────────────────────────────────────────────┐
+  │         Error          │          Cause          │                               Fix                               │
+  ├────────────────────────┼─────────────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ kubectl: cluster       │ Wrong kube context      │ Re-run get-credentials command                                  │
+  │ unreachable            │                         │                                                                 │
+  ├────────────────────────┼─────────────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ READY=False on         │ KMS API not enabled     │ gcloud services enable cloudkms.googleapis.com                  │
+  │ KMSCryptoKey           │                         │                                                                 │
+  ├────────────────────────┼─────────────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ READY=False on         │ KMS key not ready yet   │ Wait and retry — bucket waits for key                           │
+  │ StorageBucket          │                         │                                                                 │
+  ├────────────────────────┼─────────────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ 403 permission denied  │ Service account missing │ Grant roles/cloudkms.cryptoKeyEncrypterDecrypter to the Config  │
+  │                        │  IAM role               │ Connector SA                                                    │
+  └────────────────────────┴─────────────────────────┴─────────────────────────────────────────────────────────────────┘
+
+  This error means kubectl is not connected to any cluster — it's trying to reach localhost:8080 (the default fallback when 
+  there's no kubeconfig set up).                                                                                          
+                                                                                                                            
+  ---
+  Fix — Connect kubectl to Your GKE Cluster                                                                                 
+                                                            
+  Step 1 — Check if you have any cluster context
+
+  kubectl config get-contexts
+
+  If this is empty or shows no context, you need to authenticate first.
+
+  ---
+  Step 2 — Login to GCP
+
+  gcloud auth login
+  gcloud auth application-default login
+
+  ---
+  Step 3 — Set your project
+
+  gcloud config set project <your-gcp-project-id>
+
+  Verify:
+  gcloud config get-value project
+
+  ---
+  Step 4 — Get GKE cluster credentials
+
+  gcloud container clusters get-credentials <your-cluster-name> `
+    --region us-central1 `
+    --project <your-gcp-project-id>
+
+  To find your cluster name if you don't know it:
+  gcloud container clusters list --project <your-gcp-project-id>
+
+  ---
+  Step 5 — Verify kubectl is now connected
+
+  kubectl get nodes
+  kubectl get namespace config-connector
+
+  If both commands return results, kubectl is connected. Then re-run:
+
+  kubectl apply -f test/resources/kms.yaml
+  kubectl apply -f test/resources/gcs-bucket.yaml
+
+  ---
+  If You Don't Have a GKE Cluster Yet
+
+  You need to create one first. Quick command:
+
+  gcloud container clusters create my-cluster `
+    --region us-central1 `
+    --project <your-gcp-project-id> `
+    --num-nodes 1
+
+
+----------------------------------------------------------------------------------------
+
+  Step 1 — Create Zonal Cluster with Workload Identity Enabled                                                                                      
+   
+  gcloud container clusters create my-zonal-cluster `                                                                                               
+    --zone us-central1-a `                                  
+    --project abiding-splicer-494411-m9 `                                                                                                           
+    --num-nodes 1 `                                         
+    --disk-type=pd-standard `
+    --disk-size=50 `
+    --workload-pool=abiding-splicer-494411-m9.svc.id.goog
+
+  Wait for cluster to be created (~3-5 min).
+
+  ---
+  Step 2 — Enable Config Connector Addon
+
+  gcloud container clusters update my-zonal-cluster `
+    --zone us-central1-a `
+    --project abiding-splicer-494411-m9 `
+    --update-addons ConfigConnector=ENABLED
+
+  ---
+  Step 3 — Enable Workload Pool (if not already set)
+
+  gcloud container clusters update my-zonal-cluster `
+    --zone us-central1-a `
+    --project abiding-splicer-494411-m9 `
+    --workload-pool=abiding-splicer-494411-m9.svc.id.goog
+
+  ---
+  Step 4 — Get kubectl Credentials
+
+  gcloud container clusters get-credentials my-zonal-cluster `
+    --zone us-central1-a `
+    --project abiding-splicer-494411-m9
+
+  ---
+  Step 5 — Create config-connector Namespace
+
+  kubectl create namespace config-connector
+
+  kubectl annotate namespace config-connector `
+    cnrm.cloud.google.com/project-id=abiding-splicer-494411-m9
+
+  ---
+  Step 6 — Verify Namespace Created
+
+  kubectl get namespace config-connector
+  kubectl describe namespace config-connector
+
+  Expected output:
+  Name:  config-connector
+  Annotations:
+    cnrm.cloud.google.com/project-id: abiding-splicer-494411-m9
+
+-----------------------------------------------------------------------------------------
+
+● Config Connector addon is enabled but not fully configured yet. The CRDs only appear after the
+  ConfigConnector resource is applied. Let me walk through the fix:
+                                              
+  ---                                     
+  Step 1 — Verify Config Connector Pod is Running
+                                                                                                             
+  kubectl get pods -n cnrm-system
+                                                                                                             
+  If pods are missing or not running, the addon didn't enable properly. Check:
+
+  gcloud container clusters describe my-zonal-cluster `
+    --zone us-central1-a `
+    --project abiding-splicer-494411-m9 `
+    --format="value(addonsConfig.configConnectorConfig.enabled)"
+
+  Should return True.
+
+  ---
+  Step 2 — Create Service Account (if not done yet)
+
+  gcloud iam service-accounts create config-connector-sa `
+    --project abiding-splicer-494411-m9 `
+    --display-name "Config Connector SA"
+
+  ---
+  Step 3 — Grant Project Editor Role
+
+  gcloud projects add-iam-policy-binding abiding-splicer-494411-m9 `
+    --member="serviceAccount:config-connector-sa@abiding-splicer-494411-m9.iam.gserviceaccount.com" `
+    --role="roles/editor"
+
+  ---
+  Step 4 — Bind Workload Identity
+
+  gcloud iam service-accounts add-iam-policy-binding `
+    config-connector-sa@abiding-splicer-494411-m9.iam.gserviceaccount.com `
+    --member="serviceAccount:abiding-splicer-494411-m9.svc.id.goog[cnrm-system/cnrm-controller-manager]" `
+    --role="roles/iam.workloadIdentityUser" `
+    --project abiding-splicer-494411-m9
+
+  ---
+  Step 5 — Apply ConfigConnector Resource (this installs the CRDs)
+
+  Create configconnector.yaml:
+
+  apiVersion: core.cnrm.cloud.google.com/v1beta1
+  kind: ConfigConnector
+  metadata:
+    name: configconnector.core.cnrm.cloud.google.com
+  spec:
+    mode: cluster
+    googleServiceAccount: config-connector-sa@abiding-splicer-494411-m9.iam.gserviceaccount.com
+
+  Apply it:
+
+  kubectl apply -f configconnector.yaml
+
+  ---
+  Step 6 — Wait for CRDs to Register (~2 min)
+
+  kubectl wait --for=condition=Established crd/kmskeyring.kms.cnrm.cloud.google.com --timeout=120s
+
+  Then verify:
+
+  kubectl get crd | findstr cnrm
+
+  You should see kmskeyring, kmscryptokeys, storagebuckets etc.
+
+  ---
+  Step 7 — Now Apply Your YAML
+
+  kubectl apply -f test/resources/kms.yaml
+  kubectl apply -f test/resources/gcs-bucket.yaml
+
+---------------------------------------------------------------------------------------------------
+
+ ---
+  Most Likely Cause — Node is Too Small
+
+  The default machine type e2-medium (2 vCPU, 4 GB RAM) is often too small when system pods + Config
+  Connector all compete for resources.
+
+  Fix — Upgrade node machine type:
+
+  # Delete the existing node pool and recreate with larger machine type
+  gcloud container node-pools create default-pool-large `
+    --cluster=my-zonal-cluster `
+    --zone=us-central1-a `
+    --project=abiding-splicer-494411-m9 `
+    --machine-type=e2-standard-2 `
+    --num-nodes=1 `
+    --disk-type=pd-standard `
+    --disk-size=50
+
+  Or recreate the whole cluster with the right machine type from the start:
+
+  # Delete current cluster
+  gcloud container clusters delete my-zonal-cluster `
+    --zone us-central1-a `
+    --project abiding-splicer-494411-m9
+
+  # Recreate with e2-standard-2
+  gcloud container clusters create my-zonal-cluster `
+    --zone us-central1-a `
+    --project abiding-splicer-494411-m9 `
+    --num-nodes 1 `
+    --machine-type=e2-standard-2 `
+    --disk-type=pd-standard `
+    --disk-size=50 `
+    --workload-pool=abiding-splicer-494411-m9.svc.id.goog `
+    --addons=ConfigConnector
+
+  This single command creates the cluster with Workload Identity + Config Connector both enabled at once — no
+   separate update steps needed.
+
+  ---
+  Step 3 — After Cluster is Ready, Verify
+
+  kubectl get namespace cnrm-system
+  kubectl get pods -n cnrm-system
+
+  Both should now show healthy. Share the output of kubectl describe pod configconnector-operator-0 -n
+  configconnector-operator-system if you want me to confirm the exact root cause.
+
+---------------------------------------------------------------------------------------------------
+
+---
+  Most Likely Cause — Node is Too Small
+
+  The default machine type e2-medium (2 vCPU, 4 GB RAM) is often too
+  small when system pods + Config Connector all compete for resources.
+
+  Fix — Upgrade node machine type:
+
+  # Delete the existing node pool and recreate with larger machine type
+  gcloud container node-pools create default-pool-large `
+    --cluster=my-zonal-cluster `
+    --zone=us-central1-a `
+    --project=abiding-splicer-494411-m9 `
+    --machine-type=e2-standard-2 `
+    --num-nodes=1 `
+    --disk-type=pd-standard `
+    --disk-size=50
+
+  Or recreate the whole cluster with the right machine type from the
+  start:
+
+  # Delete current cluster
+  gcloud container clusters delete my-zonal-cluster `
+    --zone us-central1-a `
+    --project abiding-splicer-494411-m9
+
+  # Recreate with e2-standard-2
+  gcloud container clusters create my-zonal-cluster `
+    --zone us-central1-a `
+    --project abiding-splicer-494411-m9 `
+    --num-nodes 1 `
+    --machine-type=e2-standard-2 `
+    --disk-type=pd-standard `
+    --disk-size=50 `
+    --workload-pool=abiding-splicer-494411-m9.svc.id.goog `
+    --addons=ConfigConnector
+
+  This single command creates the cluster with Workload Identity +
+  Config Connector both enabled at once — no separate update steps
+  needed.
+
+  ---
+  Step 3 — After Cluster is Ready, Verify
+
+  kubectl get namespace cnrm-system
+  kubectl get pods -n cnrm-system
+
+  Both should now show healthy. Share the output of kubectl describe pod
+   configconnector-operator-0 -n configconnector-operator-system if
+  # Delete the existing node pool and recreate with larger machine
+  type
+  gcloud container node-pools create default-pool-large `
+    --cluster=my-zonal-cluster `
+    --zone=us-central1-a `
+    --project=abiding-splicer-494411-m9 `
+    --machine-type=e2-standard-2 `
+    --num-nodes=1 `
+    --disk-type=pd-standard `
+    --disk-size=50
+
+  Or recreate the whole cluster with the right machine type from
+  the start:
+
+  # Delete current cluster
+  gcloud container clusters delete my-zonal-cluster `
+    --zone us-central1-a `
+    --project abiding-splicer-494411-m9
+
+  # Recreate with e2-standard-2
+  gcloud container clusters create my-zonal-cluster `
+    --zone us-central1-a `
+    --project abiding-splicer-494411-m9 `
+    --num-nodes 1 `
+    --machine-type=e2-standard-2 `
+    --disk-type=pd-standard `
+    --disk-size=50 `
+    --workload-pool=abiding-splicer-494411-m9.svc.id.goog `
+    --addons=ConfigConnector
+
+  This single command creates the cluster with Workload Identity +
+  Config Connector both enabled at once — no separate update steps
+  needed.
+
+  ---
+  Step 3 — After Cluster is Ready, Verify
+
+  kubectl get namespace cnrm-system
+  kubectl get pods -n cnrm-system
+
+  Both should now show healthy. Share the output of kubectl
+  This single command creates the cluster with Workload Identity +
+   Config Connector both enabled at once — no separate update
+  steps needed.
+
+  ---
+  Step 3 — After Cluster is Ready, Verify
+
+  kubectl get namespace cnrm-system
+  kubectl get pods -n cnrm-system
+  kubectl get namespace cnrm-system
+  kubectl get pods -n cnrm-system
+
+--------------------------------------------------------------------------
+
+ The error is clear:                                        
+
+  ▎ Permission 'iam.serviceAccounts.getAccessToken' denied — Workload Identity binding is missing.    
+                                          
+  Config Connector's Kubernetes Service Account is not linked to your Google Service Account. This is 
+  the step that was skipped.                                                                          
+   
+  ---                                                                                                 
+  Fix — Add Workload Identity Binding                       
+
+  gcloud iam service-accounts add-iam-policy-binding `
+    config-connector-sa@abiding-splicer-494411-m9.iam.gserviceaccount.com `
+
+  --member="serviceAccount:abiding-splicer-494411-m9.svc.id.goog[cnrm-system/cnrm-controller-manager]"
+   `
+    --role="roles/iam.workloadIdentityUser" `
+    --project=abiding-splicer-494411-m9
+
+  ---
+  Verify Node Pool Has Workload Identity Metadata Server Enabled
+
+  gcloud container node-pools describe default-pool `
+    --cluster=my-zonal-cluster `
+    --zone=us-central1-a `
+    --project=abiding-splicer-494411-m9 `
+    --format="value(config.workloadMetadataConfig.mode)"
+
+  Expected output: GKE_METADATA
+
+  If it shows anything else, enable it:
+
+  gcloud container node-pools update default-pool `
+    --cluster=my-zonal-cluster `
+    --zone=us-central1-a `
+    --project=abiding-splicer-494411-m9 `
+    --workload-metadata=GKE_METADATA
+
+  ---
+  Restart Config Connector Controller to Pick Up New Binding
+
+  kubectl rollout restart statefulset/cnrm-controller-manager -n cnrm-system
+
+  Wait ~1 minute, then watch the bucket:
+
+  kubectl get storagebucket bkt-dv-2188-e22402-0001 -n config-connector -w
+
+  READY should flip to True within 2 minutes. Then confirm in GCP:
+
+  gcloud storage buckets list --project=abiding-splicer-494411-m9
+
+---------------------------------------------------------------------
+
+Same error still persists. Let's do a full diagnostic to find exactly what's broken:
+
+  ---                                         
+  Run All 4 Checks                        
+
+  Check 1 — Confirm IAM binding exists:                                                               
+  gcloud iam service-accounts get-iam-policy `
+    config-connector-sa@abiding-splicer-494411-m9.iam.gserviceaccount.com `                           
+    --project=abiding-splicer-494411-m9                     
+
+  Should show roles/iam.workloadIdentityUser with member
+  serviceAccount:abiding-splicer-494411-m9.svc.id.goog[cnrm-system/cnrm-controller-manager].
+
+  ---
+  Check 2 — Confirm node pool has GKE_METADATA:
+  gcloud container node-pools describe default-pool `
+    --cluster=my-zonal-cluster `
+    --zone=us-central1-a `
+    --project=abiding-splicer-494411-m9 `
+    --format="value(config.workloadMetadataConfig.mode)"
+
+  Must return GKE_METADATA. If empty or EXPOSE_SEND_METADATA — Workload Identity is not active on the
+  node pool.
+
+  ---
+  Check 3 — Confirm what KSA the controller is using:
+  kubectl get statefulset cnrm-controller-manager -n cnrm-system -o yaml | findstr serviceAccount
+
+  ---
+  Check 4 — Confirm controller pod annotation:
+  kubectl get pod -n cnrm-system -o yaml | findstr "iam.gke.io"
+
+  ---
+  Most Likely Fix
+
+  If Check 2 returns anything other than GKE_METADATA, run:
+
+  gcloud container node-pools update default-pool `
+    --cluster=my-zonal-cluster `
+    --zone=us-central1-a `
+    --project=abiding-splicer-494411-m9 `
+    --workload-metadata=GKE_METADATA
+
+  This takes ~3 minutes. After it completes, restart the controller:
+
+  ---
+  Check 4 — Confirm controller pod annotation:
+  kubectl get pod -n cnrm-system -o yaml | findstr "iam.gke.io"
+
+  ---
+  Most Likely Fix
+
+  If Check 2 returns anything other than GKE_METADATA, run:
+
+  gcloud container node-pools update default-pool `
+    --cluster=my-zonal-cluster `
+    --zone=us-central1-a `
+    --project=abiding-splicer-494411-m9 `
+    --workload-metadata=GKE_METADATA
+
+  This takes ~3 minutes. After it completes, restart the controller:
+
+  kubectl rollout restart statefulset/cnrm-controller-manager -n cnrm-system
+
+  Then watch the bucket again:
+
+  kubectl get storagebucket bkt-dv-2188-e22402-0001 -n config-connector -w
+
+------------------------------------------------------------------------------------
+
+  ---                                     
+  Fix — Add Correct Workload Identity Binding
+                                                                                                      
+  gcloud iam service-accounts add-iam-policy-binding `
+    config-connector-sa@abiding-splicer-494411-m9.iam.gserviceaccount.com `                           
+    --member="serviceAccount:abiding-splicer-494411-m9.svc.id.goog[cnrm-system/cnrm-controller-manager
+  -config-connector]" `
+    --role="roles/iam.workloadIdentityUser" `
+    --project=abiding-splicer-494411-m9
+
+  ---
+  Restart the Controller to Pick Up the New Binding
+
+  kubectl rollout restart statefulset/cnrm-controller-manager-so4mfwz4fmzh4ha -n cnrm-system
+
+  Wait ~1 minute, then watch the bucket:
+
+  kubectl get storagebucket bkt-dv-2188-e22402-0001 -n config-connector -w
+
+  ---
+  Verify Binding Was Applied
+
+  gcloud iam service-accounts get-iam-policy `
+    config-connector-sa@abiding-splicer-494411-m9.iam.gserviceaccount.com `
+    --project=abiding-splicer-494411-m9
+
+  You should now see two bindings — the old wrong one and the new correct one with
+  cnrm-controller-manager-config-connector. This time READY should flip to True.
+
+✻ Sautéed for 12s                  
+
+  ┌────────────────┬──────────────────────────────────────────────────────────────────────────────┐
+  │     Phase      │                                    Topic                                     │   
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Architecture   │ Visual diagram of how KSA → GSA → GCP resources connect                      │   
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤ 
+  │ Phase 1        │ Create GKE cluster — why e2-standard-2, pd-standard, quota errors            │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Phase 2        │ Connect kubectl — localhost:8080 error explained                             │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Phase 3        │ Enable Config Connector — correct order (Workload Identity first)            │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Phase 4        │ IAM setup — correct KSA name discovery, GKE_METADATA requirement             │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Phase 5        │ Configure KCC — ConfigConnector + ConfigConnectorContext (the most missed    │
+  │                │ step)                                                                        │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Phase 6        │ KMS resources — dependency order, CRD errors                                 │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Phase 7        │ GCS bucket — naming, encryption field issues                                 │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Phase 8        │ kustomization.yaml — why order matters                                       │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Phase 9        │ Verification — describe, force re-sync, restart controller                   │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Error          │ Full table of every error you hit with root cause and fix                    │
+  │ Reference      │                                                                              │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────────────┤
+  │ Checklist      │ Complete 15-point checklist to verify everything                             │
+  └────────────────┴──────────────────────────────────────────────────────────────────────────────┘

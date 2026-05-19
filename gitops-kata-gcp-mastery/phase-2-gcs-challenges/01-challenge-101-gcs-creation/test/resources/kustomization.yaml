@@ -1,0 +1,4 @@
+resources:
+  - kms.yaml
+  - gcs-bucket.yaml
+  - gcs-iam.yaml

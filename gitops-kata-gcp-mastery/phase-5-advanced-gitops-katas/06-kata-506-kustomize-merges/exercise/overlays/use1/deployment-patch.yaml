@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+  namespace: app-9999-default
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: main
+        image: nginx:1.25
+        resources:
+          requests:
+            cpu: "150m"

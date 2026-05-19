@@ -1,0 +1,9 @@
+apiVersion: fn.kpt.dev/v1alpha1
+kind: SubStringSearchReplace
+metadata:
+  name: fn-env-subdomain
+  annotations:
+    config.kubernetes.io/local-config: "true"
+spec:
+  by-value: .dev.gcp.cme.com
+  put-value: .qa.gcp.cme.com

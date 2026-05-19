@@ -1,0 +1,12 @@
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: sv-9999-gsa-com1-0000-pubsub
+  namespace: config-control
+spec:
+  member: PLACEHOLDER_GSA_MEMBER
+  resourceRef:
+    apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+    kind: Project
+    external: prj-dv-gitops-kata-1737
+  role: roles/pubsub.subscriber

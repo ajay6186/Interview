@@ -1,10 +1,13 @@
 # Examples 1.3 — Variables & Outputs (50 examples)
 
+> **Topic Overview:** Variables make Terraform configurations reusable and environment-agnostic. Outputs expose resource attributes to operators and other Terraform stacks. Locals compute intermediate values to reduce repetition. Understanding variable types, validation, sensitivity, precedence, and the `outputs → remote_state` pattern is essential for writing modular, maintainable infrastructure code.
+
 ---
 
 ## Basic
 
 ### 1. Simple string variable
+> The `description` field documents the variable's purpose — shown in `terraform plan` when the variable is unset. The `default` makes the variable optional; without a default it becomes required.
 ```hcl
 variable "region" {
   type        = string
@@ -14,6 +17,7 @@ variable "region" {
 ```
 
 ### 2. Number variable
+> Numbers in HCL are untyped floats. `type = number` validates that the input is numeric. Use for counts, sizes, thresholds, and port numbers.
 ```hcl
 variable "instance_count" {
   type        = number
@@ -23,6 +27,7 @@ variable "instance_count" {
 ```
 
 ### 3. Boolean variable
+> Boolean variables are used for feature flags, toggle behaviors (enable/disable monitoring), or conditional resource creation. They evaluate in `count = var.flag ? 1 : 0` patterns.
 ```hcl
 variable "enable_deletion_protection" {
   type        = bool
@@ -32,6 +37,7 @@ variable "enable_deletion_protection" {
 ```
 
 ### 4. Referencing a variable
+> Variables are accessed with the `var.` prefix. Terraform substitutes the variable's value at plan/apply time. This is the core mechanism for making configurations environment-agnostic.
 ```hcl
 resource "aws_instance" "web" {
   ami           = var.ami_id
@@ -40,6 +46,7 @@ resource "aws_instance" "web" {
 ```
 
 ### 5. Simple output
+> Outputs expose resource attributes to the terminal after `apply` and to other stacks via `terraform_remote_state`. Always include a `description` — it appears in `terraform output` and the registry documentation.
 ```hcl
 output "instance_id" {
   description = "The ID of the EC2 instance"
@@ -48,6 +55,7 @@ output "instance_id" {
 ```
 
 ### 6. Output with sensitive flag
+> `sensitive = true` suppresses the value in plan/apply output and marks it redacted in the terminal. **The raw value is still stored in state** — protect your state file appropriately.
 ```hcl
 output "db_password" {
   description = "Database master password"
@@ -57,6 +65,7 @@ output "db_password" {
 ```
 
 ### 7. locals block
+> `locals` compute intermediate values once and reuse them throughout the module. They reduce repetition and make complex expressions readable. Unlike variables, locals cannot be overridden from outside the module.
 ```hcl
 locals {
   common_tags = {
@@ -74,6 +83,7 @@ resource "aws_s3_bucket" "app" {
 ```
 
 ### 8. List variable
+> `list(string)` constrains all elements to strings. Lists are ordered and allow duplicates. Use for AZ lists, CIDR blocks, and any ordered collection of values.
 ```hcl
 variable "availability_zones" {
   type        = list(string)
@@ -83,6 +93,7 @@ variable "availability_zones" {
 ```
 
 ### 9. Map variable
+> Maps associate string keys to string values. The `var.instance_types[var.environment]` pattern selects a per-environment value — a clean alternative to long conditional chains.
 ```hcl
 variable "instance_types" {
   type = map(string)
@@ -100,6 +111,7 @@ resource "aws_instance" "app" {
 ```
 
 ### 10. Variable with no default (required)
+> Required variables (no `default`) force the caller to provide a value. This is the right choice for values like `ami_id` that vary by region and should never have a fallback.
 ```hcl
 variable "ami_id" {
   type        = string
@@ -109,11 +121,13 @@ variable "ami_id" {
 ```
 
 ### 11. Passing variable via CLI
+> `-var` flags override defaults and `.tfvars` files. They have the highest precedence (after environment variables). Useful in CI/CD for injecting environment-specific values.
 ```bash
 terraform apply -var="environment=prod" -var="instance_count=3"
 ```
 
 ### 12. Passing variables via .tfvars file
+> `terraform.tfvars` and `*.auto.tfvars` files are loaded automatically. For other files, use `-var-file`. This is the standard way to manage environment-specific configurations in version control.
 ```bash
 # terraform.tfvars (auto-loaded)
 environment   = "prod"
@@ -129,6 +143,7 @@ terraform apply -var-file="prod.tfvars"
 ## Intermediate
 
 ### 13. Object type variable
+> `object({...})` creates a structured variable with named, typed fields. More explicit than `map(any)` — Terraform validates each field's type at parse time. Great for grouping related configuration.
 ```hcl
 variable "database_config" {
   type = object({
@@ -149,6 +164,7 @@ variable "database_config" {
 ```
 
 ### 14. List of objects variable
+> `list(object({...}))` is a typed collection of structured items. Used when you need to create multiple resources with different configurations — pair with `for_each = { for idx, s in var.subnet_configs : idx => s }`.
 ```hcl
 variable "subnet_configs" {
   type = list(object({
@@ -165,6 +181,7 @@ variable "subnet_configs" {
 ```
 
 ### 15. Variable validation
+> Validation blocks run at plan/apply time and give user-friendly error messages instead of cryptic provider errors. Always add validations for variables with restricted value sets (environment names, regions).
 ```hcl
 variable "environment" {
   type        = string
@@ -177,6 +194,7 @@ variable "environment" {
 ```
 
 ### 16. Variable validation with regex
+> `can(regex(...))` returns `true` if the regex matches, `false` otherwise (doesn't throw). Use `can()` for format validation — bucket names, ARN formats, CIDR blocks, email addresses.
 ```hcl
 variable "bucket_name" {
   type        = string
@@ -189,6 +207,7 @@ variable "bucket_name" {
 ```
 
 ### 17. Sensitive variable
+> `sensitive = true` prevents the value from appearing in plan/apply output and marks it as `(sensitive value)` in logs. Use for passwords, API keys, certificates. The value IS stored in state — protect your state file.
 ```hcl
 variable "db_password" {
   type        = string
@@ -198,6 +217,7 @@ variable "db_password" {
 ```
 
 ### 18. Environment variable for sensitive inputs
+> `TF_VAR_<name>` injects variable values via shell environment variables — the cleanest way to pass secrets in CI/CD pipelines. Values are never written to disk or visible in shell history if set via CI secrets.
 ```bash
 export TF_VAR_db_password="super-secret-password"
 export TF_VAR_api_key="my-api-key"
@@ -205,6 +225,7 @@ terraform apply
 ```
 
 ### 19. Output depending on another output
+> Multiple related outputs from the same module. Callers can reference individual outputs (`module.vpc.vpc_id`) or combine them. The splat expression `[*].id` collects all IDs from a `count`-based resource.
 ```hcl
 output "vpc_id" {
   value = aws_vpc.main.id
@@ -220,6 +241,7 @@ output "public_subnet_ids" {
 ```
 
 ### 20. Output with complex expression
+> Outputs can include string interpolation and function calls. `split(":", endpoint)[0]` extracts the hostname from an RDS endpoint (which is `hostname:port`). These transformations keep callers simple.
 ```hcl
 output "alb_dns_name" {
   description = "Application Load Balancer DNS name"
@@ -233,6 +255,7 @@ output "rds_endpoint" {
 ```
 
 ### 21. nonsensitive() to expose sensitive output
+> `nonsensitive()` removes the sensitive marking from a value. **Use with extreme care** — only when the computed value is safe to show (e.g., a formatted URL with a hashed credential, never a raw password).
 ```hcl
 output "db_connection_string" {
   value     = nonsensitive("postgres://${var.db_user}:${var.db_password}@${aws_db_instance.main.address}:5432/${var.db_name}")
@@ -242,6 +265,7 @@ output "db_connection_string" {
 ```
 
 ### 22. Output with depends_on
+> `depends_on` in an output block forces Terraform to wait for specified resources before making the output available. Useful when the output's correctness depends on side-effect operations (like a listener being ready).
 ```hcl
 output "app_url" {
   value       = "https://${aws_lb.app.dns_name}/api"
@@ -250,6 +274,7 @@ output "app_url" {
 ```
 
 ### 23. .tfvars.json format
+> JSON format for `.tfvars` files is useful when your CI/CD system generates variable files programmatically (e.g., from a config management API). The map type maps directly to a JSON object.
 ```json
 {
   "environment": "prod",
@@ -262,6 +287,7 @@ output "app_url" {
 ```
 
 ### 24. Locals with computed values
+> `slice()` takes the first 3 AZs (handles regions with 2+ AZs). `cidrsubnet()` computes non-overlapping subnet CIDRs from the VPC CIDR. This replaces hardcoded CIDR lists with mathematical calculations.
 ```hcl
 data "aws_availability_zones" "available" {
   state = "available"
@@ -277,6 +303,7 @@ locals {
 ```
 
 ### 25. Multiple validation blocks (Terraform 1.9+)
+> From Terraform 1.9+, a single variable can have multiple `validation` blocks. Each block is checked independently, providing specific error messages for each constraint — much cleaner than combining conditions with `&&`.
 ```hcl
 variable "instance_type" {
   type = string
@@ -296,6 +323,7 @@ variable "instance_type" {
 ## Nested
 
 ### 26. Complex object with optional attributes (Terraform 1.3+)
+> `optional(type, default)` marks object fields as not required. If the caller omits the field, it gets the specified default value. This enables backwards-compatible changes to module interfaces without breaking existing callers.
 ```hcl
 variable "rds_config" {
   type = object({
@@ -311,6 +339,7 @@ variable "rds_config" {
 ```
 
 ### 27. Nested map of objects
+> `map(object({...}))` combines a map's key-based lookup with an object's field typing. The map keys become `each.key` in `for_each`, enabling readable resource names. `optional(string, "")` makes `description` omittable.
 ```hcl
 variable "security_group_rules" {
   type = map(object({
@@ -341,6 +370,7 @@ variable "security_group_rules" {
 ```
 
 ### 28. Locals referencing other locals
+> Locals can reference other locals in the same block — Terraform resolves the dependency order. `merge()` combines base tags with caller-provided extra tags; caller-provided tags take precedence (rightmost wins in merge).
 ```hcl
 locals {
   base_name     = "${var.project}-${var.environment}"
@@ -357,6 +387,7 @@ locals {
 ```
 
 ### 29. Output entire resource object (for module consumers)
+> Outputting the entire resource object (not just an ID) gives callers access to all attributes without the module explicitly declaring each one. This is flexible but creates a tight coupling — the caller depends on internal resource structure.
 ```hcl
 output "vpc" {
   description = "Full VPC resource object"
@@ -370,6 +401,7 @@ output "public_subnets" {
 ```
 
 ### 30. Module output chain
+> The standard pattern for passing networking outputs to a compute module. The consuming module never manages the VPC — it just references the IDs. This separation of concerns enables independent lifecycle management.
 ```hcl
 # modules/networking/outputs.tf
 output "vpc_id" {
@@ -394,6 +426,7 @@ resource "aws_eks_cluster" "main" {
 ```
 
 ### 31. Variable for list of IAM policy ARNs
+> `toset()` converts the list to a set (removes duplicates, loses ordering) which `for_each` requires. Each policy ARN gets its own `aws_iam_role_policy_attachment` resource — safer than a single attachment that manages all policies.
 ```hcl
 variable "iam_policy_arns" {
   type        = list(string)
@@ -412,6 +445,7 @@ resource "aws_iam_role_policy_attachment" "app" {
 ```
 
 ### 32. Deeply nested locals for CIDR planning
+> Organizing CIDRs in a nested `locals` map makes the network layout readable and self-documenting. `cidrsubnet(base, 8, n)` divides the VPC CIDR into /24 subnets — the `8` is the number of additional bits.
 ```hcl
 variable "vpc_cidr" {
   type    = string
@@ -441,6 +475,7 @@ locals {
 ```
 
 ### 33. Output map from for_each resources
+> The `for` expression over `aws_s3_bucket.buckets` creates a new map where each key maps to a bucket attribute. This lets callers look up specific buckets by logical name rather than by index.
 ```hcl
 resource "aws_s3_bucket" "buckets" {
   for_each = toset(["data", "logs", "artifacts"])
@@ -459,6 +494,7 @@ output "bucket_names" {
 ```
 
 ### 34. Variable with cross-validation using locals
+> Cross-variable validation isn't natively supported in variable blocks. The workaround: compute a boolean in locals and check it in a `null_resource` precondition. This validates relationships between two variables.
 ```hcl
 variable "min_instances" {
   type    = number
@@ -485,6 +521,7 @@ resource "null_resource" "validate" {
 ```
 
 ### 35. Sensitive output suppressed in plan output
+> Sensitive outputs show as `(sensitive value)` in the terminal. To read the actual value: `terraform output -raw connection_string`. Only expose sensitive outputs to processes/systems that actually need them.
 ```hcl
 output "connection_string" {
   value = "postgresql://${var.db_user}:${var.db_password}@${aws_db_instance.main.address}:5432/app"
@@ -496,6 +533,7 @@ output "connection_string" {
 ```
 
 ### 36. Variable with tuple type
+> `tuple([number, number])` is a fixed-length list where each position has a declared type. Less flexible than a list but self-documenting: callers know exactly what to provide. Use for port ranges, coordinate pairs, etc.
 ```hcl
 variable "port_range" {
   type        = tuple([number, number])
@@ -513,6 +551,7 @@ resource "aws_vpc_security_group_ingress_rule" "app" {
 ```
 
 ### 37. Environment-specific .tfvars pattern
+> Maintaining separate `.tfvars` per environment ensures each environment gets validated, version-controlled configuration. Use `$TF_ENVIRONMENT` in CI to select the right file automatically.
 ```bash
 # environments/dev.tfvars
 environment       = "dev"
@@ -537,6 +576,7 @@ terraform apply -var-file="environments/${TF_ENVIRONMENT}.tfvars"
 ## Advanced
 
 ### 38. Type any for flexible module inputs
+> `type = any` disables type checking for that variable. Use sparingly — only when the variable genuinely needs to accept different structures (e.g., a `tags` map that might have any keys). Prefer explicit types when possible.
 ```hcl
 variable "tags" {
   type        = any
@@ -546,6 +586,7 @@ variable "tags" {
 ```
 
 ### 39. Variable set validation with can() and try()
+> `can(regex(...))` returns `true/false` safely, never throws. This validates that `kms_key_arn` is either null OR a properly formatted KMS ARN. The `||` short-circuits if the variable is null — no regex run needed.
 ```hcl
 variable "kms_key_arn" {
   type    = string
@@ -560,6 +601,7 @@ variable "kms_key_arn" {
 ```
 
 ### 40. Using try() for optional output
+> `try()` evaluates expressions left-to-right and returns the first one that doesn't error. If `aws_eip.nat[*].public_ip` fails (because `aws_eip.nat` doesn't exist), `try()` falls back to `[]`.
 ```hcl
 output "nat_gateway_ips" {
   description = "NAT Gateway public IPs (empty if not created)"
@@ -568,6 +610,7 @@ output "nat_gateway_ips" {
 ```
 
 ### 41. Output for use in CI/CD
+> Designing outputs specifically for CI consumption. After `terraform apply`, scripts use `terraform output -raw ecr_repository_url` to get the ECR URL for Docker push commands. The outputs act as the interface between Terraform and deployment scripts.
 ```hcl
 output "ecr_repository_url" {
   value = aws_ecr_repository.app.repository_url
@@ -586,6 +629,7 @@ output "ecs_service_name" {
 ```
 
 ### 42. Using output in terraform_remote_state
+> Outputs from one Terraform stack are consumed by another via `terraform_remote_state`. Stack A (networking) outputs its VPC/subnet IDs; Stack B (application) reads them to launch EC2/EKS into the correct subnets.
 ```hcl
 # State A: networking stack outputs
 output "vpc_id" { value = aws_vpc.main.id }
@@ -609,6 +653,7 @@ resource "aws_eks_cluster" "main" {
 ```
 
 ### 43. Variable schema for multi-tier app
+> A deeply nested object variable captures the entire application's configuration in one place. Each tier's config is independently typed. `optional(bool, true)` on `database.multi_az` defaults to HA in prod.
 ```hcl
 variable "app_config" {
   type = object({
@@ -636,6 +681,7 @@ variable "app_config" {
 ```
 
 ### 44. Output with precondition (Terraform 1.2+)
+> A precondition on an output block prevents the output from being usable until the condition is satisfied. This prevents downstream consumers (other stacks) from reading an ACM cert ARN before it's been validated.
 ```hcl
 output "certificate_arn" {
   value       = aws_acm_certificate.main.arn
@@ -648,6 +694,7 @@ output "certificate_arn" {
 ```
 
 ### 45. Auto-loaded variable file per workspace
+> `*.auto.tfvars` files are loaded automatically without `-var-file`. Gitignoring them (except the example) keeps secrets out of version control while the pattern is documented via the example file.
 ```bash
 # terraform.workspace = "prod"
 # Auto-load: terraform.tfvars then *.auto.tfvars
@@ -659,6 +706,7 @@ output "certificate_arn" {
 ```
 
 ### 46. locals for complex IAM policy construction
+> `concat()` merges base statements with conditionally added delete permission. This is cleaner than duplicating the entire policy for enable/disable scenarios — the policy document builds itself from the module's inputs.
 ```hcl
 locals {
   s3_resources = [
@@ -685,6 +733,7 @@ locals {
 ```
 
 ### 47. Surfacing all important module outputs
+> The "all" output pattern wraps all significant module outputs in a single object. Callers can use `module.app.all.vpc_id` — self-documenting and easy to extend without breaking existing consumers.
 ```hcl
 # modules/app/outputs.tf
 output "all" {
@@ -701,6 +750,7 @@ output "all" {
 ```
 
 ### 48. locals for dynamic subnet creation
+> Transforms the flat `vpc_config` object into indexed maps suitable for `for_each`. The index (`"public-${i}"`) becomes the resource's stable key in state — critical for preventing resource replacement when subnet order changes.
 ```hcl
 variable "vpc_config" {
   type = object({
@@ -730,6 +780,7 @@ locals {
 ```
 
 ### 49. Using output to pass data to shell scripts
+> After `terraform apply`, shell scripts consume outputs to drive deployment automation. `terraform output -json` returns all outputs as JSON; pipe to `jq` for extraction. `-raw` strips quotes for direct use as arguments.
 ```bash
 # After terraform apply:
 terraform output -json > outputs.json
@@ -739,6 +790,7 @@ aws eks update-kubeconfig --name $(terraform output -raw cluster_name) --region 
 ```
 
 ### 50. Full variable/output pattern for reusable module
+> The canonical module interface: required variables with clear types, a tags variable for caller-provided metadata, locals merging standard + caller tags, and outputs covering all resources the caller will need.
 ```hcl
 # variables.tf
 variable "project"     { type = string }
@@ -766,3 +818,31 @@ output "public_subnets" { value = aws_subnet.public[*].id }
 output "private_subnets"{ value = aws_subnet.private[*].id }
 output "tags"           { value = local.tags }
 ```
+
+---
+
+## Key Takeaways
+
+- **Variable precedence** (low → high): defaults → `terraform.tfvars` → `*.auto.tfvars` → `-var-file` → `-var` flags → `TF_VAR_*` env vars.
+- **`sensitive = true`** suppresses terminal output but NOT state storage — always protect your state file.
+- **`optional(type, default)`** in object types enables additive, backwards-compatible module interface changes.
+- **Locals** compute once and can reference other locals. Use them to eliminate repetition and make complex logic readable.
+- **Outputs** are the interface to the outside world: to operators, to other stacks via `remote_state`, and to CI/CD scripts.
+- **Validation blocks** give clear error messages before the provider even makes an API call — always validate constrained variables.
+
+## Common Interview Questions & Answers
+
+**Q: What is the variable precedence order in Terraform?**  
+A: Default values < `terraform.tfvars` < `*.auto.tfvars` (alphabetical) < `-var-file` flags < `-var` flags. `TF_VAR_*` environment variables sit below `terraform.tfvars` in precedence but above defaults.
+
+**Q: What is the difference between a `variable` and a `local`?**  
+A: Variables are inputs that can be overridden by callers (via CLI, `.tfvars`, env vars). Locals are internal computed values — never overrideable from outside. Locals reduce repetition and improve readability; variables define the module's public interface.
+
+**Q: How do you pass secrets to Terraform without storing them in files?**  
+A: Use `TF_VAR_<name>` environment variables (set by your CI/CD secrets manager), or mark variables as `sensitive = true` and pass via `-var` or a secrets manager integration (Vault, SSM Parameter Store data source).
+
+**Q: How do you share outputs between two Terraform stacks?**  
+A: The source stack defines outputs; the consuming stack reads them via `data "terraform_remote_state"`. The source stack's state must be accessible (e.g., an S3 bucket with appropriate IAM permissions).
+
+**Q: What is `optional()` in object type constraints?**  
+A: Added in Terraform 1.3+, `optional(type, default)` marks an object field as not required. If the caller omits it, the default value is used. This enables backwards-compatible additions to module variable schemas.

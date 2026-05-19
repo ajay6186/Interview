@@ -1,0 +1,20 @@
+replacements:
+- source:
+    kind: ConfigMap
+    name: gitops-kata-configmap
+    fieldPath: data.google-service-account
+  targets:
+  - select:
+      kind: ServiceAccount
+      name: sv-9999-ksa-com1-0000
+    fieldPaths:
+    - metadata.annotations.iam\.gke\.io/gcp-service-account
+    options:
+      create: true
+  - select:
+      kind: IAMPolicyMember
+      name: sv-9999-gsa-com1-0000-pubsub
+    fieldPaths:
+    - spec.member
+    options:
+      create: true

@@ -1,0 +1,14 @@
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: sv-dv-9999-gsa-com1-0000-ksawif
+  namespace: config-control
+  labels:
+    environment: dev
+spec:
+  member: serviceAccount:prj-dv-anthos-host-2315.svc.id.goog[app-dv-9999-default/sv-dv-9999-ksa-com1-0000]
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: sv-dv-9999-gsa-com1-0000
+  role: roles/iam.workloadIdentityUser

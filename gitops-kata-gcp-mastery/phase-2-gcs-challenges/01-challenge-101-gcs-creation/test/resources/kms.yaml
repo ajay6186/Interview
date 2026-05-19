@@ -1,0 +1,18 @@
+apiVersion: kms.cnrm.cloud.google.com/v1beta1
+kind: KMSKeyRing
+metadata:
+  name: abiding-splicer-494411-m9
+  namespace: config-connector
+spec:
+  location: us-central1
+---
+apiVersion: kms.cnrm.cloud.google.com/v1beta1
+kind: KMSCryptoKey
+metadata:
+  name: abiding-splicer-494411-m9
+  namespace: config-connector
+spec:
+  keyRingRef:
+    name: abiding-splicer-494411-m9
+  purpose: ENCRYPT_DECRYPT
+  rotationPeriod: 7776000s
