@@ -1,0 +1,131 @@
+# Phase 2.5 — Environments & Deployments
+# Environments track WHERE your code is deployed
+# GitLab → Deployments → Environments shows history & status
+
+stages:
+  - build
+  - test
+  - deploy-staging
+  - deploy-production
+
+variables:
+  APP_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+
+# ── BUILD ────────────────────────────────────────────────────
+
+build:
+  stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $APP_IMAGE .
+    - docker push $APP_IMAGE
+    - echo "Image: $APP_IMAGE"
+
+# ── TEST ─────────────────────────────────────────────────────
+
+test:
+  stage: test
+  image: alpine:latest
+  script:
+    - echo "All tests passed ✓"
+
+# ── STAGING DEPLOYMENT ───────────────────────────────────────
+
+deploy-to-staging:
+  stage: deploy-staging
+  image: alpine:latest
+  script:
+    - echo "Pulling image $APP_IMAGE"
+    - echo "Restarting staging service..."
+    - echo "Staging deployment complete ✓"
+    - echo "URL: https://staging.my-app.com"
+  environment:
+    name: staging
+    url: https://staging.my-app.com
+    on_stop: stop-staging         # Link to the teardown job
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+stop-staging:
+  stage: deploy-staging
+  image: alpine:latest
+  script:
+    - echo "Stopping staging environment..."
+  environment:
+    name: staging
+    action: stop
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ── PRODUCTION DEPLOYMENT ────────────────────────────────────
+
+deploy-to-production:
+  stage: deploy-production
+  image: alpine:latest
+  script:
+    - echo "=== PRODUCTION DEPLOYMENT ==="
+    - echo "Image: $APP_IMAGE"
+    - echo "Canary: 10% of traffic → new version"
+    - echo "Monitoring for 5 minutes..."
+    - echo "100% traffic → new version"
+    - echo "Production deployment complete ✓"
+  environment:
+    name: production
+    url: https://my-app.com
+  when: manual                    # Always manual for production
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+rollback-production:
+  stage: deploy-production
+  image: alpine:latest
+  variables:
+    ROLLBACK_TO: ""               # Set at runtime: SHA of previous good build
+  script:
+    - |
+      if [ -z "$ROLLBACK_TO" ]; then
+        echo "ERROR: Set ROLLBACK_TO variable to the image tag to roll back to"
+        exit 1
+      fi
+    - echo "Rolling back production to: $CI_REGISTRY_IMAGE:$ROLLBACK_TO"
+    - echo "Rollback complete ✓"
+  environment:
+    name: production
+    action: rollback             # Marks as a rollback in GitLab UI
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ── REVIEW APPS (per merge request) ──────────────────────────
+
+deploy-review:
+  stage: deploy-staging
+  image: alpine:latest
+  script:
+    - echo "Deploying review app for MR !$CI_MERGE_REQUEST_IID"
+    - echo "URL: https://review-$CI_MERGE_REQUEST_IID.my-app.com"
+  environment:
+    name: review/$CI_MERGE_REQUEST_IID
+    url: https://review-$CI_MERGE_REQUEST_IID.my-app.com
+    on_stop: stop-review
+    auto_stop_in: 1 day           # Auto-destroy after 1 day
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+stop-review:
+  stage: deploy-staging
+  image: alpine:latest
+  script:
+    - echo "Destroying review app for MR !$CI_MERGE_REQUEST_IID"
+  environment:
+    name: review/$CI_MERGE_REQUEST_IID
+    action: stop
+  when: manual
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"

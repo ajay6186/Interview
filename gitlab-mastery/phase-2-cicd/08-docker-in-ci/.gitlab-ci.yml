@@ -1,0 +1,145 @@
+# Phase 2.8 — Docker in CI/CD (Build, Tag, Push Images)
+# Industry standard: every project builds a Docker image in CI
+# The image is then deployed to servers/Kubernetes
+
+stages:
+  - build
+  - test
+  - scan
+  - push
+  - deploy
+
+variables:
+  # GitLab auto-provides these when Container Registry is enabled:
+  # CI_REGISTRY       = gitlab.local:5050
+  # CI_REGISTRY_USER  = gitlab-ci-token
+  # CI_REGISTRY_PASSWORD = job token (auto-rotated)
+  # CI_REGISTRY_IMAGE = gitlab.local:5050/root/my-app
+
+  # Build the image tag from git metadata
+  IMAGE_TAG:    "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+  IMAGE_LATEST: "$CI_REGISTRY_IMAGE:latest"
+  IMAGE_BRANCH: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+
+# ── METHOD 1: Docker-in-Docker (dind) ────────────────────────
+# Docker runs INSIDE the container
+# Requires privileged mode on the runner
+build-with-dind:
+  stage: build
+  image: docker:24
+  services:
+    - name: docker:24-dind    # Sidecar Docker daemon
+      alias: docker
+  variables:
+    DOCKER_TLS_CERTDIR: ""    # Disable TLS for local dev
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker build -t "$IMAGE_TAG" -t "$IMAGE_LATEST" -t "$IMAGE_BRANCH" .
+    - docker push "$IMAGE_TAG"
+    - docker push "$IMAGE_LATEST"
+    - docker push "$IMAGE_BRANCH"
+  after_script:
+    - docker logout "$CI_REGISTRY"
+
+# ── METHOD 2: Kaniko (no Docker daemon needed — more secure) ──
+# Kaniko builds images without needing privileged mode
+# Preferred in Kubernetes environments
+build-with-kaniko:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "$CI_REGISTRY_USER" "$CI_REGISTRY_PASSWORD" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+        --context "$CI_PROJECT_DIR"
+        --dockerfile "$CI_PROJECT_DIR/Dockerfile"
+        --destination "$IMAGE_TAG"
+        --destination "$IMAGE_LATEST"
+        --cache=true
+        --cache-repo "$CI_REGISTRY_IMAGE/cache"
+
+# ── TEST THE IMAGE ────────────────────────────────────────────
+test-image:
+  stage: test
+  image: docker:24
+  services:
+    - docker:24-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker pull "$IMAGE_TAG"
+    # Run the container and test it
+    - docker run --rm --name test-container -d -p 3000:3000 "$IMAGE_TAG"
+    - sleep 5
+    - docker exec test-container wget -qO- http://localhost:3000/health || echo "Health check failed"
+    - docker stop test-container
+    - echo "Image test passed ✓"
+
+# ── SCAN IMAGE FOR VULNERABILITIES ───────────────────────────
+trivy-scan:
+  stage: scan
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: none        # Don't need source code
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+  cache:
+    paths:
+      - .trivycache/
+  script:
+    # Fail if CRITICAL vulnerabilities found
+    - trivy image
+        --exit-code 1
+        --severity CRITICAL
+        --format table
+        --timeout 10m
+        "$IMAGE_TAG"
+  allow_failure: true         # Don't block deploy in learning environment
+
+# ── MULTI-PLATFORM BUILD ──────────────────────────────────────
+# Build for both AMD64 (x86 servers) and ARM64 (Apple Silicon, ARM servers)
+build-multiplatform:
+  stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker buildx create --use
+  script:
+    - docker buildx build
+        --platform linux/amd64,linux/arm64
+        --tag "$IMAGE_TAG"
+        --push
+        .
+  when: manual                # Only when explicitly needed (slow)
+
+# ── DEPLOY USING THE IMAGE ────────────────────────────────────
+deploy:
+  stage: deploy
+  image: alpine:latest
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "Server: pull new image and restart"
+    - echo "Command that would run on server:"
+    - echo "  docker pull $IMAGE_TAG"
+    - echo "  docker stop my-app"
+    - echo "  docker run -d --name my-app -p 80:3000 $IMAGE_TAG"
+    - echo "Deployment done ✓"
+  environment:
+    name: staging
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

@@ -48,25 +48,44 @@
 input_str = "aaabbcdddaa"
 # expected_output = a3b2c1d3a2
 
-def get_repeater(word, start, input):
-    count = 0
-    for i in range(start, len(input)):
-        if input[i] == word:
-            count = count + 1
-        else:
-            break
-    return count
+# def get_repeater(word, start, input):
+#     count = 0
+#     for i in range(start, len(input)):
+#         if input[i] == word:
+#             count = count + 1
+#         else:
+#             break
+#     return count
 
-def expected_output(input):
-    result = ''
-    for i in range(0, len(input)):
-        if (i == 0):
-           count = get_repeater(input[i], i, input)
-           result = result+ input[i] + str(count)
+# def expected_output(input):
+#     result = ''
+#     for i in range(0, len(input)):
+#         if (i == 0):
+#            count = get_repeater(input[i], i, input)
+#            result = result+ input[i] + str(count)
            
-        if i>0 and input[i] !=input[i-1]:
-           count = get_repeater(input[i], i, input)
-           result = result+ input[i] + str(count)
+#         if i>0 and input[i] !=input[i-1]:
+#            count = get_repeater(input[i], i, input)
+#            result = result+ input[i] + str(count)
             
-    return result
-print(expected_output(input_str))
+#     return result
+# print(expected_output(input_str))
+
+ARR = [1,2,3,1,2,3,4,1,4,4,4,4]
+
+d = {}
+
+for i in ARR:
+    if d.get(i):
+       d[i] = d.get(i)+1
+    else:
+       d[i] = 1
+
+print(d)
+
+m = max(d.items())
+n = min(d.items())
+
+print(m)
+print(n)
+

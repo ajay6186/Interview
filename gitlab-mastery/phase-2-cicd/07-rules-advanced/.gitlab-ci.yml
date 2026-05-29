@@ -1,0 +1,152 @@
+# Phase 2.7 — Rules (Advanced)
+# "rules:" controls WHEN a job runs.
+# This is the most important thing to master for real pipelines.
+#
+# RULE EVALUATION ORDER: rules are checked top to bottom.
+# First matching rule wins.
+#
+# Common variables to use in rules:
+#   $CI_COMMIT_BRANCH          → "main", "feature/xyz"
+#   $CI_COMMIT_TAG             → "v1.0.0" (empty if not a tag)
+#   $CI_PIPELINE_SOURCE        → "push", "merge_request_event",
+#                                "schedule", "web", "api", "trigger"
+#   $CI_MERGE_REQUEST_TARGET_BRANCH_NAME → "main"
+#   $CI_COMMIT_MESSAGE         → The commit message text
+#   $MY_VARIABLE               → Any variable you define
+
+stages:
+  - test
+  - build
+  - deploy
+
+# ── RULE 1: Run only on main branch ──────────────────────────
+deploy-to-staging:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Deploying to staging..."
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ── RULE 2: Run only on merge requests ───────────────────────
+mr-check:
+  stage: test
+  image: alpine:latest
+  script:
+    - echo "Running MR-specific checks..."
+    - echo "Target branch: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# ── RULE 3: Run on tags only ──────────────────────────────────
+release-build:
+  stage: build
+  image: alpine:latest
+  script:
+    - echo "Building release $CI_COMMIT_TAG"
+  rules:
+    - if: $CI_COMMIT_TAG                    # Only when a tag is pushed
+
+# ── RULE 4: Multiple conditions (AND logic) ───────────────────
+deploy-production:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Production deployment!"
+  rules:
+    # Both conditions must be true for this rule to match
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"
+      when: manual                          # Requires human approval
+
+# ── RULE 5: Skip a job based on commit message ───────────────
+slow-tests:
+  stage: test
+  image: alpine:latest
+  script:
+    - echo "Running slow integration tests (5 minutes)..."
+  rules:
+    # If commit message contains [skip tests], don't run this job
+    - if: $CI_COMMIT_MESSAGE =~ /\[skip tests\]/
+      when: never
+    # Otherwise run it
+    - when: on_success
+
+# ── RULE 6: Run on schedule only ─────────────────────────────
+nightly-scan:
+  stage: test
+  image: alpine:latest
+  script:
+    - echo "Running nightly security scan..."
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+# ── RULE 7: Changed files — only run if relevant files changed ─
+frontend-tests:
+  stage: test
+  image: node:18-alpine
+  script:
+    - echo "Testing frontend..."
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "frontend/**/*"    # Only run if frontend files changed
+        - "package.json"
+        - "package-lock.json"
+
+backend-tests:
+  stage: test
+  image: alpine:latest
+  script:
+    - echo "Testing backend..."
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "backend/**/*"
+        - "*.go"
+
+# ── RULE 8: Combine when + allow_failure ─────────────────────
+experimental-feature:
+  stage: test
+  image: alpine:latest
+  script:
+    - echo "Running experimental feature test..."
+    - exit 1                  # This will fail!
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: on_success
+      allow_failure: true     # Pipeline stays green even though job fails
+
+# ── RULE 9: Manual job with auto-fallback ────────────────────
+deploy-hotfix:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Hotfix deployment..."
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^hotfix\/.*/   # Matches hotfix/* branches
+      when: manual
+    - when: never                               # Never run on other branches
+
+# ── RULE 10: Full real-world example ─────────────────────────
+# This job runs:
+# - Automatically on main branch
+# - Manually on any release/* branch
+# - Never on merge requests
+# - Never if commit message has [ci skip]
+full-deploy:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Full deployment pipeline..."
+  environment:
+    name: production
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /\[ci skip\]/
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: on_success
+    - if: $CI_COMMIT_BRANCH =~ /^release\/.*/
+      when: manual
+    - when: never

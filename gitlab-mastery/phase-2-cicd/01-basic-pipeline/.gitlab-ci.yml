@@ -1,0 +1,35 @@
+# Phase 2.1 — Your First Pipeline
+# Copy this file to the root of any GitLab project and push to trigger it.
+
+stages:
+  - greet
+  - check
+
+hello-world:
+  stage: greet
+  image: alpine:latest
+  script:
+    - echo "Hello from GitLab CI!"
+    - echo "Branch: $CI_COMMIT_BRANCH"
+    - echo "Pipeline ID: $CI_PIPELINE_ID"
+    - echo "Commit: $CI_COMMIT_SHORT_SHA"
+    - date
+
+who-am-i:
+  stage: greet
+  image: alpine:latest
+  script:
+    - whoami
+    - uname -a
+    - cat /etc/os-release
+
+environment-check:
+  stage: check
+  image: alpine:latest
+  script:
+    - echo "=== GitLab CI Predefined Variables ==="
+    - echo "Project: $CI_PROJECT_NAME"
+    - echo "Namespace: $CI_PROJECT_NAMESPACE"
+    - echo "Registry: $CI_REGISTRY"
+    - echo "Runner: $CI_RUNNER_DESCRIPTION"
+    - echo "Pipeline source: $CI_PIPELINE_SOURCE"

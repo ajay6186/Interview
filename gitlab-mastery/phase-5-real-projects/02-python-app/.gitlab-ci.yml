@@ -1,0 +1,130 @@
+# Phase 5.2 — Python Flask CI/CD Pipeline
+
+stages:
+  - quality
+  - test
+  - build
+  - deploy
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  IMAGE_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+  DOCKER_TLS_CERTDIR: ""
+
+cache:
+  key: "pip-$CI_COMMIT_REF_SLUG"
+  paths:
+    - .cache/pip
+    - venv/
+
+# ── QUALITY ──────────────────────────────────────────────────
+
+lint:
+  stage: quality
+  image: python:3.11-slim
+  before_script:
+    - pip install flake8 black isort
+  script:
+    - echo "=== Linting with flake8 ==="
+    - flake8 src/ --max-line-length=100 --exclude=__pycache__
+    - echo "=== Format check with black ==="
+    - black --check src/
+    - echo "=== Import order check with isort ==="
+    - isort --check-only src/
+  allow_failure: true
+
+type-check:
+  stage: quality
+  image: python:3.11-slim
+  before_script:
+    - pip install mypy flask
+  script:
+    - mypy src/ --ignore-missing-imports
+  allow_failure: true
+
+# ── TESTS ────────────────────────────────────────────────────
+
+unit-test:
+  stage: test
+  image: python:3.11-slim
+  before_script:
+    - pip install flask pytest pytest-cov
+  script:
+    - cd src
+    - pytest test_app.py -v
+        --cov=app
+        --cov-report=term-missing
+        --cov-report=xml:coverage.xml
+        --cov-fail-under=80
+        --junitxml=pytest-report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: src/pytest-report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: src/coverage.xml
+    paths:
+      - src/coverage.xml
+    expire_in: 7 days
+  coverage: '/TOTAL.*\s(\d+)%/'
+
+security-check:
+  stage: test
+  image: python:3.11-slim
+  before_script:
+    - pip install bandit safety
+  script:
+    - echo "=== Bandit: static security check ==="
+    - bandit -r src/ -ll
+    - echo "=== Safety: dependency vulnerability check ==="
+    - safety check
+  allow_failure: true
+
+# ── BUILD ─────────────────────────────────────────────────────
+
+build-image:
+  stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker build -t "$IMAGE_TAG" -t "$CI_REGISTRY_IMAGE:latest" .
+    - docker push "$IMAGE_TAG"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ── DEPLOY ────────────────────────────────────────────────────
+
+deploy-staging:
+  stage: deploy
+  image: alpine:latest
+  needs: ["build-image"]
+  environment:
+    name: staging
+    url: http://staging.my-python-app.com
+  script:
+    - echo "Deploying Python app to staging..."
+    - echo "docker pull $IMAGE_TAG"
+    - echo "docker run -d -p 5000:5000 --name python-app $IMAGE_TAG"
+    - echo "Deployed ✓"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+deploy-production:
+  stage: deploy
+  image: alpine:latest
+  needs: ["deploy-staging"]
+  environment:
+    name: production
+    url: http://my-python-app.com
+  script:
+    - echo "Production deployment..."
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

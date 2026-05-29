@@ -1,0 +1,172 @@
+# Phase 5.3 — Full Docker App Pipeline
+# Pattern: Build → Test → Push → Deploy with rollback
+
+stages:
+  - build
+  - integration-test
+  - push
+  - staging
+  - production
+
+variables:
+  IMAGE_NAME: "$CI_REGISTRY_IMAGE"
+  SHA_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+  BRANCH_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  LATEST_TAG: "$CI_REGISTRY_IMAGE:latest"
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375
+
+# ── BUILD ─────────────────────────────────────────────────────
+
+.docker-base:
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  after_script:
+    - docker logout "$CI_REGISTRY"
+
+build:
+  extends: .docker-base
+  stage: build
+  script:
+    - docker build
+        --tag "$SHA_TAG"
+        --tag "$BRANCH_TAG"
+        --label "git.sha=$CI_COMMIT_SHA"
+        --label "git.branch=$CI_COMMIT_BRANCH"
+        --label "build.id=$CI_PIPELINE_ID"
+        --label "build.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        .
+    # Save image to file for use between jobs (if no registry)
+    - docker save "$SHA_TAG" | gzip > image.tar.gz
+  artifacts:
+    paths:
+      - image.tar.gz
+    expire_in: 1 hour
+
+# ── INTEGRATION TEST (run app and test it live) ───────────────
+
+integration-test:
+  extends: .docker-base
+  stage: integration-test
+  needs: ["build"]
+  script:
+    - docker load < image.tar.gz
+    - docker run -d --name test-app -p 3000:3000 "$SHA_TAG"
+    - sleep 5
+    # Test that the app responds
+    - docker run --rm --network host alpine/curl
+        curl -f http://localhost:3000/health
+        || (docker logs test-app && exit 1)
+    - docker run --rm --network host alpine/curl
+        curl -f http://localhost:3000/users
+        || (docker logs test-app && exit 1)
+    - echo "All integration tests passed ✓"
+  after_script:
+    - docker stop test-app || true
+    - docker rm test-app || true
+
+# ── PUSH TO REGISTRY ──────────────────────────────────────────
+
+push-image:
+  extends: .docker-base
+  stage: push
+  needs: ["integration-test"]
+  script:
+    - docker load < image.tar.gz
+    - docker push "$SHA_TAG"
+    - docker push "$BRANCH_TAG"
+    # Only tag as latest on main branch
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "main" ]; then
+        docker tag "$SHA_TAG" "$LATEST_TAG"
+        docker push "$LATEST_TAG"
+      fi
+    - echo "Pushed: $SHA_TAG"
+    - echo "Image digest: $(docker inspect --format='{{index .RepoDigests 0}}' $SHA_TAG)"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH =~ /^release\/.*/
+
+# ── STAGING ───────────────────────────────────────────────────
+
+deploy-staging:
+  stage: staging
+  image: alpine:latest
+  needs: ["push-image"]
+  variables:
+    GIT_STRATEGY: none
+  environment:
+    name: staging
+    url: https://staging.example.com
+    on_stop: stop-staging
+  script:
+    - apk add --no-cache openssh-client
+    - echo "Deploy $SHA_TAG to staging server"
+    # In real setup, SSH to server or call deployment API:
+    # ssh deploy@staging-server "docker pull $SHA_TAG && ./deploy.sh $SHA_TAG"
+    - echo "Smoke test: curl https://staging.example.com/health"
+    - echo "Staging deployment complete ✓"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+stop-staging:
+  stage: staging
+  image: alpine:latest
+  variables:
+    GIT_STRATEGY: none
+  environment:
+    name: staging
+    action: stop
+  script:
+    - echo "Stopping staging environment..."
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ── PRODUCTION ────────────────────────────────────────────────
+
+deploy-production:
+  stage: production
+  image: alpine:latest
+  needs: ["deploy-staging"]
+  variables:
+    GIT_STRATEGY: none
+  environment:
+    name: production
+    url: https://example.com
+  script:
+    - echo "=== PRODUCTION DEPLOYMENT ==="
+    - echo "Image: $SHA_TAG"
+    - echo "Deploying with zero-downtime rolling update..."
+    - echo "  Step 1: Deploy to 10% of servers"
+    - echo "  Step 2: Monitor error rate for 2 minutes"
+    - echo "  Step 3: Deploy to remaining servers"
+    - echo "Production deployment complete ✓"
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+rollback-production:
+  stage: production
+  image: alpine:latest
+  variables:
+    GIT_STRATEGY: none
+    ROLLBACK_IMAGE: ""      # Set this to the previous working image tag
+  environment:
+    name: production
+    action: rollback
+  script:
+    - |
+      if [ -z "$ROLLBACK_IMAGE" ]; then
+        echo "ERROR: Set ROLLBACK_IMAGE variable when triggering this job"
+        echo "Example: $CI_REGISTRY_IMAGE:abc1234"
+        exit 1
+      fi
+    - echo "ROLLBACK: Deploying $ROLLBACK_IMAGE to production"
+    - echo "Rollback complete ✓"
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

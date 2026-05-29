@@ -1,0 +1,75 @@
+# Phase 2.3 — Artifacts & Cache
+# Artifacts: pass files BETWEEN stages (uploaded to GitLab)
+# Cache: speed up builds by persisting files BETWEEN pipeline runs
+
+stages:
+  - install
+  - build
+  - test
+  - package
+
+# Cache key: changes per branch so each branch has its own cache
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - node_modules/
+    - .npm/
+
+install-deps:
+  stage: install
+  image: node:18-alpine
+  script:
+    - npm ci --cache .npm --prefer-offline
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+      - .npm/
+    policy: pull-push       # Download then upload updated cache
+
+build-app:
+  stage: build
+  image: node:18-alpine
+  script:
+    - npm run build
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+    policy: pull             # Only download cache, don't update it
+  artifacts:
+    name: "build-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - dist/
+    expire_in: 7 days        # Auto-delete after 7 days
+    when: always             # Save artifacts even if job fails
+
+test-with-coverage:
+  stage: test
+  image: node:18-alpine
+  needs: ["build-app"]
+  script:
+    - npm test -- --coverage
+  coverage: '/Lines\s*:\s*(\d+\.?\d*)%/'   # Regex to extract coverage %
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    paths:
+      - coverage/
+    expire_in: 30 days
+
+create-package:
+  stage: package
+  image: alpine:latest
+  needs: ["build-app", "test-with-coverage"]
+  script:
+    - apk add --no-cache zip
+    - zip -r app-$CI_COMMIT_SHORT_SHA.zip dist/
+    - echo "Package created: app-$CI_COMMIT_SHORT_SHA.zip"
+  artifacts:
+    name: "app-package-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - "*.zip"
+    expire_in: 90 days

@@ -1,0 +1,83 @@
+# Phase 4.1 — Container Registry
+# Build, tag, and push Docker images using GitLab's built-in registry
+# Registry URL: http://localhost:5050
+
+stages:
+  - build
+  - scan
+  - deploy
+
+variables:
+  # GitLab predefined: CI_REGISTRY = gitlab.local:5050
+  # CI_REGISTRY_IMAGE = gitlab.local:5050/group/project
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+
+# ── BUILD & PUSH ─────────────────────────────────────────────
+
+build-image:
+  stage: build
+  image: docker:24
+  services:
+    - name: docker:24-dind
+      alias: docker
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    # Build with multiple tags
+    - docker build
+        --tag "$IMAGE_TAG"
+        --tag "$IMAGE_LATEST"
+        --label "git.sha=$CI_COMMIT_SHA"
+        --label "git.branch=$CI_COMMIT_BRANCH"
+        --label "build.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        --label "build.pipeline=$CI_PIPELINE_ID"
+        .
+    - docker push "$IMAGE_TAG"
+    - docker push "$IMAGE_LATEST"
+    - echo "Pushed: $IMAGE_TAG"
+  after_script:
+    - docker logout "$CI_REGISTRY"
+
+# ── SCAN FOR VULNERABILITIES ─────────────────────────────────
+
+trivy-scan:
+  stage: scan
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  script:
+    - trivy image
+        --exit-code 0
+        --severity HIGH,CRITICAL
+        --format table
+        "$IMAGE_TAG"
+  allow_failure: true
+
+# ── DEPLOY WITH SPECIFIC IMAGE TAG ───────────────────────────
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Deploying image: $IMAGE_TAG"
+    - echo "docker pull $IMAGE_TAG"
+    - echo "docker stop my-app || true"
+    - echo "docker run -d --name my-app -p 3000:3000 $IMAGE_TAG"
+  environment:
+    name: staging
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ── CLEANUP OLD IMAGES ───────────────────────────────────────
+# Run manually to free up registry space
+cleanup-registry:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Use GitLab UI: Project → Packages → Container Registry → Delete old tags"
+    - echo "Or use GitLab API to delete images older than 30 days"
+  when: manual

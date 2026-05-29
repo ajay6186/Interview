@@ -1,0 +1,86 @@
+# Phase 2.2 — Stages, Jobs, Dependencies
+# Shows: stage ordering, job dependencies, parallel jobs, manual jobs
+
+stages:
+  - build
+  - test
+  - review
+  - deploy
+
+# ── BUILD STAGE ─────────────────────────────────────────────
+
+build-app:
+  stage: build
+  image: alpine:latest
+  script:
+    - echo "Building application..."
+    - mkdir -p dist
+    - echo "build output v1.0" > dist/app.txt
+    - echo "Build complete"
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 hour
+
+# ── TEST STAGE (runs after build, jobs run in parallel) ──────
+
+unit-tests:
+  stage: test
+  image: alpine:latest
+  needs: ["build-app"]      # DAG: don't wait for other build jobs
+  script:
+    - echo "Running unit tests..."
+    - cat dist/app.txt
+    - echo "All unit tests passed ✓"
+
+lint:
+  stage: test
+  image: alpine:latest
+  script:
+    - echo "Running linter..."
+    - echo "No lint errors ✓"
+
+security-scan:
+  stage: test
+  image: alpine:latest
+  script:
+    - echo "Running security scan..."
+    - echo "No vulnerabilities found ✓"
+  allow_failure: true       # Pipeline stays green even if this fails
+
+# ── REVIEW STAGE ────────────────────────────────────────────
+
+code-review-reminder:
+  stage: review
+  image: alpine:latest
+  script:
+    - echo "All tests passed — ready for code review"
+    - echo "Merge Request: $CI_MERGE_REQUEST_IID"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# ── DEPLOY STAGE ────────────────────────────────────────────
+
+deploy-staging:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Deploying to staging..."
+    - cat dist/app.txt
+    - echo "Deployed to staging ✓"
+  environment:
+    name: staging
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+deploy-production:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Deploying to production..."
+    - echo "Production deployment complete ✓"
+  environment:
+    name: production
+  when: manual             # Requires a human to click "Run" in GitLab UI
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

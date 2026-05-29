@@ -1,0 +1,162 @@
+# Phase 2.10 — Pipeline Optimization (Make it Fast)
+# Slow pipelines kill developer productivity.
+# Industry goal: pipeline under 10 minutes.
+#
+# Techniques covered:
+# 1. Parallel jobs
+# 2. DAG (needs:) — skip waiting for whole stage
+# 3. Caching properly
+# 4. Conditional skipping
+# 5. Fail fast
+
+stages:
+  - install
+  - quality        # lint + typecheck run in parallel
+  - test           # unit + integration run in parallel
+  - build
+  - deploy
+
+variables:
+  # Consistent cache key across jobs that share node_modules
+  NODE_CACHE_KEY: "node-$CI_COMMIT_REF_SLUG-$CI_PROJECT_ID"
+
+# ── TECHNIQUE 1: Cache node_modules properly ─────────────────
+install-deps:
+  stage: install
+  image: node:18-alpine
+  script:
+    - npm ci --prefer-offline
+  cache:
+    key: $NODE_CACHE_KEY
+    paths:
+      - node_modules/
+      - .npm/
+    policy: pull-push     # Download + upload (only this job updates cache)
+
+# ── TECHNIQUE 2: Parallel jobs in same stage ─────────────────
+# lint and typecheck run AT THE SAME TIME
+lint:
+  stage: quality
+  image: node:18-alpine
+  needs: ["install-deps"]   # DAG: start as soon as install-deps finishes
+  cache:
+    key: $NODE_CACHE_KEY
+    paths: [node_modules/]
+    policy: pull            # Only download, don't update cache
+  script:
+    - npm run lint
+
+typecheck:
+  stage: quality
+  image: node:18-alpine
+  needs: ["install-deps"]   # Also starts right after install-deps
+  cache:
+    key: $NODE_CACHE_KEY
+    paths: [node_modules/]
+    policy: pull
+  script:
+    - npm run typecheck
+
+# ── TECHNIQUE 3: Parallel matrix (split test suite) ──────────
+unit-test:
+  stage: test
+  image: node:18-alpine
+  needs: ["lint", "typecheck"]
+  cache:
+    key: $NODE_CACHE_KEY
+    paths: [node_modules/]
+    policy: pull
+  parallel: 3             # Run 3 parallel instances
+  script:
+    # Each instance gets different env vars:
+    # CI_NODE_INDEX = 1, 2, 3
+    # CI_NODE_TOTAL = 3
+    - echo "Running test shard $CI_NODE_INDEX of $CI_NODE_TOTAL"
+    - npm test -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+  artifacts:
+    reports:
+      junit: test-results-$CI_NODE_INDEX.xml
+
+# ── TECHNIQUE 4: DAG — skip waiting for full stage ───────────
+# Without needs:   build waits for ALL test jobs (slow)
+# With needs:      build starts as soon as unit-test passes
+build:
+  stage: build
+  image: node:18-alpine
+  needs:
+    - job: unit-test        # Wait for ALL parallel unit-test instances
+    - job: lint
+  cache:
+    key: $NODE_CACHE_KEY
+    paths: [node_modules/]
+    policy: pull
+  script:
+    - npm run build
+  artifacts:
+    paths: [dist/]
+    expire_in: 1 day
+
+# ── TECHNIQUE 5: Fail fast — abort pipeline on first failure ──
+fail-fast-check:
+  stage: quality
+  image: alpine:latest
+  needs: ["install-deps"]
+  script:
+    - echo "Quick sanity check — if this fails, pipeline aborts immediately"
+    - ls package.json  # Simple check that project structure is valid
+  # By using needs: we start immediately and fail fast if something is wrong
+
+# ── TECHNIQUE 6: Skip unchanged code paths ───────────────────
+api-tests:
+  stage: test
+  image: alpine:latest
+  needs: []               # No dependencies — start immediately
+  script:
+    - echo "Testing API layer..."
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "src/api/**"    # Only run when API files change
+    - if: $CI_COMMIT_BRANCH == "main"  # Always on main
+
+ui-tests:
+  stage: test
+  image: alpine:latest
+  needs: []
+  script:
+    - echo "Testing UI components..."
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "src/ui/**"     # Only run when UI files change
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ── TECHNIQUE 7: Interruptible jobs ──────────────────────────
+# If a new pipeline starts (new commit pushed), cancel old running pipeline
+# Mark long-running jobs as interruptible
+long-e2e-test:
+  stage: test
+  image: alpine:latest
+  needs: ["build"]
+  interruptible: true     # Cancel this if a newer pipeline starts
+  timeout: 20 minutes     # Fail if takes longer than 20 min
+  script:
+    - echo "Running end-to-end tests (this is slow)..."
+    - sleep 10
+    - echo "E2E tests passed ✓"
+
+# ── DEPLOY (only if everything passed) ───────────────────────
+deploy:
+  stage: deploy
+  image: alpine:latest
+  needs:
+    - job: build
+      artifacts: true     # Download build artifacts
+    - job: long-e2e-test
+  script:
+    - echo "All checks passed — deploying..."
+    - ls dist/
+  environment:
+    name: staging
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

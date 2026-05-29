@@ -1,0 +1,148 @@
+# Phase 2.9 — Security Scanning (Industry Must-Have)
+# Every professional CI pipeline scans for security issues.
+# GitLab has built-in templates for all major scan types.
+
+stages:
+  - test
+  - build
+  - security
+  - deploy
+
+# ── 1. SAST — Static Application Security Testing ────────────
+# Scans your SOURCE CODE for security bugs BEFORE running it.
+# Finds: SQL injection, XSS, hardcoded secrets, unsafe functions
+
+# Use GitLab's official SAST template (free on all tiers):
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+
+# The templates above automatically add jobs:
+#   - semgrep-sast (finds code vulnerabilities)
+#   - secret_detection (finds passwords/tokens in code)
+#   - dependency_scanning (finds vulnerable npm/pip packages)
+
+# ── 2. SECRET DETECTION — Never Commit Passwords ─────────────
+# Scans every commit for accidentally committed:
+# - API keys, tokens
+# - Passwords
+# - AWS credentials
+# - Private keys
+
+# Custom secret detection patterns (in addition to the template):
+custom-secret-check:
+  stage: security
+  image: alpine:latest
+  script:
+    - echo "Checking for hardcoded secrets..."
+    # Look for common secret patterns
+    - |
+      if grep -rE "(password|secret|api_key|apikey)\s*=\s*['\"][^'\"]{8,}" \
+         --include="*.js" --include="*.py" --include="*.ts" \
+         --exclude-dir=node_modules --exclude-dir=.git \
+         . 2>/dev/null; then
+        echo "FAIL: Potential hardcoded secret found! Use CI/CD variables instead."
+        exit 1
+      fi
+    - echo "No hardcoded secrets found ✓"
+  allow_failure: true
+
+# ── 3. DEPENDENCY SCANNING — Check Your Libraries ────────────
+# Every npm/pip/maven package you use could have known vulnerabilities.
+# Scans package.json, requirements.txt, pom.xml etc.
+
+# Manual version (when the template isn't available):
+check-npm-audit:
+  stage: security
+  image: node:18-alpine
+  script:
+    - npm audit --audit-level=high
+    - echo "No high-severity npm vulnerabilities ✓"
+  allow_failure: true   # Don't break pipeline while learning
+
+check-python-safety:
+  stage: security
+  image: python:3.11-alpine
+  before_script:
+    - pip install safety
+  script:
+    - safety check --json || echo "Vulnerabilities found - review above"
+  allow_failure: true
+
+# ── 4. CONTAINER SCANNING — Scan Docker Images ───────────────
+container-scan:
+  stage: security
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: none
+    IMAGE_TO_SCAN: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+  script:
+    - trivy image
+        --format json
+        --output trivy-report.json
+        --severity HIGH,CRITICAL
+        "$IMAGE_TO_SCAN"
+    - trivy image
+        --format table
+        --severity HIGH,CRITICAL
+        "$IMAGE_TO_SCAN"
+  artifacts:
+    reports:
+      container_scanning: trivy-report.json   # Shows in GitLab Security dashboard
+    paths:
+      - trivy-report.json
+    expire_in: 30 days
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ── 5. LICENSE COMPLIANCE ─────────────────────────────────────
+# Check that all dependency licenses are approved by your org
+check-licenses:
+  stage: security
+  image: node:18-alpine
+  before_script:
+    - npm install -g license-checker
+  script:
+    - license-checker --onlyAllow "MIT;ISC;Apache-2.0;BSD-2-Clause;BSD-3-Clause"
+    - echo "All licenses approved ✓"
+  allow_failure: true
+
+# ── 6. GIT COMMIT SIGNING CHECK ──────────────────────────────
+verify-commits:
+  stage: test
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache git
+  script:
+    - echo "Checking commit message format..."
+    - |
+      COMMIT_MSG=$(git log -1 --pretty=%s)
+      if ! echo "$COMMIT_MSG" | grep -qE "^(feat|fix|chore|docs|style|refactor|test|ci):"; then
+        echo "WARN: Commit message should follow conventional commits:"
+        echo "  feat: add new feature"
+        echo "  fix: fix a bug"
+        echo "  chore: maintenance"
+        echo "Got: $COMMIT_MSG"
+      fi
+    - echo "Commit check done"
+  allow_failure: true
+
+# ── SECURITY REPORT SUMMARY ──────────────────────────────────
+security-summary:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "=== Security Scan Summary ==="
+    - echo "SAST:                 see Security dashboard"
+    - echo "Secret detection:     see Security dashboard"
+    - echo "Dependency scanning:  see Security dashboard"
+    - echo "Container scanning:   see trivy-report.json artifact"
+    - echo ""
+    - echo "To view results: Project → Secure → Security Dashboard"
+  when: always
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
