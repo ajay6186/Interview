@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"       # Main endpoint — all AWS services on one port
+      - "4510-4559:4510-4559"  # External services port range
+    environment:
+      - SERVICES=s3,ec2,iam,vpc,sts,lambda,dynamodb,rds,cloudwatch,logs,secretsmanager,ssm
+      - DEBUG=0
+      - PERSISTENCE=1     # keep data between restarts
+      - AWS_DEFAULT_REGION=ap-south-1
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock  # needed for Lambda
+
+volumes:
+  localstack_data:
