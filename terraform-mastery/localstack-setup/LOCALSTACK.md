@@ -57,6 +57,13 @@ The only difference in your Terraform code is the `provider` block — you point
 
 ## 3. Installation
 
+### Important: Use version 3.8 (not latest)
+
+LocalStack `latest` (2026+) requires a paid license even for free features.
+The `docker-compose.yml` in this project already pins to `localstack/localstack:3.8` (free community edition).
+
+> **Do not change the image tag to `latest`** — it will fail with a license error.
+
 ### Prerequisites
 
 | Tool | How to check | Install |

@@ -1,8 +1,6 @@
-version: "3.8"
-
 services:
   localstack:
-    image: localstack/localstack:latest
+    image: localstack/localstack:3.8
     container_name: localstack
     ports:
       - "4566:4566"       # Main endpoint — all AWS services on one port
