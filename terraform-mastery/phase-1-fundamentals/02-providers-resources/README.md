@@ -48,3 +48,17 @@ terraform destroy       # IMPORTANT: delete resources after learning
 
 ## Free Tier
 S3 is free tier: 5GB storage, 20,000 GET requests, 2,000 PUT requests/month.
+
+
+  The Key Difference: LocalStack vs Real AWS
+
+  LocalStack provider block:              Real AWS provider block:
+  ──────────────────────────              ────────────────────────
+  provider "aws" {                        provider "aws" {
+    access_key = "test"    ← fake          region = "ap-south-1"
+    secret_key = "test"    ← fake        }
+    endpoints {                           ↑ reads credentials from:
+      s3 = "http://localhost:4566"        - env vars (AWS_ACCESS_KEY_ID)
+    }                                     - ~/.aws/credentials file
+    skip_credentials_validation = true    - IAM role (on EC2/Lambda)
+  }

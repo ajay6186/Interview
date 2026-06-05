@@ -9,6 +9,7 @@ np.random.seed(42)
 
 # Simulate daily closing prices for a stock over 252 trading days
 prices = 100 * np.cumprod(1 + np.random.normal(0.0005, 0.02, 252))
+print(prices)
 
 # --- BASIC ---
 

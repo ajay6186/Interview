@@ -1,0 +1,125 @@
+# ============================================================================
+# GitLab CI/CD Pipeline — Databricks Deployment
+# Stages: validate → test → deploy-dev → deploy-prod
+# Requires GitLab CI/CD variables (Settings → CI/CD → Variables):
+#   DATABRICKS_HOST_DEV   — e.g. https://adb-xxx.azuredatabricks.net
+#   DATABRICKS_HOST_PROD  — e.g. https://adb-yyy.azuredatabricks.net
+#   DATABRICKS_TOKEN_DEV  — personal access token or service principal token
+#   DATABRICKS_TOKEN_PROD — personal access token or service principal token
+# ============================================================================
+
+default:
+  image: python:3.11-slim
+  before_script:
+    - pip install --quiet databricks-cli databricks-sdk
+
+variables:
+  PYTHON_VERSION: "3.11"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  # Override per-job via DATABRICKS_HOST / DATABRICKS_TOKEN env vars
+
+cache:
+  paths:
+    - .cache/pip/
+
+# ── STAGES ───────────────────────────────────────────────────────────────────
+stages:
+  - validate
+  - test
+  - deploy-dev
+  - deploy-prod
+
+# ── VALIDATE ─────────────────────────────────────────────────────────────────
+lint:
+  stage: validate
+  script:
+    - pip install --quiet flake8 black isort
+    # Stop on syntax errors / undefined names (E9, F63, F7, F82)
+    - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.venv
+    - black --check --diff .
+    - isort --check-only --diff .
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+bundle-validate:
+  stage: validate
+  script:
+    - databricks bundle validate --target dev
+  variables:
+    DATABRICKS_HOST: "$DATABRICKS_HOST_DEV"
+    DATABRICKS_TOKEN: "$DATABRICKS_TOKEN_DEV"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH =~ /^(main|develop)$/'
+
+# ── TEST ─────────────────────────────────────────────────────────────────────
+unit-tests:
+  stage: test
+  script:
+    - pip install --quiet pytest pytest-cov pyspark==3.5.0 delta-spark==3.1.0
+    - pytest test/ -v --tb=short --cov=. --cov-report=term-missing --cov-report=xml
+  coverage: '/TOTAL.*\s+(\d+%)$/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - coverage.xml
+    expire_in: 7 days
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH =~ /^(main|develop)$/'
+
+# ── DEPLOY DEV ───────────────────────────────────────────────────────────────
+deploy-dev:
+  stage: deploy-dev
+  environment:
+    name: development
+    url: $DATABRICKS_HOST_DEV
+  variables:
+    DATABRICKS_HOST: "$DATABRICKS_HOST_DEV"
+    DATABRICKS_TOKEN: "$DATABRICKS_TOKEN_DEV"
+  script:
+    # Deploy Databricks Asset Bundle to dev target
+    - databricks bundle deploy --target dev
+    # Optionally run the pipeline once to validate end-to-end
+    - databricks bundle run --target dev main_pipeline --no-wait
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+# ── DEPLOY PROD ──────────────────────────────────────────────────────────────
+deploy-prod:
+  stage: deploy-prod
+  environment:
+    name: production
+    url: $DATABRICKS_HOST_PROD
+  variables:
+    DATABRICKS_HOST: "$DATABRICKS_HOST_PROD"
+    DATABRICKS_TOKEN: "$DATABRICKS_TOKEN_PROD"
+  script:
+    - databricks bundle deploy --target prod
+    - databricks bundle run --target prod main_pipeline --no-wait
+  when: manual        # requires a human to click "Deploy" in GitLab
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# ── ROLLBACK JOB (manual trigger) ────────────────────────────────────────────
+rollback-prod:
+  stage: deploy-prod
+  environment:
+    name: production
+    url: $DATABRICKS_HOST_PROD
+  variables:
+    DATABRICKS_HOST: "$DATABRICKS_HOST_PROD"
+    DATABRICKS_TOKEN: "$DATABRICKS_TOKEN_PROD"
+  script:
+    # Revert to previous bundle version by redeploying the prior tag
+    - echo "Rolling back to tag ${ROLLBACK_TAG}"
+    - git checkout "${ROLLBACK_TAG}"
+    - databricks bundle deploy --target prod
+  when: manual
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'

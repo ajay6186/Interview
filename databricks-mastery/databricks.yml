@@ -1,0 +1,129 @@
+# ============================================================================
+# Databricks Asset Bundle (DAB) — bundle.yml
+# Reference: https://docs.databricks.com/dev-tools/bundles/index.html
+# Deploy: databricks bundle deploy --target dev
+#         databricks bundle deploy --target prod
+# ============================================================================
+
+bundle:
+  name: databricks_mastery
+
+# Shared resource definitions — overridden per target below
+resources:
+  jobs:
+    main_pipeline:
+      name: "main_pipeline_${bundle.target}"
+      description: "Full medallion ETL pipeline (Bronze → Silver → Gold)"
+      schedule:
+        quartz_cron_expression: "0 0 4 * * ?"
+        timezone_id: "UTC"
+      email_notifications:
+        on_failure:
+          - ops@company.com
+      max_concurrent_runs: 1
+      job_clusters:
+        - job_cluster_key: shared
+          new_cluster:
+            spark_version: "15.4.x-scala2.12"
+            node_type_id: "${var.node_type}"
+            num_workers: "${var.num_workers}"
+            spark_env_vars:
+              ENV: "${bundle.target}"
+      tasks:
+        - task_key: ingest_bronze
+          job_cluster_key: shared
+          spark_python_task:
+            python_file: "src/ingest_bronze.py"
+            parameters: ["--env", "${bundle.target}"]
+
+        - task_key: transform_silver
+          depends_on:
+            - task_key: ingest_bronze
+          job_cluster_key: shared
+          spark_python_task:
+            python_file: "src/transform_silver.py"
+            parameters: ["--env", "${bundle.target}"]
+
+        - task_key: build_gold
+          depends_on:
+            - task_key: transform_silver
+          job_cluster_key: shared
+          spark_python_task:
+            python_file: "src/build_gold.py"
+            parameters: ["--env", "${bundle.target}"]
+
+        - task_key: dq_checks
+          depends_on:
+            - task_key: build_gold
+          job_cluster_key: shared
+          spark_python_task:
+            python_file: "src/dq_checks.py"
+            parameters: ["--env", "${bundle.target}"]
+
+    streaming_pipeline:
+      name: "streaming_pipeline_${bundle.target}"
+      description: "Always-on Kafka → Delta streaming ingestion"
+      trigger:
+        continuous:
+          pause_status: UNPAUSED
+      job_clusters:
+        - job_cluster_key: stream_cluster
+          new_cluster:
+            spark_version: "15.4.x-scala2.12"
+            node_type_id: "${var.node_type}"
+            num_workers: 4
+      tasks:
+        - task_key: stream_ingest
+          job_cluster_key: stream_cluster
+          spark_python_task:
+            python_file: "src/streaming_ingest.py"
+            parameters: ["--env", "${bundle.target}", "--topic", "events"]
+
+# Variables (overridden per target)
+variables:
+  node_type:
+    description: "Databricks node type ID"
+    default: "i3.xlarge"
+  num_workers:
+    description: "Number of worker nodes"
+    default: 4
+
+# Targets (environments)
+targets:
+  dev:
+    mode: development
+    workspace:
+      host: ${DATABRICKS_HOST_DEV}
+    variables:
+      node_type: "i3.xlarge"
+      num_workers: 2
+    resources:
+      jobs:
+        main_pipeline:
+          schedule:
+            pause_status: PAUSED    # don't run on schedule in dev
+        streaming_pipeline:
+          trigger:
+            continuous:
+              pause_status: PAUSED  # manually run in dev
+
+  staging:
+    mode: development
+    workspace:
+      host: ${DATABRICKS_HOST_STAGING}
+    variables:
+      node_type: "i3.xlarge"
+      num_workers: 4
+
+  prod:
+    mode: production
+    workspace:
+      host: ${DATABRICKS_HOST_PROD}
+    variables:
+      node_type: "i3.2xlarge"
+      num_workers: 8
+    resources:
+      jobs:
+        main_pipeline:
+          schedule:
+            pause_status: UNPAUSED  # active schedule in prod

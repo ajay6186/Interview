@@ -16,8 +16,14 @@ variable "db_password" {
   default     = "ChangeMe123!"  # use TF_VAR_db_password env var in real setup
 }
 
-data "aws_vpc" "default"    { default = true }
-data "aws_subnets" "all"    { filter { name = "vpc-id"; values = [data.aws_vpc.default.id] } }
+data "aws_vpc" "default" { default = true }
+
+data "aws_subnets" "all" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
 
 resource "aws_security_group" "rds" {
   name   = "tf-mastery-rds-sg"
@@ -30,7 +36,12 @@ resource "aws_security_group" "rds" {
     cidr_blocks = [data.aws_vpc.default.cidr_block]
   }
 
-  egress { from_port = 0; to_port = 0; protocol = "-1"; cidr_blocks = ["0.0.0.0/0"] }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_db_subnet_group" "main" {
